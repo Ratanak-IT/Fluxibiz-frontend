@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.NEXT_PUBLIC_ISHOP_BASE_URL}`,
+    baseUrl: `${process.env.NEXT_PUBLIC_BASE_URL}`,
   }),
   endpoints: (builder) => ({
     loginUser :builder.mutation<unknown, unknown>({
