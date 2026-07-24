@@ -1,5 +1,5 @@
 import { Card, CardTitle } from "@/components/ui/card";
-import { StoreCardComponentProps } from "./StoreCartComponent";
+import { StoreCardComponentProps } from "./store-cart-component";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -8,15 +8,15 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
   const { name, category,description, location, image, isOpen } = store;
 
   return (
-    <Card className="max-w-sm flex-row items-start gap-3 rounded-xl   ">
+    <Card className="group max-w-sm cursor-pointer flex-row items-start gap-3 rounded-xl transition-shadow ">
       {/* Logo */}
-      <div className="shrink-0 overflow-hidden rounded-xl ">
+      <div className="relative size-20 shrink-0 overflow-hidden rounded-xl ">
         <Image
           src={image}
           width={100}
           height={100}
           alt={name}
-          className="size-20 "
+          className="object-cover transition-transform duration-300 ease-out group-hover:scale-110 "
         />
       </div>
 

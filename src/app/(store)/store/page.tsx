@@ -1,13 +1,13 @@
 "use client";
 
 import { ChevronDown, ChevronRight } from "lucide-react";
-import BannerCarousel from "@/components/store/StoreComponent/BannerCarousel";
-import StoreCardHorizontal from "@/components/store/StoreComponent/StoreCardHorizontal";
-import StoreFilterComponent from "@/components/store/StoreComponent/StoreFilterComponent";
+import BannerCarousel from "@/components/store/store-component/banner-carousel";
+import StoreCardHorizontal from "@/components/store/store-component/store-card-horizontal";
+import StoreFilterComponent from "@/components/store/store-component/store-filter-component";
 import {
   Store,
   StoreCardComponent,
-} from "@/components/store/StoreComponent/StoreCartComponent";
+} from "@/components/store/store-component/store-cart-component";
 
 
 const popularShops: Store[] = [
