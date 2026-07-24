@@ -1,22 +1,17 @@
 import type { Metadata } from "next";
-import {  Google_Sans } from "next/font/google";
+import {  Google_Sans, Geist } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+import { Provider } from "react-redux";
+import StoreProvider from "./StoreProvider";
+
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Google_Sans({
   variable: "--font-googlesans",
   subsets: ["latin"],
 });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-// const googleSans = Google_Sans({
-//   subsets: ["latin"],
-//   weight: ["400", "500", "600", "700"],
-//   variable: "--font-sans",
-//   display: "swap",
-// });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -31,9 +26,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable}  h-full antialiased`}
+      className={cn("h-full", "antialiased", geistSans.variable, "font-sans", geist.variable)}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+     
+         <StoreProvider>
+            <body className="min-h-full flex flex-col">{children}</body>
+         </StoreProvider>
+ 
     </html>
   );
 }
