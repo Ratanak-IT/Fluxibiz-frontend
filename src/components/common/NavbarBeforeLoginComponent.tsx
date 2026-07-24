@@ -73,19 +73,8 @@ const navigationItems = [
 
 export default function NavbarBeforeLoginComponent() {
   return (
-    <header
-      className="
-        sticky top-0 z-50 w-full border-b border-border
-        bg-background/95 text-foreground shadow-sm shadow-black/5 backdrop-blur
-        supports-[backdrop-filter]:bg-background/85 dark:shadow-black/25
-      "
-    >
-      <div
-        className="
-          mx-auto flex h-[89px] max-w-[1240px] items-center justify-between
-          px-5 sm:px-8
-        "
-      >
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground shadow-sm shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-background/85 dark:shadow-black/25">
+      <div className="mx-auto flex h-[89px] max-w-[1240px] items-center justify-between px-5 sm:px-8">
         {/* Logo */}
         <Link href="/" aria-label="FluxiBiz home">
           <Image
@@ -103,13 +92,7 @@ export default function NavbarBeforeLoginComponent() {
           {navigationItems.map((item) =>
             item.children ? (
               <DropdownMenu key={item.label}>
-                <DropdownMenuTrigger
-                  className="
-                    flex items-center gap-1 text-sm font-medium
-                    text-muted-foreground outline-none transition-colors
-                    hover:text-foreground
-                  "
-                >
+                <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-muted-foreground outline-none transition-colors hover:text-foreground">
                   {item.label}
                   <ChevronDown size={16} />
                 </DropdownMenuTrigger>
@@ -129,10 +112,7 @@ export default function NavbarBeforeLoginComponent() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="
-                  text-sm font-medium text-muted-foreground
-                  transition-colors hover:text-foreground
-                "
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {item.label}
               </Link>
@@ -147,11 +127,7 @@ export default function NavbarBeforeLoginComponent() {
 
           <Button
             render={<Link href="/login" />}
-            className="
-              h-9 rounded-full border border-[#00932a] bg-[#00932a]
-              px-5 text-xs font-medium text-white shadow-none
-              hover:bg-[#007d24]
-            "
+            className="h-9 rounded-full border border-[#00932a] bg-[#00932a] px-5 text-xs font-medium text-white shadow-none hover:bg-[#007d24]"
           >
             Login
           </Button>
@@ -159,11 +135,7 @@ export default function NavbarBeforeLoginComponent() {
           <Button
             render={<Link href="/register" />}
             variant="outline"
-            className="
-              h-9 rounded-full border-[#feb90d] bg-transparent
-              px-5 text-xs font-medium text-[#d99400]
-              hover:bg-[#feb90d]/10 hover:text-[#b87d00]
-            "
+            className="h-9 rounded-full border-[#feb90d] bg-transparent px-5 text-xs font-medium text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
           >
             Signup
           </Button>
@@ -202,11 +174,7 @@ export default function NavbarBeforeLoginComponent() {
                 <div key={item.label}>
                   <Link
                     href={item.href}
-                    className="
-                      block rounded-lg px-3 py-3 text-base font-medium
-                      text-foreground transition-colors
-                      hover:bg-muted
-                    "
+                    className="block rounded-lg px-3 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted"
                   >
                     {item.label}
                   </Link>
@@ -217,11 +185,7 @@ export default function NavbarBeforeLoginComponent() {
                         <Link
                           key={child.label}
                           href={child.href}
-                          className="
-                            block rounded-lg px-3 py-2 text-sm
-                            text-muted-foreground transition-colors
-                            hover:bg-muted hover:text-foreground
-                          "
+                          className="block rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         >
                           {child.label}
                         </Link>
@@ -245,10 +209,7 @@ export default function NavbarBeforeLoginComponent() {
               <Button
                 render={<Link href="/register" />}
                 variant="outline"
-                className="
-                  h-11 rounded-full border-[#feb90d] bg-transparent
-                  text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]
-                "
+                className="h-11 rounded-full border-[#feb90d] bg-transparent text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
               >
                 Signup
               </Button>

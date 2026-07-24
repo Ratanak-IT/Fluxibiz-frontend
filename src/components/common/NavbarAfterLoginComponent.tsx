@@ -102,17 +102,10 @@ export default function NavbarAfterLoginComponent({
 }: NavbarAfterLoginComponentProps) {
   return (
     <header
-      className="
-        sticky top-0 z-50 w-full border-b border-border
-        bg-background/95 text-foreground shadow-sm shadow-black/5 backdrop-blur
-        supports-[backdrop-filter]:bg-background/85 dark:shadow-black/25
-      "
+      className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground shadow-sm shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-background/85 dark:shadow-black/25"
     >
       <div
-        className="
-          mx-auto flex h-[89px] max-w-[1240px] items-center justify-between
-          px-5 sm:px-8
-        "
+        className="mx-auto flex h-[89px] max-w-[1240px] items-center justify-between px-5 sm:px-8"
       >
         {/* Logo */}
         <Link href="/" aria-label="FluxiBiz home">
@@ -132,11 +125,7 @@ export default function NavbarAfterLoginComponent({
             item.children ? (
               <DropdownMenu key={item.label}>
                 <DropdownMenuTrigger
-                  className="
-                    flex items-center gap-1 text-sm font-medium
-                    text-muted-foreground outline-none transition-colors
-                    hover:text-foreground
-                  "
+                  className="flex items-center gap-1 text-sm font-medium text-muted-foreground outline-none transition-colors hover:text-foreground"
                 >
                   {item.label}
                   <ChevronDown size={16} />
@@ -157,10 +146,7 @@ export default function NavbarAfterLoginComponent({
               <Link
                 key={item.label}
                 href={item.href}
-                className="
-                  text-sm font-medium text-muted-foreground
-                  transition-colors hover:text-foreground
-                "
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {item.label}
               </Link>
@@ -234,11 +220,7 @@ export default function NavbarAfterLoginComponent({
                   <div key={item.label}>
                     <Link
                       href={item.href}
-                      className="
-                        block rounded-lg px-3 py-3 text-base font-medium
-                        text-foreground transition-colors
-                        hover:bg-muted
-                      "
+                      className="block rounded-lg px-3 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted"
                     >
                       {item.label}
                     </Link>
@@ -249,11 +231,7 @@ export default function NavbarAfterLoginComponent({
                           <Link
                             key={child.label}
                             href={child.href}
-                            className="
-                              block rounded-lg px-3 py-2 text-sm
-                              text-muted-foreground transition-colors
-                              hover:bg-muted hover:text-foreground
-                            "
+                            className="block rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                           >
                             {child.label}
                           </Link>
@@ -271,10 +249,7 @@ export default function NavbarAfterLoginComponent({
 
                 <Link
                   href="/profile"
-                  className="
-                    flex items-center gap-3 rounded-lg px-3 py-3
-                    text-foreground hover:bg-muted
-                  "
+                  className="flex items-center gap-3 rounded-lg px-3 py-3 text-foreground hover:bg-muted"
                 >
                   <UserRound size={19} />
                   Profile
@@ -282,10 +257,7 @@ export default function NavbarAfterLoginComponent({
 
                 <Link
                   href="/settings"
-                  className="
-                    flex items-center gap-3 rounded-lg px-3 py-3
-                    text-foreground hover:bg-muted
-                  "
+                  className="flex items-center gap-3 rounded-lg px-3 py-3 text-foreground hover:bg-muted"
                 >
                   <Settings size={19} />
                   Settings
@@ -294,11 +266,7 @@ export default function NavbarAfterLoginComponent({
                 <button
                   type="button"
                   onClick={onLogout}
-                  className="
-                    flex items-center gap-3 rounded-lg px-3 py-3
-                    text-left text-destructive transition-colors
-                    hover:bg-destructive/10
-                  "
+                  className="flex items-center gap-3 rounded-lg px-3 py-3 text-left text-destructive transition-colors hover:bg-destructive/10"
                 >
                   <LogOut size={19} />
                   Logout
@@ -329,11 +297,7 @@ function CartButton({ cartCount }: { cartCount: number }) {
 
         {cartCount > 0 && (
           <span
-            className="
-              absolute -right-1 -top-1 flex min-w-5 items-center
-              justify-center rounded-full bg-destructive px-1.5 py-0.5
-              text-[11px] font-semibold leading-none text-white
-            "
+            className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white"
           >
             {cartCount > 99 ? "99+" : cartCount}
           </span>
@@ -401,10 +365,7 @@ function UserDropdown({
 
         <DropdownMenuItem
           onClick={onLogout}
-          className="
-            cursor-pointer gap-2 text-destructive
-            focus:bg-destructive/10 focus:text-destructive
-          "
+          className="cursor-pointer gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
         >
           <LogOut size={17} />
           Logout

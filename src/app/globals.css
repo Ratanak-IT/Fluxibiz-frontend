@@ -52,8 +52,8 @@
   --sidebar-border: #E8E8E8;
   --sidebar-ring: #00932A;
 
-  --font-body: Arial, Helvetica, sans-serif;
-  --font-display: "Trebuchet MS", Arial, sans-serif;
+  --font-body: "Google Sans Flex", "Google Sans", Arial, Helvetica, sans-serif;
+  --font-display: "Google Sans Flex", "Google Sans", Arial, Helvetica, sans-serif;
   --font-mono: "Courier New", monospace;
 }
 
@@ -204,6 +204,43 @@
     var(--reveal-delay, 0ms) both;
 }
 
+.scroll-reveal {
+  opacity: 0;
+  transition:
+    opacity 700ms ease var(--scroll-delay, 0ms),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--scroll-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal[data-direction="up"] {
+  transform: translateY(36px);
+}
+
+.scroll-reveal[data-direction="left"] {
+  transform: translateX(56px);
+}
+
+.scroll-reveal[data-direction="right"] {
+  transform: translateX(-56px);
+}
+
+.scroll-reveal[data-direction="scale"] {
+  transform: scale(0.78);
+}
+
+.scroll-reveal[data-direction="draw"] {
+  clip-path: inset(0 100% 0 0);
+  transition:
+    opacity 400ms ease var(--scroll-delay, 0ms),
+    clip-path 1100ms ease var(--scroll-delay, 0ms);
+}
+
+.scroll-reveal[data-visible="true"] {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 0 0 0);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -212,5 +249,11 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
   }
 }
