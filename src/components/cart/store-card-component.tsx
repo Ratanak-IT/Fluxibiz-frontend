@@ -4,7 +4,9 @@ import Image from "next/image"
 
 export function StoreCardComponent() {
   return (
-    <Card className="mx-auto h-45 w-309.75 overflow-hidden p-0">
+    <>
+    
+    <Card className=" h-45 w-309.75 overflow-hidden p-0">
       <div className="flex h-full">
         {/* Image */}
         <div className="relative h-45 w-45 shrink-0 bg-white">
@@ -43,5 +45,6 @@ export function StoreCardComponent() {
         </div>
       </div>
     </Card>
+    </>
   )
 }

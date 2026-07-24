@@ -13,21 +13,21 @@ export default function ItemCardComponent({
   item,
 }: ItemCardComponentProps) {
   return (
-    <Card className="ml-12.5 h-33.5 w-204.75 overflow-hidden border-0 p-0">
+    <Card className=" h-33.5 w-250 overflow-hidden border-0 p-0">
       <div className="flex h-full items-center gap-5 px-4">
         {/* Image */}
         <div className="relative  shrink-0 overflow-hidden rounded-lg bg-white">
           <Image
             src={item.image}
             alt={item.name}
-            width={100}
-            height={100}
+            width={110}
+            height={110}
             className="h-full w-full object-cover"
           />
         </div>
 
         {/* Everything to the right of the image */}
-        <div className="flex flex-1 items-center gap-16.75">
+        <div className="flex flex-1 items-center gap-20">
           {/* Title, description, badges */}
           <div className="flex flex-col gap-1.5">
             <CardHeader className="gap-1 p-0">
@@ -39,13 +39,18 @@ export default function ItemCardComponent({
               </CardDescription>
             </CardHeader>
             <div className="max-w-87.5 flex flex-wrap gap-2 ">
-              <Badge
+              {item.badges.map((badge, index) => (
+                  <Badge key={index} variant="secondary" className="bg-green-50 text-green-600">
+                    {badge}
+                  </Badge>
+                ))}
+              {/* <Badge
                 variant="outline"
                 className="bg-green-50 text-green-600"
               >
                 {item.badges}
               </Badge>
-              {/* <Badge
+              <Badge
                 variant="outline"
                 className="bg-green-50 text-green-600"
               >
@@ -55,7 +60,7 @@ export default function ItemCardComponent({
           </div>
 
           {/* Quantity stepper */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-5">
             <Button
               type="button"
               variant="outline"
@@ -77,7 +82,8 @@ export default function ItemCardComponent({
             </Button>
           </div>
 
-          {/* Price */}
+          <div className="flex items-center gap-30">
+             {/* Price */}
           <span className="text-lg font-semibold text-red-500">${item.price.toFixed(2)}</span>
 
           {/* Remove */}
@@ -88,8 +94,12 @@ export default function ItemCardComponent({
             className="text-red-500 hover:text-red-500"
             aria-label="Remove item"
           >
-            <X className="h-5 w-5" />
+            <X className="h-6 w-6" />
           </Button>
+            
+          </div>
+
+         
         </div>
       </div>
     </Card>

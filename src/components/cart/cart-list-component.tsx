@@ -1,5 +1,6 @@
 import { mockItems } from "@/lib/cart/cart"
-import ItemCardComponent from "./ItemCardComponent"
+import ItemCardComponent from "./item-card-component"
+
 
 
 export default function CartList() {
@@ -11,6 +12,8 @@ export default function CartList() {
           item={item}
         />
       ))}
+
+ 
     </div>
   )
 }

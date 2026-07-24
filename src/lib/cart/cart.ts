@@ -23,6 +23,17 @@ export const mockItems: ItemCardData[] = [
     quantity: 1,
     price: 18.5,
     name: "KFC Signature Burger"
+  },
+  {
+    id: 2,
+    image:
+      "https://i.pinimg.com/736x/0d/54/e0/0d54e01fbce989f17d836b3bc59a2fed.jpg",
+    title: "kentucky fried chicken ",
+    description: "Beef patty, crispy bacon, cheddar, ...",
+    badges: ["No onions", "Extra cheese", "size s"],
+    quantity: 1,
+    price: 18.5,
+    name: "Kentucky Fried Chicken"
   }
 ]
 
