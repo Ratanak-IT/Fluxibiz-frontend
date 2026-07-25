@@ -80,7 +80,7 @@ export default function OrderSummaryComponent() {
 
 
   return (
-    <Card className=" h-85 w-75 p-4">
+    <Card className=" h-85 w-100 p-4 bg-gray-100">
       <CardHeader className="p-0 mb-6">
         <CardTitle className="text-xl font-bold tracking-tight text-neutral-900">
           Order Summary

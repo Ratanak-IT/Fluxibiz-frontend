@@ -1,3 +1,5 @@
+
+// item card
 export default interface ItemCardData {
   id: number
   image: string
@@ -8,8 +10,6 @@ export default interface ItemCardData {
   quantity: number
   price: number
 }
-
-
 
 
 export const mockItems: ItemCardData[] = [
@@ -35,8 +35,37 @@ export const mockItems: ItemCardData[] = [
     price: 18.5,
     name: "Kentucky Fried Chicken"
   }
+  // {
+  //   id: 3,
+  //   image:
+  //     "https://i.pinimg.com/736x/62/07/01/620701147f4cefd9d14fb91657601c31.jpg",
+  //   title: "Fried fries ",
+  //   description: "Photo culinary magazine photo of french ... ",
+  //   badges: [ "size s"],
+  //   quantity: 1,
+  //   price: 2.5,
+  //   name: "Fried fries"
+  // }
 ]
 
+
+// store card
+export interface StoreCardData {
+  image: string
+  category: string
+  name: string
+  location: string
+  hours: string
+}
+
+export const mockStore: StoreCardData = {
+  image:
+    "https://i.pinimg.com/control1/1200x/3a/63/13/3a63135dd9749486af01c7acdb321c5e.jpg",
+  category: "Fast Food",
+  name: "KFC Cambodia",
+  location: "Boeng Keng Kang 1",
+  hours: "07:00 AM – 10:00 PM",
+}
 
 
 
