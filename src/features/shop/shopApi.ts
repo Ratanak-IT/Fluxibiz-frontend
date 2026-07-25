@@ -14,8 +14,7 @@ export const shopApi = createApi({
             method: "POST",
             body: credential
         })
-    }),
-
+  }),
   registerUser: builder.mutation<unknown, unknown>({
         query: (credential)=>({
             url: "/users/user-signup",
@@ -24,6 +23,7 @@ export const shopApi = createApi({
         })
     })
   }),
+  
 });
 
 export const { useLoginUserMutation, useRegisterUserMutation } = shopApi;
