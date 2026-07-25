@@ -11,9 +11,16 @@
   --accent: oklch(0.97 0 0);
   --description: #E8E8E8;
   --text: #030712;
-  --input: oklch(0.922 0 0);
+  --input: #D9D9D9;
+
+  /* --primary: oklch(0.205 0 0); */
+  /* --secondary: oklch(0.97 0 0);
+  --accent: oklch(0.97 0 0); */
+  /* --description: #E8E8E8;
+  --text: #030712;
+  --input: oklch(0.922 0 0); */
   --google-sans: "Google Sans", sans-serif;
-  --background: oklch(1 0 0);
+  /* --background: oklch(1 0 0); */
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -41,6 +48,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+<<<<<<< HEAD
+=======
+
+>>>>>>> d30a5b9b23dd959a230f74d445e0bf576e1d6773
 }
 
 @theme inline {
@@ -88,8 +99,13 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
+
+<<<<<<< HEAD
+=======
+
 }
 
+>>>>>>> d30a5b9b23dd959a230f74d445e0bf576e1d6773
 body {
   /* font-family: Arial, Helvetica, sans-serif; */
   font-family: "Google Sans", sans-serif;

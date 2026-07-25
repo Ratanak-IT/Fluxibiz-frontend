@@ -13,8 +13,7 @@ export const storeApi = createApi({
             method: "POST",
             body: credential
         })
-    }),
-
+  }),
   registerUser: builder.mutation<unknown, unknown>({
         query: (credential)=>({
             url: "/users/user-signup",
@@ -23,6 +22,7 @@ export const storeApi = createApi({
         })
     })
   }),
+  
 });
 
 export const { useLoginUserMutation, useRegisterUserMutation } = storeApi;

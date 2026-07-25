@@ -1,9 +1,5 @@
-
-
-export default function Home() {
-  return (
-    <>
-     This is Home page​ផេកខ្មែរ
-    </>
-  );
+export default function HomePage(){
+  return(
+    <></>
+  )
 }
