@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import {  Google_Sans, Geist } from "next/font/google";
+import {  Google_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Provider } from "react-redux";
 import StoreProvider from "./StoreProvider";
 
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+// const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Google_Sans({
   variable: "--font-googlesans",
@@ -26,7 +25,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, "font-sans", geist.variable)}
+      className={cn("h-full", "antialiased", geistSans.variable, "font-sans")}
     >
      
          <StoreProvider>
