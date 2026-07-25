@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import Image from "next/image"
-import { MenuItemData } from "@/lib/store/detailstore.ts/detailstore"
+import { MenuItemData } from "@/lib/store/detailstore/detailstore"
 
 
 

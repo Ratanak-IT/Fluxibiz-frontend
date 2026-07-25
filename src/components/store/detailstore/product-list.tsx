@@ -1,4 +1,4 @@
-import { MenuItemData } from "@/lib/store/detailstore.ts/detailstore"
+import { MenuItemData } from "@/lib/store/detailstore/detailstore"
 import { MenuProductCard } from "./product-card"
 
 

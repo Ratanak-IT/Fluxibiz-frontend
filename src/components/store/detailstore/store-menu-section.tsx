@@ -1,5 +1,5 @@
 import ProductList from "@/components/store/detailstore/product-list"
-import { getPopularMenuItems, getTeaMenuItems } from "@/lib/store/detailstore.ts/detailstore"
+import { getPopularMenuItems, getTeaMenuItems } from "@/lib/store/detailstore/detailstore"
 
 
 
