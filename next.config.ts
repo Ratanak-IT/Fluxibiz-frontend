@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "www.koithe.com",
+      },
+       {
+        protocol: "https",
         hostname: "encrypted-tbn0.gstatic.com",
       },
       {
@@ -26,5 +30,6 @@ const nextConfig: NextConfig = {
   },
   reactCompiler: true,
 };
+
 
 export default nextConfig;
