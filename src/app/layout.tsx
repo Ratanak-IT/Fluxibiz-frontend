@@ -37,14 +37,15 @@ export default function RootLayout({
             )}
             suppressHydrationWarning
         >
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-                <NavbarBeforeLoginComponent />
-
+            <body className="min-h-full flex flex-col">
                 <StoreProvider>
-                    <body className="min-h-full flex flex-col">{children}</body>
+                    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+                        <NavbarBeforeLoginComponent />
+                        <main className="flex-1">{children}</main>
+                        <Footer />
+                    </ThemeProvider>
                 </StoreProvider>
-                <Footer />
-            </ThemeProvider>
+            </body>
         </html>
     );
 }
