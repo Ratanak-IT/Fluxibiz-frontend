@@ -10,7 +10,7 @@ const relatedItems: Products[] = [
     price: 1.6,
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Beverages",
-    image: "https://i.pinimg.com/736x/e7/e2/b6/e7e2b63e9066f63dd29825be9142e49a.jpg",
+    image: "https://i.pinimg.com/736x/0a/60/93/0a6093fa6b8ff3432f9f92031509c8c5.jpg",
   },
   {
     id: "2",
@@ -18,7 +18,7 @@ const relatedItems: Products[] = [
     price: 1.6,
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Beverages",
-    image: "https://i.pinimg.com/736x/e7/e2/b6/e7e2b63e9066f63dd29825be9142e49a.jpg",
+    image: "https://i.pinimg.com/736x/e5/b9/8f/e5b98f5016f5c9c755229edb09c51c87.jpg",
   },
   {
     id: "3",
@@ -32,7 +32,7 @@ const relatedItems: Products[] = [
 
 export default function Page() {
   return (
-    <div className="px-6 py-10  sm:px-10">
+    <div className="">
       <ProductDetail/>
       <DescriptionCard/>
       <RelatedProducts items={relatedItems} viewAllHref="/menu/beverages" />

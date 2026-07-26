@@ -27,14 +27,7 @@ export default async function testPage(){
         <SearchFilterBar/>
 
         <ProductList title="Popular Menu" items={popularMenuItems} />
-      <ProductList title="Tea Menu" items={teaMenuItems} />
-       
-         
-
-  
-      
-      
-      
+      <ProductList title="Tea Menu" items={teaMenuItems} />  
       
      </div>
     )

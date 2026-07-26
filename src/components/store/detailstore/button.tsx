@@ -18,15 +18,23 @@ interface FilterDropdownProps {
 function FilterDropdown({ label, options }: FilterDropdownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        className="inline-flex h-11 shrink-0 items-center rounded-full bg-white px-5 font-medium text-neutral-800 shadow-sm hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200"
-      >
+      <DropdownMenuTrigger className="inline-flex h-11 shrink-0 items-center rounded-full bg-white px-5 font-medium text-neutral-800 shadow-sm hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200">
         {label}
         <ChevronDown className="ml-1.5 h-4 w-4 text-neutral-400" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         {options.map((option) => (
-          <DropdownMenuItem key={option}>{option}</DropdownMenuItem>
+          <DropdownMenuItem
+            key={option}
+            className="
+    cursor-pointer
+    focus:bg-green-100
+    focus:text-green-700
+    dark:focus:bg-green-900/30
+    dark:focus:text-green-400"
+          >
+            {option}
+          </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

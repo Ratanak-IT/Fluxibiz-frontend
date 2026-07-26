@@ -71,10 +71,10 @@ export default function ProductDetail({
   }
 
   return (
-    <div className="mx-25 h-177.5 w-7xl  text-neutral-900 transition-colors dark:bg-neutral-950 dark:text-neutral-100">
+    <div className=" m-25 h-177.5 w-7xl  text-neutral-900 transition-colors dark:bg-neutral-950 dark:text-neutral-100">
    
-      <div className="mb-6 flex items-center justify-between">
-        <button className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white">
+      <div className="flex items-center justify-between">
+        <button className="inline-flex items-center pb-6 gap-1 text-sm text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white">
           <ChevronLeft className="h-4 w-4" />
           Store/product/detail
         </button>
@@ -126,21 +126,31 @@ export default function ProductDetail({
 
           <h1 className="text-2xl font-bold sm:text-3xl">{product.name}</h1>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-3xl font-bold text-green-600 dark:text-green-500">
-              {formatPrice(unitPrice)}
-            </span>
-            {product.compareAtPrice && (
-              <span className="text-md text-neutral-400 line-through dark:text-neutral-500">
-                {formatPrice(product.compareAtPrice)}
-              </span>
-            )}
-            {discountPct !== null && (
-              <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-semibold text-white">
-                {discountPct}% OFF
-              </span>
-            )}
-          </div>
+     <div className="flex flex-wrap items-center gap-3">
+  <style>{`
+    @keyframes discount-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+    .discount-pulse {
+      animation: discount-pulse 1.2s ease-in-out infinite;
+    }
+  `}</style>
+
+  <span className="text-3xl font-bold text-green-600 dark:text-green-500">
+    {formatPrice(unitPrice)}
+  </span>
+  {product.compareAtPrice && (
+    <span className="text-md text-neutral-400 line-through dark:text-neutral-500">
+      {formatPrice(product.compareAtPrice)}
+    </span>
+  )}
+  {discountPct !== null && (
+    <span className="discount-pulse inline-block rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-semibold text-white">
+      {discountPct}% OFF
+    </span>
+  )}
+</div>
 
           <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
             {product.description}

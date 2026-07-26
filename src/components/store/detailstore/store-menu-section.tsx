@@ -12,7 +12,7 @@ export default async function StoreMenuSection() {
 
   return (
     <>
-      <ProductList title="Popular Menu" items={popularMenuItems} />
+      <ProductList title="Popular Menu" items={popularMenuItems}/>
       <ProductList title="Tea Menu" items={teaMenuItems} />
     </>
   );
