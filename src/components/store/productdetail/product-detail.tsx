@@ -48,9 +48,7 @@ export default function ProductDetail({
     });
   }, [productId]);
 
-  //   useEffect(() => {
-  //     document.documentElement.classList.toggle("dark", dark);
-  //   }, [dark]);
+
 
   if (!product) {
     return (
@@ -74,7 +72,7 @@ export default function ProductDetail({
 
   return (
     <div className="mx-25 h-177.5 w-7xl  text-neutral-900 transition-colors dark:bg-neutral-950 dark:text-neutral-100">
-      {/* Top bar */}
+   
       <div className="mb-6 flex items-center justify-between">
         <button className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white">
           <ChevronLeft className="h-4 w-4" />
@@ -83,7 +81,7 @@ export default function ProductDetail({
       </div>
 
       <div className="grid grid-cols-[auto_1fr] gap-6">
-        {/* Gallery */}
+     
         <div className="flex gap-3">
           <div className="flex flex-col gap-3">
             {product.images.map((src, i) => (
@@ -241,7 +239,6 @@ export default function ProductDetail({
             )}
           </button>
 
-          {/* Perks */}
           <div className="grid grid-cols-3 gap-3 border-t border-neutral-200 pt-4 dark:border-neutral-800">
             {product.perks.map((perk) => {
               const Icon = ICONS[perk.icon];
