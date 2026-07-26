@@ -37,29 +37,29 @@ const partners = [
     src: mptcLogo,
     alt: "Ministry of Post and Telecommunications",
     // Custom shift for MPTC logo to line up with left elements
-    className: "w-full max-w-[280px] sm:max-w-[320px] -ml-3 sm:-ml-12",
+    className: "w-full max-w-[280px] sm:max-w-[320px] ",
   },
   {
     src: istadLogo,
     alt: "ISTAD",
     // Custom shift for ISTAD logo
-    className: "w-full max-w-[120px] sm:max-w-[150px] -ml-3 sm:-ml-6",
+    className: "w-full max-w-[120px] sm:max-w-[150px]",
   },
   {
     src: cbrdFundLogo,
     alt: "CBRD Fund",
     // Custom shift for CBRD Fund logo
-    className: "w-full max-w-[135px] sm:max-w-[165px] -ml-2 sm:-ml-4",
+    className: "w-full max-w-[135px] sm:max-w-[165px] ",
   },
 ];
 
 export default function Footer() {
   return (
     <footer className="relative z-10 mt-auto border-t border-border bg-card text-card-foreground">
-      <div className="mx-auto w-full max-w-[1600px] overflow-hidden px-4 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
+      <div className="mx-auto w-full container max-w-7xl overflow-hidden px-4 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
         
         {/* TOP SECTION */}
-        <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-around lg:gap-12">
+        <div className="container mx-auto max-w-7xl grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ">
           
           {/* Logo & Description Column */}
           <section
@@ -112,7 +112,7 @@ export default function Footer() {
                   strokeWidth={2}
                 />
                 <p>
-                  #40, Street 273, Sangkat Boeung Kak Ti Mouy, Khan Toul Kork,
+                  #40, Street 273, Sangkat Boeung Kak Ti Mouy, <br /> Khan Toul Kork,
                   Phnom Penh
                 </p>
               </div>
@@ -135,13 +135,13 @@ export default function Footer() {
             Supported by
           </p>
 
-          <div className="mx-auto flex flex-wrap items-center justify-around gap-8 sm:gap-12">
+          <div className="container mx-auto  max-w-7xl grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ">
             {partners.map((partner) => (
               <Image
                 key={partner.alt}
                 src={partner.src}
                 alt={partner.alt}
-                className={`${partner.className} h-auto object-contain`}
+                className={`${partner.className}`}
               />
             ))}
           </div>
