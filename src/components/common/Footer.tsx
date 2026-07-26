@@ -55,7 +55,7 @@ export default function Footer() {
                 src={fluxibizLogo}
                 alt="FluxiBiz"
                 priority
-                className="h-auto w-[155px] object-contain sm:w-[180px]"
+                className="h-[80px] w-[155px] object-contain sm:w-[180px]"
               />
             </Link>
 
@@ -128,7 +128,7 @@ export default function Footer() {
       </div>
 
       <div className="bg-primary text-white">
-        <div className="mx-auto flex min-h-20 w-full max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 sm:px-8 md:flex-row md:gap-6 md:py-4 lg:px-10">
+        <div className="mx-auto flex min-h-10 w-full max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 sm:px-8 md:flex-row md:gap-6 md:py-4 lg:px-10">
           <p className="text-center text-xs leading-5 text-white/80 sm:text-sm md:text-left">
             All Rights Reserved © Copyright 2026 FluxiBiz Cambodia.
           </p>
