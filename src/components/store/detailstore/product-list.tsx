@@ -1,10 +1,10 @@
-import { MenuItemData } from "@/lib/store/detailstore/detailstore"
-import { MenuProductCard } from "./product-card"
-
+import { MenuItemData } from "@/lib/store/detailstore/detailstore";
+import { MenuProductCard } from "./product-card";
+import Link from "next/link";
 
 interface ProductListProps {
-  title?: string
-  items: MenuItemData[]
+    title?: string;
+    items: MenuItemData[];
 }
 
 export default function ProductList({ title, items = [] }: ProductListProps) {
@@ -16,11 +16,13 @@ export default function ProductList({ title, items = [] }: ProductListProps) {
         </h2>
       )}
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {items.map((item) => (
-          <MenuProductCard key={item.id} item={item} />
-        ))}
-      </div>
-    </section>
-  )
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                {items.map((item) => (
+                    <Link href={"storeSlug/product/productSlug"} key={item.id}>
+                        <MenuProductCard key={item.id} item={item} />
+                    </Link>
+                ))}
+            </div>
+        </section>
+    );
 }

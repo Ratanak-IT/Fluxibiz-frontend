@@ -20,8 +20,8 @@ export default function StoreCard({ store = mockStore }: StoreCardComponentProps
           <Image
             src={store.image}
             alt={store.name}
-            width={180}
-            height={180}
+            fill
+            sizes="160px"
             className="h-full w-full object-cover"
           />
         </div>

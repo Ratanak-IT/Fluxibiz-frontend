@@ -1,10 +1,11 @@
+//
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const storeApi = createApi({
-  reducerPath: "storeApi",
+export const shopApi = createApi({
+  reducerPath: "shopApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.NEXT_PUBLIC_ISHOP_BASE_URL}`,
+    baseUrl: `${process.env.NEXT_PUBLIC_BASE_URL}`,
   }),
   endpoints: (builder) => ({
     loginUser :builder.mutation<unknown, unknown>({
@@ -25,4 +26,4 @@ export const storeApi = createApi({
   
 });
 
-export const { useLoginUserMutation, useRegisterUserMutation } = storeApi;
+export const { useLoginUserMutation, useRegisterUserMutation } = shopApi;
