@@ -39,12 +39,12 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
         </div>
 
         {/* Right: image + add button */}
-        <div className="relative m-3 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
+        <div className="relative m-3 aspect-square h-[calc(100%-1.5rem)] shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
           <Image
             src={item.image}
             alt={item.name}
-            width={128}
-            height={128}
+            fill
+            sizes="142px"
             className="h-full w-full object-cover"
           />
           <Button
@@ -61,5 +61,4 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
     </Card>
   )
 }
-
 
