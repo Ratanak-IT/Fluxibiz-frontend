@@ -5,14 +5,16 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "loyverse.com",
-        port: "",
-        pathname: "/sites/all/themes/loyversecom/images/product/download/br/**",
-        search: "",
+        hostname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "**",
       },
     ],
   },
   reactCompiler: true,
 };
+
 
 export default nextConfig;
