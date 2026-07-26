@@ -97,6 +97,7 @@ export default function NavbarBeforeLoginComponent() {
           <LanguageDropdown />
 
           <Button
+            nativeButton={false}
             render={<Link href="/login" />}
             className="h-11 rounded-full border border-[#00932a] bg-[#00932a] px-8 text-base font-bold text-white shadow-none hover:bg-[#007d24]"
           >
@@ -104,6 +105,7 @@ export default function NavbarBeforeLoginComponent() {
           </Button>
 
           <Button
+            nativeButton={false}
             render={<Link href="/register" />}
             variant="outline"
             className="h-11 rounded-full border-2 border-[#feb90d] bg-transparent px-8 text-base font-bold text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
@@ -173,6 +175,7 @@ export default function NavbarBeforeLoginComponent() {
               <LanguageDropdown mobile />
 
               <Button
+                nativeButton={false}
                 render={<Link href="/login" />}
                 className="mt-4 h-13 rounded-full bg-[#00932a] text-lg font-bold text-white hover:bg-[#007d24]"
               >
@@ -180,6 +183,7 @@ export default function NavbarBeforeLoginComponent() {
               </Button>
 
               <Button
+                nativeButton={false}
                 render={<Link href="/register" />}
                 variant="outline"
                 className="h-14 rounded-full border-2 border-[#feb90d] bg-transparent text-lg font-bold text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
