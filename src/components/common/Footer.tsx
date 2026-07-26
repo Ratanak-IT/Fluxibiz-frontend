@@ -37,30 +37,28 @@ const partners = [
     src: mptcLogo,
     alt: "Ministry of Post and Telecommunications",
     // Custom shift for MPTC logo to line up with left elements
-    className: "w-full max-w-[280px] sm:max-w-[320px] -ml-3 sm:-ml-12",
+    className: "w-full max-w-[280px] sm:max-w-[320px] ",
   },
   {
     src: istadLogo,
     alt: "ISTAD",
     // Custom shift for ISTAD logo
-    className: "w-full max-w-[120px] sm:max-w-[150px] -ml-3 sm:-ml-6",
+    className: "w-full max-w-[120px] sm:max-w-[150px]",
   },
   {
     src: cbrdFundLogo,
     alt: "CBRD Fund",
     // Custom shift for CBRD Fund logo
-    className: "w-full max-w-[135px] sm:max-w-[165px] -ml-2 sm:-ml-4",
+    className: "w-full max-w-[135px] sm:max-w-[165px] ",
   },
 ];
 
 export default function Footer() {
   return (
     <footer className="relative z-10 mt-auto border-t border-border bg-card text-card-foreground">
-      <div className="mx-auto w-full max-w-[1600px] overflow-hidden px-4 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
-        
+      <div className="mx-auto w-full container max-w-7xl overflow-hidden px-4 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
         {/* TOP SECTION */}
-        <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-around lg:gap-12">
-          
+        <div className="container mx-auto max-w-7xl grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ">
           {/* Logo & Description Column */}
           <section
             className="flex flex-col items-start text-left"
@@ -112,17 +110,28 @@ export default function Footer() {
                   strokeWidth={2}
                 />
                 <p>
-                  #40, Street 273, Sangkat Boeung Kak Ti Mouy, Khan Toul Kork,
-                  Phnom Penh
+                  #40, Street 273, Sangkat Boeung Kak Ti Mouy, <br /> Khan Toul
+                  Kork, Phnom Penh
                 </p>
               </div>
 
               <ContactLink href="tel:+85515338826" label="+855 15 33 88 26">
-                <Phone aria-hidden="true" className="size-5 sm:size-6" strokeWidth={2} />
+                <Phone
+                  aria-hidden="true"
+                  className="size-5 sm:size-6"
+                  strokeWidth={2}
+                />
               </ContactLink>
 
-              <ContactLink href="mailto:ipos.istad@gmail.com" label="ipos.istad@gmail.com">
-                <Mail aria-hidden="true" className="size-5 sm:size-6" strokeWidth={2} />
+              <ContactLink
+                href="mailto:ipos.istad@gmail.com"
+                label="ipos.istad@gmail.com"
+              >
+                <Mail
+                  aria-hidden="true"
+                  className="size-5 sm:size-6"
+                  strokeWidth={2}
+                />
               </ContactLink>
             </address>
           </section>
@@ -130,18 +139,17 @@ export default function Footer() {
 
         {/* SPONSORED BY & SPONSOR LOGOS SECTION */}
         <div className="mt-12 border-t border-border pt-8 sm:mt-14 sm:pt-10">
-          
           <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:mb-8 sm:text-xs">
             Supported by
           </p>
 
-          <div className="mx-auto flex flex-wrap items-center justify-around gap-8 sm:gap-12">
+          <div className="container mx-auto  max-w-7xl grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ">
             {partners.map((partner) => (
               <Image
                 key={partner.alt}
                 src={partner.src}
                 alt={partner.alt}
-                className={`${partner.className} h-auto object-contain`}
+                className={`${partner.className}`}
               />
             ))}
           </div>
@@ -178,8 +186,13 @@ export default function Footer() {
 function FooterTitle({ children }: { children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="text-lg font-semibold tracking-wide text-card-foreground sm:text-xl">{children}</h2>
-      <div className="mt-2 h-1 w-12 rounded-full bg-secondary" aria-hidden="true" />
+      <h2 className="text-lg font-semibold tracking-wide text-card-foreground sm:text-xl">
+        {children}
+      </h2>
+      <div
+        className="mt-2 h-1 w-12 rounded-full bg-secondary"
+        aria-hidden="true"
+      />
     </div>
   );
 }
