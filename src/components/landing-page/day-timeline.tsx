@@ -15,37 +15,37 @@ const steps: Step[] = [
   {
     title: "Open the doors",
     body: "Track your opening cash and get to work — no paperwork needed.",
-    illustration: "/landing/open-door.png",
+    illustration: "image/landing/open-door.png",
     tone: "brand",
   },
   {
     title: "Sell smarter",
     body: "Manage every sale from one simple place, in-store or online.",
-    illustration: "/landing/sale.png",
+    illustration: "image/landing/sale.png",
     tone: "amber",
   },
   {
     title: "Stay in control of your stock",
     body: "Real-time stock levels, low-stock alerts, and quick reorders.",
-    illustration: "/landing/stock.png",
+    illustration: "image/landing/stock.png",
     tone: "rose",
   },
   {
     title: "Know your business",
     body: "Sales and performance in one clear dashboard.",
-    illustration: "/landing/dashboard.png",
+    illustration: "image/landing/dashboard.png",
     tone: "brand",
   },
   {
     title: "End your day with clarity",
     body: "Review sales, payments, and cash flow before you close up.",
-    illustration: "/landing/cash-flow.png",
+    illustration: "image/landing/cash-flow.png",
     tone: "amber",
   },
   {
     title: "Close the register",
     body: "Cash out with a tap — tomorrow picks up right where today left off.",
-    illustration: "/landing/close.png",
+    illustration: "image/landing/close.png",
     tone: "rose",
   },
 ];
