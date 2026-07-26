@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Section } from "./landing-shared";
+import { Reveal, Section } from "./landing-shared";
+import { ScrollReveal } from "./scroll-reveal";
 
 type Cycle = "monthly" | "quarterly" | "yearly";
 
@@ -100,7 +101,6 @@ interface PlanCardProps {
 function PlanCard({ plan, cycle, selected, onSelect, onArrowKey }: PlanCardProps) {
   const suffix = CYCLES.find((c) => c.id === cycle)!.suffix;
 
-  // Roving-tabindex radio behaviour: arrows move between plans, space/enter picks one.
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -123,50 +123,58 @@ function PlanCard({ plan, cycle, selected, onSelect, onArrowKey }: PlanCardProps
       onClick={onSelect}
       onKeyDown={handleKeyDown}
       className={cn(
-        "relative h-full cursor-pointer gap-0 rounded-2xl p-7 outline-none",
-        "transition-[transform,box-shadow,border-color] duration-300 ease-out",
+        "group relative h-full cursor-pointer gap-0 rounded-2xl p-7 outline-none overflow-visible",
+        "transition-[box-shadow,border-color] duration-300 ease-out",
         "focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
-        selected
-          ? "border-brand bg-brand-soft/40 shadow-[0_24px_60px_-30px_rgba(21,128,61,0.55)] lg:-translate-y-4"
-          : "border-hairline shadow-sm hover:border-brand/40 hover:shadow-md lg:translate-y-0",
+        plan.popular
+          ? "pricing-popular-float-lg border-2 border-brand bg-white z-10 "
+          : "border-hairline hover:border-brand/40 bg-card",
+        selected && !plan.popular ? "bg-brand-soft/40" : "",
       )}
     >
       {plan.popular ? (
-        <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-ink px-3 py-1 text-[10px] font-semibold text-white hover:bg-brand-ink">
-          ★ Most popular
+        <Badge className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-brand-ink px-3 py-1 text-[10px] font-semibold text-white hover:bg-brand-ink">
         </Badge>
       ) : null}
 
-      <h3 className="font-display text-base font-bold text-brand-ink">{plan.name}</h3>
+      <div className="origin-center transition-transform duration-500 ease-out group-hover:scale-[1.03]">
+        <h3 className="font-display text-base font-bold text-brand-ink">{plan.name}</h3>
 
-      <p className="mt-4 font-display text-4xl font-extrabold text-brand-ink">
-        ${plan.prices[cycle]}
-        <span className="ml-1 align-middle text-sm font-medium text-muted-foreground">{suffix}</span>
-      </p>
+        <Reveal key={cycle} variant="up" duration={300} className="mt-4">
+          <p className="font-display text-4xl font-extrabold text-brand-ink">
+            ${plan.prices[cycle]}
+            <span className="ml-1 align-middle text-sm font-medium text-muted-foreground">
+              {suffix}
+            </span>
+          </p>
+        </Reveal>
 
-      <p className="mt-4 text-xs text-muted-foreground">{plan.tagline}</p>
+        <p className="mt-4 text-xs text-muted-foreground">{plan.tagline}</p>
 
-      <ul className="mt-5 space-y-3">
-        {plan.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2 text-xs text-brand-ink">
-            <Check className="mt-px size-3.5 shrink-0 text-brand" aria-hidden />
-            {feature}
-          </li>
-        ))}
-      </ul>
+        <ul className="mt-5 space-y-3">
+          {plan.features.map((feature) => (
+            <li key={feature} className="flex items-start gap-2 text-xs text-brand-ink">
+              <Check className="mt-px size-3.5 shrink-0 text-brand" aria-hidden />
+              {feature}
+            </li>
+          ))}
+        </ul>
 
-      <Button
-        // The card already handles selection — don't let the click bubble and re-fire it.
-        onClick={(event) => event.stopPropagation()}
-        className={cn(
-          "mt-8 h-11 w-full rounded-xl text-sm font-semibold transition-colors",
-          selected
-            ? "bg-brand text-white hover:bg-brand-deep"
-            : "border border-hairline bg-white text-brand-ink hover:bg-brand-soft",
-        )}
-      >
-        Get started
-      </Button>
+        <Button
+          onClick={(event) => {
+            event.stopPropagation();
+            onSelect();
+          }}
+          className={cn(
+            "mt-8 h-11 w-full rounded-xl text-sm font-semibold transition-colors",
+            plan.popular || selected
+              ? "bg-brand text-white hover:bg-brand-deep"
+              : "border border-hairline bg-white text-brand-ink hover:bg-brand-soft",
+          )}
+        >
+          Get started
+        </Button>
+      </div>
     </Card>
   );
 }
@@ -182,10 +190,10 @@ export function PricingSection() {
   }
 
   return (
-    <Section id="pricing">
+    <Section id="pricing" className="overflow-visible">
       <div className="text-center">
         <Badge className="gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-xs text-brand-ink hover:bg-brand-soft">
-          <span className="size-2 rounded-full bg-brand" aria-hidden />
+          <span className="size-2 animate-pulse rounded-full bg-brand" aria-hidden />
           Pricing
         </Badge>
         <h2 className="mt-5 font-display text-3xl font-extrabold text-brand-deep md:text-[2.75rem]">
@@ -201,17 +209,26 @@ export function PricingSection() {
       <div
         role="radiogroup"
         aria-label="Subscription plan"
-        className="mt-14 grid grid-cols-1 items-center gap-6 md:grid-cols-3"
+        className={cn(
+          "mt-20 flex snap-x snap-mandatory gap-6 overflow-x-auto px-5 pt-8 pb-4 scrollbar-none",
+          "md:grid md:grid-cols-3 md:items-center md:overflow-visible md:px-0 md:pb-0 md:pt-12 md:snap-none",
+        )}
       >
-        {PLANS.map((plan) => (
-          <PlanCard
+        {PLANS.map((plan, index) => (
+          <ScrollReveal
             key={plan.id}
-            plan={plan}
-            cycle={cycle}
-            selected={plan.id === selectedId}
-            onSelect={() => setSelectedId(plan.id)}
-            onArrowKey={(direction) => moveSelection(plan.id, direction)}
-          />
+            direction="up"
+            delay={index * 120}
+            className="w-[82%] shrink-0 snap-center sm:w-[60%] md:w-auto md:shrink overflow-visible"
+          >
+            <PlanCard
+              plan={plan}
+              cycle={cycle}
+              selected={plan.id === selectedId}
+              onSelect={() => setSelectedId(plan.id)}
+              onArrowKey={(direction) => moveSelection(plan.id, direction)}
+            />
+          </ScrollReveal>
         ))}
       </div>
 

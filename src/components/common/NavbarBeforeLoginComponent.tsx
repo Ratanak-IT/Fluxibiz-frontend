@@ -28,38 +28,10 @@ const navigationItems = [
   {
     label: "Business",
     href: "#business",
-    children: [
-      {
-        label: "Retail Business",
-        href: "/business/retail",
-      },
-      {
-        label: "Restaurant",
-        href: "/business/restaurant",
-      },
-      {
-        label: "Online Store",
-        href: "/business/online-store",
-      },
-    ],
   },
   {
     label: "Feature",
     href: "#features",
-    children: [
-      {
-        label: "Point of Sale",
-        href: "/features/pos",
-      },
-      {
-        label: "Inventory",
-        href: "/features/inventory",
-      },
-      {
-        label: "Reports",
-        href: "/features/reports",
-      },
-    ],
   },
   {
     label: "Store",
@@ -73,8 +45,8 @@ const navigationItems = [
 
 export default function NavbarBeforeLoginComponent() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground shadow-sm shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-background/85 dark:shadow-black/25">
-      <div className="mx-auto flex h-[89px] max-w-[1240px] items-center justify-between px-5 sm:px-8">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-background/85 dark:shadow-black/25">
+      <div className="mx-auto flex h-[55px] max-w-[1365px] items-center justify-between px-5 sm:px-8">
         {/* Logo */}
         <Link href="/" aria-label="FluxiBiz home">
           <Image
@@ -137,7 +109,7 @@ export default function NavbarBeforeLoginComponent() {
             variant="outline"
             className="h-9 rounded-full border-[#feb90d] bg-transparent px-5 text-xs font-medium text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
           >
-            Signup
+            Sign up
           </Button>
         </div>
 
@@ -230,8 +202,8 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
           variant="ghost"
           className={
             mobile
-              ? "w-full justify-start gap-2"
-              : "h-10 gap-2 rounded-full px-2"
+              ? "w-full justify-start gap-2 hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
+              : "h-10 gap-2 rounded-full px-2 hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
           }
         />}
       >
@@ -240,7 +212,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             alt="English"
             width={34}
             height={24}
-            className="h-5 w-8 rounded-sm object-cover"
+            className="h-5 w-8 object-cover"
           />
 
           {mobile && <span>English</span>}
@@ -255,7 +227,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             alt=""
             width={28}
             height={20}
-            className="h-4 w-7 rounded-sm object-cover"
+            className="h-4 w-7 object-cover"
           />
           English
         </DropdownMenuItem>
@@ -266,7 +238,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             alt=""
             width={28}
             height={20}
-            className="h-4 w-7 rounded-sm object-cover"
+            className="h-4 w-7 object-cover"
           />
           Khmer
         </DropdownMenuItem>

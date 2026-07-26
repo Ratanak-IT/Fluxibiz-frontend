@@ -10,15 +10,15 @@ import { cn } from "@/lib/utils";
  * - Add replacement assets under public/image/landing.
  */
 export const LANDING_IMAGES = {
-  dashboardPreview: "/image/landing/dashboard-preview.png",
+  dashboardPreview: "/landing/dashboard-bo.png",
   businessToolsPreview: "/image/landing/business-tools-preview.png",
   features: {
-    pos: "/image/landing/card/dynamic.jpg",
-    inventory: "/image/landing/card/inventory.jpg",
-    dashboard: "/image/landing/card/clean.jpg",
+    pos: "/image/landing/card/business.png",
+    inventory: "/image/landing/card/inventory.png",
+    dashboard: "/image/landing/dashboard-preview.png",
   },
   surfaces: {
-    dashboard: "/image/landing/surface-dashboard.png",
+    dashboard: "/image/landing/surface.png",
     storefront: "/image/landing/surface-storefront.png",
     mobile: "/image/landing/surface-mobile.png",
   },

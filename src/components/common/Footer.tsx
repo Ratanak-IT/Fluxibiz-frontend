@@ -43,7 +43,7 @@ const partners = [
 
 export default function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-card text-card-foreground">
+    <footer className="relative z-10 mt-auto border-t border-border bg-card text-card-foreground">
       <div className="mx-auto w-full max-w-7xl overflow-hidden px-4 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
         <div className="grid gap-8 sm:gap-10 md:grid-cols-2 md:gap-10 lg:grid-cols-[1.35fr_.7fr_1fr] lg:gap-14">
           <section

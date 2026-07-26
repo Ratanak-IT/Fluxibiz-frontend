@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function LandingPage() {
   return (
-    <main>
+    <main className="landing-page overflow-x-clip">
       <HeroSection />
       <ProductPreview />
       <FeatureCards />
