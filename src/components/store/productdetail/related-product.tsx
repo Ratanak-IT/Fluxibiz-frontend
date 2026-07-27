@@ -1,8 +1,9 @@
-// related-products.tsx
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import {  Products } from "@/lib/store/detailproduct/product";
+
 import { ProductCard } from "./prodcuct-card";
+import { Products } from "@/lib/store/productdetail/product";
 
 
 interface RelatedProductsProps {
@@ -17,9 +18,9 @@ export function RelatedProducts({
   viewAllHref = "#",
 }: RelatedProductsProps) {
   return (
-    <section className="m-25">
+    <section className="mx-auto my-10 max-w-7xl px-4">
      
-      <div className="mb-4 flex items-center justify-between ">
+      <div className="  mb-4 flex items-center justify-between ">
         <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50">
           {title}
         </h2>
