@@ -27,33 +27,37 @@ const staff = [
 ];
 
 function ToolCard({
-  label,
-  title,
-  className = "",
-  inverted = false,
-  children,
+    label,
+    title,
+    className,
+    children,
+    inverted = false,
 }: {
-  label: string;
-  title: string;
-  className?: string;
-  inverted?: boolean;
-  children: React.ReactNode;
+    label: string;
+    title: string;
+    className?: string;
+    children?: ReactNode;
+    inverted?: boolean;
 }) {
-  return (
-    <Card
-      className={`group h-full gap-0 overflow-hidden rounded-2xl border-border p-5 sm:p-6 ${className}`}
-    >
-      <div className="origin-center transition-transform duration-500 ease-out group-hover:scale-[1.04]">
-        <p className={`text-xs font-semibold uppercase tracking-[0.14em] ${inverted ? "text-white/80" : "text-brand"}`}>
-          {label}
-        </p>
-        <h3 className={`mt-1.5 font-display text-base font-bold ${inverted ? "text-white" : "text-foreground"}`}>
-          {title}
-        </h3>
-        {children}
-      </div>
-    </Card>
-  );
+    return (
+        <div
+            className={`group h-full gap-0 overflow-hidden rounded-2xl border border-border bg-white text-card-foreground p-5 sm:p-6 ${className}`}
+        >
+            <div className="origin-center transition-transform duration-500 ease-out group-hover:scale-[1.04]">
+                <p
+                    className={`text-xs font-semibold uppercase tracking-[0.14em] ${inverted ? "text-white/80" : "text-brand"}`}
+                >
+                    {label}
+                </p>
+                <h3
+                    className={`mt-1.5 font-display text-base font-bold ${inverted ? "text-white" : "text-foreground"}`}
+                >
+                    {title}
+                </h3>
+                {children}
+            </div>
+        </div>
+    );
 }
 
 export function ToolsBento() {
