@@ -33,7 +33,7 @@ export default function StoreCard({ store = mockStore }: StoreCardComponentProps
               {store.category}
             </CardDescription>
 
-            <CardTitle className="text-4xl font-bold">
+            <CardTitle className="text-xl font-semibold">
               {store.name}
             </CardTitle>
           </CardHeader>

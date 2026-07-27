@@ -37,7 +37,7 @@ export async function getProduct(id: string): Promise<Product> {
     images: [
       "https://i.pinimg.com/736x/2b/15/8b/2b158b25f63a54b59604568236dedfcb.jpg",
       "https://i.pinimg.com/736x/e3/6a/72/e36a720526185c37b69d2bad73d1d95c.jpg",
-      "https://i.pinimg.com/736x/e7/e2/b6/e7e2b63e9066f63dd29825be9142e49a.jpg",
+      "https://i.pinimg.com/736x/80/fa/b8/80fab853a55b8411eaa3768b3d1b61a5.jpg",
     ],
     sugarLevels: ["0", "25", "50", "75", "100"].map((v) => ({
       label: `${v}%`,
@@ -80,28 +80,3 @@ export function computeDiscountPct(
   if (!compareAtPrice || compareAtPrice <= price) return null;
   return Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
 }
-
-
-// export interface ProductList {
-//   id: string
-//   name: string
-//   price: number
-//   description: string
-//   category: string
-//   image: string
-// }
-
-
-// export interface ProductListProps {
-//   items?: ProductList[]; 
-// }
-
-export interface Products {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-}
-

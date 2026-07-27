@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
  * - Add replacement assets under public/image/landing.
  */
 export const LANDING_IMAGES = {
-  dashboardPreview: "/landing/dashboard-bo.png",
+  dashboardPreview: "/image/landing/dashboard-bo.png",
   businessToolsPreview: "/image/landing/business-tools-preview.png",
   features: {
     pos: "/image/landing/card/business.png",

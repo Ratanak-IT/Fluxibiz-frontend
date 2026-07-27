@@ -31,7 +31,7 @@ export default function DescriptionCard({
   imageAlt = "Product",
 }: DescriptionCardProps) {
   return (
-   <div className="mx-25">
+   <div className="m-25">
   <Card className="grid h-92 grid-cols-1 gap-0 overflow-hidden rounded-3xl p-0 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 md:grid-cols-2">
     <div className="flex min-h-0 flex-col justify-center overflow-hidden px-6 sm:px-10 sm:py-10">
       <CardHeader className="p-0">

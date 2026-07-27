@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "../ui/skeleton"
 
 interface CartItem {
@@ -26,7 +26,7 @@ export default function OrderSummaryComponent() {
     async function fetchCartData() {
       try {
         setIsLoading(true)
-        
+
         await new Promise((resolve) => setTimeout(resolve, 1500))
 
         // Mock payload structure
@@ -62,7 +62,7 @@ export default function OrderSummaryComponent() {
     setIsSubmitting(false)
   }
 
- 
+
   if (isLoading) {
     return (
       <Card className="w-full max-w-sm border-none  p-4 space-y-6">
@@ -92,12 +92,12 @@ export default function OrderSummaryComponent() {
           <span>item</span>
           <span className="font-bold text-neutral-900">{totalItemCount}</span>
         </div>
-        
+
         <div className="flex justify-between items-center">
           <span>Subtotal</span>
           <span className="font-bold text-neutral-900">${subtotal.toFixed(2)}</span>
         </div>
-        
+
         <div className="flex justify-between items-center pb-4 border-b border-neutral-200">
           <span>Discount</span>
           <span className="font-bold text-neutral-900">${discount.toFixed(2)}</span>
@@ -109,15 +109,15 @@ export default function OrderSummaryComponent() {
         </div>
       </CardContent>
 
-      <CardFooter className="p-0 mt-6">
-        <Button 
+      <CardAction className="p-0 mt-6">
+        <Button
           onClick={handleCheckout}
           disabled={isSubmitting || totalItemCount === 0}
           className="w-full h-12 text-base font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-full transition-colors"
         >
           {isSubmitting ? "Processing..." : "Checkout"}
         </Button>
-      </CardFooter>
+      </CardAction>
     </Card>
   )
 }

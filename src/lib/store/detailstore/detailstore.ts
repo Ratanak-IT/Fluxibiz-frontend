@@ -1,7 +1,7 @@
 export interface MenuItemData {
   id: string
   name: string
-  price: number
+  price: string
   description: string
   category: string
   image: string
@@ -9,7 +9,7 @@ export interface MenuItemData {
 
 
 export interface ProductListProps {
-  items?: MenuItemData[]; 
+  items?: MenuItemData[]; // now optional
 }
 
 // --- Raw mock data (private to this file) ---
@@ -18,7 +18,7 @@ export const popularMenuItems: MenuItemData[] = [
   {
     id: "1",
     name: "Green Tea Macchiato",
-    price: 1.90,
+    price: "1.90",
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Juice",
     image: "https://i.pinimg.com/736x/96/80/ec/9680ecaf91173c532345f935f1bd5a01.jpg",
@@ -26,7 +26,7 @@ export const popularMenuItems: MenuItemData[] = [
   {
     id: "2",
     name: "Jasmine Green Tea",
-    price: 1.60,
+    price: "1.60",
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Juice",
     image: "https://i.pinimg.com/736x/96/80/ec/9680ecaf91173c532345f935f1bd5a01.jpg",
@@ -34,7 +34,7 @@ export const popularMenuItems: MenuItemData[] = [
   {
     id: "3",
     name: "Premium Hojicha Latte",
-    price: 2.20,
+    price: "2.20",
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Hojicha",
     image: "https://i.pinimg.com/736x/96/80/ec/9680ecaf91173c532345f935f1bd5a01.jpg",
@@ -42,7 +42,7 @@ export const popularMenuItems: MenuItemData[] = [
   {
     id: "4",
     name: "Uji Matcha Latte",
-    price: 2.30,
+    price: "2.30",
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Matcha Series",
     image: "https://i.pinimg.com/736x/96/80/ec/9680ecaf91173c532345f935f1bd5a01.jpg",
@@ -50,7 +50,7 @@ export const popularMenuItems: MenuItemData[] = [
   {
     id: "5",
     name: "Premium Hojicha Macchiato",
-    price: 2.30,
+    price: "2.30",
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Hojicha",
     image: "https://i.pinimg.com/736x/96/80/ec/9680ecaf91173c532345f935f1bd5a01.jpg",
@@ -58,7 +58,7 @@ export const popularMenuItems: MenuItemData[] = [
   {
     id: "6",
     name: "Jumbo Milk Tea",
-    price: 2.30,
+    price: "2.30",
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Chewy Tea",
     image: "https://i.pinimg.com/736x/96/80/ec/9680ecaf91173c532345f935f1bd5a01.jpg",
@@ -69,7 +69,7 @@ export const popularMenuItems: MenuItemData[] = [
   {
     id: "7",
     name: "Jasmine Green Tea",
-    price: 1.90,
+    price: "1.90",
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Juice",
     image: "https://i.pinimg.com/736x/96/80/ec/9680ecaf91173c532345f935f1bd5a01.jpg",
@@ -77,7 +77,7 @@ export const popularMenuItems: MenuItemData[] = [
   {
     id: "8",
     name: "Jasmine Green Tea",
-    price: 1.60,
+    price: "1.60",
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Juice",
     image: "https://i.pinimg.com/736x/96/80/ec/9680ecaf91173c532345f935f1bd5a01.jpg",
@@ -85,7 +85,7 @@ export const popularMenuItems: MenuItemData[] = [
   {
     id: "9",
     name: "Jasmine Green Tea",
-    price: 2.30,
+    price: "2.30",
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Matcha Series",
     image: "https://i.pinimg.com/736x/96/80/ec/9680ecaf91173c532345f935f1bd5a01.jpg",
@@ -93,7 +93,7 @@ export const popularMenuItems: MenuItemData[] = [
   {
     id: "10",
     name: "Jumbo Milk Tea",
-    price: 2.30,
+    price: "2.30",
     description: "Fragrant jasmine green tea freshly brewed.",
     category: "Chewy Tea",
     image: "https://i.pinimg.com/736x/96/80/ec/9680ecaf91173c532345f935f1bd5a01.jpg",

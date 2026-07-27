@@ -1,5 +1,6 @@
 import {
   Card,
+ 
   CardHeader,
   CardDescription,
   CardTitle,
@@ -17,7 +18,7 @@ interface MenuProductCardProps {
 
 export function MenuProductCard({ item }: MenuProductCardProps) {
   return (
-    <Card className="group h-41.25 w-143 overflow-hidden border-0 bg-white p-0 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg dark:bg-neutral-900 sm:max-w-143">
+    <Card className="h-41.25 w-143 overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-neutral-900 sm:max-w-143">
       <div className="flex h-full">
         {/* Left: text content */}
         <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5 py-4 pl-5 pr-3">
@@ -25,7 +26,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
             <CardTitle className="truncate text-3xl font-bold text-neutral-900 dark:text-neutral-50">
               {item.name}
             </CardTitle>
-            <p className="text-2xl font-bold text-red-500">
+            <p className="text-base font-bold text-red-500">
               $ {item.price}
             </p>
             <CardDescription className="line-clamp-2 text-sm text-neutral-500 dark:text-neutral-400">
