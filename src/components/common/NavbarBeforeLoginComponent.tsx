@@ -46,8 +46,9 @@ const navigationItems = [
 export default function NavbarBeforeLoginComponent() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground backdrop-blur supports-[backdrop-filter]:bg-background/85">
-      <div className="mx-auto flex h-[70px] max-w-[1800px] items-center justify-between px-6 sm:px-10">
+      <div className="mx-auto flex h-[55px] max-w-[1330px] items-center justify-between px-6 sm:px-10">
         
+        {/* Desktop Logo - Scaled down to w-[130px] */}
         <Link href="/" aria-label="FluxiBiz home">
           <Image
             src={fluxibizLogo}
@@ -55,17 +56,18 @@ export default function NavbarBeforeLoginComponent() {
             width={240}
             height={90}
             priority
-            className="h-auto w-[165px] object-contain"
+            className="h-auto w-[130px] object-contain"
           />
         </Link>
 
-        <nav className="hidden items-center gap-14 lg:flex">
+        {/* Desktop Navigation */}
+        <nav className="hidden items-center gap-8 lg:flex">
           {navigationItems.map((item) =>
             item.children ? (
               <DropdownMenu key={item.label}>
-                <DropdownMenuTrigger className="flex items-center gap-2 text-lg font-semibold text-muted-foreground outline-none transition-colors hover:text-foreground">
+                <DropdownMenuTrigger className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground outline-none transition-colors hover:text-foreground">
                   {item.label}
-                  <ChevronDown size={20} />
+                  <ChevronDown size={16} />
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="start" className="min-w-60 p-2">
@@ -73,7 +75,7 @@ export default function NavbarBeforeLoginComponent() {
                     <DropdownMenuItem
                       key={child.label}
                       render={<Link href={child.href} />}
-                      className="py-3 text-base font-medium"
+                      className="py-2 text-sm font-medium"
                     >
                       {child.label}
                     </DropdownMenuItem>
@@ -84,7 +86,7 @@ export default function NavbarBeforeLoginComponent() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-lg font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
               >
                 {item.label}
               </Link>
@@ -99,7 +101,7 @@ export default function NavbarBeforeLoginComponent() {
           <Button
             nativeButton={false}
             render={<Link href="/login" />}
-            className="h-11 rounded-full border border-[#00932a] bg-[#00932a] px-8 text-base font-bold text-white shadow-none hover:bg-[#007d24]"
+            className="h-9 rounded-full border border-[#00932a] bg-[#00932a] px-8 text-sm font-bold text-white shadow-none hover:bg-[#007d24]"
           >
             Login
           </Button>
@@ -108,12 +110,13 @@ export default function NavbarBeforeLoginComponent() {
             nativeButton={false}
             render={<Link href="/register" />}
             variant="outline"
-            className="h-11 rounded-full border-2 border-[#feb90d] bg-transparent px-8 text-base font-bold text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
+            className="h-9 rounded-full border-2 border-[#feb90d] bg-transparent px-8 text-sm font-bold text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
           >
             Sign up
           </Button>
         </div>
 
+        {/* Mobile Navigation Sheet */}
         <Sheet>
           <SheetTrigger
             className="lg:hidden"
@@ -133,23 +136,24 @@ export default function NavbarBeforeLoginComponent() {
           <SheetContent side="right" className="w-[340px] sm:w-[400px]">
             <SheetHeader>
               <SheetTitle className="text-left">
+                {/* Mobile Drawer Logo - Scaled down to w-[120px] */}
                 <Image
                   src={fluxibizLogo}
                   alt="FluxiBiz"
                   width={180}
                   height={80}
-                  className="h-auto w-[150px] object-contain"
+                  className="h-auto w-[120px] object-contain"
                 />
               </SheetTitle>
             </SheetHeader>
 
-            <div className="mt-8 flex flex-col gap-4">
+            <div className="mt-8 flex flex-col gap-2">
               <ThemeToggle mobile />
               {navigationItems.map((item) => (
                 <div key={item.label}>
                   <Link
                     href={item.href}
-                    className="block rounded-lg px-4 py-4 text-xl font-bold text-foreground transition-colors hover:bg-muted"
+                    className="block rounded-lg px-3 py-2.5 text-base font-bold text-foreground transition-colors hover:bg-muted"
                   >
                     {item.label}
                   </Link>
@@ -160,7 +164,7 @@ export default function NavbarBeforeLoginComponent() {
                         <Link
                           key={child.label}
                           href={child.href}
-                          className="block rounded-lg px-3 py-3 text-lg font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                          className="block rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         >
                           {child.label}
                         </Link>
@@ -170,14 +174,14 @@ export default function NavbarBeforeLoginComponent() {
                 </div>
               ))}
 
-              <div className="my-4 border-t border-border" />
+              <div className="my-2 border-t border-border" />
 
               <LanguageDropdown mobile />
 
               <Button
                 nativeButton={false}
                 render={<Link href="/login" />}
-                className="mt-4 h-13 rounded-full bg-[#00932a] text-lg font-bold text-white hover:bg-[#007d24]"
+                className="mt-4 h-11 rounded-full bg-[#00932a] text-base font-bold text-white hover:bg-[#007d24]"
               >
                 Login
               </Button>
@@ -186,7 +190,7 @@ export default function NavbarBeforeLoginComponent() {
                 nativeButton={false}
                 render={<Link href="/register" />}
                 variant="outline"
-                className="h-14 rounded-full border-2 border-[#feb90d] bg-transparent text-lg font-bold text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
+                className="h-11 rounded-full border-2 border-[#feb90d] bg-transparent text-base font-bold text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
               >
                 Signup
               </Button>
@@ -208,8 +212,8 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             variant="ghost"
             className={
               mobile
-                ? "w-full justify-start gap-3 text-lg font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
-                : "h-12 gap-2 rounded-full px-3 text-base font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
+                ? "w-full justify-start gap-3 text-base font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
+                : "h-10 gap-2 rounded-full px-3 text-sm font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
             }
           />
         }
@@ -219,33 +223,33 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
           alt="English"
           width={40}
           height={28}
-          className="h-7 w-10 object-cover rounded-md"
+          className="h-5 w-8 rounded-md object-cover"
         />
 
         {mobile && <span>English</span>}
 
-        <ChevronDown size={20} />
+        <ChevronDown size={16} />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align={mobile ? "start" : "end"} className="p-2">
-        <DropdownMenuItem className="gap-3 py-2.5 text-base font-medium">
+        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium">
           <Image
             src={englishFlag}
             alt=""
             width={32}
             height={24}
-            className="h-6 w-9 object-cover rounded-md"
+            className="h-5 w-8 rounded-md object-cover"
           />
           English
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="gap-3 py-2.5 text-base font-medium">
+        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium">
           <Image
             src={khmerFlag}
             alt=""
             width={32}
             height={24}
-            className="h-6 w-9 object-cover rounded-md"
+            className="h-5 w-8 rounded-md object-cover"
           />
           Khmer
         </DropdownMenuItem>
