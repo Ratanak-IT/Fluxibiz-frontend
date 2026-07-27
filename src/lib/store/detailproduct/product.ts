@@ -13,6 +13,8 @@ export interface Product {
   price: number;
   compareAtPrice?: number;
   images: string[];
+  image?: string;
+  category?: string;
   sugarLevels: ProductOption[];
   sizes: ProductOption[];
   defaultSugarLevel: string;

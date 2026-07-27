@@ -8,12 +8,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Image from "next/image";
-import {  Products } from "@/lib/store/detailproduct/product";
+import { Product } from "@/lib/store/detailproduct/product";
 
 
 
 interface ProductCardProps {
-  item: Products;
+  item: Product;
 }
 
 export function ProductCard({ item }: ProductCardProps) {
@@ -39,7 +39,7 @@ export function ProductCard({ item }: ProductCardProps) {
 
     <div className="relative m-3 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
       <Image
-        src={item.image}
+        src={item.image || ""}
         alt={item.name}
         width={128}
         height={128}

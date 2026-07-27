@@ -1,13 +1,13 @@
 // related-products.tsx
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import {  Products } from "@/lib/store/detailproduct/product";
+import { Product } from "@/lib/store/detailproduct/product";
 import { ProductCard } from "./prodcuct-card";
 
 
 interface RelatedProductsProps {
   title?: string;
-  items: Products[];
+  items: Product[];
   viewAllHref?: string;
 }
 
