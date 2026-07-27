@@ -4,7 +4,6 @@ import {
     FeatureCards,
     HeroSection,
     MigrationSection,
-    PricingSection,
     ProductPreview,
     SurfacesSection,
     ToolsBento,
@@ -26,7 +25,6 @@ export default function LandingPage() {
       <DayTimeline />
       <SurfacesSection />
       <MigrationSection />
-      <PricingSection />
     </main>
   );
 }

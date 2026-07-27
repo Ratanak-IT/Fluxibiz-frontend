@@ -110,9 +110,9 @@ export default function NavbarBeforeLoginComponent() {
             nativeButton={false}
             render={<Link href="/register" />}
             variant="outline"
-            className="h-9 rounded-full border-2 border-[#feb90d] bg-transparent px-8 text-sm font-bold text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
+            className="h-9 rounded-full border-2 border-[#00932a] bg-transparent px-8 text-sm font-bold text-[#00932a] hover:bg-[#00932a]/10 hover:text-[#00932a]"
           >
-            Sign up
+            Register
           </Button>
         </div>
 
@@ -223,7 +223,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
           alt="English"
           width={40}
           height={28}
-          className="h-5 w-8 rounded-md object-cover"
+          className="h-5 w-8  object-cover"
         />
 
         {mobile && <span>English</span>}
@@ -238,7 +238,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             alt=""
             width={32}
             height={24}
-            className="h-5 w-8 rounded-md object-cover"
+            className="h-5 w-8 object-cover"
           />
           English
         </DropdownMenuItem>
@@ -249,7 +249,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             alt=""
             width={32}
             height={24}
-            className="h-5 w-8 rounded-md object-cover"
+            className="h-5 w-8  object-cover"
           />
           Khmer
         </DropdownMenuItem>
