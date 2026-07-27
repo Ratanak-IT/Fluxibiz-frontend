@@ -34,16 +34,16 @@ const socialLinks = [
 // 🟢 Custom offsets added per logo
 const partners = [
   {
-    src: mptcLogo,
-    alt: "Ministry of Post and Telecommunications",
-    // Custom shift for MPTC logo to line up with left elements
-    className: "w-full max-w-[280px] sm:max-w-[320px] ",
-  },
-  {
     src: istadLogo,
     alt: "ISTAD",
     // Custom shift for ISTAD logo
     className: "w-full max-w-[120px] sm:max-w-[150px]",
+  },
+    {
+    src: mptcLogo,
+    alt: "Ministry of Post and Telecommunications",
+    // Custom shift for MPTC logo to line up with left elements
+    className: "w-full max-w-[280px] sm:max-w-[320px] ",
   },
   {
     src: cbrdFundLogo,
@@ -143,7 +143,7 @@ export default function Footer() {
             Supported by
           </p>
 
-          <div className="container mx-auto  max-w-7xl grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ">
+          <div className="container mx-auto grid max-w-7xl grid-cols-1 items-center justify-items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
             {partners.map((partner) => (
               <Image
                 key={partner.alt}

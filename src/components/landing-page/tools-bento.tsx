@@ -1,8 +1,7 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Image from "next/image";
 import { Check } from "lucide-react";
 
-import { Card } from "@/components/ui/card";
 import {
   Eyebrow,
   LANDING_IMAGES,
@@ -41,7 +40,7 @@ function ToolCard({
 }) {
     return (
         <div
-            className={`group h-full gap-0 overflow-hidden rounded-2xl border border-border bg-white text-card-foreground p-5 sm:p-6 ${className}`}
+            className={`group h-full gap-0 overflow-hidden rounded-2xl border border-border text-card-foreground p-5 sm:p-6 ${className}`}
         >
             <div className="origin-center transition-transform duration-500 ease-out group-hover:scale-[1.04]">
                 <p
@@ -75,6 +74,7 @@ export function ToolsBento() {
           <ToolCard
             label="POS · Orders"
             title="A till your staff learn in one afternoon"
+            className="bg-white"
           >
             <div className="relative mt-5 aspect-[1.55/1] overflow-hidden rounded-xl border border-border bg-white">
               <Image
@@ -92,7 +92,7 @@ export function ToolsBento() {
           <ToolCard
             label="Online commerce"
             title="Your storefront, open around the clock"
-            className="border-brand bg-brand text-white"
+            className="border-brand bg-primary text-white"
             inverted
           >
             <div className="mt-5 flex items-center gap-4">
@@ -119,7 +119,7 @@ export function ToolsBento() {
         </ScrollReveal>
 
         <ScrollReveal direction="right" delay={220} className="h-full">
-          <ToolCard label="Social commerce" title="Turn DMs into paid orders">
+          <ToolCard className="bg-white" label="Social commerce" title="Turn DMs into paid orders">
             <div className="mt-5 overflow-hidden rounded-xl border border-border">
               <div className="flex justify-between bg-[#101710] px-4 py-3 text-xs text-white">
                 <span>#2241 · Table 04</span>
@@ -146,7 +146,7 @@ export function ToolsBento() {
 
       <div className="mt-5 grid gap-5 md:grid-cols-3 md:items-stretch">
         <ScrollReveal direction="up" delay={0} className="h-full">
-          <ToolCard label="Inventory" title="Stock that counts itself">
+          <ToolCard className="bg-white" label="Inventory" title="Stock that counts itself">
             <ul className="mt-5 space-y-4">
               {stock.map((item) => (
                 <li key={item.name}>
@@ -185,7 +185,7 @@ export function ToolsBento() {
           <ToolCard
             label="Reports · Analytics"
             title="Know the day before you lock the door"
-            className="bg-brand-soft"
+            className="bg-white"
           >
             <div className="mt-5 flex items-baseline justify-between">
               <p className="font-display text-2xl font-bold">
@@ -223,7 +223,7 @@ export function ToolsBento() {
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={240} className="h-full">
-          <ToolCard label="Employees" title="Shifts & roles">
+          <ToolCard className="bg-white" label="Employees" title="Shifts & roles">
             <ul className="mt-5 grid grid-cols-2 gap-3">
               {staff.map((person) => (
                 <li
