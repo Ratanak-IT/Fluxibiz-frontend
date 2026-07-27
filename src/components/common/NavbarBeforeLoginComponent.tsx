@@ -108,9 +108,9 @@ export default function NavbarBeforeLoginComponent() {
             nativeButton={false}
             render={<Link href="/register" />}
             variant="outline"
-            className="h-11 rounded-full border-2 border-[#feb90d] bg-transparent px-8 text-base font-bold text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
+            className="h-11 rounded-full border-2 border-[#00932a] bg-transparent px-8 text-base font-bold text-[#00932a] hover:bg-[#00932a]/10 hover:text-[#007d24]"
           >
-            Sign up
+            Register
           </Button>
         </div>
 
@@ -209,7 +209,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             className={
               mobile
                 ? "w-full justify-start gap-3 text-lg font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
-                : "h-12 gap-2 rounded-full px-3 text-base font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
+                : "h-12 gap-2  px-3 text-base font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
             }
           />
         }
@@ -219,7 +219,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
           alt="English"
           width={40}
           height={28}
-          className="h-7 w-10 object-cover rounded-md"
+          className="h-7 w-10 object-cover "
         />
 
         {mobile && <span>English</span>}
@@ -234,7 +234,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             alt=""
             width={32}
             height={24}
-            className="h-6 w-9 object-cover rounded-md"
+            className="h-6 w-9 object-cover"
           />
           English
         </DropdownMenuItem>
@@ -245,7 +245,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             alt=""
             width={32}
             height={24}
-            className="h-6 w-9 object-cover rounded-md"
+            className="h-6 w-9 object-cover"
           />
           Khmer
         </DropdownMenuItem>
