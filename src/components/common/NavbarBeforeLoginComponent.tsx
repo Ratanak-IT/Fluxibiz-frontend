@@ -24,7 +24,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-const navigationItems = [
+type NavigationItem = {
+  label: string;
+  href: string;
+  children?: { label: string; href: string }[];
+};
+
+const navigationItems: NavigationItem[] = [
   {
     label: "Business",
     href: "#business",
