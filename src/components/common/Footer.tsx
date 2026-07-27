@@ -33,17 +33,18 @@ const socialLinks = [
 
 // 🟢 Custom offsets added per logo
 const partners = [
-  {
-    src: mptcLogo,
-    alt: "Ministry of Post and Telecommunications",
-    // Custom shift for MPTC logo to line up with left elements
-    className: "w-full max-w-[280px] sm:max-w-[320px] ",
-  },
+  
   {
     src: istadLogo,
     alt: "ISTAD",
     // Custom shift for ISTAD logo
     className: "w-full max-w-[120px] sm:max-w-[150px]",
+  },
+  {
+    src: mptcLogo,
+    alt: "Ministry of Post and Telecommunications",
+    // Custom shift for MPTC logo to line up with left elements
+    className: "w-full max-w-[280px] sm:max-w-[320px] ",
   },
   {
     src: cbrdFundLogo,

@@ -18,7 +18,7 @@ interface FilterDropdownProps {
 function FilterDropdown({ label, options }: FilterDropdownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="inline-flex h-11 shrink-0 items-center rounded-full bg-white px-5 font-medium text-neutral-800 shadow-sm hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200">
+      <DropdownMenuTrigger className="inline-flex h-11 shrink-0 items-center rounded-full bg-white px-5 font-medium text-neutral-800 shadow-sm hover:bg-neutral-50  dark:text-neutral-200">
         {label}
         <ChevronDown className="ml-1.5 h-4 w-4 text-neutral-400" />
       </DropdownMenuTrigger>
@@ -43,7 +43,7 @@ function FilterDropdown({ label, options }: FilterDropdownProps) {
 
 export default function SearchFilterBar() {
   return (
-    <div className="flex w-full items-center gap-3  px-25 dark:bg-neutral-950">
+    <div className="flex w-full items-center gap-3  px-25 ">
       {/* Search input */}
       <div className="relative flex-1">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
