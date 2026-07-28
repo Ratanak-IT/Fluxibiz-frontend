@@ -31,9 +31,9 @@ export default function DescriptionCard({
   imageAlt = "Product",
 }: DescriptionCardProps) {
   return (
-   <div className="m-25">
-  <Card className="grid h-92 grid-cols-1 gap-0 overflow-hidden rounded-3xl p-0 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 md:grid-cols-2">
-    <div className="flex min-h-0 flex-col justify-center overflow-hidden px-6 sm:px-10 sm:py-10">
+   <div className="mx-auto  max-w-7xl px-4 sm:px-6 lg:px-8">
+  <Card className="grid grid-cols-1 overflow-hidden rounded-3xl p-0 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 md:min-h-92 md:grid-cols-2">
+    <div className="flex min-h-0 flex-col justify-center p-6 sm:p-8 lg:p-10">
       <CardHeader className="p-0">
         <CardTitle className="text-xl font-bold text-green-600 dark:text-green-500">
           {title}
@@ -56,7 +56,7 @@ export default function DescriptionCard({
       </CardContent>
     </div>
 
-    <div className="relative h-full w-full shrink-0 overflow-hidden  dark:bg-neutral-800">
+    <div className="relative min-h-64 w-full shrink-0 overflow-hidden dark:bg-neutral-800 md:min-h-0">
       <Image
         src={imageSrc}
         alt={imageAlt}

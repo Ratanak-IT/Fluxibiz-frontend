@@ -35,17 +35,7 @@ export const mockItems: ItemCardData[] = [
     price: 18.5,
     name: "Kentucky Fried Chicken"
   }
-  // {
-  //   id: 3,
-  //   image:
-  //     "https://i.pinimg.com/736x/62/07/01/620701147f4cefd9d14fb91657601c31.jpg",
-  //   title: "Fried fries ",
-  //   description: "Photo culinary magazine photo of french ... ",
-  //   badges: [ "size s"],
-  //   quantity: 1,
-  //   price: 2.5,
-  //   name: "Fried fries"
-  // }
+ 
 ]
 
 

@@ -1,4 +1,3 @@
-
 export interface ProductOption {
   label: string;
   value: string;
@@ -26,6 +25,15 @@ export interface Product {
   }[];
 }
 
+// --- Related products (card grid shape) ---
+export interface Products {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  category: string;
+  image: string;
+}
 
 export async function getProduct(id: string): Promise<Product> {
   return {
@@ -37,7 +45,7 @@ export async function getProduct(id: string): Promise<Product> {
     price: 1.99,
     compareAtPrice: 2.5,
     images: [
-      "https://i.pinimg.com/736x/2b/15/8b/2b158b25f63a54b59604568236dedfcb.jpg",
+      "https://i.pinimg.com/736x/da/e3/a8/dae3a884189cee56fde94fcefff0a036.jpg",
       "https://i.pinimg.com/736x/e3/6a/72/e36a720526185c37b69d2bad73d1d95c.jpg",
       "https://i.pinimg.com/736x/80/fa/b8/80fab853a55b8411eaa3768b3d1b61a5.jpg",
     ],
@@ -60,7 +68,38 @@ export async function getProduct(id: string): Promise<Product> {
   };
 }
 
-// Same idea — stub for now, swap in a real POST /cart/items call later.
+export async function getRelatedProducts(): Promise<Products[]> {
+  return [
+    {
+      id: "1",
+      name: "Jasmine Green Tea",
+      price: 1.6,
+      description: "Fragrant jasmine green tea freshly brewed.",
+      category: "Beverages",
+      image:
+        "https://i.pinimg.com/736x/0a/60/93/0a6093fa6b8ff3432f9f92031509c8c5.jpg",
+    },
+    {
+      id: "2",
+      name: "Jasmine Green Tea",
+      price: 1.6,
+      description: "Fragrant jasmine green tea freshly brewed.",
+      category: "Beverages",
+      image:
+        "https://i.pinimg.com/736x/e5/b9/8f/e5b98f5016f5c9c755229edb09c51c87.jpg",
+    },
+    {
+      id: "3",
+      name: "Jasmine Green Tea",
+      price: 1.6,
+      description: "Fragrant jasmine green tea freshly brewed.",
+      category: "Beverages",
+      image:
+        "https://i.pinimg.com/736x/e7/e2/b6/e7e2b63e9066f63dd29825be9142e49a.jpg",
+    },
+  ];
+}
+
 export async function addToCart(payload: {
   productId: string;
   sugarLevel: string;

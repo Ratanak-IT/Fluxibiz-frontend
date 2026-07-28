@@ -13,7 +13,7 @@ export default async function StoreDetail() {
     const popularMenuItems = await getPopularMenuItems();
     const teaMenuItems = await getTeaMenuItems();
     return (
-        <div className="min-h-screen bg-neutral-100 px-25 py-6 sm:px-10 ">
+        <div className="min-h-screen bg-neutral-100 px-25 py-6 sm:px-10 dark:bg-neutral-950">
             <div className="mb-4 flex items-center justify-between px-25">
                 <button
                     type="button"
