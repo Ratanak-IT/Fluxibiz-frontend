@@ -24,42 +24,22 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-const navigationItems = [
+type NavigationItem = {
+  label: string;
+  href: string;
+  children?: { label: string; href: string }[];
+};
+
+const keycloakLoginUrl = `${process.env.NEXT_PUBLIC_KEYCLOAK_LOGIN_URL}`
+
+const navigationItems: NavigationItem[] = [
   {
     label: "Business",
-    href: "#business",
-    children: [
-      {
-        label: "Retail Business",
-        href: "/business/retail",
-      },
-      {
-        label: "Restaurant",
-        href: "/business/restaurant",
-      },
-      {
-        label: "Online Store",
-        href: "/business/online-store",
-      },
-    ],
+    href: "/register",
   },
   {
     label: "Feature",
-    href: "#features",
-    children: [
-      {
-        label: "Point of Sale",
-        href: "/features/pos",
-      },
-      {
-        label: "Inventory",
-        href: "/features/inventory",
-      },
-      {
-        label: "Reports",
-        href: "/features/reports",
-      },
-    ],
+    href: "/feature",
   },
   {
     label: "Store",
@@ -73,35 +53,37 @@ const navigationItems = [
 
 export default function NavbarBeforeLoginComponent() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground shadow-sm shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-background/85 dark:shadow-black/25">
-      <div className="mx-auto flex h-[89px] max-w-[1240px] items-center justify-between px-5 sm:px-8">
-        {/* Logo */}
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground backdrop-blur supports-[backdrop-filter]:bg-background/85">
+      <div className="mx-auto flex h-[55px] max-w-[1330px] items-center justify-between px-6 sm:px-10">
+
+        {/* Desktop Logo - Scaled down to w-[130px] */}
         <Link href="/" aria-label="FluxiBiz home">
           <Image
             src={fluxibizLogo}
             alt="FluxiBiz"
-            width={180}
-            height={70}
+            width={240}
+            height={90}
             priority
-            className="h-auto w-[110px] object-contain"
+            className="h-auto w-[130px] object-contain"
           />
         </Link>
 
-        {/* Desktop navigation */}
-        <nav className="hidden items-center gap-11 lg:flex">
+        {/* Desktop Navigation */}
+        <nav className="hidden items-center gap-8 lg:flex">
           {navigationItems.map((item) =>
             item.children ? (
               <DropdownMenu key={item.label}>
-                <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-muted-foreground outline-none transition-colors hover:text-foreground">
+                <DropdownMenuTrigger className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground outline-none transition-colors hover:text-foreground">
                   {item.label}
                   <ChevronDown size={16} />
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent align="start" className="min-w-52">
+                <DropdownMenuContent align="start" className="min-w-60 p-2">
                   {item.children.map((child) => (
                     <DropdownMenuItem
                       key={child.label}
                       render={<Link href={child.href} />}
+                      className="py-2 text-sm font-medium"
                     >
                       {child.label}
                     </DropdownMenuItem>
@@ -112,7 +94,7 @@ export default function NavbarBeforeLoginComponent() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
               >
                 {item.label}
               </Link>
@@ -120,50 +102,55 @@ export default function NavbarBeforeLoginComponent() {
           )}
         </nav>
 
-        {/* Desktop actions */}
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-4 lg:flex">
           <ThemeToggle />
           <LanguageDropdown />
 
           <Button
-            render={<Link href="/login" />}
-            className="h-9 rounded-full border border-[#00932a] bg-[#00932a] px-5 text-xs font-medium text-white shadow-none hover:bg-[#007d24]"
+            nativeButton={false}
+            render={<Link href={keycloakLoginUrl} />}
+            className="h-9 rounded-full border border-[#00932a] bg-[#00932a] px-8 text-sm font-bold text-white shadow-none hover:bg-[#007d24]"
           >
             Login
           </Button>
 
           <Button
+            nativeButton={false}
             render={<Link href="/register" />}
             variant="outline"
-            className="h-9 rounded-full border-[#feb90d] bg-transparent px-5 text-xs font-medium text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
+            className="h-9 rounded-full border-2 border-[#00932a] bg-transparent px-8 text-sm font-bold text-[#00932a] hover:bg-[#00932a]/10 hover:text-[#00932a]"
           >
-            Signup
+            Register
           </Button>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile Navigation Sheet */}
         <Sheet>
           <SheetTrigger
             className="lg:hidden"
-            render={<Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label="Open navigation menu"
-            />}
+            render={
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-12"
+                aria-label="Open navigation menu"
+              />
+            }
           >
-            <Menu size={24} />
+            <Menu size={32} />
           </SheetTrigger>
 
-          <SheetContent side="right" className="w-[300px] sm:w-[360px]">
+          <SheetContent side="right" className="w-[340px] sm:w-[400px]">
             <SheetHeader>
               <SheetTitle className="text-left">
+                {/* Mobile Drawer Logo - Scaled down to w-[120px] */}
                 <Image
                   src={fluxibizLogo}
                   alt="FluxiBiz"
-                  width={145}
-                  height={60}
-                  className="h-auto w-[130px] object-contain"
+                  width={180}
+                  height={80}
+                  className="h-auto w-[120px] object-contain"
                 />
               </SheetTitle>
             </SheetHeader>
@@ -174,18 +161,18 @@ export default function NavbarBeforeLoginComponent() {
                 <div key={item.label}>
                   <Link
                     href={item.href}
-                    className="block rounded-lg px-3 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted"
+                    className="block rounded-lg px-3 py-2.5 text-base font-bold text-foreground transition-colors hover:bg-muted"
                   >
                     {item.label}
                   </Link>
 
                   {item.children && (
-                    <div className="ml-4 border-l border-border pl-3">
+                    <div className="ml-4 border-l-2 border-border pl-4">
                       {item.children.map((child) => (
                         <Link
                           key={child.label}
                           href={child.href}
-                          className="block rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                          className="block rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         >
                           {child.label}
                         </Link>
@@ -195,21 +182,23 @@ export default function NavbarBeforeLoginComponent() {
                 </div>
               ))}
 
-              <div className="my-4 border-t border-border" />
+              <div className="my-2 border-t border-border" />
 
               <LanguageDropdown mobile />
 
               <Button
+                nativeButton={false}
                 render={<Link href="/login" />}
-                className="mt-4 h-11 rounded-full bg-[#00932a] text-white hover:bg-[#007d24]"
+                className="mt-4 h-11 rounded-full bg-[#00932a] text-base font-bold text-white hover:bg-[#007d24]"
               >
                 Login
               </Button>
 
               <Button
+                nativeButton={false}
                 render={<Link href="/register" />}
                 variant="outline"
-                className="h-11 rounded-full border-[#feb90d] bg-transparent text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
+                className="h-11 rounded-full border-2 border-[#feb90d] bg-transparent text-base font-bold text-[#d99400] hover:bg-[#feb90d]/10 hover:text-[#b87d00]"
               >
                 Signup
               </Button>
@@ -225,48 +214,50 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={<Button
-          type="button"
-          variant="ghost"
-          className={
-            mobile
-              ? "w-full justify-start gap-2"
-              : "h-10 gap-2 rounded-full px-2"
-          }
-        />}
-      >
-          <Image
-            src={englishFlag}
-            alt="English"
-            width={34}
-            height={24}
-            className="h-5 w-8 rounded-sm object-cover"
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            className={
+              mobile
+                ? "w-full justify-start gap-3 text-base font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
+                : "h-10 gap-2 rounded-full px-3 text-sm font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
+            }
           />
+        }
+      >
+        <Image
+          src={englishFlag}
+          alt="English"
+          width={40}
+          height={28}
+          className="h-5 w-8  object-cover"
+        />
 
-          {mobile && <span>English</span>}
+        {mobile && <span>English</span>}
 
-          <ChevronDown size={16} />
+        <ChevronDown size={16} />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align={mobile ? "start" : "end"}>
-        <DropdownMenuItem className="gap-3">
+      <DropdownMenuContent align={mobile ? "start" : "end"} className="p-2">
+        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium">
           <Image
             src={englishFlag}
             alt=""
-            width={28}
-            height={20}
-            className="h-4 w-7 rounded-sm object-cover"
+            width={32}
+            height={24}
+            className="h-5 w-8 object-cover"
           />
           English
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="gap-3">
+        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium">
           <Image
             src={khmerFlag}
             alt=""
-            width={28}
-            height={20}
-            className="h-4 w-7 rounded-sm object-cover"
+            width={32}
+            height={24}
+            className="h-5 w-8  object-cover"
           />
           Khmer
         </DropdownMenuItem>

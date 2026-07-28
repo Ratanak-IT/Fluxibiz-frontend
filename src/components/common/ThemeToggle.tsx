@@ -18,7 +18,7 @@ export default function ThemeToggle({ mobile = false }: { mobile?: boolean }) {
       className={
         mobile
           ? "h-11 w-full justify-start gap-3 rounded-lg px-3 text-foreground"
-          : "relative size-10 rounded-full text-[#ffb000] hover:bg-[#ffb000]/10 hover:text-[#ffb000]"
+          : "relative size-10 rounded-full text-[#6a6a6a] hover:bg-[#6a6a6a]/10 hover:text-[#6a6a6a]"
       }
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >

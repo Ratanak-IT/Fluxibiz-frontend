@@ -1,7 +1,10 @@
-export default function RegisterComponent(){
+import { RegisterForm } from "./RegisterForm";
+import { RegistrationShell } from "./RegistrationShell";
+
+export default function RegisterComponent() {
     return (
-        <>
-        Register
-        </>
-    )
+        <RegistrationShell variant="figma">
+            <RegisterForm />
+        </RegistrationShell>
+    );
 }

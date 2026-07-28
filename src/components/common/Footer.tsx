@@ -31,23 +31,37 @@ const socialLinks = [
   { label: "TikTok", href: "https://www.tiktok.com/", icon: FaTiktok },
 ];
 
+// 🟢 Custom offsets added per logo
 const partners = [
   {
+    src: istadLogo,
+    alt: "ISTAD",
+    // Custom shift for ISTAD logo
+    className: "w-full max-w-[120px] sm:max-w-[150px]",
+  },
+    {
     src: mptcLogo,
     alt: "Ministry of Post and Telecommunications",
-    className: "col-span-2 w-full max-w-[280px] sm:col-span-1 sm:max-w-[320px]",
+    // Custom shift for MPTC logo to line up with left elements
+    className: "w-full max-w-[280px] sm:max-w-[320px] ",
   },
-  { src: istadLogo, alt: "ISTAD", className: "w-full max-w-[120px] sm:max-w-[150px]" },
-  { src: cbrdFundLogo, alt: "CBRD Fund", className: "w-full max-w-[135px] sm:max-w-[165px]" },
+  {
+    src: cbrdFundLogo,
+    alt: "CBRD Fund",
+    // Custom shift for CBRD Fund logo
+    className: "w-full max-w-[135px] sm:max-w-[165px] ",
+  },
 ];
 
 export default function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-card text-card-foreground">
-      <div className="mx-auto w-full max-w-7xl overflow-hidden px-4 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
-        <div className="grid gap-8 sm:gap-10 md:grid-cols-2 md:gap-10 lg:grid-cols-[1.35fr_.7fr_1fr] lg:gap-14">
+    <footer className="relative z-10 mt-auto border-t border-border bg-card text-card-foreground">
+      <div className="mx-auto w-full container max-w-7xl overflow-hidden px-4 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
+        {/* TOP SECTION */}
+        <div className="container mx-auto max-w-7xl grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ">
+          {/* Logo & Description Column */}
           <section
-            className="flex flex-col items-center text-center md:col-span-2 lg:col-span-1 lg:items-start lg:text-left"
+            className="flex flex-col items-start text-left"
             aria-label="About FluxiBiz"
           >
             <Link href="/" aria-label="FluxiBiz home" className="inline-flex">
@@ -66,6 +80,7 @@ export default function Footer() {
             </div>
           </section>
 
+          {/* Useful Links Column */}
           <section className="rounded-2xl border border-border bg-background/45 p-5 text-left sm:p-6 md:rounded-none md:border-0 md:bg-transparent md:p-0">
             <FooterTitle>Useful Links</FooterTitle>
             <nav
@@ -84,6 +99,7 @@ export default function Footer() {
             </nav>
           </section>
 
+          {/* Contact Us Column */}
           <section className="rounded-2xl border border-border bg-background/45 p-5 text-left sm:p-6 md:rounded-none md:border-0 md:bg-transparent md:p-0">
             <FooterTitle>Contact Us</FooterTitle>
             <address className="mt-5 max-w-md space-y-4 not-italic text-sm leading-6 text-muted-foreground sm:text-base">
@@ -94,41 +110,55 @@ export default function Footer() {
                   strokeWidth={2}
                 />
                 <p>
-                  #40, Street 273, Sangkat Boeung Kak Ti Mouy, Khan Toul Kork,
-                  Phnom Penh
+                  #40, Street 273, Sangkat Boeung Kak Ti Mouy, <br /> Khan Toul
+                  Kork, Phnom Penh
                 </p>
               </div>
 
               <ContactLink href="tel:+85515338826" label="+855 15 33 88 26">
-                <Phone aria-hidden="true" className="size-5 sm:size-6" strokeWidth={2} />
+                <Phone
+                  aria-hidden="true"
+                  className="size-5 sm:size-6"
+                  strokeWidth={2}
+                />
               </ContactLink>
 
-              <ContactLink href="mailto:ipos.istad@gmail.com" label="ipos.istad@gmail.com">
-                <Mail aria-hidden="true" className="size-5 sm:size-6" strokeWidth={2} />
+              <ContactLink
+                href="mailto:ipos.istad@gmail.com"
+                label="ipos.istad@gmail.com"
+              >
+                <Mail
+                  aria-hidden="true"
+                  className="size-5 sm:size-6"
+                  strokeWidth={2}
+                />
               </ContactLink>
             </address>
           </section>
         </div>
 
-        <div className="mt-9 border-t border-border pt-7 sm:mt-12 sm:pt-9">
-          <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:mb-7 sm:text-xs">
+        {/* SPONSORED BY & SPONSOR LOGOS SECTION */}
+        <div className="mt-12 border-t border-border pt-8 sm:mt-14 sm:pt-10">
+          <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:mb-8 sm:text-xs">
             Supported by
           </p>
-          <div className="mx-auto grid max-w-sm grid-cols-1 items-center justify-items-center gap-7 min-[420px]:grid-cols-2 sm:max-w-none sm:grid-cols-3 sm:gap-6">
+
+          <div className="container mx-auto grid max-w-7xl grid-cols-1 items-center justify-items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
             {partners.map((partner) => (
               <Image
                 key={partner.alt}
                 src={partner.src}
                 alt={partner.alt}
-                className={`${partner.className} h-auto object-contain`}
+                className={`${partner.className}`}
               />
             ))}
           </div>
         </div>
       </div>
 
+      {/* Bottom Copyright Bar */}
       <div className="bg-primary text-white">
-        <div className="mx-auto flex min-h-20 w-full max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 sm:px-8 md:flex-row md:gap-6 md:py-4 lg:px-10">
+        <div className="mx-auto flex min-h-10 w-full max-w-[1600px] flex-col items-center justify-between gap-3 px-4 py-5 sm:px-8 md:flex-row md:gap-6 md:py-4 lg:px-10">
           <p className="text-center text-xs leading-5 text-white/80 sm:text-sm md:text-left">
             All Rights Reserved © Copyright 2026 FluxiBiz Cambodia.
           </p>
@@ -156,8 +186,13 @@ export default function Footer() {
 function FooterTitle({ children }: { children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="text-lg font-semibold tracking-wide text-card-foreground sm:text-xl">{children}</h2>
-      <div className="mt-2 h-1 w-12 rounded-full bg-secondary" aria-hidden="true" />
+      <h2 className="text-lg font-semibold tracking-wide text-card-foreground sm:text-xl">
+        {children}
+      </h2>
+      <div
+        className="mt-2 h-1 w-12 rounded-full bg-secondary"
+        aria-hidden="true"
+      />
     </div>
   );
 }

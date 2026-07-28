@@ -65,7 +65,7 @@ const navigationItems = [
   },
   {
     label: "Feature",
-    href: "#features",
+    href: "/feature",
     children: [
       {
         label: "Point of Sale",
@@ -105,7 +105,7 @@ export default function NavbarAfterLoginComponent({
       className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground shadow-sm shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-background/85 dark:shadow-black/25"
     >
       <div
-        className="mx-auto flex h-[89px] max-w-[1240px] items-center justify-between px-5 sm:px-8"
+        className="mx-auto flex h-[55px] max-w-[1240px] items-center justify-between px-5 sm:px-8"
       >
         {/* Logo */}
         <Link href="/" aria-label="FluxiBiz home">
