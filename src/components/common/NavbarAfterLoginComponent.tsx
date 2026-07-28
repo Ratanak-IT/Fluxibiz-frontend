@@ -65,7 +65,7 @@ const navigationItems = [
   },
   {
     label: "Feature",
-    href: "#features",
+    href: "/feature",
     children: [
       {
         label: "Point of Sale",

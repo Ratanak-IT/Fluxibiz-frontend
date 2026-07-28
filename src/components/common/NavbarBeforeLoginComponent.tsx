@@ -39,7 +39,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: "Feature",
-    href: "/user",
+    href: "/feature",
   },
   {
     label: "Store",
