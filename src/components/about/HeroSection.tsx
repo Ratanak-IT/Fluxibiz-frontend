@@ -77,7 +77,7 @@ export default function HeroSection({
           <span className="text-ink">{headlineSuffix}</span>
         </h1>
 
-        <p className="text-muted animate-fade-up-2 m-0 mb-[1.9rem] max-w-[42ch] translate-y-[14px] text-[clamp(1rem,1.4vw,1.2rem)] leading-[1.6] opacity-0">
+        <p className="text-[var(--ah-muted)] animate-fade-up-2 m-0 mb-[1.9rem] max-w-[42ch] translate-y-[14px] text-[clamp(1rem,1.4vw,1.2rem)] leading-[1.6] opacity-0">
           {description}
         </p>
 
@@ -227,7 +227,7 @@ export default function HeroSection({
                 <span className="text-faint text-[0.7rem]">2m ago</span>
               </div>
               <div className="text-ink mb-[0.2rem] text-[0.85rem] font-bold">New order paid.</div>
-              <div className="text-muted text-[0.75rem] leading-[1.4]">
+              <div className="text-[var(--ah-muted)] text-[0.75rem] leading-[1.4]">
                 Your inventory and dashboard updated automatically.
               </div>
             </div>
@@ -245,7 +245,7 @@ export default function HeroSection({
                 ✓
               </div>
               <div className="text-ink mb-[0.25rem] text-[0.78rem] font-bold">Payment successful</div>
-              <div className="text-muted mb-[0.55rem] text-[0.66rem] leading-[1.35]">
+              <div className="text-[var(--ah-muted)] mb-[0.55rem] text-[0.66rem] leading-[1.35]">
                 Your order has been placed. Track your order here.
               </div>
               <div className="rounded-[6px] bg-brand p-[0.4rem] text-[0.68rem] font-semibold text-white">

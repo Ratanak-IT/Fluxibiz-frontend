@@ -30,6 +30,8 @@ type NavigationItem = {
   children?: { label: string; href: string }[];
 };
 
+const keycloakLoginUrl = `${process.env.NEXT_PUBLIC_KEYCLOAK_LOGIN_URL}`
+
 const navigationItems: NavigationItem[] = [
   {
     label: "Business",
@@ -106,7 +108,7 @@ export default function NavbarBeforeLoginComponent() {
 
           <Button
             nativeButton={false}
-            render={<Link href="/login" />}
+            render={<Link href={keycloakLoginUrl} />}
             className="h-9 rounded-full border border-[#00932a] bg-[#00932a] px-8 text-sm font-bold text-white shadow-none hover:bg-[#007d24]"
           >
             Login

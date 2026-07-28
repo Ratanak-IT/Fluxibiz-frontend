@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main>
+    <main className="about-page">
       <HeroSection />
       <FeaturesSection/>
       <MissionSection/>

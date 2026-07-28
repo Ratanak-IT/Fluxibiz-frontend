@@ -1,0 +1,232 @@
+@theme inline {
+  --font-googlesans: var(--font-body);
+
+  --color-surface: var(--ah-surface);
+  --color-surface-dark: var(--ah-surface-dark);
+  --color-ink: var(--ah-ink);
+  --color-faint: var(--ah-faint);
+  --color-line: var(--ah-line);
+  --color-brand-strong: var(--ah-brand-strong);
+  --color-brand-light: var(--ah-brand-light);
+  --color-brand-secondary: var(--ah-brand-secondary);
+
+  --ease-hero: var(--ah-ease);
+
+  --animate-fade-up: ah-fade-up 0.6s var(--ah-ease) forwards;
+  --animate-fade-up-1: ah-fade-up 0.75s 0.1s var(--ah-ease) forwards;
+  --animate-fade-up-2: ah-fade-up 0.75s 0.2s var(--ah-ease) forwards;
+  --animate-fade-up-3: ah-fade-up 0.75s 0.3s var(--ah-ease) forwards;
+  --animate-fade-up-4: ah-fade-up 0.75s 0.4s var(--ah-ease) forwards;
+  --animate-sheen: ah-sheen 6s ease-in-out infinite;
+  --animate-blob-1: ah-drift-a 14s ease-in-out infinite;
+  --animate-blob-2: ah-drift-b 17s ease-in-out infinite;
+  --animate-blob-3: ah-drift-a 20s ease-in-out infinite reverse;
+  --animate-dash-flow: ah-dash-flow 2.5s linear infinite;
+  --animate-pulse-badge: ah-pulse-badge 2.4s ease-in-out infinite;
+  --animate-ring: ah-ring 2.4s ease-out infinite;
+  --animate-eq: ah-eq var(--dur, 2.6s) ease-in-out infinite;
+  --animate-sale: ah-bob 5.3s 0.6s ease-in-out infinite;
+  --animate-float-dashboard:
+    ah-card-in 0.7s 0.05s var(--ah-ease) forwards,
+    ah-bob 4.6s 0.9s ease-in-out infinite;
+  --animate-float-overview:
+    ah-card-in 0.7s 0.2s var(--ah-ease) forwards,
+    ah-bob 5.4s 0.9s ease-in-out infinite;
+  --animate-float-rating:
+    ah-card-in 0.7s 0.25s var(--ah-ease) forwards,
+    ah-bob 4.8s 0.9s ease-in-out infinite;
+  --animate-float-payment:
+    ah-card-in 0.7s 0.35s var(--ah-ease) forwards,
+    ah-bob 5.1s 0.9s ease-in-out infinite;
+  --animate-float-order:
+    ah-card-in 0.7s 0.45s var(--ah-ease) forwards,
+    ah-bob 5.6s 0.9s ease-in-out infinite;
+  --animate-float-receipt:
+    ah-card-in 0.7s 0.55s var(--ah-ease) forwards,
+    ah-bob 5.2s 0.9s ease-in-out infinite;
+}
+
+.about-page {
+  --ah-brand: var(--brand);
+  --ah-brand-secondary: var(--accent-amber);
+  --ah-ink: var(--foreground);
+  --ah-brand-strong: color-mix(in srgb, var(--ah-brand) 82%, #000);
+  --ah-brand-light: color-mix(in srgb, var(--ah-brand) 55%, #fff);
+  --ah-brand-soft: color-mix(
+    in srgb,
+    var(--ah-brand) 12%,
+    var(--background)
+  );
+  --ah-glow: color-mix(in srgb, var(--ah-brand) 50%, transparent);
+  --ah-surface: color-mix(in srgb, var(--background) 92%, white 8%);
+  --ah-surface-dark: #111827;
+  --ah-muted: color-mix(
+    in srgb,
+    var(--ah-ink) 55%,
+    var(--background)
+  );
+  --ah-faint: color-mix(
+    in srgb,
+    var(--ah-ink) 40%,
+    var(--background)
+  );
+  --ah-line: color-mix(in srgb, var(--ah-ink) 8%, transparent);
+  --ah-shadow-sm: color-mix(in srgb, #000 5%, transparent);
+  --ah-shadow-md: color-mix(in srgb, #000 20%, transparent);
+  --ah-shadow-lg: color-mix(in srgb, #000 16%, transparent);
+  --ah-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ah-fade-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ah-sheen {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes ah-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(24px, -20px);
+  }
+}
+
+@keyframes ah-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-28px, 18px);
+  }
+}
+
+@keyframes ah-dash-flow {
+  to {
+    stroke-dashoffset: -26;
+  }
+}
+
+@keyframes ah-pulse-badge {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes ah-card-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ah-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes ah-eq {
+  0%,
+  100% {
+    height: calc(var(--h) * 0.5);
+  }
+  50% {
+    height: var(--h);
+  }
+}
+
+@keyframes ah-ring {
+  0% {
+    box-shadow: 0 0 0 0 var(--ah-glow);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 12px
+      color-mix(in srgb, var(--ah-brand) 0%, transparent);
+  }
+}
+
+@keyframes ms-slide-left {
+  from {
+    transform: translateX(calc(-50% - 0.75rem));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes ms-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0.4;
+  }
+}
+
+@keyframes ov-breathe {
+  0%,
+  100% {
+    opacity: 0.035;
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    opacity: 0.075;
+    transform: scale(1.015) translateY(-4px);
+  }
+}
+
+@keyframes ov-vibrate {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(0.4px, -0.3px);
+  }
+}
+
+@keyframes ov-spot-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-page .ah-scope *,
+  .about-page .ah-scope *::after {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
