@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { RegisterField } from "./RegisterForm";
 
+const keycloakLoginUrl = `${process.env.NEXT_PUBLIC_KEYCLOAK_LOGIN_URL}`
+
 export function BusinessRegisterForm() {
     return (
         <form className="grid gap-4 font-sans" onSubmit={(event) => event.preventDefault()}>
@@ -68,7 +70,7 @@ export function BusinessRegisterForm() {
             <p className="text-center text-[17px] leading-6 text-[#6b776f]">
                 Already have an account?{" "}
                 <Link
-                    href="/login"
+                    href={keycloakLoginUrl}
                     className="text-blue-600 hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                     Log in

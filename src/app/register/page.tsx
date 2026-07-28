@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 
-import RegisterComponent from "@/components/login/RegisterComponent";
+import { RegistrationShell } from "@/components/login/RegistrationShell";
+import { UserRegisterForm } from "@/components/login/UserRegisterForm";
 
 export const metadata: Metadata = {
-    title: "Create your account | FluxiBiz",
-    description: "Create a FluxiBiz account to start managing your business.",
+    title: "User registration | FluxiBiz",
+    description: "Create your FluxiBiz user account.",
 };
 
-export default function RegisterPage() {
-    return <RegisterComponent />;
+export default function UserRegisterPage() {
+    return (
+        <RegistrationShell contentClassName="max-w-[575px]">
+            <UserRegisterForm />
+        </RegistrationShell>
+    );
 }

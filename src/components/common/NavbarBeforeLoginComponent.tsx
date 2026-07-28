@@ -33,11 +33,11 @@ type NavigationItem = {
 const navigationItems: NavigationItem[] = [
   {
     label: "Business",
-    href: "#business",
+    href: "/register",
   },
   {
     label: "Feature",
-    href: "#features",
+    href: "/user",
   },
   {
     label: "Store",
@@ -53,7 +53,7 @@ export default function NavbarBeforeLoginComponent() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <div className="mx-auto flex h-[55px] max-w-[1330px] items-center justify-between px-6 sm:px-10">
-        
+
         {/* Desktop Logo - Scaled down to w-[130px] */}
         <Link href="/" aria-label="FluxiBiz home">
           <Image

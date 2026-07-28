@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PasswordField, RegisterField } from "./RegisterForm";
 
+const keycloakLoginUrl = `${process.env.NEXT_PUBLIC_KEYCLOAK_LOGIN_URL}`
+
 const SOCIAL_PROVIDERS = [
     {
         label: "Google",
@@ -82,13 +84,14 @@ export function UserRegisterForm() {
                 <span>I accept the Terms &amp; Conditions</span>
             </label>
 
-            <Button
-                type="submit"
-                className="h-[48px] w-full rounded-[11px] text-xl font-semibold tracking-[1.2px]"
-            >
-                Register
-            </Button>
-
+            <Link href={"/register/business"}>
+                <Button
+                    type="submit"
+                    className="h-[48px] w-full rounded-[11px] text-xl font-semibold tracking-[1.2px]"
+                >
+                    Register
+                </Button>
+            </Link>
             <div className="flex items-center gap-4" aria-hidden="true">
                 <span className="h-px flex-1 bg-[#313131]/25" />
                 <span className="text-base font-medium text-[#313131]/50">
@@ -122,7 +125,7 @@ export function UserRegisterForm() {
 
             <p className="text-center text-base text-[#636b74]">
                 Already signed up?{" "}
-                <Link href="/login" className="text-[#258bf1] hover:underline">
+                <Link href={keycloakLoginUrl} className="text-[#258bf1] hover:underline">
                     click here
                 </Link>
             </p>
