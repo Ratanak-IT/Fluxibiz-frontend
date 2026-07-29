@@ -14,12 +14,8 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
         cursor-pointer 
         flex-row items-start 
         gap-3 
-
-        rounded-xl
-
-        bg-card
+        rounded-sm
         text-card-foreground
-
         transition-shadow
     "
     >

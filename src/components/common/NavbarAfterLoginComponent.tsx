@@ -34,6 +34,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+
+
 type NavbarAfterLoginComponentProps = {
   user?: {
     name: string;
@@ -44,46 +46,23 @@ type NavbarAfterLoginComponentProps = {
   onLogout?: () => void;
 };
 
-const navigationItems = [
+type NavigationItem = {
+  label: string;
+  href: string;
+};
+
+const navigationItems: NavigationItem[] = [
   {
-    label: "Business",
-    href: "#business",
-    children: [
-      {
-        label: "Retail Business",
-        href: "/business/retail",
-      },
-      {
-        label: "Restaurant",
-        href: "/business/restaurant",
-      },
-      {
-        label: "Online Store",
-        href: "/business/online-store",
-      },
-    ],
+    label: "Store",
+    href: "/store",
   },
   {
     label: "Feature",
     href: "/feature",
-    children: [
-      {
-        label: "Point of Sale",
-        href: "/features/pos",
-      },
-      {
-        label: "Inventory",
-        href: "/features/inventory",
-      },
-      {
-        label: "Reports",
-        href: "/features/reports",
-      },
-    ],
   },
   {
-    label: "Store",
-    href: "/store",
+    label: "Support",
+    href: "/support",
   },
   {
     label: "About us",
@@ -95,67 +74,42 @@ export default function NavbarAfterLoginComponent({
   user = {
     name: "FluxiBiz User",
     email: "user@fluxibiz.com",
-    image: "https://media.easy-peasy.ai/4e600a82-8aac-4abb-95cd-f87cc9125a0f/18ea5802-d34e-4fbb-91e2-99baebb2eac9_medium.webp",
+    image:
+      "https://media.easy-peasy.ai/4e600a82-8aac-4abb-95cd-f87cc9125a0f/18ea5802-d34e-4fbb-91e2-99baebb2eac9_medium.webp",
   },
   cartCount = 3,
   onLogout,
 }: NavbarAfterLoginComponentProps) {
   return (
-    <header
-      className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground shadow-sm shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-background/85 dark:shadow-black/25"
-    >
-      <div
-        className="mx-auto flex h-[55px] max-w-[1240px] items-center justify-between px-5 sm:px-8"
-      >
-        {/* Logo */}
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-white  text-foreground backdrop-blur dark:bg-background">
+      <div className="mx-auto flex h-[55px] max-w-[1330px] items-center justify-between px-6 sm:px-10">
+        {/* Desktop Logo */}
         <Link href="/" aria-label="FluxiBiz home">
           <Image
             src={fluxibizLogo}
             alt="FluxiBiz"
-            width={180}
-            height={70}
+            width={240}
+            height={90}
             priority
-            className="h-auto w-[110px] object-contain"
+            className="h-auto w-32.5 object-contain"
           />
         </Link>
 
-        {/* Desktop navigation */}
-        <nav className="hidden items-center gap-11 lg:flex">
-          {navigationItems.map((item) =>
-            item.children ? (
-              <DropdownMenu key={item.label}>
-                <DropdownMenuTrigger
-                  className="flex items-center gap-1 text-sm font-medium text-muted-foreground outline-none transition-colors hover:text-foreground"
-                >
-                  {item.label}
-                  <ChevronDown size={16} />
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent align="start" className="min-w-52">
-                  {item.children.map((child) => (
-                    <DropdownMenuItem
-                      key={child.label}
-                      render={<Link href={child.href} />}
-                    >
-                      {child.label}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {item.label}
-              </Link>
-            ),
-          )}
+        {/* Desktop Navigation */}
+        <nav className="hidden items-center gap-8 lg:flex">
+          {navigationItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Desktop actions */}
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-4 lg:flex">
           <ThemeToggle />
           <LanguageDropdown />
 
@@ -172,84 +126,72 @@ export default function NavbarAfterLoginComponent({
 
           <Sheet>
             <SheetTrigger
-              render={<Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label="Open navigation menu"
-              />}
+              className="lg:hidden"
+              render={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-12"
+                  aria-label="Open navigation menu"
+                />
+              }
             >
-              <Menu size={24} />
+              <Menu size={32} />
             </SheetTrigger>
 
-            <SheetContent side="right" className="w-[300px] sm:w-[360px]">
+            <SheetContent side="right" className="w-[340px] sm:w-[400px]">
               <SheetHeader>
                 <SheetTitle className="text-left">
                   <Image
                     src={fluxibizLogo}
                     alt="FluxiBiz"
-                    width={145}
-                    height={60}
-                    className="h-auto w-[130px] object-contain"
+                    width={180}
+                    height={80}
+                    className="h-auto w-30 object-contain"
                   />
                 </SheetTitle>
               </SheetHeader>
 
               <div className="mt-8 flex flex-col gap-2">
-                <div className="mb-5 flex items-center gap-3 rounded-xl bg-muted p-3">
+                <ThemeToggle mobile />
+
+                {/* User info card */}
+                <div className="mb-3 flex items-center gap-3 rounded-xl bg-muted p-3">
                   <Avatar className="size-11">
                     {user.image && (
                       <AvatarImage src={user.image} alt={user.name} />
                     )}
-                    <AvatarFallback>
-                      {getInitials(user.name)}
-                    </AvatarFallback>
+                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
 
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-foreground">
+                    <p className="truncate font-bold text-foreground">
                       {user.name}
                     </p>
-                    <p className="truncate text-sm text-muted-foreground">
+                    <p className="truncate text-sm font-medium text-muted-foreground">
                       {user.email}
                     </p>
                   </div>
                 </div>
 
                 {navigationItems.map((item) => (
-                  <div key={item.label}>
-                    <Link
-                      href={item.href}
-                      className="block rounded-lg px-3 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted"
-                    >
-                      {item.label}
-                    </Link>
-
-                    {item.children && (
-                      <div className="ml-4 border-l border-border pl-3">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.label}
-                            href={child.href}
-                            className="block rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="block rounded-lg px-3 py-2.5 text-base font-bold text-foreground transition-colors hover:text-foreground dark:text-text dark:hover:text-secondary"
+                  >
+                    {item.label}
+                  </Link>
                 ))}
 
-                <div className="my-3 border-t border-border" />
-
-                <ThemeToggle mobile />
+                <div className="my-2 border-t border-border" />
 
                 <LanguageDropdown mobile />
 
                 <Link
                   href="/profile"
-                  className="flex items-center gap-3 rounded-lg px-3 py-3 text-foreground hover:bg-muted"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-foreground transition-colors hover:bg-muted"
                 >
                   <UserRound size={19} />
                   Profile
@@ -257,7 +199,7 @@ export default function NavbarAfterLoginComponent({
 
                 <Link
                   href="/settings"
-                  className="flex items-center gap-3 rounded-lg px-3 py-3 text-foreground hover:bg-muted"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-foreground transition-colors hover:bg-muted"
                 >
                   <Settings size={19} />
                   Settings
@@ -266,7 +208,7 @@ export default function NavbarAfterLoginComponent({
                 <button
                   type="button"
                   onClick={onLogout}
-                  className="flex items-center gap-3 rounded-lg px-3 py-3 text-left text-destructive transition-colors hover:bg-destructive/10"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-base font-bold text-destructive transition-colors hover:bg-destructive/10"
                 >
                   <LogOut size={19} />
                   Logout
@@ -279,6 +221,8 @@ export default function NavbarAfterLoginComponent({
     </header>
   );
 }
+
+
 
 function CartButton({ cartCount }: { cartCount: number }) {
   return (
@@ -374,53 +318,54 @@ function UserDropdown({
     </DropdownMenu>
   );
 }
-
 function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={<Button
-          type="button"
-          variant="ghost"
-          className={
-            mobile
-              ? "w-full justify-start gap-2"
-              : "h-10 gap-2 rounded-full px-2"
-          }
-        />}
-      >
-          <Image
-            src={englishFlag}
-            alt="English"
-            width={34}
-            height={24}
-            className="h-5 w-8 rounded-sm object-cover"
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            className={
+              mobile
+                ? "w-full justify-start gap-3 text-base font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
+                : "h-10 gap-2 rounded-full px-3 text-sm font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
+            }
           />
+        }
+      >
+        <Image
+          src={englishFlag}
+          alt="English"
+          width={40}
+          height={28}
+          className="h-5 w-8  object-cover"
+        />
 
-          {mobile && <span>English</span>}
+        {mobile && <span>English</span>}
 
-          <ChevronDown size={16} />
+        <ChevronDown size={16} />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align={mobile ? "start" : "end"}>
-        <DropdownMenuItem className="gap-3">
+      <DropdownMenuContent align={mobile ? "start" : "end"} className="p-2">
+        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium">
           <Image
             src={englishFlag}
             alt=""
-            width={28}
-            height={20}
-            className="h-4 w-7 rounded-sm object-cover"
+            width={32}
+            height={24}
+            className="h-5 w-8 object-cover"
           />
           English
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="gap-3">
+        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium">
           <Image
             src={khmerFlag}
             alt=""
-            width={28}
-            height={20}
-            className="h-4 w-7 rounded-sm object-cover"
+            width={32}
+            height={24}
+            className="h-5 w-8  object-cover"
           />
           Khmer
         </DropdownMenuItem>
@@ -438,3 +383,4 @@ function getInitials(name: string) {
     .slice(0, 2)
     .toUpperCase();
 }
+

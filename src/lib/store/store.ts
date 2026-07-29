@@ -10,7 +10,7 @@ export interface StoreCardData {
 
 export const mockStore: StoreCardData = {
   image:
-    "https://www.koithe.com/en/images/a-event-7.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/3/3d/Koi_The.jpg",
   category: "Milk Tea",
   name: "The KOI",
   location: "Boeng Keng Kang 1",

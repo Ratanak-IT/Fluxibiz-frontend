@@ -19,8 +19,10 @@ export default function ProductList({ title, items = [] }: ProductListProps) {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {items.map((item) => (
                     <Link href={"storeSlug/product/productSlug"} key={item.id}>
-                        <MenuProductCard key={item.id} item={item} />
+                          <MenuProductCard key={item.id} item={item} />
                     </Link>
+                      
+                  
                 ))}
             </div>
         </section>

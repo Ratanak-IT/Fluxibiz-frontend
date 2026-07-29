@@ -457,12 +457,13 @@ export default function HomePage() {
                         <Link href={"store/storeDetail"}>
                         <SectionHeader title="Store" />
                         <StoreRow items={stores} />
+                         </Link>
                         <div className="flex justify-center pt-4">
                             <button className="rounded-full bg-primary px-6 py-2 text-sm flex items-center gap-2 font-medium text-white">
                                 See More <ChevronDown />
                             </button>
                         </div>
-                        </Link>
+                       
                         
                     </section>
                 </div>
