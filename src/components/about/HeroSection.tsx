@@ -77,7 +77,7 @@ export default function HeroSection({
           <span className="text-ink">{headlineSuffix}</span>
         </h1>
 
-        <p className="text-[var(--ah-muted)] animate-fade-up-2 m-0 mb-[1.9rem] max-w-[42ch] translate-y-[14px] text-[clamp(1rem,1.4vw,1.2rem)] leading-[1.6] opacity-0">
+        <p className="text-[var(--ah-muted)] animate-fade-up-2 m-0 mb-[1.9rem] max-w-[46ch] translate-y-[14px] text-[clamp(1.1rem,1.7vw,1.35rem)] leading-[1.65] opacity-0">
           {description}
         </p>
 
@@ -162,7 +162,7 @@ export default function HeroSection({
 
           {/* today's overview: breathing equalizer */}
           <div className="absolute left-[29%] top-[15%] w-[50%] min-w-[300px]">
-            <div className="animate-float-overview border-line min-h-[200px] w-full rounded-[14px] border bg-surface-dark dark:bg-gray-400 px-[1.1rem] pb-[0.9rem] pt-4 text-white/70 opacity-0 shadow-[0_1px_2px_var(--ah-shadow-md),0_18px_34px_-16px_var(--ah-shadow-md),0_40px_70px_-40px_var(--ah-glow)]">
+            <div className="animate-float-overview border-line min-h-[200px] w-full rounded-[14px] border bg-surface-dark px-[1.1rem] pb-[0.9rem] pt-4 text-white/70 opacity-0 shadow-[0_1px_2px_var(--ah-shadow-md),0_18px_34px_-16px_var(--ah-shadow-md),0_40px_70px_-40px_var(--ah-glow)]">
               <div className="mb-[0.7rem] text-[0.85rem] font-semibold">Today&apos;s overview</div>
               <div className="mb-[0.7rem] flex h-[200px] items-end gap-[2px]">
                 {BAR_HEIGHTS.map((h, i) => (

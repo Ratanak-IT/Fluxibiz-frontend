@@ -46,7 +46,8 @@
     ah-bob 5.2s 0.9s ease-in-out infinite;
 }
 
-.about-page {
+.about-page,
+.ah-scope {
   --ah-brand: var(--brand);
   --ah-brand-secondary: var(--accent-amber);
   --ah-ink: var(--foreground);
@@ -223,8 +224,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .about-page .ah-scope *,
-  .about-page .ah-scope *::after {
+  .ah-scope *,
+  .ah-scope *::after {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

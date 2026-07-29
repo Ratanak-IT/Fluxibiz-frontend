@@ -6,6 +6,7 @@ import Footer from "@/components/common/Footer";
 import NavbarBeforeLoginComponent from "@/components/common/NavbarBeforeLoginComponent";
 
 import "./globals.css";
+import "./about/about.css";
 import { cn } from "@/lib/utils";
 import StoreProvider from "./StoreProvider";
 
