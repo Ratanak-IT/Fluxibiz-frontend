@@ -115,7 +115,7 @@ export function FeatureCards() {
                                             </h3>
                                         </div>
 
-                                        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                                        <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
                                             {feature.body}
                                         </p>
 

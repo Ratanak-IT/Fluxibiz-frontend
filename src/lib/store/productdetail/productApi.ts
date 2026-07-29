@@ -1,5 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { addToCart, getProduct, getRelatedProducts, Product, Products } from "./product";
+import RelatedProducts from "@/components/store/productdetail/related-product";
 
 
 interface AddToCartPayload {
@@ -32,6 +33,7 @@ export const productApi = createApi({
       async queryFn() {
         try {
           const data = await getRelatedProducts();
+          console.log("Ralated product", data)
           return { data };
         } catch (err) {
           return { error: { message: (err as Error).message } };

@@ -19,7 +19,7 @@ export const mockItems: ItemCardData[] = [
       "https://i.pinimg.com/736x/25/17/98/2517984ee7203b9bdda04cd4a78525fd.jpg",
     title: "KFC Signature Burger",
     description: "Beef patty, crispy bacon, cheddar, ...",
-    badges: ["No onions", "Extra cheese", "size s"],
+    badges: ["Extra cheese", "size s"],
     quantity: 1,
     price: 18.5,
     name: "KFC Signature Burger"

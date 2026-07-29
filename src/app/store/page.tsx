@@ -428,21 +428,33 @@ export default function HomePage() {
                     </section>
 
                     <section className="space-y-3">
-                        <SectionHeader title="Promotions" />
+
+                        <Link href={"store/storeDetail"}>
+                         <SectionHeader title="Promotions" />
                         <StoreRow items={promotions} />
+                        </Link>
+
+                       
                     </section>
 
                     <section className="space-y-3">
-                        <SectionHeader title="Recommend" />
+                        <Link href={"store/storeDetail"}>
+                         <SectionHeader title="Recommend" />
                         <StoreRow items={recommend} />
+                        </Link>
+                       
                     </section>
 
                     <section className="space-y-3">
+                        <Link href={"store/storeDetail"}>
                         <SectionHeader title="Nearby Store" />
                         <StoreRow items={nearby} />
+                        </Link>
+                        
                     </section>
 
                     <section className="space-y-3">
+                        <Link href={"store/storeDetail"}>
                         <SectionHeader title="Store" />
                         <StoreRow items={stores} />
                         <div className="flex justify-center pt-4">
@@ -450,6 +462,8 @@ export default function HomePage() {
                                 See More <ChevronDown />
                             </button>
                         </div>
+                        </Link>
+                        
                     </section>
                 </div>
             </div>
