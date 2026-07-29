@@ -127,78 +127,115 @@ function DashboardCard({ card }: { card: ShowcaseCard }) {
   const OrderIcon = card.orderIcon;
 
   return (
-    <div className="h-full overflow-y-auto px-6 py-7 sm:px-9 md:py-9 lg:overflow-hidden lg:px-14 lg:py-10">
-      <p className="font-mono text-xs font-semibold tracking-[0.16em] text-brand sm:text-sm">
-        {card.label}
+  <div className="h-full overflow-y-auto px-6 py-7 sm:px-9 md:py-9 lg:overflow-hidden lg:px-14 lg:py-10 dark:bg-background">
+  <p className="font-mono text-xs font-semibold tracking-[0.16em] text-brand dark:text-brand sm:text-sm">
+    {card.label}
+  </p>
+
+  <div className="mt-7 grid items-center gap-9 lg:mt-2 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
+    <div className="lg:py-8">
+      <h2 className="text-4xl font-extrabold leading-[1.03] tracking-[-0.045em] text-brand dark:text-brand sm:text-5xl lg:text-[3.35rem]">
+        {card.title}
+        <br />
+        <span className="text-secondary dark:text-secondary">{card.accent}</span>
+      </h2>
+
+      <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground dark:text-muted-foreground sm:text-lg sm:leading-8">
+        {card.description}
       </p>
 
-      <div className="mt-7 grid items-center gap-9 lg:mt-2 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
-        <div className="lg:py-8">
-          <h2 className="text-4xl font-extrabold leading-[1.03] tracking-[-0.045em] text-brand sm:text-5xl lg:text-[3.35rem]">
-            {card.title}
-            <br />
-            <span className="text-amber">{card.accent}</span>
-          </h2>
-          <p className="mt-6 max-w-xl text-base leading-7 text-[#626d65] sm:text-lg sm:leading-8">
-            {card.description}
+      <ul className="mt-8 space-y-4">
+        {card.points.map((point) => (
+          <li
+            key={point}
+            className="flex items-center gap-3 text-base font-medium text-foreground dark:text-foreground sm:text-lg"
+          >
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand-soft dark:bg-brand-soft">
+              <Check className="size-4 text-brand dark:text-brand" strokeWidth={2.5} />
+            </span>
+            {point}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <div className="flex flex-wrap gap-3">
+        <span className="inline-flex items-center gap-2 rounded-full bg-brand-soft dark:bg-brand-soft px-4 py-2 text-xs font-bold text-brand-ink dark:text-brand-ink sm:text-sm">
+          <span className="size-2.5 rounded-full bg-secondary dark:bg-secondary" />
+          {card.liveBadge}
+        </span>
+
+        <span className="inline-flex items-center gap-2 rounded-full bg-muted dark:bg-muted px-4 py-2 text-xs font-semibold text-muted-foreground dark:text-muted-foreground sm:text-sm">
+          <span className="size-2.5 rounded-full bg-brand dark:bg-brand" />
+          {card.statusBadge}
+        </span>
+      </div>
+
+      <div className="mt-5 flex items-center gap-4 rounded-[20px] border border-secondary dark:border-secondary bg-accent-amber-soft dark:bg-accent-amber-soft p-4 sm:px-5 sm:py-5">
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand dark:bg-brand text-primary-foreground dark:text-primary-foreground sm:size-14">
+          <OrderIcon className="size-6" />
+        </span>
+
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-base font-bold text-foreground dark:text-foreground sm:text-lg">
+            {card.orderTitle}
           </p>
-          <ul className="mt-8 space-y-4">
-            {card.points.map((point) => (
-              <li key={point} className="flex items-center gap-3 text-base font-medium text-[#344239] sm:text-lg">
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand-soft">
-                  <Check className="size-4 text-brand" strokeWidth={2.5} />
-                </span>
-                {point}
-              </li>
-            ))}
-          </ul>
+          <p className="mt-1 text-sm text-muted-foreground dark:text-muted-foreground sm:text-base">
+            {card.orderDetail}
+          </p>
         </div>
 
-        <div>
-          <div className="flex flex-wrap gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#083b22] px-4 py-2 text-xs font-bold text-white sm:text-sm">
-              <span className="size-2.5 rounded-full bg-amber" />
-              {card.liveBadge}
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#f0f4ed] px-4 py-2 text-xs font-semibold text-[#4d5951] sm:text-sm">
-              <span className="size-2.5 rounded-full bg-brand" />
-              {card.statusBadge}
-            </span>
-          </div>
+        <span className="rounded-full bg-secondary dark:bg-secondary px-4 py-1.5 text-sm font-bold text-secondary-foreground dark:text-secondary-foreground">
+          {card.orderState}
+        </span>
+      </div>
 
-          <div className="mt-5 flex items-center gap-4 rounded-[20px] border border-[#FEB90D] bg-[#FFF8E7] p-4 sm:px-5 sm:py-5">
-            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand text-white sm:size-14">
-              <OrderIcon className="size-6" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-base font-bold text-[#17291d] sm:text-lg">{card.orderTitle}</p>
-              <p className="mt-1 text-sm text-[#7a847d] sm:text-base">{card.orderDetail}</p>
+      <div className="mt-4 space-y-4">
+        {card.rows.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <div
+              key={item.title}
+              className="
+                flex items-center gap-4 
+                rounded-[20px] 
+                border border-border dark:border-border
+                bg-card dark:bg-card
+                p-4 
+                sm:px-5 sm:py-5
+              "
+            >
+              <span
+                className={`
+                  grid size-12 shrink-0 
+                  place-items-center 
+                  rounded-2xl 
+                  sm:size-14
+                  ${item.iconClassName}
+                `}
+              >
+                <Icon className="size-6" />
+              </span>
+
+              <div className="min-w-0 flex-1">
+                <p className="text-base font-bold text-foreground dark:text-foreground sm:text-lg">
+                  {item.title}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground dark:text-muted-foreground sm:text-base">
+                  {item.detail}
+                </p>
+              </div>
+
+              <ChevronRight className="size-5 shrink-0 text-muted-foreground dark:text-muted-foreground" />
             </div>
-            <span className="rounded-full bg-[#FEB90D] px-4 py-1.5 text-sm font-bold text-[#3d2a00]">
-              {card.orderState}
-            </span>
-          </div>
-
-          <div className="mt-4 space-y-4">
-            {card.rows.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div key={item.title} className="flex items-center gap-4 rounded-[20px] border border-[#dce5d9] bg-white p-4 sm:px-5 sm:py-5">
-                  <span className={`grid size-12 shrink-0 place-items-center rounded-2xl sm:size-14 ${item.iconClassName}`}>
-                    <Icon className="size-6" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-base font-bold text-[#17291d] sm:text-lg">{item.title}</p>
-                    <p className="mt-1 text-sm text-[#7a847d] sm:text-base">{item.detail}</p>
-                  </div>
-                  <ChevronRight className="size-5 shrink-0 text-[#bcc8ba]" />
-                </div>
-              );
-            })}
-          </div>
-        </div>
+          );
+        })}
       </div>
     </div>
+  </div>
+</div>
   );
 }
 
@@ -216,21 +253,21 @@ export function DashboardSyncShowcase() {
 
   return (
     <section
-      aria-label="Dashboard and inventory sync showcase"
-      className="bg-[linear-gradient(180deg,#ffffff_0%,#edf8f0_100%)] px-5 md:px-8"
-    >
-      <div ref={containerRef} className="relative mx-auto w-full max-w-6xl">
-        {SHOWCASE_CARDS.map((card, index) => (
-          <StickyStackCard
-            key={`${card.label}-${index}`}
-            index={index}
-            total={SHOWCASE_CARDS.length}
-            progress={progress}
-          >
-            <DashboardCard card={card} />
-          </StickyStackCard>
-        ))}
-      </div>
-    </section>
+  aria-label="Dashboard and inventory sync showcase"
+  className="bg-[linear-gradient(180deg,#ffffff_0%,#edf8f0_100%)] dark:bg-[linear-gradient(180deg,#1C1C1C_0%,#101915_100%)] px-5 md:px-8"
+>
+  <div ref={containerRef} className="relative mx-auto w-full max-w-6xl">
+    {SHOWCASE_CARDS.map((card, index) => (
+      <StickyStackCard
+        key={`${card.label}-${index}`}
+        index={index}
+        total={SHOWCASE_CARDS.length}
+        progress={progress}
+      >
+        <DashboardCard card={card} />
+      </StickyStackCard>
+    ))}
+  </div>
+</section>
   );
 }

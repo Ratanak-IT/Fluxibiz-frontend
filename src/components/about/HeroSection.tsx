@@ -78,7 +78,7 @@ export default function HeroSection({
           <span className="text-ink">{headlineSuffix}</span>
         </h1>
 
-        <p className="text-[var(--ah-muted)] animate-fade-up-2 m-0 mb-[1.9rem] max-w-[42ch] translate-y-[14px] text-[clamp(1rem,1.4vw,1.2rem)] leading-[1.6] opacity-0">
+        <p className="text-[var(--ah-muted)] animate-fade-up-2 m-0 mb-[1.9rem] max-w-[46ch] translate-y-[14px] text-[clamp(1.1rem,1.7vw,1.35rem)] leading-[1.65] opacity-0">
           {description}
         </p>
 
@@ -192,7 +192,7 @@ export default function HeroSection({
             </div>
           </div>
 
-          {/* rating badge */}
+          {/* rating badge
           <div className="absolute right-0 top-[4%] w-[26%] min-w-[220px]">
             <div className="animate-float-rating border-line flex w-full flex-col gap-[0.3rem] rounded-[14px] border bg-surface px-4 py-[0.7rem] opacity-0 shadow-[0_1px_2px_var(--ah-shadow-sm),0_14px_28px_-14px_var(--ah-shadow-md),0_34px_60px_-34px_var(--ah-shadow-lg)]">
               <span className="text-brand-secondary text-[0.85rem] tracking-[1px]">★★★★★</span>
@@ -201,7 +201,7 @@ export default function HeroSection({
                 <span>Loved by {Number(loved).toLocaleString('en-US')}+ businesses</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* payment form card */}
           <div className="absolute right-[1%] top-[57%] w-[30%] min-w-[100px]">

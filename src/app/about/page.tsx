@@ -1,8 +1,7 @@
-import {ContactSection} from "@/components/about/ContactSection";
-import HeroSection from "@/components/about/HeroSection";
 import MentorsSection from "@/components/about/MentorsSection";
 import MissionSection from "@/components/about/MissionSection";
 import VisionSection from "@/components/about/VisionSection";
+import { HeroSection } from "@/components/landing-page";
 import type { Metadata } from "next";
 import GoalFeature from "@/components/about/GoalFeature";
 
@@ -18,7 +17,6 @@ export default function AboutPage() {
       <GoalFeature/>
       <MissionSection/>
       <VisionSection stepDurationMs={900} dwellMs={1200}/>
-      <ContactSection />
       <MentorsSection />      
     </main>
   );

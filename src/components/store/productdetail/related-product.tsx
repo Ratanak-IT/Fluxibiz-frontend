@@ -10,17 +10,16 @@ interface RelatedProductsProps {
   title?: string;
   items: Products[];
   viewAllHref?: string;
-  //
 }
 
-export function RelatedProducts({
+export default function RelatedProducts({
   title = "You May Also Like",
   items,
   viewAllHref = "#",
 }: RelatedProductsProps) {
   return (
     <section className="mx-auto my-10 max-w-7xl px-4">
-
+     
       <div className="  mb-4 flex items-center justify-between ">
         <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50">
           {title}

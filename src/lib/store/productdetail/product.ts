@@ -4,7 +4,7 @@ export interface ProductOption {
   priceModifier?: number;
 }
 
-export interface Product {
+export  interface Product {
   id: string;
   badge?: string;
   name: string;
@@ -12,8 +12,6 @@ export interface Product {
   price: number;
   compareAtPrice?: number;
   images: string[];
-  image?: string;
-  category?: string;
   sugarLevels: ProductOption[];
   sizes: ProductOption[];
   defaultSugarLevel: string;
@@ -47,7 +45,7 @@ export async function getProduct(id: string): Promise<Product> {
     images: [
       "https://i.pinimg.com/736x/da/e3/a8/dae3a884189cee56fde94fcefff0a036.jpg",
       "https://i.pinimg.com/736x/e3/6a/72/e36a720526185c37b69d2bad73d1d95c.jpg",
-      "https://i.pinimg.com/736x/80/fa/b8/80fab853a55b8411eaa3768b3d1b61a5.jpg",
+      "https://i.pinimg.com/736x/e7/e2/b6/e7e2b63e9066f63dd29825be9142e49a.jpg",
     ],
     sugarLevels: ["0", "25", "50", "75", "100"].map((v) => ({
       label: `${v}%`,

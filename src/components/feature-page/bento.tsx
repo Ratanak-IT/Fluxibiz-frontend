@@ -143,76 +143,76 @@ function FeatureVisual({ id }: { id: Module["id"] }) {
 export function FeatureBento() {
   return (
     <section className="bg-background px-5 py-20 text-text md:px-8 md:py-28">
-      <div className="mx-auto max-w-6xl">
-        <Reveal className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
-            Greater than a feature list
-          </p>
-          <h2 className="mt-4 text-4xl font-bold tracking-[-0.04em] md:text-6xl">
-            One powerful platform.
-            <span className="block text-primary">Built for how you work.</span>
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">
-            A dynamic, device-ready commerce platform that connects the counter, dashboard, and
-            customer experience.
-          </p>
-        </Reveal>
+  <div className="mx-auto max-w-6xl">
+    <Reveal className="mx-auto max-w-3xl text-center">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+        Greater than a feature list
+      </p>
+      <h2 className="mt-4 text-4xl font-bold tracking-[-0.04em] md:text-6xl">
+        One powerful platform.
+        <span className="block text-primary">Built for how you work.</span>
+      </h2>
+      <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">
+        A dynamic, device-ready commerce platform that connects the counter, dashboard, and
+        customer experience.
+      </p>
+    </Reveal>
 
-        <div className="mt-14 grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-12">
-          {MODULES.map((item, index) => {
-            const Icon = item.icon;
-            const isDark = item.id === "modern-pos";
+    <div className="mt-14 grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-12">
+      {MODULES.map((item, index) => {
+        const Icon = item.icon;
+        const isDark = item.id === "modern-pos";
 
-            return (
-              <Reveal key={item.id} delay={index * 0.06} className={CARD_LAYOUTS[item.id]}>
-                <GlassCard
+        return (
+          <Reveal key={item.id} delay={index * 0.06} className={CARD_LAYOUTS[item.id]}>
+            <GlassCard
+              className={cn(
+                "group h-full min-h-[380px] overflow-hidden border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_-30px_rgba(0,147,42,0.5)] dark:hover:shadow-[0_28px_70px_-30px_rgba(33,185,75,0.5)] sm:p-7",
+                CARD_SURFACES[item.id],
+                isDark ? "border-white/20" : "",
+              )}
+            >
+              <div className="flex items-start justify-between">
+                <span
                   className={cn(
-                    "group h-full min-h-[380px] overflow-hidden border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_-30px_rgba(0,147,42,0.5)] sm:p-7",
-                    CARD_SURFACES[item.id],
-                    isDark ? "border-white/20" : "",
+                    "grid size-12 place-items-center rounded-2xl",
+                    isDark ? "bg-white text-primary" : "bg-primary text-white",
                   )}
                 >
-                  <div className="flex items-start justify-between">
-                    <span
-                      className={cn(
-                        "grid size-12 place-items-center rounded-2xl",
-                        isDark ? "bg-white text-primary" : "bg-primary text-white",
-                      )}
-                    >
-                      <Icon className="size-6" />
-                    </span>
-                    <span className={cn("font-mono text-xs", isDark ? "text-white/60" : "text-text/40")}>
-                      {item.index}
-                    </span>
-                  </div>
+                  <Icon className="size-6" />
+                </span>
+                <span className={cn("font-mono text-xs", isDark ? "text-white/60" : "text-text/40")}>
+                  {item.index}
+                </span>
+              </div>
 
-                  <h3 className="mt-7 text-2xl font-bold">{item.title}</h3>
-                  <p className={cn("mt-3 max-w-xl leading-6", isDark ? "text-white/75" : "text-muted-foreground")}>
-                    {item.promise}
-                  </p>
+              <h3 className="mt-7 text-2xl font-bold">{item.title}</h3>
+              <p className={cn("mt-3 max-w-xl leading-6", isDark ? "text-white/75" : "text-muted-foreground")}>
+                {item.promise}
+              </p>
 
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {item.features.slice(0, 3).map((feature) => (
-                      <span
-                        key={feature}
-                        className={cn(
-                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold",
-                          isDark ? "bg-white/12 text-white" : "bg-primary/8 text-primary",
-                        )}
-                      >
-                        <Check className="size-3" />
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {item.features.slice(0, 3).map((feature) => (
+                  <span
+                    key={feature}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold",
+                      isDark ? "bg-white/12 text-white" : "bg-primary/8 text-primary",
+                    )}
+                  >
+                    <Check className="size-3" />
+                    {feature}
+                  </span>
+                ))}
+              </div>
 
-                  <FeatureVisual id={item.id} />
-                </GlassCard>
-              </Reveal>
-            );
-          })}
-        </div>
-      </div>
-    </section>
+              <FeatureVisual id={item.id} />
+            </GlassCard>
+          </Reveal>
+        );
+      })}
+    </div>
+  </div>
+</section>
   );
 }

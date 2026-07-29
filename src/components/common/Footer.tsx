@@ -33,13 +33,14 @@ const socialLinks = [
 
 // 🟢 Custom offsets added per logo
 const partners = [
+  
   {
     src: istadLogo,
     alt: "ISTAD",
     // Custom shift for ISTAD logo
     className: "w-full max-w-[120px] sm:max-w-[150px]",
   },
-    {
+  {
     src: mptcLogo,
     alt: "Ministry of Post and Telecommunications",
     // Custom shift for MPTC logo to line up with left elements
@@ -55,7 +56,7 @@ const partners = [
 
 export default function Footer() {
   return (
-    <footer className="relative z-10 mt-auto border-t border-border bg-card text-card-foreground">
+    <footer className="relative z-10 mt-auto border-t border-border bg-white text-card-foreground">
       <div className="mx-auto w-full container max-w-7xl overflow-hidden px-4 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
         {/* TOP SECTION */}
         <div className="container mx-auto max-w-7xl grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ">
@@ -100,7 +101,7 @@ export default function Footer() {
           </section>
 
           {/* Contact Us Column */}
-          <section className="rounded-2xl border border-border bg-background/45 p-5 text-left sm:p-6 md:rounded-none md:border-0 md:bg-transparent md:p-0">
+          <section className="rounded-2xl  border border-border bg-background/45 p-5 text-left sm:p-6 md:rounded-none md:border-0 md:bg-transparent md:p-0">
             <FooterTitle>Contact Us</FooterTitle>
             <address className="mt-5 max-w-md space-y-4 not-italic text-sm leading-6 text-muted-foreground sm:text-base">
               <div className="flex items-start gap-3 text-left">
@@ -143,7 +144,7 @@ export default function Footer() {
             Supported by
           </p>
 
-          <div className="container mx-auto grid max-w-7xl grid-cols-1 items-center justify-items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+          <div className="container mx-auto  max-w-7xl grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ">
             {partners.map((partner) => (
               <Image
                 key={partner.alt}

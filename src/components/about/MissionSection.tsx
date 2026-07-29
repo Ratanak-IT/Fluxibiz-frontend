@@ -72,10 +72,10 @@ export default function MissionSection({
 
   return (
     <section
-      className={`ms-scope w-full overflow-hidden px-[5.5%] pb-24 pt-[5.5rem] font-googlesans antialiased`}
+      className={`ms-scope w-full overflow-hidden px-[5.5%] pb-24 font-googlesans antialiased`}
     >
       <div className="mb-[3.2rem] max-w-[900px]">
-        <div className="mb-4 inline-flex animate-[ah-fade-up_0.6s_var(--ah-ease)_forwards] items-center gap-2 text-[0.85rem] font-bold uppercase tracking-[0.04em] dark:bg-black text-[#00932A] opacity-0 motion-reduce:animate-none motion-reduce:opacity-100">
+        <div className="mb-4 inline-flex animate-[ah-fade-up_0.6s_var(--ah-ease)_forwards] items-center gap-2 text-[0.85rem] font-bold uppercase tracking-[0.04em] text-[#00932A] opacity-0 motion-reduce:animate-none motion-reduce:opacity-100">
           <span className="h-1.5 w-1.5 animate-[ms-pulse_2.2s_ease-in-out_infinite] rounded-full dark:bg-white bg-[#00932A] motion-reduce:animate-none" />
           {eyebrow}
         </div>
@@ -87,16 +87,26 @@ export default function MissionSection({
         </h2>
       </div>
 
-      <div className="py-8 relative w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)]">
+      {/* <div className="py-8 relative w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)]">
         <div
-          className="flex w-max animate-[ms-slide-left_linear_infinite] gap-6 motion-reduce:animate-none "
-          style={{ animationDuration: `${slideDurationSec}s` }}
+            className="
+                mb-4 inline-flex 
+                animate-[ah-fade-up_0.6s_var(--ah-ease)_forwards] 
+                items-center gap-2 
+                text-[0.85rem] font-bold uppercase 
+                tracking-[0.04em] 
+                text-brand
+                opacity-0 
+                motion-reduce:animate-none 
+                motion-reduce:opacity-100
+            "
         >
           {loopedCards.map((card, i) => (
             <div
               key={`${card.title}-${i}`}
               style={{ animationDelay: `${(i % cards.length) * 0.1}s` }}
-              className="ease-hero flex-[0_0_auto] w-[260px] translate-y-[18px] dark:bg-gray-300 animate-[ah-card-in_0.7s_var(--ah-ease)_forwards] rounded-[18px] border border-[rgba(3,7,18,0.04)] bg-white px-6 pb-[1.8rem] pt-[1.6rem] opacity-0 shadow-[0_10px_28px_-14px_rgba(3,7,18,0.12)] transition-transform duration-300 ease-out hover:-translate-y-1.5 motion-reduce:translate-y-0 motion-reduce:transition-none motion-reduce:animate-none motion-reduce:opacity-100 max-[720px]:w-[220px]"
+              className="ease-hero flex-[0_0_auto] w-[260px] translate-y-[18px] dark:bg-gray-300 animate-[ah-card-in_0.7s_var(--ah-ease)_forwards] rounded-[18px] border border-[rgba(3,7,18,0.04)] bg-white px-6 pb-[1.8rem] pt-[1.6rem] opacity-0 shadow-[0_10px_28px_-14px_rgba(3,7,18,0.12)]
+               transition-transform duration-300 ease-out hover:-translate-y-1.5 motion-reduce:translate-y-0 motion-reduce:transition-none motion-reduce:animate-none motion-reduce:opacity-100 max-[720px]:w-[220px]"
             >
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#00932A] shadow-[0_8px_18px_-6px_rgba(0,147,42,0.45)]">
                 <Icon name={card.icon} />
@@ -110,7 +120,130 @@ export default function MissionSection({
             </div>
           ))}
         </div>
-      </div>
-    </section>
+
+
+        <h2
+            className="
+                m-0 translate-y-4 
+                animate-[ah-fade-up_0.75s_0.12s_var(--ah-ease)_forwards] 
+                text-[2.6rem] font-extrabold 
+                leading-[1.18] tracking-[-0.02em] 
+                text-foreground
+                opacity-0 
+                motion-reduce:translate-y-0 
+                motion-reduce:animate-none 
+                motion-reduce:opacity-100 
+                max-[720px]:text-[1.7rem]
+            "
+        >
+            {headlinePrefix}
+            <br />
+
+            with{" "}
+            <span className="text-brand">
+                {headlineHighlight}
+            </span>{" "}
+            {headlineSuffix}
+
+        </h2>
+
+    </div> */}
+
+
+    <div
+        className="
+            py-8 relative w-full overflow-hidden 
+            [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)] 
+            [-webkit-mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)]
+        "
+    >
+
+        <div
+            className="
+                flex w-max 
+                animate-[ms-slide-left_linear_infinite] 
+                gap-6 
+                motion-reduce:animate-none
+            "
+            style={{
+                animationDuration: `${slideDurationSec}s`,
+            }}
+        >
+
+            {loopedCards.map((card, i) => (
+
+                <div
+                    key={`${card.title}-${i}`}
+                    style={{
+                        animationDelay: `${(i % cards.length) * 0.1}s`,
+                    }}
+                    className="
+                        ease-hero flex-[0_0_auto] 
+                        w-[260px] translate-y-[18px]
+
+                        animate-[ah-card-in_0.7s_var(--ah-ease)_forwards]
+
+                        rounded-[18px]
+
+                        border border-border
+
+                        bg-card
+
+                        px-6 pb-[1.8rem] pt-[1.6rem]
+
+                        opacity-0
+
+                        shadow-[0_10px_28px_-14px_rgba(3,7,18,0.12)]
+
+                        transition-transform duration-300 ease-out hover:-translate-y-1.5 motion-reduce:translate-y-0 motion-reduce:transition-none motion-reduce:animate-none motion-reduce:opacity-100 max-[720px]:w-[220px]
+                    "
+                >
+
+                    <div
+                        className="
+                            mb-4 flex h-10 w-10 
+                            items-center justify-center 
+                            rounded-full 
+                            bg-brand
+
+                            shadow-[0_8px_18px_-6px_rgba(33,185,75,0.45)]
+                        "
+                    >
+                        <Icon name={card.icon} />
+                    </div>
+
+
+                    <h3
+                        className="
+                            m-0 mb-2 
+                            text-[1.02rem] font-bold 
+                            tracking-[-0.005em]
+                            text-card-foreground
+                        "
+                    >
+                        {card.title}
+                    </h3>
+
+
+                    <p
+                        className="
+                            m-0 
+                            text-[0.85rem] 
+                            leading-[1.45] 
+                            text-muted-foreground
+                        "
+                    >
+                        {card.description}
+                    </p>
+
+                </div>
+
+            ))}
+
+        </div>
+
+    </div>
+
+</section>
   );
 }

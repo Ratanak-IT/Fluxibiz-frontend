@@ -42,7 +42,7 @@ export function UserRegisterForm() {
                     label="Last Name"
                     name="lastName"
                     autoComplete="family-name"
-                    placeholder="khorm"
+                    placeholder="khorn"
                     required={false}
                 />
             </div>
@@ -100,12 +100,12 @@ export function UserRegisterForm() {
                 <span className="h-px flex-1 bg-[#313131]/25" />
             </div>
 
-            <div className="grid gap-[10px] sm:grid-cols-2">
+             <div className="grid gap-[10px] sm:grid-cols-2 ">
                 {SOCIAL_PROVIDERS.map((provider) => (
                     <button
                         key={provider.label}
                         type="button"
-                        className="flex h-[50px] items-center justify-center gap-3 rounded-[11px] border border-border bg-white text-sm font-medium text-[#636b74] transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className="flex h-[50px] items-center justify-center gap-3 rounded-[11px] border border-border bg-white text-sm font-medium text-[#636b74] transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring "
                     >
                         <Image
                             src={provider.icon}
