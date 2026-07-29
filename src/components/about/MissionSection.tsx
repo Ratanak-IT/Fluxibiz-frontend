@@ -1,4 +1,5 @@
 import React from 'react';
+import { Chart } from './Chart';
 
 interface FeatureCard {
   icon: 'clipboard' | 'heart' | 'clock' | 'shield';
@@ -64,17 +65,17 @@ export default function MissionSection({
   headlineSuffix = 'and expertise.',
   cards = DEFAULT_CARDS,
   slideDurationSec = 15,
-  className = 'dark:bg-black',
+
 }: MissionSectionProps) {
   // duplicate the card list for a seamless infinite marquee
   const loopedCards = [...cards, ...cards];
 
   return (
     <section
-      className={`ms-scope w-full overflow-hidden bg-[#F5F5F5] px-[5.5%] pb-24 pt-[5.5rem] font-googlesans antialiased ${className}`}
+      className={`ms-scope w-full overflow-hidden px-[5.5%] pb-24 pt-[5.5rem] font-googlesans antialiased`}
     >
       <div className="mb-[3.2rem] max-w-[900px]">
-        <div className="mb-4 inline-flex animate-[ah-fade-up_0.6s_var(--ah-ease)_forwards] items-center gap-2 text-[0.85rem] font-bold uppercase tracking-[0.04em] dark:bg-white text-[#00932A] opacity-0 motion-reduce:animate-none motion-reduce:opacity-100">
+        <div className="mb-4 inline-flex animate-[ah-fade-up_0.6s_var(--ah-ease)_forwards] items-center gap-2 text-[0.85rem] font-bold uppercase tracking-[0.04em] dark:bg-black text-[#00932A] opacity-0 motion-reduce:animate-none motion-reduce:opacity-100">
           <span className="h-1.5 w-1.5 animate-[ms-pulse_2.2s_ease-in-out_infinite] rounded-full dark:bg-white bg-[#00932A] motion-reduce:animate-none" />
           {eyebrow}
         </div>
@@ -86,7 +87,7 @@ export default function MissionSection({
         </h2>
       </div>
 
-      <div className="relative w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)]">
+      <div className="py-8 relative w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)]">
         <div
           className="flex w-max animate-[ms-slide-left_linear_infinite] gap-6 motion-reduce:animate-none "
           style={{ animationDuration: `${slideDurationSec}s` }}
@@ -95,7 +96,7 @@ export default function MissionSection({
             <div
               key={`${card.title}-${i}`}
               style={{ animationDelay: `${(i % cards.length) * 0.1}s` }}
-              className="ease-hero flex-[0_0_auto] w-[260px] translate-y-[18px] dark:bg-gray-300 animate-[ah-card-in_0.7s_var(--ah-ease)_forwards] rounded-[18px] border border-[rgba(3,7,18,0.04)] bg-white px-6 pb-[1.8rem] pt-[1.6rem] opacity-0 shadow-[0_10px_28px_-14px_rgba(3,7,18,0.12)] transition-[transform,box-shadow] duration-[400ms] hover:-translate-y-1.5 hover:shadow-[0_22px_44px_-18px_rgba(3,7,18,0.2)] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 max-[720px]:w-[220px]"
+              className="ease-hero flex-[0_0_auto] w-[260px] translate-y-[18px] dark:bg-gray-300 animate-[ah-card-in_0.7s_var(--ah-ease)_forwards] rounded-[18px] border border-[rgba(3,7,18,0.04)] bg-white px-6 pb-[1.8rem] pt-[1.6rem] opacity-0 shadow-[0_10px_28px_-14px_rgba(3,7,18,0.12)] transition-transform duration-300 ease-out hover:-translate-y-1.5 motion-reduce:translate-y-0 motion-reduce:transition-none motion-reduce:animate-none motion-reduce:opacity-100 max-[720px]:w-[220px]"
             >
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#00932A] shadow-[0_8px_18px_-6px_rgba(0,147,42,0.45)]">
                 <Icon name={card.icon} />

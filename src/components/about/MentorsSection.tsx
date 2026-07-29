@@ -4,7 +4,7 @@ import { mentors, team } from "@/lib/about/data";
 export default function MentorsSection() {
   return (
     //  py-20  → vertical padding (top/bottom). Change here.
-    <section className="bg-[#f5f5f5] dark:bg-gray-900 py-20">
+    <section className="py-20">
       {/*  px-[5.5%]  → horizontal padding (left/right). Change here.
            max-w-[1900px] + mx-auto → caps width and centers on the page. */}
       <div className="mx-auto max-w-[1900px] px-[5.5%]">

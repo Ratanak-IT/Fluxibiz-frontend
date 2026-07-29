@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { ArrowRightIcon } from 'lucide-react';
+import { Chart } from './Chart';
 
 export interface AboutHeroSectionProps {
   eyebrow?: string;
@@ -141,9 +142,11 @@ export default function HeroSection({
           <div className="animate-pulse-badge absolute left-[24%] top-[39%] z-[3] flex h-[30px] w-[30px] items-center justify-center rounded-full bg-brand text-[0.85rem] text-white shadow-[0_8px_18px_-6px_var(--ah-glow)]">
             ★
           </div>
+          <Chart/>
+
 
           {/* dashboard chart card */}
-          <div className="absolute left-[2%] top-[10%] w-[20%] min-w-[160px]">
+          <div className="absolute left-[20%] top-[90%] w-[20%] min-w-[160px]">
             <div className="animate-float-dashboard border-line w-full rounded-[14px] border bg-surface p-[0.7rem] opacity-0 shadow-[0_1px_2px_var(--ah-shadow-sm),0_14px_28px_-14px_var(--ah-shadow-md),0_34px_60px_-34px_var(--ah-shadow-lg)]">
               <div className="text-ink mb-[0.45rem] text-[0.82rem] font-extrabold tracking-[-0.01em]">
                 ${Number(revenue).toLocaleString('en-US')}
@@ -162,14 +165,14 @@ export default function HeroSection({
 
           {/* today's overview: breathing equalizer */}
           <div className="absolute left-[29%] top-[15%] w-[50%] min-w-[300px]">
-            <div className="animate-float-overview border-line min-h-[200px] w-full rounded-[14px] border bg-surface-dark dark:bg-gray-400 px-[1.1rem] pb-[0.9rem] pt-4 text-white/70 opacity-0 shadow-[0_1px_2px_var(--ah-shadow-md),0_18px_34px_-16px_var(--ah-shadow-md),0_40px_70px_-40px_var(--ah-glow)]">
+            <div className="animate-float-overview border-line min-h-[200px] w-full rounded-[14px] border bg-surface-dark dark:bg-neutral-800 px-[1.1rem] pb-[0.9rem] pt-4 text-white/70 opacity-0 shadow-[0_1px_2px_var(--ah-shadow-md),0_18px_34px_-16px_var(--ah-shadow-md),0_40px_70px_-40px_var(--ah-glow)]">
               <div className="mb-[0.7rem] text-[0.85rem] font-semibold">Today&apos;s overview</div>
               <div className="mb-[0.7rem] flex h-[200px] items-end gap-[2px]">
                 {BAR_HEIGHTS.map((h, i) => (
                   <span
                     key={i}
                     className={`animate-eq flex-1 origin-bottom rounded-[2px] ${
-                      i % 3 === 0 ? 'bg-brand' : 'bg-white/20'
+                      i % 3 === 0 ? 'bg-brand' : 'bg-white/90'
                     }`}
                     style={
                       {
@@ -221,7 +224,7 @@ export default function HeroSection({
           <div className="absolute left-[29%] top-[70%] w-[30%] min-w-[220px]">
             <div className="animate-float-order border-line w-full rounded-[14px] border bg-surface px-[1.05rem] py-[0.9rem] opacity-0 shadow-[0_1px_2px_var(--ah-shadow-sm),0_14px_28px_-14px_var(--ah-shadow-md),0_34px_60px_-34px_var(--ah-shadow-lg)]">
               <div className="mb-[0.4rem] flex items-center gap-2">
-                <span className="rounded-full bg-text px-[0.55rem] py-[0.2rem] text-[0.66rem] font-semibold text-white">
+                <span className="rounded-full bg-text px-[0.55rem] py-[0.2rem] text-[0.66rem] font-semibold text-gray-100 dark:text-gray-900">
                   Order #1048
                 </span>
                 <span className="text-faint text-[0.7rem]">2m ago</span>

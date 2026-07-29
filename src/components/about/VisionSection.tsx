@@ -164,7 +164,7 @@ export default function VisionSection({
       style={{ ['--ov-step-duration']: `${stepDurationMs}ms` } as React.CSSProperties}
       className={`flex h-screen w-full items-center justify-center font-googlesans antialiased [--ov-primary:#00932A] [--ov-secondary:#FEB90D] dark:[--ov-primary:#22C55E] dark:[--ov-secondary:#FACC15] bg-[radial-gradient(circle_at_88%_20%,rgba(0,147,42,0.06),transparent_45%),repeating-linear-gradient(135deg,rgba(3,7,18,0.012)_0px,rgba(3,7,18,0.012)_1px,transparent_1px,transparent_3px),#F5F5F5] dark:bg-[radial-gradient(circle_at_88%_20%,rgba(0,147,42,0.10),transparent_45%),repeating-linear-gradient(135deg,rgba(255,255,255,0.02)_0px,rgba(255,255,255,0.02)_1px,transparent_1px,transparent_3px),#0B0B0B] ${className}`}
     >
-      <div className="relative h-full w-full overflow-hidden bg-[#F5F5F5] dark:bg-[#0B0B0B]">
+      <div className="relative h-full w-full overflow-hidden">
         <div className="pointer-events-none absolute left-[-2%] top-[38%] z-0 animate-[ov-breathe_6s_ease-in-out_infinite] select-none text-[22vw] font-black leading-none tracking-[-0.04em] text-[#00932A] dark:text-gray-200 opacity-5 motion-reduce:animate-none">
           {watermark}
         </div>
