@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Menu, Sparkles } from "lucide-react";
+import { ChevronDown, Menu } from "lucide-react";
 
 import englishFlag from "../../../public/image/flags/english.png";
 import khmerFlag from "../../../public/image/flags/khmer.png";
@@ -10,6 +10,7 @@ import fluxibizLogo from "../../../public/image/logo.png";
 
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/common/ThemeToggle";
+import { useAuth } from "@/features/auth/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,10 +31,8 @@ type NavigationItem = {
   children?: { label: string; href: string }[];
 };
 
-const keycloakLoginUrl = `${process.env.NEXT_PUBLIC_KEYCLOAK_LOGIN_URL}`;
-
 const navigationItems: NavigationItem[] = [
-   {
+  {
     label: "Store",
     href: "/store",
   },
@@ -41,7 +40,7 @@ const navigationItems: NavigationItem[] = [
     label: "Feature",
     href: "/feature",
   },
- {
+  {
     label: "Support",
     href: "/support",
   },
@@ -51,11 +50,17 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
-export default function NavbarBeforeLoginComponent() {
+export default function NavbarBeforeLoginComponent({
+  pending = false,
+}: {
+  pending?: boolean;
+}) {
+  const { loginHref, login } = useAuth();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b  bg-white text-foreground backdrop-blur dark:bg-background ">
       <div className="mx-auto flex h-13.75 max-w-332.5 items-center justify-between px-6 sm:px-10">
-        {/* Desktop Logo - Scaled down to w-[130px] */}
+        {/* Desktop Logo */}
         <Link href="/" aria-label="FluxiBiz home">
           <Image
             src={fluxibizLogo}
@@ -101,10 +106,13 @@ export default function NavbarBeforeLoginComponent() {
           )}
         </nav>
 
-        <div className="hidden items-center gap-4 lg:flex">
+        <div
+          className={`hidden items-center gap-4 lg:flex ${
+            pending ? "pointer-events-none opacity-60" : ""
+          }`}
+        >
           <ThemeToggle />
           <LanguageDropdown />
-
 
           <Link
             href="/register"
@@ -112,9 +120,15 @@ export default function NavbarBeforeLoginComponent() {
           >
             Business
           </Link>
+
+          {/* Plain <a>, not next/link: this is a route handler that 302s to Keycloak */}
           <Button
             nativeButton={false}
-            render={<Link href={keycloakLoginUrl} />}
+            render={<a href={loginHref} />}
+            onClick={(event) => {
+              event.preventDefault();
+              login();
+            }}
             className="h-9 rounded-full border border-[#00932a] bg-[#00932a] px-8 text-sm font-bold text-white shadow-none hover:bg-[#007d24]"
           >
             Login
@@ -150,7 +164,6 @@ export default function NavbarBeforeLoginComponent() {
           <SheetContent side="right" className="w-[340px] sm:w-[400px]">
             <SheetHeader>
               <SheetTitle className="text-left">
-                {/* Mobile Drawer Logo - Scaled down to w-[120px] */}
                 <Image
                   src={fluxibizLogo}
                   alt="FluxiBiz"
@@ -194,7 +207,11 @@ export default function NavbarBeforeLoginComponent() {
 
               <Button
                 nativeButton={false}
-                render={<Link href="/login" />}
+                render={<a href={loginHref} />}
+                onClick={(event) => {
+                  event.preventDefault();
+                  login();
+                }}
                 className="mt-4 h-11 rounded-full bg-[#00932a] text-base font-bold text-white hover:bg-[#007d24]"
               >
                 Login

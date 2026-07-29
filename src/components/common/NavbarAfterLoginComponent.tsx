@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -18,9 +19,11 @@ import fluxibizLogo from "../../../public/image/logo.png";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/common/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { SessionUser } from "@/lib/type/authType";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -34,14 +37,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-
-
 type NavbarAfterLoginComponentProps = {
-  user?: {
-    name: string;
-    email: string;
-    image?: string;
-  };
+  user: SessionUser;
   cartCount?: number;
   onLogout?: () => void;
 };
@@ -71,13 +68,8 @@ const navigationItems: NavigationItem[] = [
 ];
 
 export default function NavbarAfterLoginComponent({
-  user = {
-    name: "FluxiBiz User",
-    email: "user@fluxibiz.com",
-    image:
-      "https://media.easy-peasy.ai/4e600a82-8aac-4abb-95cd-f87cc9125a0f/18ea5802-d34e-4fbb-91e2-99baebb2eac9_medium.webp",
-  },
-  cartCount = 3,
+  user,
+  cartCount = 0,
   onLogout,
 }: NavbarAfterLoginComponentProps) {
   return (
@@ -194,7 +186,7 @@ export default function NavbarAfterLoginComponent({
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-foreground transition-colors hover:bg-muted"
                 >
                   <UserRound size={19} />
-                  Profile
+                  View profile
                 </Link>
 
                 <Link
@@ -211,7 +203,7 @@ export default function NavbarAfterLoginComponent({
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-base font-bold text-destructive transition-colors hover:bg-destructive/10"
                 >
                   <LogOut size={19} />
-                  Logout
+                  Log out
                 </button>
               </div>
             </SheetContent>
@@ -222,11 +214,10 @@ export default function NavbarAfterLoginComponent({
   );
 }
 
-
-
 function CartButton({ cartCount }: { cartCount: number }) {
   return (
     <Button
+    nativeButton={false}
       render={
         <Link
           href="/checkout"
@@ -239,71 +230,72 @@ function CartButton({ cartCount }: { cartCount: number }) {
     >
       <ShoppingCart size={25} />
 
-        {cartCount > 0 && (
-          <span
-            className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white"
-          >
-            {cartCount > 99 ? "99+" : cartCount}
-          </span>
-        )}
+      {cartCount > 0 && (
+        <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+          {cartCount > 99 ? "99+" : cartCount}
+        </span>
+      )}
     </Button>
   );
 }
-
 function UserDropdown({
   user,
   onLogout,
 }: {
-  user: {
-    name: string;
-    email: string;
-    image?: string;
-  };
+  user: SessionUser;
   onLogout?: () => void;
 }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={<Button
-          type="button"
-          variant="ghost"
-          className="h-auto rounded-full p-1"
-          aria-label="Open user menu"
-        />}
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-auto rounded-full p-1"
+            aria-label="Open user menu"
+          />
+        }
       >
-          <Avatar className="size-11 border border-border">
-            {user.image && <AvatarImage src={user.image} alt={user.name} />}
-            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-          </Avatar>
+        <Avatar className="size-11 border border-border">
+          {user.image && <AvatarImage src={user.image} alt={user.name} />}
+          <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-64">
-        <DropdownMenuLabel>
-          <div className="flex flex-col gap-1">
-            <p className="font-medium text-foreground">{user.name}</p>
-            <p className="truncate text-xs font-normal text-muted-foreground">
-              {user.email}
-            </p>
-          </div>
-        </DropdownMenuLabel>
+        {/* Wrap the label in a Group context */}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>
+            <div className="flex flex-col gap-1">
+              <p className="font-medium text-foreground">{user.name}</p>
+              <p className="truncate text-xs font-normal text-muted-foreground">
+                {user.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          render={<Link href="/profile" />}
-          className="cursor-pointer gap-2"
-        >
-          <UserRound size={17} />
-          Profile
-        </DropdownMenuItem>
+        {/* You can also wrap standard items in a group if desired */}
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            render={<Link href="/profile" />}
+            className="cursor-pointer gap-2"
+          >
+            <UserRound size={17} />
+            View profile
+          </DropdownMenuItem>
 
-        <DropdownMenuItem
-          render={<Link href="/settings" />}
-          className="cursor-pointer gap-2"
-        >
-          <Settings size={17} />
-          Settings
-        </DropdownMenuItem>
+          <DropdownMenuItem
+            render={<Link href="/settings" />}
+            className="cursor-pointer gap-2"
+          >
+            <Settings size={17} />
+            Settings
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
@@ -312,12 +304,13 @@ function UserDropdown({
           className="cursor-pointer gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
         >
           <LogOut size={17} />
-          Logout
+          Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
+
 function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
   return (
     <DropdownMenu>
@@ -383,4 +376,3 @@ function getInitials(name: string) {
     .slice(0, 2)
     .toUpperCase();
 }
-

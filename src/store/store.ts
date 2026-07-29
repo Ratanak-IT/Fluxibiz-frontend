@@ -1,24 +1,33 @@
+import { configureStore } from '@reduxjs/toolkit';
+import authReducer from '../features/auth/authSlice'; 
 
+import { authApi } from '../features/auth/authApi';
+import { shopApi } from '../features/shop/shopApi';
+import { storeCateApi } from '../features/store-api/store-api';
+import { productApi } from '../lib/store/productdetail/productApi';
+import { sessionApi } from '../features/auth/sessionApi';
+import { userApi } from '../features/user/userApi';
 
-import { authApi } from '@/features/auth/authApi'
-import { shopApi } from '@/features/shop/shopApi'
-import { storeCateApi } from '@/features/store-api/store-api'
-import { productApi } from '@/lib/store/productdetail/productApi'
-
-import {configureStore} from '@reduxjs/toolkit'
-
-// set up the store
 export const makeStore = () => {
   return configureStore({
     reducer: {
+      auth: authReducer,
       [authApi.reducerPath]: authApi.reducer,
-      [shopApi.reducerPath] : shopApi.reducer,
-      [storeCateApi.reducerPath]  :storeCateApi.reducer,
+      [shopApi.reducerPath]: shopApi.reducer,
+      [storeCateApi.reducerPath]: storeCateApi.reducer,
       [productApi.reducerPath]: productApi.reducer,
+      [sessionApi.reducerPath]: sessionApi.reducer,
+      [userApi.reducerPath]: userApi.reducer,
     },
     middleware: (getDefaultMiddleware) => 
-      getDefaultMiddleware().concat(authApi.middleware, shopApi.middleware, storeCateApi.middleware,productApi.middleware)
-    
+      getDefaultMiddleware().concat(
+        authApi.middleware, 
+        shopApi.middleware, 
+        storeCateApi.middleware,
+        productApi.middleware,
+        sessionApi.middleware,
+        userApi.middleware
+      )
   }) 
 }
 
