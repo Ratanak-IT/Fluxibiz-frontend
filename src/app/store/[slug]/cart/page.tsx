@@ -7,8 +7,8 @@ import Link from "next/link";
 
 export default function CartPage() {
     return (
-        <div className="bg--description min-h-screen bg-gray-100">
-            <div className="mx-25 py-10 ">
+        <div className=" mx-auto max-w-362.5 min-h-screen ">
+            <div className="mx-25 py-7.5 ">
                 <div className="mb-6 flex items-center justify-between">
                     <h1 className="text-3xl font-bold text-green-600">
                         Your Cart
@@ -25,7 +25,7 @@ export default function CartPage() {
                 </div>
                 <StoreCardComponent />
 
-                <div className="mt-6 flex items-start gap-8 pt-4">
+                <div className="mt-6 flex items-start gap-8 pt-2">
                     <div className="flex flex-1 flex-col gap-4">
                         <CartList />
                     </div>

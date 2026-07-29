@@ -60,9 +60,10 @@
 
 .dark {
   color-scheme: dark;
-  --background: #0b1210;
+  --background:  #2C2C2C;
   --foreground: #f3f7f4;
-  --card: #121c18;
+  --text: #F5F5F5;
+  --card: #4C4C4C;
   --card-foreground: #f3f7f4;
   --popover: #121c18;
   --popover-foreground: #f3f7f4;

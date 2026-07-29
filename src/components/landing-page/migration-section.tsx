@@ -89,74 +89,109 @@ function MigrationCard({
     const style = TONES[tone];
 
     return (
-        <Card className="group h-full gap-0 overflow-hidden rounded-xl border-border bg-white p-7 transition-[border-color] duration-500 ease-out hover:border-brand/30">
-            <div
-                className={`origin-center transition-transform duration-500 ease-out group-hover:scale-[1.04] ${
-                    featured
-                        ? "text-left md:flex md:flex-row md:items-center"
-                        : ""
-                }`}
+       <Card
+    className="
+        group h-full gap-0 overflow-hidden rounded-xl 
+        border-border 
+        bg-card 
+        p-7 
+        transition-[border-color] duration-500 ease-out 
+        hover:border-brand/30
+    "
+>
+    <div
+        className={`origin-center transition-transform duration-500 ease-out group-hover:scale-[1.04] ${
+            featured
+                ? "text-left md:flex md:flex-row md:items-center"
+                : ""
+        }`}
+    >
+        <div className={featured ? "max-w-md shrink-0 text-left" : ""}>
+            <span
+                className={`
+                    mt-4 flex size-11 items-center justify-center 
+                    rounded-full border-2 
+                    ${style.border} 
+                    ${style.title}
+                `}
             >
-                <div className={featured ? "max-w-md shrink-0 text-left" : ""}>
-                    <span
-                        className={`mt-4 flex size-11 items-center justify-center rounded-full border-2 ${style.border} ${style.title}`}
-                    >
-                        <Icon className="size-5 stroke-[2.2]" />
-                    </span>
+                <Icon className="size-5 stroke-[2.2]" />
+            </span>
 
-                    <h3
-                        className={`mt-4 font-display text-xl font-bold leading-tight ${style.title}`}
-                    >
-                        {title}
-                    </h3>
-                    <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
-                        {body}
-                    </p>
-                </div>
-                {featured ? <MigrationArtwork /> : null}
-            </div>
-        </Card>
+            <h3
+                className={`
+                    mt-4 font-display text-xl font-bold leading-tight 
+                    ${style.title}
+                `}
+            >
+                {title}
+            </h3>
+
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                {body}
+            </p>
+        </div>
+
+        {featured ? <MigrationArtwork /> : null}
+    </div>
+</Card>
     );
 }
 
 export function MigrationSection() {
     return (
-        <Section className="bg-background">
-            <div className="text-center">
-                <RuledEyebrow>Reliability guaranteed</RuledEyebrow>
-                <h2 className="mt-4 font-display text-3xl font-extrabold text-brand-deep md:text-[2.75rem]">
-                    Seamless migration, <Accent>zero data loss</Accent>
-                </h2>
-                <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                    Switching to FluxiBiz is effortless. Every byte of your data
-                    is moved, validated, and ready to use in minutes.
-                </p>
-            </div>
+     <Section className="bg-background">
+    <div className="text-center">
+        <RuledEyebrow>Reliability guaranteed</RuledEyebrow>
 
-            <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-                <ScrollReveal
-                    direction="up"
-                    delay={0}
-                    className="lg:col-span-2"
-                >
-                    <MigrationCard item={ITEMS[0]} index={0} featured />
-                </ScrollReveal>
-                <ScrollReveal direction="up" delay={120}>
-                    <MigrationCard item={ITEMS[1]} index={1} />
-                </ScrollReveal>
-                <div className="lg:col-span-3 lg:grid lg:grid-cols-2 lg:gap-5">
-                    <ScrollReveal direction="up" delay={240}>
-                        <MigrationCard item={ITEMS[2]} index={2} />
-                    </ScrollReveal>
-                    <ScrollReveal
-                        direction="up"
-                        delay={360}
-                        className="mt-5 lg:mt-0"
-                    >
-                        <MigrationCard item={ITEMS[3]} index={3} />
-                    </ScrollReveal>
-                </div>
-            </div>
-        </Section>
+        <h2
+            className="
+                mt-4 font-display text-3xl font-extrabold 
+                text-brand-deep 
+                md:text-[2.75rem]
+            "
+        >
+            Seamless migration, <Accent>zero data loss</Accent>
+        </h2>
+
+        <p
+            className="
+                mx-auto mt-4 max-w-xl text-sm leading-relaxed 
+                text-muted-foreground
+            "
+        >
+            Switching to FluxiBiz is effortless. Every byte of your data
+            is moved, validated, and ready to use in minutes.
+        </p>
+    </div>
+
+    <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <ScrollReveal
+            direction="up"
+            delay={0}
+            className="lg:col-span-2"
+        >
+            <MigrationCard item={ITEMS[0]} index={0} featured />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={120}>
+            <MigrationCard item={ITEMS[1]} index={1} />
+        </ScrollReveal>
+
+        <div className="lg:col-span-3 lg:grid lg:grid-cols-2 lg:gap-5">
+            <ScrollReveal direction="up" delay={240}>
+                <MigrationCard item={ITEMS[2]} index={2} />
+            </ScrollReveal>
+
+            <ScrollReveal
+                direction="up"
+                delay={360}
+                className="mt-5 lg:mt-0"
+            >
+                <MigrationCard item={ITEMS[3]} index={3} />
+            </ScrollReveal>
+        </div>
+    </div>
+</Section>
     );
 }

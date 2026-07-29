@@ -11,11 +11,11 @@ export default function StoreCard({
   store = mockStore,
 }: StoreCardComponentProps) {
   return (
-    <div className="mb-4 px-4 sm:px-8 md:px-16 lg:px-25 ">
-      <Card className="h-auto md:h-45 overflow-hidden p-0  dark:bg-neutral-900">
+    <div className="mb-4  sm:px-8 md:px-16 lg:px-25 ">
+      <Card className="h-auto md:h-45 overflow-hidden p-0  ">
         <div className="flex  flex-col md:flex-row h-full">
           {/* Image */}
-          <div className="relative m-2 ml-2 h-full overflow-hidden rounded-lg sm:h-56 md:h-40 w-full md:w-40  rounded-t-lg md:rounded-l-lg md:rounded-r-none">
+          <div className="relative mb-4 m-2 ml-2 h-full overflow-hidden rounded-lg sm:h-56 md:h-40 w-full md:w-40  rounded-t-lg md:rounded-l-lg md:rounded-r-none">
             <Image
               src={store.image}
               alt={store.name}

@@ -149,7 +149,7 @@ function Sparkline() {
 
 function GlanceCard() {
     return (
-        <Card className="hero-float w-[280px] rotate-[-1deg] gap-0 rounded-2xl border-hairline p-5 shadow-[0_24px_60px_-24px_rgba(15,36,23,0.35)] sm:w-[430px]">
+        <Card className="hero-float w-70 rotate-1 gap-0 rounded-2xl border-hairline p-5 shadow-[0_24px_60px_-24px_rgba(15,36,23,0.35)] sm:w-[430px]">
             <div className="mb-4 flex gap-1.5" aria-hidden>
                 {Array.from({ length: 5 }).map((_, i) => (
                     <span
@@ -207,7 +207,7 @@ function Row({
 
 function MonthCard() {
     return (
-        <Card className="hero-float-slow absolute -bottom-2 -right-2 z-10 w-[190px] gap-0 rounded-xl border-hairline bg-background p-4 shadow-[0_20px_45px_-20px_rgba(15,36,23,0.4)]">
+        <Card className="hero-float-slow absolute -bottom-2 -right-2 z-10 w-47.5 gap-0 rounded-xl border-hairline bg-background p-4 shadow-[0_20px_45px_-20px_rgba(15,36,23,0.4)]">
             <div className="flex items-center justify-between">
                 <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
                     This month
