@@ -35,7 +35,7 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
       className="
         group relative mx-auto mt-3 
         w-65 cursor-pointer p-2
-        overflow-hidden  rounded-lg duration-3000 hover:duration-3000 hover:shadow-sm  hover:scale-98 ease-out transition-transform
+        overflow-hidden  rounded-lg duration-1000 hover:duration-1000 hover:shadow-sm  hover:scale-98 ease-out transition-transform
       
     "
     >

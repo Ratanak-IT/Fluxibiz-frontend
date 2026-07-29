@@ -18,7 +18,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
         rounded-xl
         text-card-foreground
 
-         duration-3000 hover:duration-3000 hover:shadow-sm  hover:scale-98 ease-out transition-transform
+         duration-1000 hover:duration-1000 hover:shadow-sm  hover:scale-98 ease-out transition-transform
     "
     >
       {/* Logo */}
