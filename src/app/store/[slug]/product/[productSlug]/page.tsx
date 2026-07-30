@@ -12,7 +12,7 @@ import { useGetRelatedProductsQuery } from "@/lib/store/productdetail/productApi
 export default function DetailProductPage() {
     const { data: relatedItems, isLoading } = useGetRelatedProductsQuery();
   return (
-    <div className="">
+    <div className=" dark:bg-background">
       <ProductDetail/>
       <DescriptionCard/>
             {!isLoading && relatedItems && (

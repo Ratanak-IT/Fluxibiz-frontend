@@ -63,7 +63,7 @@ export default function NavbarBeforeLoginComponent() {
             width={240}
             height={90}
             priority
-            className="h-auto w-32.5 object-contain"
+            className="h-auto w-33 object-contain"
           />
         </Link>
 
@@ -108,14 +108,14 @@ export default function NavbarBeforeLoginComponent() {
 
           <Link
             href="/register"
-            className="text-sm text-text font-bold text-gray-700 hover:text-secondary"
+            className="text-sm  font-bold text-gray-700 hover:text-secondary dark:text-text dark:hover:text-secondary "
           >
             Business
           </Link>
           <Button
             nativeButton={false}
             render={<Link href={keycloakLoginUrl} />}
-            className="h-9 rounded-full border border-[#00932a] bg-[#00932a] px-8 text-sm font-bold text-white shadow-none hover:bg-[#007d24]"
+            className="h-9 rounded-full border border-primary bg-primary px-8 text-sm font-bold text-white shadow-none hover:bg-[#007d24]"
           >
             Login
           </Button>
@@ -124,7 +124,7 @@ export default function NavbarBeforeLoginComponent() {
             nativeButton={false}
             render={<Link href="/register" />}
             variant="outline"
-            className="h-9 rounded-full border-2 border-[#00932a] bg-transparent px-8 text-sm font-bold text-[#00932a] hover:bg-[#00932a]/10 hover:text-[#00932a]"
+            className="h-9 rounded-full border-2 border-primary] bg-transparent px-8 text-sm font-bold text-primary hover:bg-primary/10 hover:text-primary"
           >
             Register
           </Button>
@@ -195,7 +195,7 @@ export default function NavbarBeforeLoginComponent() {
               <Button
                 nativeButton={false}
                 render={<Link href="/login" />}
-                className="mt-4 h-11 rounded-full bg-[#00932a] text-base font-bold text-white hover:bg-[#007d24]"
+                className="mt-4 h-11 rounded-full bg-primary text-base font-bold text-white hover:bg-[#007d24]"
               >
                 Login
               </Button>

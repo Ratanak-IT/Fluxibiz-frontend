@@ -80,14 +80,21 @@ export default function OrderSummaryComponent() {
 
 
   return (
-      <Card className="h-85 w-100 bg-gray-100 p-4 dark:bg-card">
-  <CardHeader className="mb-5 p-0">
-    <CardTitle className="text-xl font-bold tracking-tight text-neutral-900 dark:text-card-foreground">
+      <Card
+        className="
+          h-auto w-full bg-gray-100 p-4
+          dark:bg-card
+          md:h-auto md:w-full md:p-5
+          lg:h-85 lg:w-100 lg:p-4
+        "
+      >
+  <CardHeader className="mb-4 p-0 md:mb-5 lg:mb-5">
+    <CardTitle className="text-lg font-bold tracking-tight text-neutral-900 dark:text-card-foreground md:text-xl lg:text-xl">
       Order Summary
     </CardTitle>
   </CardHeader>
 
-  <CardContent className="space-y-4 p-0 text-sm text-neutral-600 dark:text-muted-foreground">
+  <CardContent className="space-y-3 p-0 text-sm text-neutral-600 dark:text-muted-foreground md:space-y-4 lg:space-y-4">
     <div className="flex items-center justify-between">
       <span>item</span>
       <span className="font-bold text-neutral-900 dark:text-card-foreground">
@@ -102,7 +109,7 @@ export default function OrderSummaryComponent() {
       </span>
     </div>
 
-    <div className="flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-border">
+    <div className="flex items-center justify-between border-b border-neutral-200 pb-3 dark:border-border md:pb-4 lg:pb-4">
       <span>Discount</span>
       <span className="font-bold text-neutral-900 dark:text-card-foreground">
         ${discount.toFixed(2)}
@@ -110,21 +117,21 @@ export default function OrderSummaryComponent() {
     </div>
 
     <div className="flex items-center justify-between pt-2">
-      <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
+      <span className="text-sm font-bold text-neutral-900 dark:text-card-foreground md:text-base lg:text-base">
         Total
       </span>
 
-      <span className="text-2xl font-bold text-green-600 dark:text-primary">
+      <span className="text-xl font-bold text-green-600 dark:text-primary md:text-2xl lg:text-2xl">
         ${total.toFixed(2)}
       </span>
     </div>
   </CardContent>
 
-  <CardFooter className="mt-6 p-0">
+  <CardFooter className="mt-4 p-0 md:mt-6 lg:mt-6">
     <Button
       onClick={handleCheckout}
       disabled={isSubmitting || totalItemCount === 0}
-      className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white transition-colors hover:bg-green-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
+      className="h-11 w-full rounded-full bg-green-600 text-sm font-semibold text-white transition-colors hover:bg-green-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 md:h-12 md:text-base lg:h-12 lg:text-base"
     >
       {isSubmitting ? "Processing..." : "Checkout"}
     </Button>

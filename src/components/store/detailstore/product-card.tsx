@@ -30,7 +30,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
         <CardTitle className="truncate text-base font-bold text-text dark:text-text sm:text-lg md:text-xl">
           {item.name}
         </CardTitle>
-        <p className="text-base font-bold text-red-500 dark:text-red-700 sm:text-lg">
+        <p className="text-base font-bold text-red-500 dark:text-red-400 sm:text-lg">
           $ {item.price}
         </p>
         <CardDescription className="line-clamp-2 text-xs text-neutral-500 dark:text-neutral-400 sm:text-sm">

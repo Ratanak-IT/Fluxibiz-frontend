@@ -60,7 +60,7 @@
 
 .dark {
   color-scheme: dark;
-  --background:  #2C2C2C;
+  --background:  #2c2c2ca3;
   --foreground: #f3f7f4;
   --text: #F5F5F5;
   --card: #2a2929;
