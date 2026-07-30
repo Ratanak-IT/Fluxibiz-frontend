@@ -1,8 +1,10 @@
 
 
 import { authApi } from '@/features/auth/authApi'
-import { storeApi } from '@/features/shop/shopApi'
+import { shopApi } from '@/features/shop/shopApi'
 import { storeCateApi } from '@/features/store-api/store-api'
+import { productApi } from '@/lib/store/productdetail/productApi'
+
 import {configureStore} from '@reduxjs/toolkit'
 
 // set up the store
@@ -10,11 +12,12 @@ export const makeStore = () => {
   return configureStore({
     reducer: {
       [authApi.reducerPath]: authApi.reducer,
-      [storeApi.reducerPath] : storeApi.reducer,
-      [storeCateApi.reducerPath]  :storeCateApi.reducer
+      [shopApi.reducerPath] : shopApi.reducer,
+      [storeCateApi.reducerPath]  :storeCateApi.reducer,
+      [productApi.reducerPath]: productApi.reducer,
     },
     middleware: (getDefaultMiddleware) => 
-      getDefaultMiddleware().concat(authApi.middleware, storeApi.middleware, storeCateApi.middleware)
+      getDefaultMiddleware().concat(authApi.middleware, shopApi.middleware, storeCateApi.middleware,productApi.middleware)
     
   }) 
 }

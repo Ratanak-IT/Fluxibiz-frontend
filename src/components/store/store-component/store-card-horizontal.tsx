@@ -31,16 +31,22 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
             rounded-xl
         "
       >
-        <Image
-          src={image}
-          width={100}
-          height={100}
-          alt={name}
+        <div
           className="
-                object-cover 
-             
-            "
-        />
+            relative size-20 
+            shrink-0 
+            overflow-hidden 
+            rounded-xl
+        "
+        >
+          <Image
+            src={image}
+            width={100}
+            height={100}
+            alt={name}
+            className="object-cover transition-transform duration-300 ease-out group-hover:scale-110 "
+          />
+        </div>
       </div>
 
       {/* Content */}
@@ -87,20 +93,8 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
           {description}
         </div>
 
-        <div
-          className="
-                flex items-center 
-                gap-1 
-                text-sm 
-                text-muted-foreground"
-        >
-          <MapPin
-            className="
-                    h-4 w-4 
-                    shrink-0 
-                    text-primary"
-          />
-
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <MapPin className="h-4 w-4 shrink-0 text-primary" />
           <span className="truncate">{location}</span>
         </div>
       </div>
