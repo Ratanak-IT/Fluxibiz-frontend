@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -36,6 +35,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import CartDrawer from "@/components/common/CartDrawer";
 
 type NavbarAfterLoginComponentProps = {
   user: SessionUser;
@@ -105,14 +105,13 @@ export default function NavbarAfterLoginComponent({
           <ThemeToggle />
           <LanguageDropdown />
 
-          <CartButton cartCount={cartCount} />
-
+          <CartDrawer />
           <UserDropdown user={user} onLogout={onLogout} />
         </div>
 
         {/* Mobile actions */}
         <div className="flex items-center gap-1 lg:hidden">
-          <CartButton cartCount={cartCount} />
+          <CartDrawer />
 
           <ThemeToggle />
 
@@ -217,7 +216,7 @@ export default function NavbarAfterLoginComponent({
 function CartButton({ cartCount }: { cartCount: number }) {
   return (
     <Button
-    nativeButton={false}
+      nativeButton={false}
       render={
         <Link
           href="/checkout"

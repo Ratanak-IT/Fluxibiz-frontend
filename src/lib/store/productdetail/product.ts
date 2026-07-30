@@ -21,6 +21,14 @@ export  interface Product {
     title: string;
     subtitle: string;
   }[];
+   businessId: string;
+    storeSlug: string;
+    storeName: string;
+    storeCategory: string;
+    storeLogo: string;
+    storeLocation: string;
+    storeHours: string;
+    currency?: string;
 }
 
 // --- Related products (card grid shape) ---
