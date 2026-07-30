@@ -15,7 +15,7 @@ export default function CartPage() {
                     <Link href="/store">
                         <button
                             type="button"
-                            className="flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
+                            className="flex items-center gap-1 text-xs font-medium text-green-600 hover:underline sm:text-sm"
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Continue shopping

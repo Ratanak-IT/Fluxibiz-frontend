@@ -12,7 +12,6 @@ import { useRemoveCartStoreMutation } from "@/features/cart/cartApi";
 export function StoreCardComponent({ store }: { store: StoreCart }) {
     const [removeStore, { isLoading: isRemoving }] = useRemoveCartStoreMutation();
 
-    // The API returns MinIO object keys; next/image needs a URL.
     const logoUrl = resolveMediaUrl(store.logo);
 
     return (
