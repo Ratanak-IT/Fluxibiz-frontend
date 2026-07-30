@@ -4,10 +4,13 @@ import {
   DashboardSyncShowcase,
   FeatureBento,
   FeatureCta,
-  FeatureHero,
   FeatureModules,
 } from "@/components/feature-page";
 import { TechnologyMarquee } from "@/components/ui/technology-marquee";
+import HeroSection from "@/components/about/HeroSection";
+import { ToolsBento } from "@/components/landing-page/tools-bento";
+import { DayTimeline } from "@/components/landing-page/day-timeline";
+
 
 export const metadata: Metadata = {
   title: "Features — FluxiBiz",
@@ -18,11 +21,13 @@ export const metadata: Metadata = {
 export default function FeaturePage() {
   return (
     <main className="overflow-x-clip bg-white">
-      <FeatureHero />
+      <HeroSection/>
       <DashboardSyncShowcase />
+      <ToolsBento />
+      <FeatureModules />
+       <DayTimeline />
       <FeatureBento />
       <TechnologyMarquee />
-      <FeatureModules />
       <FeatureCta />
     </main>
   );

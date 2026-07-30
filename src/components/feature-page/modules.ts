@@ -78,13 +78,22 @@ export const MODULES: Module[] = [
   },
 ];
 
-export const MARQUEE = [
-  "Next.js",
-  "Spring Boot",
-  "PostgreSQL",
-  "Keycloak",
-  "MinIO",
-  "Docker",
-  "Traefik",
-  "Telegram Bot API",
+;
+
+export interface Tech {
+  name: string;
+  src: string;
+  scale?: number;
+}
+
+export const MARQUEE: Tech[] = [
+  { name: "Next.js", src: "/image/features/nextjs.png" },
+  { name: "Spring Boot", src: "/image/features/springboot.png" },
+  { name: "PostgreSQL", src: "/image/features/postgresql.png" },
+  { name: "Keycloak", src: "/image/features/keycloak.png" },
+  { name: "MinIO", src: "/image/features/minio.png" },
+  { name: "Docker", src: "/image/features/docker.png" },
+  { name: "Traefik", src: "/image/features/traefik.png", scale: 1.6 },
+  { name: "Redis", src: "/image/features/redis.png", scale: 1.35 },
+  { name: "GitHub Action", src: "/image/features/github-action.png", scale: 1.35 },
 ];

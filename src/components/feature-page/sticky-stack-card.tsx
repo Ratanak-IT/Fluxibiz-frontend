@@ -40,7 +40,7 @@ export function StickyStackCard({
 >
   <motion.article
     style={{ scale, opacity, willChange: "transform" }}
-    className="h-[78svh] min-h-[560px] max-h-[680px] w-full overflow-hidden rounded-[32px] bg-white dark:bg-card shadow-[0_40px_90px_-25px_rgba(15,23,42,0.35)] dark:shadow-[0_40px_90px_-25px_rgba(0,0,0,0.6)] ring-1 ring-slate-900/5 dark:ring-white/10 transition-shadow duration-500 hover:shadow-[0_50px_110px_-25px_rgba(15,23,42,0.45)] dark:hover:shadow-[0_50px_110px_-25px_rgba(0,0,0,0.7)]"
+    className="h-[78svh] min-h-[560px] max-h-[680px] w-full overflow-hidden rounded-[32px] bg-white dark:shadow-[0_40px_90px_-25px_rgba(0,0,0,0.6)] ring-1 ring-slate-900/5 dark:ring-white/10 transition-shadow duration-500 hover:shadow-[0_50px_110px_-25px_rgba(15,23,42,0.45)] dark:hover:shadow-[0_50px_110px_-25px_rgba(0,0,0,0.7)]"
   >
     {children}
   </motion.article>

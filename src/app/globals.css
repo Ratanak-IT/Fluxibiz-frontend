@@ -450,3 +450,18 @@
     stroke-dashoffset: 0;
   }
 }
+@keyframes marquee-loop {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-track {
+  animation: marquee-loop 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
