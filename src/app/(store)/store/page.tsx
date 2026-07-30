@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import BannerCarousel from "@/components/store/store-component/banner-carousel";
 import StoreCardHorizontal from "@/components/store/store-component/store-card-horizontal";
 import StoreFilterComponent from "@/components/store/store-component/store-filter-component";
@@ -8,9 +9,9 @@ import {
   Store,
   StoreCardComponent,
 } from "@/components/store/store-component/store-cart-component";
+import Link from "next/link";
 
-
-const popularShops: Store[] = [
+const RecommendShops: Store[] = [
   {
     id: "1",
     name: "Chip Mong",
@@ -39,7 +40,7 @@ const popularShops: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "Koi Drink, Fresh quality",
     location: "Toul Kork",
-    hours: "",
+    hours: "07:00 - 22:00",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTo4VXwoCJ-dS4NLRkYdcXCfcyrdDSwUFBjNsmPymGlzVpIcZczXJtBPxSK&s=10",
     isOpen: true,
@@ -50,7 +51,7 @@ const popularShops: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "MIXUE Ice cream, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: "07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/b8/10/de/b810de0abac5d814637ed085df2f04ea.jpg",
     isOpen: true,
@@ -61,7 +62,7 @@ const popularShops: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "KFC Fresh, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/91/2a/d1/912ad14928b0fc294054d485970880b2.jpg",
     isOpen: true,
@@ -97,7 +98,7 @@ const promotions: Store[] = [
     category: "AEON Q2 Deli, Fresh, High...",
     description: "AEON Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSASC65bCKsmDW5gynrtfhpueHTuZ4Aa4gk53oClcsB22uhb7uHQIxL2n72&s=10",
     discountLabel: "70%",
@@ -109,7 +110,7 @@ const promotions: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "Fresh Fruit Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/b2/9e/99/b29e991c78bef89ce93cff1554a284d3.jpg",
     discountLabel: "10%",
@@ -132,7 +133,7 @@ const promotions: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "Fresh Fruit Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/b2/9e/99/b29e991c78bef89ce93cff1554a284d3.jpg",
     isOpen: true,
@@ -150,14 +151,14 @@ const promotions: Store[] = [
   },
 ];
 
-const recommend: Store[] = [
+const food: Store[] = [
   {
     id: "64",
     name: "Daily Fresh Fruit",
     category: "Daily Fresh Fruit, High Fresh Fruit",
     description: "Fresh Fruit Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/b2/9e/99/b29e991c78bef89ce93cff1554a284d3.jpg",
     isOpen: true,
@@ -184,13 +185,13 @@ const recommend: Store[] = [
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSASC65bCKsmDW5gynrtfhpueHTuZ4Aa4gk53oClcsB22uhb7uHQIxL2n72&s=10",
     isOpen: true,
   },
-   {
+  {
     id: "4",
     name: "AEON",
     category: "AEON Q2 Deli, Fresh, High...",
     description: "AEON Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSASC65bCKsmDW5gynrtfhpueHTuZ4Aa4gk53oClcsB22uhb7uHQIxL2n72&s=10",
     discountLabel: "70%",
@@ -202,7 +203,7 @@ const recommend: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "Fresh Fruit Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/b2/9e/99/b29e991c78bef89ce93cff1554a284d3.jpg",
     discountLabel: "10%",
@@ -225,7 +226,7 @@ const recommend: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "Fresh Fruit Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/b2/9e/99/b29e991c78bef89ce93cff1554a284d3.jpg",
     isOpen: true,
@@ -250,7 +251,7 @@ const nearby: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "MIXUE Ice cream, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/8c/e6/cf/8ce6cf60303b39d28e25ab838e0966f9.jpg",
     isOpen: true,
@@ -261,18 +262,18 @@ const nearby: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "MIXUE Ice cream, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/ee/93/70/ee9370b2e11c2e0d52d49a86934a7de0.jpg",
     isOpen: true,
   },
-   {
+  {
     id: "4",
     name: "AEON",
     category: "AEON Q2 Deli, Fresh, High...",
     description: "AEON Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSASC65bCKsmDW5gynrtfhpueHTuZ4Aa4gk53oClcsB22uhb7uHQIxL2n72&s=10",
     discountLabel: "70%",
@@ -284,7 +285,7 @@ const nearby: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "Fresh Fruit Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/b2/9e/99/b29e991c78bef89ce93cff1554a284d3.jpg",
     discountLabel: "10%",
@@ -307,7 +308,7 @@ const nearby: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "Fresh Fruit Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/b2/9e/99/b29e991c78bef89ce93cff1554a284d3.jpg",
     isOpen: true,
@@ -348,13 +349,13 @@ const stores: Store[] = [
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSASC65bCKsmDW5gynrtfhpueHTuZ4Aa4gk53oClcsB22uhb7uHQIxL2n72&s=10",
     isOpen: true,
   },
-   {
+  {
     id: "4",
     name: "AEON",
     category: "AEON Q2 Deli, Fresh, High...",
     description: "AEON Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSASC65bCKsmDW5gynrtfhpueHTuZ4Aa4gk53oClcsB22uhb7uHQIxL2n72&s=10",
     discountLabel: "70%",
@@ -366,7 +367,7 @@ const stores: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "Fresh Fruit Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/b2/9e/99/b29e991c78bef89ce93cff1554a284d3.jpg",
     discountLabel: "10%",
@@ -389,7 +390,7 @@ const stores: Store[] = [
     category: "Daily Fresh Fruit, High...",
     description: "Fresh Fruit Q2 Deli, Fresh quality",
     location: "Toul Kork",
-    hours: "Tue and Sun 07:00 - 22:00",
+    hours: " 07:00 - 22:00",
     image:
       "https://i.pinimg.com/736x/b2/9e/99/b29e991c78bef89ce93cff1554a284d3.jpg",
     isOpen: true,
@@ -411,23 +412,114 @@ function SectionHeader({ title }: { title: string }) {
   return (
     <div className="flex items-center justify-between">
       <h2 className="text-xl font-bold">{title}</h2>
-      <button className="text-muted-foreground hover:text-foreground">
-        <ChevronRight className="h-5 w-5" />
-      </button>
     </div>
   );
 }
 
-// Horizontal scroll
+/**
+ * Generic horizontal scroller with hover-revealed circular arrow buttons.
+ * Wrap any horizontally-scrolling row of cards with this.
+ */
+function ScrollRow({ children }: { children: React.ReactNode }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateArrows = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    updateArrows();
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateArrows, { passive: true });
+    window.addEventListener("resize", updateArrows);
+    return () => {
+      el.removeEventListener("scroll", updateArrows);
+      window.removeEventListener("resize", updateArrows);
+    };
+  }, [children]);
+
+  const scroll = (direction: "left" | "right") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const amount = el.clientWidth * 0.8;
+    el.scrollBy({
+      left: direction === "left" ? -amount : amount,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <div className="group/row relative">
+      <div
+        ref={scrollRef}
+        className="
+          flex gap-4 overflow-x-auto pb-2
+          snap-x snap-mandatory scroll-smooth
+          [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
+        "
+      >
+        {children}
+      </div>
+
+      {canScrollLeft && (
+        <button
+          type="button"
+          onClick={() => scroll("left")}
+          aria-label="Scroll left"
+          className="
+            absolute left-1 top-1/2 z-20 -translate-y-1/2
+            flex h-10 w-10 items-center justify-center
+            rounded-full bg-white shadow-lg
+            opacity-0 transition-opacity duration-200
+            group-hover/row:opacity-100
+            hover:bg-accent
+          "
+        >
+          <ChevronLeft className="h-5 w-5 text-foreground" />
+        </button>
+      )}
+
+      {canScrollRight && (
+        <button
+          type="button"
+          onClick={() => scroll("right")}
+          aria-label="Scroll right"
+          className="
+            absolute right-1 top-1/2 z-20 -translate-y-1/2
+            flex h-10 w-10 items-center justify-center
+            rounded-full bg-white shadow-lg
+            opacity-0 transition-opacity duration-200
+            group-hover/row:opacity-100
+            hover:bg-accent
+          "
+        >
+          <ChevronRight className="h-5 w-5 text-foreground" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+// Horizontal scroll row of vertical store cards
 function StoreRow({ items }: { items: Store[] }) {
   return (
-    <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scroll-smooth [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
+    <ScrollRow>
       {items.map((store) => (
-        <div key={store.id} className="shrink-0 snap-start">
+        <Link
+          key={store.id}
+          href={`/store/${store.id}`}
+          className="shrink-0 snap-start"
+        >
           <StoreCardComponent store={store} />
-        </div>
+        </Link>
       ))}
-    </div>
+    </ScrollRow>
   );
 }
 
@@ -444,19 +536,21 @@ export default function HomePage() {
             </div>
           </div>
         </aside>
+
         <div className="min-w-0 flex-1 space-y-10">
           <section className="space-y-3">
-            <SectionHeader title="Popular Shops" />
-            <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-              {popularShops.map((store) => (
-                <div
+            <SectionHeader title="Recommend" />
+            <ScrollRow>
+              {RecommendShops.map((store) => (
+                <Link
                   key={store.id}
-                  className="shrink-0 snap-start basis-[calc((100%-3*theme(spacing.4))/4)]"
+                  href={`/store/${store.id}`}
+                  className="shrink-0 snap-start basis-[calc((100%-3*(--spacing(4)))/4)]"
                 >
                   <StoreCardHorizontal store={store} />
-                </div>
+                </Link>
               ))}
-            </div>
+            </ScrollRow>
           </section>
 
           <section className="space-y-3">
@@ -465,8 +559,8 @@ export default function HomePage() {
           </section>
 
           <section className="space-y-3">
-            <SectionHeader title="Recommend" />
-            <StoreRow items={recommend} />
+            <SectionHeader title="Food" />
+            <StoreRow items={food} />
           </section>
 
           <section className="space-y-3">
@@ -478,8 +572,14 @@ export default function HomePage() {
             <SectionHeader title="Store" />
             <StoreRow items={stores} />
             <div className="flex justify-center pt-4">
-              <button className="rounded-full bg-primary px-6 py-2 text-sm flex items-center gap-2 font-medium text-white">
-                See More <ChevronDown/>
+              <button
+                className="
+                  flex items-center gap-2 rounded-full bg-primary
+                  px-6 py-2 text-sm font-medium text-white
+                  transition-colors hover:bg-primary/90
+                "
+              >
+                See More <ChevronDown className="h-4 w-4" />
               </button>
             </div>
           </section>
