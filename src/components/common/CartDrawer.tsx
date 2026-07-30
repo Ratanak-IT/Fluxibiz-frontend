@@ -31,6 +31,7 @@ import {
     useRemoveCartStoreMutation,
     useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
+import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
 import {
     formatMoney,
     resolveMediaUrl,
@@ -97,16 +98,18 @@ export default function CartDrawer() {
                 </div>
 
                 {cart && cart.stores.length > 0 && (
-                    <div className="border-t border-neutral-200 px-5 py-4 dark:border-border">
-                        <p className="mb-3 text-center text-xs leading-relaxed text-neutral-500 dark:text-muted-foreground">
-                            Each shop is paid separately. Pick one to check out.
+                    <div className="border-t border-neutral-200 px-5 py-3 dark:border-border">
+                        <p className="text-center text-xs leading-relaxed text-neutral-500 dark:text-muted-foreground">
+                            {cart.totalItems} {cart.totalItems === 1 ? "item" : "items"} ·
+                            pay one shop at a time
                         </p>
 
-                        <Link href="/cart" onClick={() => setOpen(false)}>
-                            <Button className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white hover:bg-green-700 dark:bg-primary dark:hover:bg-primary/90">
-                                View cart · {cart.totalItems}{" "}
-                                {cart.totalItems === 1 ? "item" : "items"}
-                            </Button>
+                        <Link
+                            href="/cart"
+                            onClick={() => setOpen(false)}
+                            className="mt-1 block text-center text-xs font-medium text-neutral-400 underline-offset-2 hover:text-neutral-600 hover:underline dark:text-muted-foreground"
+                        >
+                            View full cart
                         </Link>
                     </div>
                 )}
@@ -175,7 +178,6 @@ function StoreSection({
                 </Button>
             </div>
 
-            {/* A closed shop still shows its items, but the customer needs to know. */}
             {!store.open && (
                 <p className="mb-2 rounded-md bg-yellow-50 px-2 py-1.5 text-xs text-yellow-800 dark:bg-yellow-500/10 dark:text-yellow-500">
                     This shop is closed right now.
@@ -197,7 +199,64 @@ function StoreSection({
                     {formatMoney(store.subtotal, store.currency)}
                 </span>
             </div>
+
+            <StoreCheckoutButton store={store} onNavigate={onNavigate} />
         </section>
+    );
+}
+
+function StoreCheckoutButton({
+    store,
+    onNavigate,
+}: {
+    store: StoreCart;
+    onNavigate: () => void;
+}) {
+    const { data: active } = useGetActiveCheckoutQuery();
+
+    const pending = active?.hasPendingCheckout ? active.checkout : null;
+    const pendingHere = pending?.storeSlug === store.slug;
+    const blockedByOther = pending && !pendingHere;
+
+    // Khmer needs a taller line box or its subscripts get clipped.
+    const shell =
+        "mt-3 flex h-11 w-full items-center justify-center rounded-xl border text-sm font-semibold leading-[1.9]";
+
+    if (!store.open) {
+        return (
+            <div
+                className={`${shell} cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400 dark:border-border dark:bg-card dark:text-muted-foreground`}
+                aria-disabled="true"
+            >
+                ហាងបិទ
+            </div>
+        );
+    }
+
+    if (blockedByOther) {
+        return (
+            <div
+                className={`${shell} cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400 dark:border-border dark:bg-card dark:text-muted-foreground`}
+                aria-disabled="true"
+                title={`Finish or cancel your payment at ${pending?.storeName} first`}
+            >
+                ទូទាត់បានតែមួយហាងម្តង
+            </div>
+        );
+    }
+
+    const href = pendingHere
+        ? `/store/${store.slug}/checkout`
+        : `/cart?shop=${encodeURIComponent(store.slug)}`;
+
+    return (
+        <Link
+            href={href}
+            onClick={onNavigate}
+            className={`${shell} border-neutral-900 bg-white text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-border dark:bg-background dark:text-card-foreground dark:hover:bg-card`}
+        >
+            {pendingHere ? "បញ្ចប់ការទូទាត់" : "ចូលទៅកាន់ការទូទាត់"}
+        </Link>
     );
 }
 

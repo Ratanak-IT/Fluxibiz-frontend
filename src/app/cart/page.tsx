@@ -1,9 +1,11 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
 import CartList from "@/components/cart/cart-list-component";
+import CartSkeletonComponent from "@/components/cart/cart-skeleton-component";
 
 export default function CartPage() {
     return (
@@ -15,7 +17,7 @@ export default function CartPage() {
                     <Link href="/store">
                         <button
                             type="button"
-                            className="flex items-center gap-1 text-xs font-medium text-green-600 hover:underline sm:text-sm"
+                            className="flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Continue shopping
@@ -23,7 +25,9 @@ export default function CartPage() {
                     </Link>
                 </div>
 
-                <CartList />
+                <Suspense fallback={<CartSkeletonComponent />}>
+                    <CartList />
+                </Suspense>
             </div>
         </div>
     );

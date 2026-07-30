@@ -50,15 +50,30 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
+interface NavbarBeforeLoginProps {
+  pending?: boolean;
+  isLoggingIn?: boolean;
+  onLogin?: () => Promise<void> | void;
+}
+
 export default function NavbarBeforeLoginComponent({
   pending = false,
-}: {
-  pending?: boolean;
-}) {
+  isLoggingIn = false,
+  onLogin,
+}: NavbarBeforeLoginProps) {
   const { loginHref, login } = useAuth();
 
+  const handleLogin = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (onLogin) {
+      onLogin();
+    } else {
+      login();
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b  bg-white text-foreground backdrop-blur dark:bg-background ">
+    <header className="sticky top-0 z-50 w-full border-b bg-white text-foreground backdrop-blur dark:bg-background">
       <div className="mx-auto flex h-13.75 max-w-332.5 items-center justify-between px-6 sm:px-10">
         {/* Desktop Logo */}
         <Link href="/" aria-label="FluxiBiz home">
@@ -108,7 +123,7 @@ export default function NavbarBeforeLoginComponent({
 
         <div
           className={`hidden items-center gap-4 lg:flex ${
-            pending ? "pointer-events-none opacity-60" : ""
+            pending || isLoggingIn ? "pointer-events-none opacity-60" : ""
           }`}
         >
           <ThemeToggle />
@@ -116,35 +131,31 @@ export default function NavbarBeforeLoginComponent({
 
           <Link
             href="/register"
-            className="text-sm  font-bold text-gray-700 hover:text-secondary dark:text-text dark:hover:text-secondary "
+            className="text-sm font-bold text-gray-700 hover:text-secondary dark:text-text dark:hover:text-secondary"
           >
             Business
           </Link>
 
-          {/* Plain <a>, not next/link: this is a route handler that 302s to Keycloak */}
           <Button
             nativeButton={false}
             render={<a href={loginHref} />}
-            onClick={(event) => {
-              event.preventDefault();
-              login();
-            }}
+            onClick={handleLogin}
+            disabled={pending || isLoggingIn}
             className="h-9 rounded-full border border-[#00932a] bg-[#00932a] px-8 text-sm font-bold text-white shadow-none hover:bg-[#007d24]"
           >
-            Login
+            {isLoggingIn ? "Logging in..." : "Login"}
           </Button>
 
           <Button
             nativeButton={false}
             render={<Link href="/register" />}
             variant="outline"
-            className="h-9 rounded-full border-2 border-primary] bg-transparent px-8 text-sm font-bold text-primary hover:bg-primary/10 hover:text-primary"
+            className="h-9 rounded-full border-2 border-primary bg-transparent px-8 text-sm font-bold text-primary hover:bg-primary/10 hover:text-primary"
           >
             Register
           </Button>
         </div>
 
-        {/* Mobile Navigation Sheet */}
         <Sheet>
           <SheetTrigger
             className="lg:hidden"
@@ -208,13 +219,11 @@ export default function NavbarBeforeLoginComponent({
               <Button
                 nativeButton={false}
                 render={<a href={loginHref} />}
-                onClick={(event) => {
-                  event.preventDefault();
-                  login();
-                }}
+                onClick={handleLogin}
+                disabled={pending || isLoggingIn}
                 className="mt-4 h-11 rounded-full bg-[#00932a] text-base font-bold text-white hover:bg-[#007d24]"
               >
-                Login
+                {isLoggingIn ? "Logging in..." : "Login"}
               </Button>
 
               <Button
@@ -254,7 +263,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
           alt="English"
           width={40}
           height={28}
-          className="h-5 w-8  object-cover"
+          className="h-5 w-8 object-cover"
         />
 
         {mobile && <span>English</span>}
@@ -280,7 +289,7 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             alt=""
             width={32}
             height={24}
-            className="h-5 w-8  object-cover"
+            className="h-5 w-8 object-cover"
           />
           Khmer
         </DropdownMenuItem>

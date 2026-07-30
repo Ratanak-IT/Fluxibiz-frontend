@@ -41,7 +41,8 @@ export default function CheckoutPage({
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
-    // A payment already open at THIS shop is resumed rather than duplicated.
+    const backToCart = `/cart?shop=${encodeURIComponent(slug)}`;
+
     const pending = active?.hasPendingCheckout ? active.checkout : null;
     const pendingIsThisStore = pending?.storeSlug === slug;
     const blockedBy = pending && !pendingIsThisStore ? pending : null;
@@ -83,7 +84,6 @@ export default function CheckoutPage({
         }
     };
 
-    // ------------------------------------------------------------- loading
 
     if (cartLoading || activeLoading) {
         return (
@@ -93,7 +93,6 @@ export default function CheckoutPage({
         );
     }
 
-    // The cart empties once payment lands, so keep showing the paid panel.
     if (!store && !paid && !session) {
         return (
             <div className="mx-auto max-w-2xl px-6 py-16 text-center">
@@ -104,7 +103,7 @@ export default function CheckoutPage({
                 </p>
 
                 <Link
-                    href="/cart"
+                    href={backToCart}
                     className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
                 >
                     <ChevronLeft className="h-4 w-4" />
@@ -120,7 +119,7 @@ export default function CheckoutPage({
     return (
         <div className="mx-auto max-w-3xl px-6 py-10">
             <Link
-                href="/cart"
+                href={backToCart}
                 className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
             >
                 <ChevronLeft className="h-4 w-4" />
@@ -131,7 +130,6 @@ export default function CheckoutPage({
 
             <p className="mt-1 text-sm text-muted-foreground">{storeName}</p>
 
-            {/* One shop at a time: another shop already holds the open payment. */}
             {blockedBy && !session && (
                 <div className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900 dark:bg-amber-950/40">
                     <div className="flex items-start gap-3">
@@ -177,7 +175,6 @@ export default function CheckoutPage({
                 </div>
             )}
 
-            {/* Order summary — hidden once the QR is up, to keep one focus. */}
             {!session && store && (
                 <div className="mt-8 rounded-xl bg-gray-100 p-5 dark:bg-card">
                     <div className="flex flex-col gap-3">
