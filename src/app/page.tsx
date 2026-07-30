@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import {
     DayTimeline,
     FeatureCards,
-    HeroSection,
     MigrationSection,
     ProductPreview,
     SurfacesSection,
     ToolsBento,
 } from "@/components/landing-page";
+import HeroSection from "@/components/about/HeroSection";
 
 export const metadata: Metadata = {
     title: "FluxiBiz — Run your whole business from one screen",
