@@ -53,14 +53,15 @@
   --sidebar-border: #E8E8E8;
   --sidebar-ring: #00932A;
 
-  --font-body: "Google Sans Flex", "Google Sans", Arial, Helvetica, sans-serif;
-  --font-display: "Google Sans Flex", "Google Sans", Arial, Helvetica, sans-serif;
+  --font-body: "Google Sans", "Google Sans Flex", Arial, Helvetica, sans-serif;
+  --font-display: "Google Sans", "Google Sans Flex", Arial, Helvetica, sans-serif;
   --font-mono: "Courier New", monospace;
 }
 
 .dark {
   color-scheme: dark;
-  --background:  #2c2c2ca3;
+  --from-background: #2C2C2C;
+  --background:  #2C2C2C;
   --foreground: #f3f7f4;
   --text: #F5F5F5;
   --card: #2a2929;
@@ -448,5 +449,20 @@
   .sparkline-draw {
     animation: none;
     stroke-dashoffset: 0;
+  }
+}
+@keyframes marquee-loop {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-track {
+  animation: marquee-loop 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
   }
 }
