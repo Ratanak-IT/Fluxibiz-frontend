@@ -1,11 +1,9 @@
-import {ContactSection} from "@/components/about/ContactSection";
-import FeaturesSection from "@/components/about/FeaturesSection";
 import MentorsSection from "@/components/about/MentorsSection";
 import MissionSection from "@/components/about/MissionSection";
-
 import VisionSection from "@/components/about/VisionSection";
 import { HeroSection } from "@/components/landing-page";
 import type { Metadata } from "next";
+import GoalFeature from "@/components/about/GoalFeature";
 
 export const metadata: Metadata = {
   title: "About Us | FluxiBiz",
@@ -16,11 +14,10 @@ export default function AboutPage() {
   return (
     <main className="about-page">
       <HeroSection />
-      <FeaturesSection/>
+      <GoalFeature/>
       <MissionSection/>
       <VisionSection stepDurationMs={900} dwellMs={1200}/>
-      <ContactSection />
-      <MentorsSection />
+      <MentorsSection />      
     </main>
   );
 }

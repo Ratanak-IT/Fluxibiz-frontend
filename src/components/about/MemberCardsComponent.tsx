@@ -29,7 +29,7 @@ export default function TeamCard({
         py-8 px-6 items-center rounded-[32px] 
         bg-card
         border border-transparent 
-        transition-all duration-500
+        transition-all duration-400
         hover:shadow-[0_0_0_2px_rgba(254,185,13,0.12),0_18px_40px_-20px_rgba(254,185,13,0.28)]
         hover:-translate-y-1
     "
@@ -58,7 +58,7 @@ export default function TeamCard({
                     absolute inset-0 rounded-full 
                     border-[1px] border-brand
                 "
-                style={{ animation: "breathe 3.5s ease-in-out infinite" }}
+                style={{ animation: "breathe 2.5s ease-in-out infinite" }}
             />
 
 
@@ -163,7 +163,7 @@ export default function TeamCard({
                         rounded-full 
                         border border-border
                         bg-background
-                        hover:bg-accent
+                        hover:bg-gray/80
                     "
                     disabled={!link}
                 >
