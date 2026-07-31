@@ -1,9 +1,5 @@
 import { resolveMediaUrl } from "@/lib/type/cartType";
 
-/* ------------------------------------------------------------------ *
- * Categories — GET /api/v1/public/business-categories
- * ------------------------------------------------------------------ */
-
 export interface BusinessSubCategory {
     id: string;
     name: string;
@@ -17,11 +13,7 @@ export interface BusinessCategory {
     subCategories: BusinessSubCategory[] | null;
 }
 
-/**
- * A business is tagged with a *sub*category (BusinessResponse.category is a
- * BusinessSubCategoryResponse), so only leaf ids are useful as `categoryId`
- * filter values. Parents with no children are leaves themselves.
- */
+
 export function leafCategories(
     category: BusinessCategory,
 ): BusinessSubCategory[] {
@@ -30,9 +22,6 @@ export function leafCategories(
     return [{ id: category.id, name: category.name, slug: category.slug }];
 }
 
-/* ------------------------------------------------------------------ *
- * Stores — GET /api/v1/public/stores
- * ------------------------------------------------------------------ */
 
 export interface PublicStore {
     id: string;
@@ -44,6 +33,45 @@ export interface PublicStore {
     cityOrProvince: string | null;
     storefrontUrl: string | null;
     category: BusinessSubCategory | null;
+    openTime?: string | null;
+    closeTime?: string | null;
+    operatingHours?: string | null;
+    hours?: string | null;
+    isOpen?: boolean | null;
+    open?: boolean | null;
+    discountLabel?: string | null;
+    promotionLabel?: string | null;
+    promotion?: string | null;
+}
+
+export interface PublicStoreDetailResponse {
+    id: string;
+    slug: string;
+    name: string;
+    displayName?: string;
+    logo: string | null;
+    thumbnail: string | null;
+    about: string | null;
+    phoneNumber: string | null;
+    address: string | null;
+    cityOrProvince: string | null;
+    googleMap: string | null;
+    website: string | null;
+    storefrontUrl: string | null;
+    baseCurrency: string;
+    displayCurrency: string;
+    category: BusinessSubCategory | null;
+    socialLinks: Record<string, string>[] | null;
+    isClosed?: boolean | null;
+    openTime?: string | null;
+    closeTime?: string | null;
+    operatingHours?: string | null;
+    hours?: string | null;
+    isOpen?: boolean | null;
+    open?: boolean | null;
+    discountLabel?: string | null;
+    promotionLabel?: string | null;
+    promotion?: string | null;
 }
 
 export interface PageMetadata {
@@ -59,7 +87,6 @@ export interface PublicStorePage {
 }
 
 export interface PublicStoreQuery {
-    /** Leaf category ids. More than one triggers a client-side merge. */
     categoryIds?: string[];
     cityOrProvince?: string;
     keyword?: string;
@@ -67,17 +94,7 @@ export interface PublicStoreQuery {
     size?: number;
 }
 
-/* ------------------------------------------------------------------ *
- * Card view model
- * ------------------------------------------------------------------ */
 
-/**
- * Shape the store cards render.
- *
- * `hours` and `isOpen` are optional because PublicStoreResponse does not
- * expose opening hours or an open/closed flag — the cards omit those rows
- * rather than inventing values.
- */
 export interface Store {
     id: string;
     slug: string;
@@ -85,15 +102,70 @@ export interface Store {
     category: string;
     description: string;
     location: string;
-    image: string | null;
+    image: string;
     hours?: string;
     isOpen?: boolean;
     discountLabel?: string;
 }
 
+export function isStoreOpenNow(
+    hoursStr?: string | null,
+    openTime?: string | null,
+    closeTime?: string | null,
+): boolean {
+    if (!hoursStr && openTime && closeTime) {
+        hoursStr = `${openTime} - ${closeTime}`;
+    }
+    if (!hoursStr || !hoursStr.trim()) return true;
+
+    try {
+        const parts = hoursStr.split("-").map((s) => s.trim());
+        if (parts.length !== 2) return true;
+
+        const parseTime = (timeStr: string) => {
+            const match = timeStr.match(/^(\d{1,2}):(\d{2})/);
+            if (!match) return null;
+            return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+        };
+
+        const openMinutes = parseTime(parts[0]);
+        const closeMinutes = parseTime(parts[1]);
+
+        if (openMinutes === null || closeMinutes === null) return true;
+
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+        if (closeMinutes > openMinutes) {
+            return currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
+        } else {
+            return currentMinutes >= openMinutes || currentMinutes <= closeMinutes;
+        }
+    } catch {
+        return true;
+    }
+}
+
 export function toStoreCard(store: PublicStore): Store {
     const resolvedImage =
         resolveMediaUrl(store.logo) ?? resolveMediaUrl(store.thumbnail);
+
+    const openTime = store.openTime ?? null;
+    const closeTime = store.closeTime ?? null;
+    let operatingHours = store.operatingHours ?? store.hours ?? null;
+
+    if (!operatingHours && openTime && closeTime) {
+        operatingHours = `${openTime} - ${closeTime}`;
+    }
+
+    const explicitOpen = store.isOpen ?? store.open;
+    const computedOpen =
+        explicitOpen !== undefined && explicitOpen !== null
+            ? Boolean(explicitOpen)
+            : isStoreOpenNow(operatingHours, openTime, closeTime);
+
+    const discountLabel =
+        store.discountLabel ?? store.promotionLabel ?? store.promotion ?? undefined;
 
     return {
         id: store.id,
@@ -103,5 +175,66 @@ export function toStoreCard(store: PublicStore): Store {
         description: store.about ?? "",
         location: store.cityOrProvince ?? "",
         image: resolvedImage ?? "",
+        hours: operatingHours ?? undefined,
+        isOpen: computedOpen,
+        discountLabel,
     };
+}
+
+export interface ItemImage {
+    id: string;
+
+    url?: string | null;
+    imageUrl?: string | null;
+    position: number;
+}
+
+export function itemImageUrl(image?: ItemImage | null): string | null {
+    if (!image) return null;
+    return resolveMediaUrl(image.url ?? image.imageUrl);
+}
+
+export function primaryItemImage(
+    item?: { images?: ItemImage[] | null } | null,
+): string | null {
+    const images = item?.images ?? [];
+    if (images.length === 0) return null;
+
+    const sorted = [...images].sort(
+        (a, b) => (a.position ?? 0) - (b.position ?? 0),
+    );
+
+    for (const image of sorted) {
+        const url = itemImageUrl(image);
+        if (url) return url;
+    }
+
+    return null;
+}
+
+export interface ItemVariant {
+    id: string;
+    slug: string;
+    variantName: string;
+    price: number;
+}
+
+export interface StorefrontItemResponse {
+    id: string;
+    businessId: string;
+    itemGroup: { id: string; name: string; slug: string } | null;
+    unit: { id: string; name: string; symbol: string } | null;
+    slug: string;
+    name: string;
+    sku: string | null;
+    code: string | null;
+    description: string | null;
+    images: ItemImage[];
+    barcode: string | null;
+    price: number;
+    itemType: string;
+    attributes: Record<string, any> | null;
+    variants: ItemVariant[];
+    lowStockDefault: number | null;
+    status: string;
 }

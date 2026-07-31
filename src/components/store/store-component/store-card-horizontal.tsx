@@ -3,16 +3,21 @@
 import { Card, CardTitle } from "@/components/ui/card";
 import { StoreCardComponentProps } from "./store-cart-component";
 import Image from "next/image";
-import { MapPin, Store as StoreIcon } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
+const DEFAULT_STORE_IMAGE =
+  "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&auto=format&fit=crop&q=60";
+
 const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
   const { name, description, location, image, isOpen } = store;
-  const [hasError, setHasError] = useState(false);
+  const [imgSrc, setImgSrc] = useState<string>(
+    image && image.trim() ? image : DEFAULT_STORE_IMAGE
+  );
 
   useEffect(() => {
-    setHasError(false);
+    setImgSrc(image && image.trim() ? image : DEFAULT_STORE_IMAGE);
   }, [image]);
 
   return (
@@ -37,22 +42,25 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
             shrink-0 
             overflow-hidden 
             rounded-xl
-            bg-muted flex items-center justify-center
         "
       >
-        {image && !hasError ? (
+        <div
+          className="
+            relative size-20 
+            shrink-0 
+            overflow-hidden 
+            rounded-xl
+        "
+        >
           <Image
-            src={image}
-            unoptimized
+            src={imgSrc}
             width={100}
             height={100}
             alt={name}
-            onError={() => setHasError(true)}
-            className="object-cover transition-transform duration-300 ease-out group-hover:scale-110 h-full w-full"
+            onError={() => setImgSrc(DEFAULT_STORE_IMAGE)}
+            className="object-cover transition-transform duration-300 ease-out group-hover:scale-110 "
           />
-        ) : (
-          <StoreIcon className="h-8 w-8 text-muted-foreground" />
-        )}
+        </div>
       </div>
 
       {/* Content */}

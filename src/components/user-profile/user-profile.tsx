@@ -1,17 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Link2, Pencil, User } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Link2, Pencil, User, Check, Loader2 } from "lucide-react";
+import { useAuth } from "@/features/auth/useAuth";
+import { useGetMyProfileQuery, useUpdateMyProfileMutation } from "@/features/user/userApi";
+import { resolveMediaUrl } from "@/lib/type/cartType";
 
 const connectedProviders = [
   {
     name: "Google",
-    email: "emma.j@gmail.com",
+    email: "Connected via OAuth2 / Keycloak",
     connected: true,
     icon: (
       <svg viewBox="0 0 24 24" className="size-5">
@@ -34,30 +37,78 @@ const connectedProviders = [
       </svg>
     ),
   },
-  {
-    name: "Facebook",
-    email: "emma.j@gmail.com",
-    connected: true,
-    icon: (
-      <svg viewBox="0 0 24 24" className="size-5">
-        <path
-          fill="#1877F2"
-          d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.25h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07Z"
-        />
-        <path
-          fill="#fff"
-          d="M16.67 15.56 17.2 12.07h-3.32V9.82c0-.96.46-1.89 1.95-1.89h1.51V4.96s-1.37-.24-2.68-.24c-2.74 0-4.53 1.67-4.53 4.69v2.66H7.08v3.49h3.05V24a12.2 12.2 0 0 0 3.75 0v-8.44h2.79Z"
-        />
-      </svg>
-    ),
-  },
-]
+];
 
 export default function UserProfile() {
-  const [firstName, setFirstName] = useState("Emma")
-  const [lastName, setLastName] = useState("Johnson")
-  const [email, setEmail] = useState("emma.johnson@email.com")
-  const [phone, setPhone] = useState("+1 (415) 555-7284")
+  const { user, status, login } = useAuth();
+  const { data: profile, isLoading } = useGetMyProfileQuery(undefined, {
+    skip: status !== "authenticated",
+  });
+  const [updateProfile, { isLoading: isSaving }] = useUpdateMyProfileMutation();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [gender, setGender] = useState("");
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      login();
+    }
+  }, [status, login]);
+
+  useEffect(() => {
+    if (profile) {
+      setFirstName(profile.firstName ?? "");
+      setLastName(profile.lastName ?? "");
+      setEmail(profile.email ?? user?.email ?? "");
+      setPhone(profile.phoneNumber ?? "");
+      setAddress(profile.address ?? "");
+      setGender(profile.gender ?? "");
+    } else if (user) {
+      setFirstName(user.firstName ?? "");
+      setLastName(user.lastName ?? "");
+      setEmail(user.email ?? "");
+    }
+  }, [profile, user]);
+
+  const fullName = [firstName, lastName].filter(Boolean).join(" ") || user?.name || "User Profile";
+  const avatarSrc = resolveMediaUrl(profile?.profilePicture) ?? user?.image ?? "https://github.com/shadcn.png";
+  const fallbackInitials = (fullName.slice(0, 2) || "UP").toUpperCase();
+
+  async function handleSaveChanges() {
+    setSaveError(null);
+    setSaveSuccess(false);
+
+    try {
+      await updateProfile({
+        firstName,
+        lastName,
+        email,
+        phoneNumber: phone,
+        address,
+        gender,
+      }).unwrap();
+
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2500);
+    } catch (err) {
+      console.error("Failed to update profile", err);
+      setSaveError("Could not save profile changes. Please try again.");
+    }
+  }
+
+  if (isLoading || status === "loading") {
+    return (
+      <div className="flex h-96 items-center justify-center text-muted-foreground">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-background">
@@ -67,8 +118,8 @@ export default function UserProfile() {
           <div className="mb-8 flex items-center gap-6">
             <div className="relative shrink-0">
               <Avatar className="size-28 border-2 border-white shadow-sm sm:size-32 dark:border-border">
-                <AvatarImage src="https://github.com/shadcn.png" alt="Emma Johnson" />
-                <AvatarFallback className="text-2xl">EJ</AvatarFallback>
+                <AvatarImage src={avatarSrc} alt={fullName} />
+                <AvatarFallback className="text-2xl">{fallbackInitials}</AvatarFallback>
               </Avatar>
               <button
                 type="button"
@@ -80,10 +131,10 @@ export default function UserProfile() {
             </div>
             <div>
               <h1 className="text-2xl font-semibold text-neutral-900 sm:text-3xl dark:text-foreground">
-                Emma Johnson
+                {fullName}
               </h1>
               <p className="text-sm text-muted-foreground sm:text-base">
-                Manage your account settings
+                {profile?.role ? `Role: ${profile.role}` : "Manage your account settings"}
               </p>
             </div>
           </div>
@@ -159,6 +210,37 @@ export default function UserProfile() {
                       className="h-11 rounded-full px-4"
                     />
                   </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="address"
+                      className="text-xs font-medium text-muted-foreground"
+                    >
+                      Address
+                    </Label>
+                    <Input
+                      id="address"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      className="h-11 rounded-full px-4"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="gender"
+                      className="text-xs font-medium text-muted-foreground"
+                    >
+                      Gender
+                    </Label>
+                    <Input
+                      id="gender"
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value)}
+                      placeholder="e.g. Male, Female, Other"
+                      className="h-11 rounded-full px-4"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -191,13 +273,9 @@ export default function UserProfile() {
 
                       <Button
                         variant="outline"
-                        className={
-                          connected
-                            ? "rounded-full border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-600 dark:border-destructive/30 dark:bg-destructive/10 dark:text-destructive dark:hover:bg-destructive/20"
-                            : "rounded-full bg-green-600 text-white hover:bg-green-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
-                        }
+                        className="rounded-full border-muted bg-muted/50 text-foreground cursor-default"
                       >
-                        {connected ? "Disconnect" : "Connect"}
+                        Connected
                       </Button>
                     </div>
                   ))}
@@ -205,14 +283,30 @@ export default function UserProfile() {
               </CardContent>
             </Card>
 
-            <div className="flex justify-end">
-              <Button className="h-11 rounded-full bg-green-600 px-6 font-semibold text-white hover:bg-green-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90">
-                Save Changes
+            <div className="flex flex-col items-end gap-2">
+              <Button
+                onClick={handleSaveChanges}
+                disabled={isSaving}
+                className="h-11 rounded-full bg-green-600 px-6 font-semibold text-white hover:bg-green-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
+              >
+                {saveSuccess ? (
+                  <span className="flex items-center gap-2">
+                    <Check className="h-4 w-4" /> Saved
+                  </span>
+                ) : isSaving ? (
+                  "Saving..."
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
+
+              {saveError && (
+                <p className="text-xs text-destructive">{saveError}</p>
+              )}
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

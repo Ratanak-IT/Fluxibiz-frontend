@@ -14,7 +14,7 @@ import {
   useGetPublicStoresQuery,
   useGetRecommendedStoresQuery,
 } from "@/features/store-api/store-api";
-import { toStoreCard } from "@/lib/type/storeType";
+import { PublicStore, toStoreCard } from "@/lib/type/storeType";
 
 const RecommendShops: Store[] = [
   {
@@ -553,6 +553,63 @@ function RecommendedSection() {
   );
 }
 
+function StoresByCategorySection() {
+  const { data, isLoading } = useGetPublicStoresQuery({ size: 100 });
+  const publicStores = data?.content ?? [];
+
+  if (isLoading) {
+    return (
+      <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
+        Loading stores by category...
+      </div>
+    );
+  }
+
+  if (publicStores.length === 0) {
+    return (
+      <>
+        <section className="space-y-3">
+          <SectionHeader title="Food" />
+          <StoreRow items={food} />
+        </section>
+
+        <section className="space-y-3">
+          <SectionHeader title="Nearby Store" />
+          <StoreRow items={nearby} />
+        </section>
+
+        <section className="space-y-3">
+          <SectionHeader title="Store" />
+          <StoreRow items={stores} />
+        </section>
+      </>
+    );
+  }
+
+  // Group public stores by their category name
+  const grouped = publicStores.reduce<Record<string, PublicStore[]>>((acc, store) => {
+    const categoryName = store.category?.name?.trim() || "Stores";
+    if (!acc[categoryName]) {
+      acc[categoryName] = [];
+    }
+    acc[categoryName].push(store);
+    return acc;
+  }, {});
+
+  const categoriesList = Object.entries(grouped);
+
+  return (
+    <div className="space-y-10">
+      {categoriesList.map(([catName, catStores]) => (
+        <section key={catName} className="space-y-3">
+          <SectionHeader title={catName} />
+          <StoreRow items={catStores.map(toStoreCard)} />
+        </section>
+      ))}
+    </div>
+  );
+}
+
 export default function HomePage() {
   return (
     <div className="mx-auto max-w-362.5 space-y-10 px-4 py-6">
@@ -575,31 +632,7 @@ export default function HomePage() {
             <StoreRow items={promotions} />
           </section>
 
-          <section className="space-y-3">
-            <SectionHeader title="Food" />
-            <StoreRow items={food} />
-          </section>
-
-          <section className="space-y-3">
-            <SectionHeader title="Nearby Store" />
-            <StoreRow items={nearby} />
-          </section>
-
-          <section className="space-y-3">
-            <SectionHeader title="Store" />
-            <StoreRow items={stores} />
-            <div className="flex justify-center pt-4">
-              <button
-                className="
-                  flex items-center gap-2 rounded-full bg-primary
-                  px-6 py-2 text-sm font-medium text-white
-                  transition-colors hover:bg-primary/90
-                "
-              >
-                See More <ChevronDown className="h-4 w-4" />
-              </button>
-            </div>
-          </section>
+          <StoresByCategorySection />
         </div>
       </div>
     </div>

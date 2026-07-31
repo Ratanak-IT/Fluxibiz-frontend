@@ -9,9 +9,9 @@ import StoreGroupComponent from "./store-group-component";
 import EmptyCartComponent from "./empty-cart-component";
 import CartSkeletonComponent from "./cart-skeleton-component";
 
-export default function CartList() {
-    // ?shop=<slug> scopes the page to the one shop the customer chose in the
-    const shopSlug = useSearchParams().get("shop");
+export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
+    const searchParams = useSearchParams();
+    const slug = shopSlug ?? searchParams.get("shop");
 
     const { data: cart, isLoading, isError } = useGetCartQuery();
 
@@ -33,11 +33,9 @@ export default function CartList() {
         return <EmptyCartComponent />;
     }
 
-    const scoped = shopSlug
-        ? cart.stores.find((store) => store.slug === shopSlug)
-        : null;
+    const scoped = slug ? cart.stores.find((store) => store.slug === slug) : null;
 
-    if (shopSlug && !scoped) {
+    if (slug && !scoped) {
         return (
             <div className="rounded-2xl bg-gray-100 py-16 text-center dark:bg-card">
                 <Store className="mx-auto h-8 w-8 text-neutral-300 dark:text-muted-foreground" />

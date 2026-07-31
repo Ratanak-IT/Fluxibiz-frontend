@@ -5,11 +5,13 @@ import type {
     FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 
-import type {
+import {
     BusinessCategory,
     PublicStore,
+    PublicStoreDetailResponse,
     PublicStorePage,
     PublicStoreQuery,
+    StorefrontItemResponse,
 } from "@/lib/type/storeType";
 
 /**
@@ -107,8 +109,13 @@ export const storeCateApi = createApi({
             providesTags: ["PublicStore"],
         }),
 
-        getPublicStore: builder.query<PublicStore, string>({
+        getPublicStore: builder.query<PublicStoreDetailResponse, string>({
             query: (slug) => `/public/stores/${slug}`,
+            providesTags: ["PublicStore"],
+        }),
+
+        getPublicStoreItems: builder.query<StorefrontItemResponse[], string>({
+            query: (slug) => `/public/stores/${slug}/items`,
             providesTags: ["PublicStore"],
         }),
 
@@ -135,5 +142,6 @@ export const {
     useGetBusinessCategoryQuery,
     useGetPublicStoresQuery,
     useGetPublicStoreQuery,
+    useGetPublicStoreItemsQuery,
     useGetRecommendedStoresQuery,
 } = storeCateApi;

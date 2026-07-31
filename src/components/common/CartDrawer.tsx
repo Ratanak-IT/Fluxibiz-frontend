@@ -142,7 +142,7 @@ function StoreSection({
                             className="h-full w-full object-cover"
                         />
                     ) : (
-           
+
                         <div className="flex h-full w-full items-center justify-center">
                             <Store className="h-5 w-5 text-neutral-400" />
                         </div>
@@ -289,6 +289,12 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                 <p className="truncate text-sm font-semibold text-neutral-900 dark:text-card-foreground">
                     {line.name}
                 </p>
+
+                {line.description && (
+                    <p className="line-clamp-1 text-xs text-neutral-500 dark:text-muted-foreground">
+                        {line.description}
+                    </p>
+                )}
 
                 {line.badges.length > 0 && (
                     <div className="mt-1 flex flex-nowrap gap-1 overflow-hidden">

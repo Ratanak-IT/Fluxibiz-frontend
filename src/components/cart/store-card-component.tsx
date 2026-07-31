@@ -56,7 +56,7 @@ export function StoreCardComponent({ store }: { store: StoreCart }) {
                             </div>
                         )}
 
-                       
+
                         {store.hours && (
                             <div className="flex items-center gap-1.5">
                                 <Clock className="h-4 w-4 shrink-0 text-green-600 dark:text-[#21b94b]" />

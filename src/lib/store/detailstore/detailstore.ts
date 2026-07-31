@@ -1,10 +1,13 @@
+import type { StorefrontItemResponse } from "@/lib/type/storeType";
+
 export interface MenuItemData {
-  id: string
-  name: string
-  price: string
-  description: string
-  category: string
-  image: string
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  category: string;
+  image: string;
+  rawItem?: StorefrontItemResponse;
 }
 
 export interface ProductListProps {

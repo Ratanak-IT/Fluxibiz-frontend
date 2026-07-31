@@ -76,7 +76,7 @@ export default function NavbarBeforeLoginComponent({
     <header className="sticky top-0 z-50 w-full border-b bg-white text-foreground backdrop-blur dark:bg-background">
       <div className="mx-auto flex h-13.75 max-w-332.5 items-center justify-between px-6 sm:px-10">
         {/* Desktop Logo */}
-        <Link href="/" aria-label="FluxiBiz home">
+        <Link href="/store" aria-label="FluxiBiz home">
           <Image
             src={fluxibizLogo}
             alt="FluxiBiz"

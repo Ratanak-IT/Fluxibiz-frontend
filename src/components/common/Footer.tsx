@@ -65,7 +65,7 @@ export default function Footer() {
         className="flex flex-col items-start text-left"
         aria-label="About FluxiBiz"
       >
-        <Link href="/" aria-label="FluxiBiz home" className="inline-flex">
+        <Link href="/store" aria-label="FluxiBiz home" className="inline-flex">
           <Image
             src={fluxibizLogo}
             alt="FluxiBiz"

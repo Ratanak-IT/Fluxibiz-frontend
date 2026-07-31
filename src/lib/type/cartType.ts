@@ -1,5 +1,3 @@
-
-
 export interface CartLine {
     cartItemId: string;
     itemId: string;
@@ -59,7 +57,6 @@ export function resolveMediaUrl(keyOrUrl: string | null | undefined): string | n
 
     let value = keyOrUrl.trim();
 
-    // If legacy domain was saved in database, replace with s3.careerpatch.site
     if (value.includes("storage.careerpatch.site")) {
         value = value.replace("storage.careerpatch.site", "s3.careerpatch.site");
     }
@@ -75,10 +72,39 @@ export function resolveMediaUrl(keyOrUrl: string | null | undefined): string | n
     const base = (process.env.NEXT_PUBLIC_MINIO_URL || "https://s3.careerpatch.site").replace(/\/$/, "");
     const bucket = process.env.NEXT_PUBLIC_MINIO_BUCKET || "fluxibix";
 
-    // Avoid duplicating bucket if value already starts with bucket name
     if (value.startsWith(`${bucket}/`)) {
         return `${base}/${value}`;
     }
 
     return `${base}/${bucket}/${value}`;
+}
+
+
+export function apiErrorMessage(
+    error: unknown,
+    fallback = "Something went wrong. Please try again.",
+): string {
+    if (!error || typeof error !== "object") return fallback;
+
+    const err = error as { status?: number | string; data?: unknown; error?: string };
+
+    if (err.status === 401 || err.status === 403) {
+        return "Please sign in to add items to your cart.";
+    }
+
+    if (err.data && typeof err.data === "object") {
+        const data = err.data as { message?: string; detail?: string };
+        if (typeof data.message === "string" && data.message.trim()) return data.message;
+        if (typeof data.detail === "string" && data.detail.trim()) return data.detail;
+    }
+
+    if (typeof err.data === "string" && err.data.trim()) return err.data;
+
+    return fallback;
+}
+
+export function isUnauthorized(error: unknown): boolean {
+    if (!error || typeof error !== "object") return false;
+    const status = (error as { status?: number | string }).status;
+    return status === 401 || status === 403;
 }

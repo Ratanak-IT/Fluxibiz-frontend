@@ -76,7 +76,7 @@ export default function NavbarAfterLoginComponent({
     <header className="sticky top-0 z-50 w-full border-b border-border bg-white  text-foreground backdrop-blur dark:bg-background">
       <div className="mx-auto flex h-[55px] max-w-[1330px] items-center justify-between px-6 sm:px-10">
         {/* Desktop Logo */}
-        <Link href="/" aria-label="FluxiBiz home">
+        <Link href="/store" aria-label="FluxiBiz home">
           <Image
             src={fluxibizLogo}
             alt="FluxiBiz"
@@ -181,7 +181,7 @@ export default function NavbarAfterLoginComponent({
                 <LanguageDropdown mobile />
 
                 <Link
-                  href="/profile"
+                  href="/user-profile"
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-foreground transition-colors hover:bg-muted"
                 >
                   <UserRound size={19} />
@@ -280,7 +280,7 @@ function UserDropdown({
         {/* You can also wrap standard items in a group if desired */}
         <DropdownMenuGroup>
           <DropdownMenuItem
-            render={<Link href="/profile" />}
+            render={<Link href="/user-profile" />}
             className="cursor-pointer gap-2"
           >
             <UserRound size={17} />

@@ -29,7 +29,7 @@ export default function RootLayout({
             suppressHydrationWarning
             data-scroll-behavior="smooth"
         >
-            <body className="min-h-full flex flex-col" suppressHydrationWarning>
+            <body className="min-h-full flex flex-col" >
                 <StoreProvider>
                     <AuthProvider>
                         <ThemeProvider

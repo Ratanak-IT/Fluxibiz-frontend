@@ -1,5 +1,6 @@
 // store card
 export interface StoreCardData {
+  id?: string
   image: string
   category: string
   name: string
