@@ -63,14 +63,14 @@ export function ContactSection() {
   }
 
   return (
-<section className="bg-muted/30 dark:bg-black py-20 font-body">
+<section className="bg-background dark:bg-background py-20 font-body">
   <div className="mx-auto grid max-w-[1900px] gap-10 px-[5.5%] lg:grid-cols-2 lg:gap-12">
         {/* Left: heading + contact details */}
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-green-600 font-body">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary font-body">
             Contact Us
           </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-display">
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-primary sm:text-4xl font-display">
             Get In Touch
           </h2>
           <p className="mt-3 max-w-md text-sm text-muted-foreground sm:text-base font-body">
@@ -82,13 +82,13 @@ export function ContactSection() {
             {contactDetails.map(({ icon: Icon, label, value }) => (
               <div
                 key={label}
-                className="flex items-start gap-4 rounded-2xl border bg-background p-4 shadow-sm"
+                className="flex items-start gap-4 rounded-2xl border bg-white p-4"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-50 dark:bg-green-950/40">
-                  <Icon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <Icon className="h-5 w-5 text-primary dark:text-green-400" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-green-600 dark:text-green-400">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-primary dark:text-green-400">
                     {label}
                   </p>
                   <p className="mt-1 text-sm font-medium text-foreground">
@@ -101,7 +101,7 @@ export function ContactSection() {
         </div>
 
         {/* Right: form card */}
-        <div className="rounded-2xl border bg-background p-6 shadow-sm sm:p-8">
+        <div className="rounded-2xl border bg-white p-6 sm:p-8">
           <h3 className="text-lg font-semibold text-foreground font-display">
             Send us a message
           </h3>
@@ -180,7 +180,7 @@ export function ContactSection() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-full bg-green-600 px-6 hover:bg-green-700"
+                className="rounded-full bg-primary px-6 hover:bg-green-700"
               >
                 Send message
                 <ArrowRight className="ml-2 h-4 w-4" />
