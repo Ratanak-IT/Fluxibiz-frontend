@@ -1,9 +1,8 @@
 "use client";
 
 import { useRef, type MouseEvent, type RefObject } from "react";
-import { ArrowRight, Check } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
+
 import { Card } from "@/components/ui/card";
 
 const GLANCE_ROWS = [
@@ -333,9 +332,7 @@ export function HeroSection() {
                     </h1>
 
                     <p className="mt-6 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-                        The all-in-one system built to help small teams take
-                        orders, track stock, and grow revenue — without the
-                        complexity.
+                        Founded in Phnom Penh in 2026 by a group of IT enthusiasts, FluxiBiz brings everything a business needs to sell, manage and grow into one simple place.
                     </p>
 
                    
@@ -343,7 +340,7 @@ export function HeroSection() {
 
                 {/* ── Preview cluster ──────────────────────────────────── */}
                 <div className="relative mx-auto w-fit lg:mr-0">
-                    <span className="hero-float-sm absolute -left-6 -top-6 z-10 -rotate-7 rounded-md bg-brand-deep px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-amber shadow-lg">
+                    <span className="hero-float-sm absolute -left-6 -top-6 z-10 -rotate-7 rounded-md bg-brand-deep px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-white shadow-lg ">
                         +18% this week
                     </span>
                     <GlanceCard />
