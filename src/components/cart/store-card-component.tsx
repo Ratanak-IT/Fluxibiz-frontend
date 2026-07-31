@@ -12,10 +12,10 @@ export function StoreCardComponent({ store = mockStore }: StoreCardComponentProp
   return (
     <>
     
-    <Card className="h-45 overflow-hidden p-0 dark:border-neutral-700 dark:bg-[#1b1b1b]">
-  <div className="flex h-full">
+   <Card className="h-auto overflow-hidden p-0 sm:h-36 md:h-45">
+  <div className="flex h-full flex-row items-center">
     {/* Image */}
-    <div className="relative h-40 w-40 overflow-hidden rounded-lg">
+    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg sm:h-full sm:w-32 md:h-40 md:w-40">
       <Image
         src={store.image}
         alt={store.name}
@@ -26,25 +26,25 @@ export function StoreCardComponent({ store = mockStore }: StoreCardComponentProp
     </div>
 
     {/* Content */}
-    <div className="flex flex-1 flex-col justify-center gap-2 px-6 py-6">
-      <CardHeader className="gap-1 p-0">
-        <CardDescription className="text-sm text-muted-foreground dark:text-[#a7b4ad]">
+    <div className="flex flex-1 flex-col justify-center gap-1 px-3 py-3 sm:gap-2 sm:px-5 sm:py-5 md:px-6 md:py-6">
+      <CardHeader className="gap-0.5 p-0 sm:gap-1">
+        <CardDescription className="text-xs text-muted-foreground sm:text-sm">
           {store.category}
         </CardDescription>
 
-        <CardTitle className="text-xl font-semibold dark:text-[#f3f7f4]">
+        <CardTitle className="text-base font-semibold sm:text-lg md:text-xl">
           {store.name}
         </CardTitle>
       </CardHeader>
 
-      <div className="flex items-center gap-4 text-sm text-muted-foreground dark:text-[#a7b4ad]">
-        <div className="flex items-center gap-1.5">
-          <MapPin className="h-4 w-4 text-green-600 dark:text-[#21b94b]" />
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground sm:gap-3 sm:text-sm md:gap-4">
+        <div className="flex items-center gap-1 sm:gap-1.5">
+          <MapPin className="h-3.5 w-3.5 text-green-600 sm:h-4 sm:w-4" />
           <span>{store.location}</span>
         </div>
 
-        <div className="flex items-center gap-1.5">
-          <Clock className="h-4 w-4 text-green-600 dark:text-[#21b94b]" />
+        <div className="flex items-center gap-1 sm:gap-1.5">
+          <Clock className="h-3.5 w-3.5 text-green-600 sm:h-4 sm:w-4" />
           <span>{store.hours}</span>
         </div>
       </div>

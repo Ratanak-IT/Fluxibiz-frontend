@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import {
@@ -22,7 +22,7 @@ import {
   useAddToCartMutation,
   useGetProductQuery,
 } from "@/lib/store/productdetail/productApi";
-import { useRouter } from "next/navigation";
+
 import Link from "next/link";
 
 const ICONS = { truck: Truck, shield: ShieldCheck, refresh: RotateCcw };
@@ -268,7 +268,7 @@ export default function ProductDetail({
                     ?
                     "border-brand bg-brand-soft text-brand"
                     :
-                    "border-border bg-card text-foreground hover:bg-green-100"
+                    "border-border bg-card text-foreground hover:border-sidebar-primary"
                 }
 
               `}
@@ -288,7 +288,7 @@ export default function ProductDetail({
 
       <div>
 
-        <p className="mb-2 text-sm text-muted-foreground">
+        <p className="mb-2 text-sm text-muted-foreground ">
 
           Size:
           {" "}
@@ -317,7 +317,7 @@ export default function ProductDetail({
                     ?
                     "border-brand bg-brand-soft text-brand"
                     :
-                    "border-border bg-card text-foreground hover:bg-green-100"
+                    "border-border bg-card text-foreground hover:border-sidebar-primary"
                 }
               `}
             >
@@ -335,8 +335,6 @@ export default function ProductDetail({
         </div>
 
       </div>
-
-
 
 
       {/* Quantity */}
@@ -374,8 +372,6 @@ export default function ProductDetail({
 
 
       </div>
-
-
 
       {/* Add Cart */}
 
