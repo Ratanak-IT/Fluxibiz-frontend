@@ -1,12 +1,10 @@
 'use client'
+
 import DescriptionCard from "@/components/store/productdetail/description-card";
 import ProductDetail from "@/components/store/productdetail/product-detail";
 import RelatedProducts from "@/components/store/productdetail/related-product";
 
 import { useGetRelatedProductsQuery } from "@/lib/store/productdetail/productApi";
-
-
-
 
 
 export default function DetailProductPage() {

@@ -7,12 +7,9 @@ export interface MenuItemData {
   image: string
 }
 
-
 export interface ProductListProps {
-  items?: MenuItemData[]; // now optional
+  items?: MenuItemData[]; 
 }
-
-// --- Raw mock data (private to this file) ---
 
 export const popularMenuItems: MenuItemData[] = [
   {
@@ -109,3 +106,31 @@ export async function getTeaMenuItems(): Promise<MenuItemData[]> {
   return teaMenuItems
 }
 
+
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
+
+
+export const menuApi = createApi({
+  reducerPath: "menuApi",
+  baseQuery: fakeBaseQuery(),
+  tagTypes: ["PopularMenu", "TeaMenu"],
+  endpoints: (builder) => ({
+    getPopularMenu: builder.query<MenuItemData[], void>({
+      async queryFn() {
+        const data = await getPopularMenuItems();
+        return { data };
+      },
+      providesTags: ["PopularMenu"],
+    }),
+
+    getTeaMenu: builder.query<MenuItemData[], void>({
+      async queryFn() {
+        const data = await getTeaMenuItems();
+        return { data };
+      },
+      providesTags: ["TeaMenu"],
+    }),
+  }),
+});
+
+export const { useGetPopularMenuQuery, useGetTeaMenuQuery } = menuApi;

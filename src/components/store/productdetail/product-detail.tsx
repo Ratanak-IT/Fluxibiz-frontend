@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import {
@@ -22,7 +22,7 @@ import {
   useAddToCartMutation,
   useGetProductQuery,
 } from "@/lib/store/productdetail/productApi";
-import { useRouter } from "next/navigation";
+
 import Link from "next/link";
 
 const ICONS = { truck: Truck, shield: ShieldCheck, refresh: RotateCcw };

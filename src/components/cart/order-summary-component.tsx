@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "../ui/skeleton"
+import { Card,  CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+
 
 interface CartItem {
   id: string

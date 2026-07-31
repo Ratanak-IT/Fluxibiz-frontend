@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function CartPage() {
     return (
-        <div className="mx-auto min-h-screen max-w-362.5">
+        <div className="mx-auto min-h-screen max-w-362.5 dark:bg-background">
             <div className="px-4 py-5 sm:px-6 sm:py-6 md:px-10 md:py-7 lg:mx-25 lg:px-0 lg:py-7.5">
                 <div className="mb-4 flex items-center justify-between sm:mb-6">
                     <h1 className="text-xl font-bold text-green-600 sm:text-2xl lg:text-3xl">

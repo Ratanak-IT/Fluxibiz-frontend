@@ -13,21 +13,17 @@ export default function ItemCardComponent({
   item,
 }: ItemCardComponentProps) {
   return (
- <Card
-      className="
+ <Card className="
         h-auto w-full flex-col gap-4 overflow-hidden border-0 bg-gray-100 p-4
         dark:bg-card
         md:h-auto md:w-full md:flex-col md:gap-3 md:p-4
-        lg:flex lg:h-33.5 lg:w-204.75 lg:flex-row lg:p-0
-      "
-    >
+        lg:flex lg:h-33.5 lg:w-204.75 lg:flex-row lg:p-0">
       <div
         className="
           flex flex-col gap-4
           md:flex-row md:items-center md:gap-4
           lg:grid lg:h-full lg:grid-cols-[110px_1fr_96px_150px] lg:items-center lg:gap-4 lg:px-4
-        "
-      >
+        ">
         {/* Top row on mobile: image + title/desc/badges side by side */}
         <div className="flex gap-4 md:contents lg:contents">
           {/* Image — fixed column */}
@@ -37,8 +33,7 @@ export default function ItemCardComponent({
               alt={item.name}
               width={110}
               height={110}
-              className="h-full w-full object-cover"
-            />
+              className="h-full w-full object-cover" />
           </div>
  
           {/* Title, description, badges — the ONLY flexible column */}

@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { addToCart, getProduct, getRelatedProducts, Product, Products } from "./product";
-import RelatedProducts from "@/components/store/productdetail/related-product";
+
 
 
 interface AddToCartPayload {
@@ -61,3 +61,5 @@ export const {
   useGetRelatedProductsQuery,
   useAddToCartMutation,
 } = productApi;
+
+

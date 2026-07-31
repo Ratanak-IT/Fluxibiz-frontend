@@ -1,5 +1,6 @@
 import SearchFilterBar from "@/components/store/detailstore/button";
 import ProductList from "@/components/store/detailstore/product-list";
+import CartSidebar from "@/components/store/detailstore/cart-sidebar";
 
 import StoreCard from "@/components/store/detailstore/store-card";
 import {
@@ -12,9 +13,9 @@ import Link from "next/link";
 export default async function StoreDetail() {
   const popularMenuItems = await getPopularMenuItems();
   const teaMenuItems = await getTeaMenuItems();
-
+ 
   return (
-    <div className="mx-auto max-w-362.5 space-y-10  py-6 sm:px-10 dark:bg-background ">
+    <div className="mx-auto max-w-362.5 space-y-10 py-6 sm:px-10 dark:bg-background">
       <div className="mb-4 flex items-center justify-between px-4 sm:px-8 md:px-14 lg:px-23">
         <Link
           href="/store"
@@ -25,19 +26,32 @@ export default async function StoreDetail() {
         </Link>
         <Link
           href="storeDetail/cart"
-          className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary sm:h-11 sm:px-5"
+          className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary sm:h-11 sm:px-5 lg:hidden"
         >
           <ShoppingCart className="h-4 w-4" />
           Cart
         </Link>
       </div>
-
-      <div className="space-y-10 ">
+ 
+      <div className="space-y-10">
         <StoreCard />
         <SearchFilterBar />
-
-        <ProductList title="Popular Menu" items={popularMenuItems} />
-        <ProductList title="Tea Menu" items={teaMenuItems} />
+      </div>
+ 
+      {/* Two-column shell: menu on the left, sticky cart on the right (matches reference layout) */}
+      {/* items-start: keeps the cart column sized to its own content instead of stretching to match the (much taller) menu column */}
+      <div className="grid grid-cols-1 items-start justify-center gap-0 pr-6 sm:pr-10 lg:pr-25 lg:grid-cols-[1fr_400px] lg:gap-0">
+        <div className="min-w-0 space-y-2">
+          <ProductList title="Popular Menu" items={popularMenuItems} />
+          <ProductList title="Tea Menu" items={teaMenuItems} />
+        </div>
+ 
+        {/* Cart sidebar: hidden on mobile (use the Cart link above instead), sticky on desktop */}
+        <div className="hidden lg:block lg:pt-8">
+          <div className="sticky top-6">
+            <CartSidebar subtotal={0} />
+          </div>
+        </div>
       </div>
     </div>
   );
