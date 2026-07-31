@@ -1,17 +1,21 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
-import { Clock, MapPin } from "lucide-react";
+import { Clock, MapPin, Store as StoreIcon } from "lucide-react";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 export interface Store {
   id: string;
+  slug?: string;
   name: string;
   category: string;
   description: string;
   location: string;
-  hours: string;
+  hours?: string;
   image: string;
   discountLabel?: string;
-  isOpen: boolean;
+  isOpen?: boolean;
 }
 
 export interface StoreCardComponentProps {
@@ -30,6 +34,12 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     isOpen,
   } = store;
 
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [image]);
+
   return (
     <div
       className="
@@ -41,14 +51,20 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     >
       {/* Store Image */}
 
-      <div className="  relative grow  h-38 w-full overflow-hidden rounded-lg   ">
-        <Image
-          src={image}
-          fill
-          alt={`${name} cover`}
-          sizes="(max-width: 768px) 50vw, 272px"
-          className=" object-cover   "
-        />
+      <div className="relative grow h-38 w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
+        {image && !hasError ? (
+          <Image
+            src={image}
+            unoptimized
+            fill
+            alt={`${name} cover`}
+            onError={() => setHasError(true)}
+            sizes="(max-width: 768px) 50vw, 272px"
+            className="object-cover"
+          />
+        ) : (
+          <StoreIcon className="h-12 w-12 text-muted-foreground" />
+        )}
 
         {/* Discount Label */}
 

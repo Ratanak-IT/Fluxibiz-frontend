@@ -57,7 +57,12 @@ export function formatMoney(amount: number, currency = "USD"): string {
 export function resolveMediaUrl(keyOrUrl: string | null | undefined): string | null {
     if (!keyOrUrl || !keyOrUrl.trim()) return null;
 
-    const value = keyOrUrl.trim();
+    let value = keyOrUrl.trim();
+
+    // If legacy domain was saved in database, replace with s3.careerpatch.site
+    if (value.includes("storage.careerpatch.site")) {
+        value = value.replace("storage.careerpatch.site", "s3.careerpatch.site");
+    }
 
     if (
         value.startsWith("http://") ||
@@ -67,10 +72,13 @@ export function resolveMediaUrl(keyOrUrl: string | null | undefined): string | n
         return value;
     }
 
-    const base = process.env.NEXT_PUBLIC_MINIO_URL;
-    const bucket = process.env.NEXT_PUBLIC_MINIO_BUCKET;
+    const base = (process.env.NEXT_PUBLIC_MINIO_URL || "https://s3.careerpatch.site").replace(/\/$/, "");
+    const bucket = process.env.NEXT_PUBLIC_MINIO_BUCKET || "fluxibix";
 
-    if (!base || !bucket) return null;
+    // Avoid duplicating bucket if value already starts with bucket name
+    if (value.startsWith(`${bucket}/`)) {
+        return `${base}/${value}`;
+    }
 
-    return `${base.replace(/\/$/, "")}/${bucket}/${value}`;
+    return `${base}/${bucket}/${value}`;
 }

@@ -10,7 +10,12 @@ import {
 import { ChevronLeft, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 
-export default async function StoreDetail() {
+export default async function StoreDetail({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const popularMenuItems = await getPopularMenuItems();
   const teaMenuItems = await getTeaMenuItems();
  

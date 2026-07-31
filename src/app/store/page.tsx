@@ -10,6 +10,11 @@ import {
   StoreCardComponent,
 } from "@/components/store/store-component/store-cart-component";
 import Link from "next/link";
+import {
+  useGetPublicStoresQuery,
+  useGetRecommendedStoresQuery,
+} from "@/features/store-api/store-api";
+import { toStoreCard } from "@/lib/type/storeType";
 
 const RecommendShops: Store[] = [
   {
@@ -519,6 +524,35 @@ function StoreRow({ items }: { items: Store[] }) {
   );
 }
 
+function RecommendedSection() {
+  const { data, isLoading } = useGetRecommendedStoresQuery({ size: 10 });
+  const liveStores = data?.content.map(toStoreCard) ?? [];
+  const storesToDisplay = liveStores.length > 0 ? liveStores : RecommendShops;
+
+  return (
+    <section className="space-y-3">
+      <SectionHeader title="Recommend" />
+      {isLoading ? (
+        <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
+          Loading recommended stores...
+        </div>
+      ) : (
+        <ScrollRow>
+          {storesToDisplay.map((store) => (
+            <Link
+              key={store.id}
+              href={`/store/${store.slug || store.id}`}
+              className="shrink-0 snap-start basis-[calc((100%-3*(--spacing(4)))/4)]"
+            >
+              <StoreCardHorizontal store={store} />
+            </Link>
+          ))}
+        </ScrollRow>
+      )}
+    </section>
+  );
+}
+
 export default function HomePage() {
   return (
     <div className="mx-auto max-w-362.5 space-y-10 px-4 py-6">
@@ -534,20 +568,7 @@ export default function HomePage() {
         </aside>
 
         <div className="min-w-0 flex-1 space-y-10">
-          <section className="space-y-3">
-            <SectionHeader title="Recommend" />
-            <ScrollRow>
-              {RecommendShops.map((store) => (
-                <Link
-                  key={store.id}
-                  href={`/store/${store.id}`}
-                  className="shrink-0 snap-start basis-[calc((100%-3*(--spacing(4)))/4)]"
-                >
-                  <StoreCardHorizontal store={store} />
-                </Link>
-              ))}
-            </ScrollRow>
-          </section>
+          <RecommendedSection />
 
           <section className="space-y-3">
             <SectionHeader title="Promotions" />

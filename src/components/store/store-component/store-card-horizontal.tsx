@@ -1,11 +1,19 @@
+"use client";
+
 import { Card, CardTitle } from "@/components/ui/card";
 import { StoreCardComponentProps } from "./store-cart-component";
 import Image from "next/image";
-import { MapPin } from "lucide-react";
+import { MapPin, Store as StoreIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
   const { name, description, location, image, isOpen } = store;
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [image]);
 
   return (
     <Card
@@ -29,24 +37,22 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
             shrink-0 
             overflow-hidden 
             rounded-xl
+            bg-muted flex items-center justify-center
         "
       >
-        <div
-          className="
-            relative size-20 
-            shrink-0 
-            overflow-hidden 
-            rounded-xl
-        "
-        >
+        {image && !hasError ? (
           <Image
             src={image}
+            unoptimized
             width={100}
             height={100}
             alt={name}
-            className="object-cover transition-transform duration-300 ease-out group-hover:scale-110 "
+            onError={() => setHasError(true)}
+            className="object-cover transition-transform duration-300 ease-out group-hover:scale-110 h-full w-full"
           />
-        </div>
+        ) : (
+          <StoreIcon className="h-8 w-8 text-muted-foreground" />
+        )}
       </div>
 
       {/* Content */}
