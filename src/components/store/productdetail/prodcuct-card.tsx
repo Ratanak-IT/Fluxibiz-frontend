@@ -25,23 +25,15 @@ export function ProductCard({ item }: ProductCardProps) {
     bg-card 
     p-5 
     shadow-sm
-
     sm:max-w-143 sm:h-41.25 
-    lg:h-41.25 lg:w-143
-  "
->
+    lg:h-41.25 lg:w-143  ">
   <div className="flex h-full items-center justify-between gap-4">
-
-
     {/* Left Column: Details */}
-
     <div
       className="
         flex min-w-0 flex-1 
         flex-col justify-between 
-        space-y-1.5
-      "
-    >
+        space-y-1.5 ">
 
       <CardHeader className="p-0">
 
@@ -51,22 +43,13 @@ export function ProductCard({ item }: ProductCardProps) {
             text-sm font-bold 
             text-foreground
 
-            sm:text-xl
-          "
-        >
+            sm:text-xl " >
           {item.name}
         </CardTitle>
 
-
         <p
-          className="
-            text-base 
-            text-2xl font-bold 
-            text-destructive
-
-            sm:text-lg
-          "
-        >
+          className=" text-2xl font-bold 
+            text-destructive sm:text-lg" >
           $ {item.price}
         </p>
 
@@ -76,10 +59,7 @@ export function ProductCard({ item }: ProductCardProps) {
             line-clamp-2 
             text-xs 
             text-muted-foreground
-
-            sm:text-sm
-          "
-        >
+            sm:text-sm" >
           {item.description}
         </CardDescription>
 
@@ -92,18 +72,13 @@ export function ProductCard({ item }: ProductCardProps) {
           className="
             text-xs font-semibold 
             text-brand
-
-            sm:text-sm
-          "
-        >
+            sm:text-sm" >
           {item.category}
         </span>
       </div>
 
 
     </div>
-
-
 
 
     {/* Right Column: Image & Plus Action */}
@@ -113,10 +88,7 @@ export function ProductCard({ item }: ProductCardProps) {
         relative flex 
         h-24 w-20 shrink-0 
         items-center justify-center
-
-        sm:h-28 sm:w-24
-      "
-    >
+        sm:h-28 sm:w-24" >
 
       <Image
         src={item.image}
@@ -135,26 +107,18 @@ export function ProductCard({ item }: ProductCardProps) {
         className="
           absolute 
           -bottom-1 -right-1 
-
           h-7 w-7 
           rounded-full
-
-          bg-muted 
+          bg-white
           text-card-foreground
-
           shadow-sm
-
           transition-transform 
           hover:scale-105 
-          hover:bg-accent
-
+          hover:bg-background
           sm:h-8 sm:w-8
-        "
-        aria-label={`Add ${item.name} to cart`}
-      >
-
+        " aria-label={`Add ${item.name} to cart`}>
         <Plus
-          className="
+          className=" text-primary
             h-3.5 w-3.5 
             sm:h-4 sm:w-4
           "

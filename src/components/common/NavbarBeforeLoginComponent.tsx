@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Menu } from "lucide-react";
+import { ChevronDown, Menu, Sparkles } from "lucide-react";
 
 import englishFlag from "../../../public/image/flags/english.png";
 import khmerFlag from "../../../public/image/flags/khmer.png";
@@ -30,20 +30,20 @@ type NavigationItem = {
   children?: { label: string; href: string }[];
 };
 
-const keycloakLoginUrl = `${process.env.NEXT_PUBLIC_KEYCLOAK_LOGIN_URL}`
+const keycloakLoginUrl = `${process.env.NEXT_PUBLIC_KEYCLOAK_LOGIN_URL}`;
 
 const navigationItems: NavigationItem[] = [
-  {
-    label: "Business",
-    href: "/register",
+   {
+    label: "Store",
+    href: "/store",
   },
   {
     label: "Feature",
     href: "/feature",
   },
-  {
-    label: "Store",
-    href: "/store",
+ {
+    label: "Support",
+    href: "/support",
   },
   {
     label: "About us",
@@ -53,9 +53,8 @@ const navigationItems: NavigationItem[] = [
 
 export default function NavbarBeforeLoginComponent() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground backdrop-blur supports-[backdrop-filter]:bg-background/85">
-      <div className="mx-auto flex h-[55px] max-w-[1330px] items-center justify-between px-6 sm:px-10">
-
+    <header className="sticky top-0 z-50 w-full border-b  bg-white text-foreground backdrop-blur dark:bg-background ">
+      <div className="mx-auto flex h-13.75 max-w-332.5 items-center justify-between px-6 sm:px-10">
         {/* Desktop Logo - Scaled down to w-[130px] */}
         <Link href="/" aria-label="FluxiBiz home">
           <Image
@@ -64,7 +63,7 @@ export default function NavbarBeforeLoginComponent() {
             width={240}
             height={90}
             priority
-            className="h-auto w-[130px] object-contain"
+            className="h-auto w-33 object-contain"
           />
         </Link>
 
@@ -94,7 +93,7 @@ export default function NavbarBeforeLoginComponent() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground dark:text-text dark:hover:text-secondary"
               >
                 {item.label}
               </Link>
@@ -106,10 +105,17 @@ export default function NavbarBeforeLoginComponent() {
           <ThemeToggle />
           <LanguageDropdown />
 
+
+          <Link
+            href="/register"
+            className="text-sm  font-bold text-gray-700 hover:text-secondary dark:text-text dark:hover:text-secondary "
+          >
+            Business
+          </Link>
           <Button
             nativeButton={false}
             render={<Link href={keycloakLoginUrl} />}
-            className="h-9 rounded-full border border-[#00932a] bg-[#00932a] px-8 text-sm font-bold text-white shadow-none hover:bg-[#007d24]"
+            className="h-9 rounded-full border border-primary bg-primary px-8 text-sm font-bold text-white shadow-none hover:bg-[#007d24]"
           >
             Login
           </Button>
@@ -118,7 +124,7 @@ export default function NavbarBeforeLoginComponent() {
             nativeButton={false}
             render={<Link href="/register" />}
             variant="outline"
-            className="h-9 rounded-full border-2 border-[#00932a] bg-transparent px-8 text-sm font-bold text-[#00932a] hover:bg-[#00932a]/10 hover:text-[#00932a]"
+            className="h-9 rounded-full border-2 border-primary] bg-transparent px-8 text-sm font-bold text-primary hover:bg-primary/10 hover:text-primary"
           >
             Register
           </Button>
@@ -150,7 +156,7 @@ export default function NavbarBeforeLoginComponent() {
                   alt="FluxiBiz"
                   width={180}
                   height={80}
-                  className="h-auto w-[120px] object-contain"
+                  className="h-auto w-30 object-contain"
                 />
               </SheetTitle>
             </SheetHeader>
@@ -189,7 +195,7 @@ export default function NavbarBeforeLoginComponent() {
               <Button
                 nativeButton={false}
                 render={<Link href="/login" />}
-                className="mt-4 h-11 rounded-full bg-[#00932a] text-base font-bold text-white hover:bg-[#007d24]"
+                className="mt-4 h-11 rounded-full bg-primary text-base font-bold text-white hover:bg-[#007d24]"
               >
                 Login
               </Button>

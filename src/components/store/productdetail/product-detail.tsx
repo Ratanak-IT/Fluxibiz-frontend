@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import {
@@ -22,7 +22,7 @@ import {
   useAddToCartMutation,
   useGetProductQuery,
 } from "@/lib/store/productdetail/productApi";
-import { useRouter } from "next/navigation";
+
 import Link from "next/link";
 
 const ICONS = { truck: Truck, shield: ShieldCheck, refresh: RotateCcw };
@@ -142,7 +142,6 @@ export default function ProductDetail({
 
       </div>
 
-
       {/* Main Image */}
       <div
         className="
@@ -217,7 +216,7 @@ export default function ProductDetail({
               bg-destructive 
               px-2.5 py-0.5 
               text-xs font-semibold 
-              text-destructive-foreground
+              text-white
             "
           >
             {discountPct}% OFF
@@ -239,7 +238,7 @@ export default function ProductDetail({
 
       <div>
 
-        <p className="mb-2 text-sm text-muted-foreground">
+        <p className="mb-2 text-sm text-muted-foreground ">
 
           Sugar Level:
           {" "}
@@ -269,7 +268,7 @@ export default function ProductDetail({
                     ?
                     "border-brand bg-brand-soft text-brand"
                     :
-                    "border-border bg-card text-foreground hover:bg-accent"
+                    "border-border bg-card text-foreground hover:border-sidebar-primary"
                 }
 
               `}
@@ -289,7 +288,7 @@ export default function ProductDetail({
 
       <div>
 
-        <p className="mb-2 text-sm text-muted-foreground">
+        <p className="mb-2 text-sm text-muted-foreground ">
 
           Size:
           {" "}
@@ -318,7 +317,7 @@ export default function ProductDetail({
                     ?
                     "border-brand bg-brand-soft text-brand"
                     :
-                    "border-border bg-card text-foreground hover:bg-accent"
+                    "border-border bg-card text-foreground hover:border-sidebar-primary"
                 }
               `}
             >
@@ -338,8 +337,6 @@ export default function ProductDetail({
       </div>
 
 
-
-
       {/* Quantity */}
 
       <div className="flex items-center gap-4">
@@ -349,7 +346,7 @@ export default function ProductDetail({
           className="
             flex h-9 w-9 items-center justify-center 
             text-3xl font-bold text-destructive 
-            hover:bg-accent
+          
           "
           disabled={quantity <= 1}
         >
@@ -367,7 +364,7 @@ export default function ProductDetail({
           className="
             flex h-9 w-9 items-center justify-center 
             text-3xl font-bold text-brand 
-            hover:bg-accent
+            
           "
         >
           <Plus className="h-4 w-4" />
@@ -375,8 +372,6 @@ export default function ProductDetail({
 
 
       </div>
-
-
 
       {/* Add Cart */}
 

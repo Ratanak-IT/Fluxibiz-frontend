@@ -10,6 +10,7 @@ import "./about/about.css";
 import { cn } from "@/lib/utils";
 import StoreProvider from "./StoreProvider";
 
+
 export const metadata: Metadata = {
     title: "FluxiBiz - Run your whole business from one screen",
     description:
@@ -34,6 +35,7 @@ export default function RootLayout({
                         enableSystem
                     >
                         <NavbarBeforeLoginComponent />
+                        
                         <main className="flex-1">{children}</main>
                         <Footer />
                     </ThemeProvider>
