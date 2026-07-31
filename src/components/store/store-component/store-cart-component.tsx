@@ -49,7 +49,6 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
       
     "
     >
-      {/* Store Image */}
 
       <div className="relative grow h-38 w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
         {image && !hasError ? (
@@ -66,31 +65,43 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
           <StoreIcon className="h-12 w-12 text-muted-foreground" />
         )}
 
-        {/* Discount Label */}
 
         {discountLabel && (
           <div
             className="
-                    absolute top-2 left-2 
-                    z-10 flex 
-                    h-11 w-11 
-                    items-center justify-center
-
-                    rounded-full
-                    text-foreground
-
-                    text-xs font-bold
-
-                    border-2 border-dashed 
-                    border-input
-                    bg-accent
-                "
+              absolute top-2 left-2 
+              z-10 flex flex-col 
+              h-12 w-12 
+              items-center justify-center 
+              text-center leading-none 
+              rounded-full
+              text-foreground
+              border-2 border-dashed 
+              border-input
+              bg-accent shadow-xs p-0.5
+            "
           >
-            {discountLabel}
+            {discountLabel.includes(" ") ? (
+              discountLabel.split(" ").map((part, idx) => (
+                <span
+                  key={idx}
+                  className={
+                    idx === 0
+                      ? "text-[11px] font-extrabold leading-tight tracking-tight"
+                      : "text-[9px] font-bold opacity-90 leading-tight uppercase"
+                  }
+                >
+                  {part}
+                </span>
+              ))
+            ) : (
+              <span className="text-[11px] font-extrabold leading-tight">
+                {discountLabel}
+              </span>
+            )}
           </div>
         )}
 
-        {/* Open / Closed Label */}
 
         <div
           className={`
@@ -108,7 +119,6 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
         </div>
       </div>
 
-      {/* Store Information */}
 
       <CardContent className="space-y-1 p-1">
         <h3

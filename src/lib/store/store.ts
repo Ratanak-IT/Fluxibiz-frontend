@@ -7,6 +7,7 @@ export interface StoreCardData {
   description: string
   location: string
   hours: string
+  discountLabel?: string | null
 }
 
 export const mockStore: StoreCardData = {

@@ -44,6 +44,11 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
             rounded-xl
         "
       >
+        {store.discountLabel && (
+          <div className="absolute top-1 left-1 z-10 rounded-md bg-red-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white shadow-xs">
+            {store.discountLabel}
+          </div>
+        )}
         <div
           className="
             relative size-20 

@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useMemo } from "react";
 import SearchFilterBar from "@/components/store/detailstore/button";
 import ProductList from "@/components/store/detailstore/product-list";
 import CartSidebar from "@/components/store/detailstore/cart-sidebar";
@@ -15,7 +15,6 @@ import {
 import { resolveMediaUrl } from "@/lib/type/cartType";
 import { StoreCardData } from "@/lib/store/store";
 import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
-
 
 function toMenuItem(item: StorefrontItemResponse): MenuItemData {
   return {
@@ -46,6 +45,86 @@ export default function StoreDetail({
   const { data: storeItems = [], isLoading: isLoadingItems } =
     useGetPublicStoreItemsQuery(slug);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedPriceRange, setSelectedPriceRange] = useState("All Prices");
+  const [sortBy, setSortBy] = useState("Default");
+
+  // Dynamically derive category options from store's real items
+  const dynamicCategories = useMemo(() => {
+    const cats = new Set<string>();
+    storeItems.forEach((item) => {
+      const name = item.itemGroup?.name?.trim();
+      if (name) cats.add(name);
+    });
+    return ["All", ...Array.from(cats)];
+  }, [storeItems]);
+
+  // Filter and sort items dynamically
+  const filteredItems = useMemo(() => {
+    let result = storeItems;
+
+    // Search query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (item) =>
+          item.name.toLowerCase().includes(q) ||
+          (item.description && item.description.toLowerCase().includes(q)) ||
+          (item.itemGroup?.name && item.itemGroup.name.toLowerCase().includes(q)) ||
+          (item.code && item.code.toLowerCase().includes(q)) ||
+          (item.sku && item.sku.toLowerCase().includes(q)) ||
+          (item.barcode && item.barcode.toLowerCase().includes(q))
+      );
+    }
+
+    // Category filter
+    if (selectedCategory !== "All") {
+      result = result.filter((item) => {
+        const catName = item.itemGroup?.name?.trim() || "Menu";
+        return catName.toLowerCase() === selectedCategory.toLowerCase();
+      });
+    }
+
+    // Price range filter
+    if (selectedPriceRange !== "All Prices") {
+      result = result.filter((item) => {
+        const price = Number(item.price ?? 0);
+        switch (selectedPriceRange) {
+          case "Under $2":
+            return price < 2;
+          case "$2 - $5":
+            return price >= 2 && price <= 5;
+          case "$5 - $10":
+            return price > 5 && price <= 10;
+          case "Over $10":
+            return price > 10;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Sort
+    const sorted = [...result];
+    if (sortBy === "Price: Low to High") {
+      sorted.sort((a, b) => Number(a.price ?? 0) - Number(b.price ?? 0));
+    } else if (sortBy === "Price: High to Low") {
+      sorted.sort((a, b) => Number(b.price ?? 0) - Number(a.price ?? 0));
+    } else if (sortBy === "Name: A to Z") {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    return sorted;
+  }, [storeItems, searchQuery, selectedCategory, selectedPriceRange, sortBy]);
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("All");
+    setSelectedPriceRange("All Prices");
+    setSortBy("Default");
+  };
+
   const resolvedImage =
     resolveMediaUrl(storeDetail?.logo) ??
     resolveMediaUrl(storeDetail?.thumbnail) ??
@@ -67,12 +146,14 @@ export default function StoreDetail({
         location: storeDetail.cityOrProvince ?? storeDetail.address ?? "Phnom Penh",
         hours: operatingHours,
         image: resolvedImage,
+        discountLabel: storeDetail.discountLabel,
       }
     : undefined;
 
   const hasRealItems = storeItems.length > 0;
+  const hasFilteredItems = filteredItems.length > 0;
 
-  const groupedItems = storeItems.reduce<Record<string, MenuItemData[]>>(
+  const groupedItems = filteredItems.reduce<Record<string, MenuItemData[]>>(
     (acc, item) => {
       const groupName = item.itemGroup?.name?.trim() || "Menu";
       if (!acc[groupName]) acc[groupName] = [];
@@ -117,15 +198,42 @@ export default function StoreDetail({
         <>
           <div className="space-y-10">
             <StoreCard store={storeData} />
-            <SearchFilterBar />
+            <SearchFilterBar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              categories={dynamicCategories}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              selectedPriceRange={selectedPriceRange}
+              onPriceRangeChange={setSelectedPriceRange}
+              sortBy={sortBy}
+              onSortByChange={setSortBy}
+              onReset={handleResetFilters}
+            />
           </div>
 
           <div className="grid grid-cols-1 items-start justify-center gap-0 pr-6 sm:pr-10 lg:grid-cols-[1fr_400px] lg:gap-0 lg:pr-25">
             <div className="min-w-0 space-y-2">
-              {hasRealItems ? (
+              {hasFilteredItems ? (
                 menuSections.map(([groupTitle, items]) => (
                   <ProductList key={groupTitle} title={groupTitle} items={items} />
                 ))
+              ) : hasRealItems ? (
+                <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
+                  <UtensilsCrossed className="h-8 w-8 text-neutral-400" />
+                  <p className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
+                    No items found matching your filters
+                  </p>
+                  <p className="max-w-xs text-sm text-muted-foreground">
+                    Try adjusting your search keyword, category, or price range.
+                  </p>
+                  <button
+                    onClick={handleResetFilters}
+                    className="mt-2 rounded-full bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90"
+                  >
+                    Reset Filters
+                  </button>
+                </div>
               ) : (
                 <div className="flex flex-col items-center gap-3 px-6 py-20 text-center">
                   <UtensilsCrossed className="h-8 w-8 text-neutral-300" />

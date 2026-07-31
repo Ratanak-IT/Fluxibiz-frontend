@@ -159,40 +159,35 @@ export default function ProductDetail({
           <h1 className="text-2xl font-bold sm:text-3xl">{product.name}</h1>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div
-              className="
-            text-2xl font-bold text-brand 
-            sm:text-3xl
-          "
-            >
-              {formatPrice(unitPrice)}
-            </div>
+  <div className="text-2xl font-bold text-brand sm:text-3xl">
+    {formatPrice(unitPrice)}
+  </div>
 
-            {product.compareAtPrice && (
-              <span className="text-md text-muted-foreground line-through">
-                {formatPrice(product.compareAtPrice)}
-              </span>
-            )}
+  {product.compareAtPrice && (
+    <span className="text-md text-muted-foreground line-through">
+      {formatPrice(product.compareAtPrice)}
+    </span>
+  )}
 
-            {discountPct !== null && (
-              <motion.span
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{
-                  duration: 1,
-                  repeat: Infinity,
-                }}
-                className="
-              inline-block rounded-full 
-              bg-destructive 
-              px-2.5 py-0.5 
-              text-xs font-semibold 
-              text-white
-            "
-              >
-                {discountPct}% OFF
-              </motion.span>
-            )}
-          </div>
+  {discountPct !== null && (
+    <motion.span
+      animate={{ scale: [1, 1.2, 1] }}
+      transition={{
+        duration: 1,
+        repeat: Infinity,
+      }}
+      className="
+        inline-flex items-center justify-center
+        rounded-full bg-destructive 
+        px-2.5 py-0.5 
+        text-xs font-semibold leading-none
+        text-white
+      "
+    >
+      {discountPct}% OFF
+    </motion.span>
+  )}
+</div>
 
           <p className="text-sm leading-relaxed text-muted-foreground">
             {product.description}

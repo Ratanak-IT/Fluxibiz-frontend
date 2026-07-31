@@ -49,7 +49,14 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
           </div>
 
           {/* Content */}
-          <div className="flex flex-1 flex-col justify-center gap-3 p-4 sm:p-6 sm:pl-0">
+          <div className="relative flex flex-1 flex-col justify-center gap-3 p-4 sm:p-6 sm:pl-0">
+            {store.discountLabel && (
+              <div className="self-start rounded-full bg-red-500/10 px-3 py-1 text-xs font-bold text-red-600 dark:bg-red-500/20 dark:text-red-400 border border-red-500/20 flex items-center gap-1.5">
+                <span>🏷️</span>
+                <span>PROMOTION: {store.discountLabel}</span>
+              </div>
+            )}
+
             <CardHeader className="gap-1 p-0">
               <CardDescription className="text-xs text-muted-foreground sm:text-sm">
                 {store.category}

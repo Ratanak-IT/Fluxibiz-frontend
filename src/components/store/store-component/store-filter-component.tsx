@@ -6,10 +6,17 @@ import { useGetBusinessCategoryQuery } from "@/features/store-api/store-api";
 import { ChevronDown, Loader2, Search } from "lucide-react";
 import { useState } from "react";
 
+interface StoreFilterComponentProps {
+    selected?: string[];
+    onSelectedChange?: (selected: string[]) => void;
+}
+
 const VisitCount = 10;
 
-export default function StoreFilterComponent() {
-    const [selected, setSelected] = useState<string[]>([]);
+export default function StoreFilterComponent({
+    selected = [],
+    onSelectedChange,
+}: StoreFilterComponentProps) {
     const [showMore, setShowMore] = useState(false);
 
     const { data: category = [], isLoading, isError } = useGetBusinessCategoryQuery();
@@ -26,9 +33,10 @@ export default function StoreFilterComponent() {
     const extraTypes = allTypes.slice(VisitCount);
 
     const toggle = (id: string) => {
-        setSelected((selected) =>
-            selected.includes(id) ? selected.filter((s) => s !== id) : [...selected, id]
-        );
+        const next = selected.includes(id)
+            ? selected.filter((s) => s !== id)
+            : [...selected, id];
+        onSelectedChange?.(next);
     };
 
     return (
