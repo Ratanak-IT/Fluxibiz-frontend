@@ -5,38 +5,64 @@ interface StickyStackCardProps {
   children: ReactNode;
 }
 
-const STACK_STEP = 34;
+const MOBILE_STACK_STEP = 14;
+const TABLET_STACK_STEP = 22;
+const DESKTOP_STACK_STEP = 34;
 
-export function StickyStackCard({ index, children }: StickyStackCardProps) {
+export function StickyStackCard({
+  index,
+  children,
+}: StickyStackCardProps) {
   const stackStyle = {
-    "--stack-shift": `${index * STACK_STEP}px`,
+    "--mobile-stack-shift": `${index * MOBILE_STACK_STEP}px`,
+    "--tablet-stack-shift": `${index * TABLET_STACK_STEP}px`,
+    "--desktop-stack-shift": `${index * DESKTOP_STACK_STEP}px`,
     zIndex: index + 10,
   } as CSSProperties;
 
   return (
     <div
       className={[
+        // Base card
         "relative mx-auto w-full",
-        "rounded-[28px]",
-        "border border-black/5 dark:border-white/10",
+        "overflow-hidden rounded-[22px]",
+        "border border-border dark:border-white/10",
         "bg-card text-card-foreground",
-        "shadow-[0_30px_80px_-28px_rgba(0,0,0,0.42)]",
-        "dark:shadow-[0_30px_80px_-24px_rgba(0,0,0,0.8)]",
 
-        "my-5 min-h-[500px]",
+        // Shadow
+        "shadow-[0_20px_50px_-24px_rgba(0,0,0,0.38)]",
+        "dark:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]",
 
-        // គ្រប់កាត៖ top ដូចគ្នា កម្ពស់ដូចគ្នា margin ដូចគ្នា
-        "lg:sticky",
+        // Sticky stack for mobile
+        "sticky",
+        "top-[72px]",
+        "translate-y-[var(--mobile-stack-shift)]",
+        "mb-[18vh]",
+        "min-h-[500px]",
+
+        // Smooth animation
+        "transition-[transform,box-shadow,border-color]",
+        "duration-500",
+        "ease-out",
+        "will-change-transform",
+
+        // Tablet
+        "sm:top-[80px]",
+        "sm:translate-y-[var(--tablet-stack-shift)]",
+        "sm:rounded-[26px]",
+        "sm:min-h-[510px]",
+        "sm:mb-[20vh]",
+
+        // Desktop
         "lg:top-[64px]",
-        "lg:translate-y-[var(--stack-shift)]",
-        "lg:my-0",
+        "lg:translate-y-[var(--desktop-stack-shift)]",
+        "lg:rounded-[28px]",
         "lg:mb-[16vh]",
         "lg:h-[clamp(470px,62vh,530px)]",
         "lg:min-h-0",
-        "lg:w-full",
-        "lg:overflow-hidden",
       ].join(" ")}
-      style={stackStyle}>
+      style={stackStyle}
+    >
       {children}
     </div>
   );

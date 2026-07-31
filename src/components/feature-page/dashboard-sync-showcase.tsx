@@ -12,15 +12,12 @@ import {
   ReceiptText,
   RefreshCw,
   Send,
-  ShoppingCart,
   Smartphone,
   Store,
-  Truck,
   type LucideIcon,
 } from "lucide-react";
 
 import { StickyStackCard } from "./sticky-stack-card";
-import { FaFacebookMessenger } from "react-icons/fa";
 
 interface DashboardRow {
   title: string;
@@ -50,7 +47,7 @@ interface ShowcaseCard {
 const SHOWCASE_CARDS: ShowcaseCard[] = [
   {
     label: "01 · Support All Business Types",
-    title: "One platform  ",
+    title: "One platform",
     accent: "Every business",
     description:
       "Built to support businesses of all sizes and industries—from retail stores and restaurants to pharmacies, supermarkets, wholesalers, and service providers.",
@@ -61,19 +58,19 @@ const SHOWCASE_CARDS: ShowcaseCard[] = [
     liveBadge: "LIVE · 12 BUSINESS TYPES",
     statusBadge: "READY TO GROW",
     orderTitle: "Retail Store",
-    orderDetail: "Inventory • POS • Customers",
+    orderDetail: "Inventory • POS",
     orderState: "Popular",
     orderIcon: Store,
     rows: [
       {
         title: "Restaurant",
-        detail: "Dine-in • Delivery • Kitchen",
+        detail: "Dine-in • Kitchen",
         icon: Store,
         iconClassName: "bg-brand text-white",
       },
       {
         title: "Pharmacy",
-        detail: "Medicine • Expiry • Barcode",
+        detail: "Medicine • Expiry",
         icon: Store,
         iconClassName: "bg-amber text-white",
       },
@@ -92,11 +89,11 @@ const SHOWCASE_CARDS: ShowcaseCard[] = [
     description:
       "Sell in-store, online, and through social media while keeping inventory and orders synchronized.",
     points: [
-      "Unified Sales Channels",
-      "Real-Time Order Sync",
-      "Social Commerce Integration",
+      "Unified sales channels",
+      "Real-time order sync",
+      "Social commerce integration",
     ],
-    liveBadge: "LIVE· OMNICHANNEL ",
+    liveBadge: "LIVE · OMNICHANNEL",
     statusBadge: "CONNECTED",
     orderTitle: "Physical Store",
     orderDetail: "POS • Walk-in Sales",
@@ -119,7 +116,7 @@ const SHOWCASE_CARDS: ShowcaseCard[] = [
         title: "Telegram",
         detail: "Messages • Order Requests",
         icon: Send,
-        iconClassName: "bg-[#d74442] text-white",
+        iconClassName: "bg-[#229ED9] text-white",
       },
     ],
   },
@@ -127,15 +124,14 @@ const SHOWCASE_CARDS: ShowcaseCard[] = [
     label: "03 · Automate Work Smarter",
     title: "Less manual work",
     accent: "More productivity",
-
     description:
-      "Automate everyday tasks to save time and reduce errors",
+      "Automate everyday tasks to save time and reduce errors.",
     points: [
       "Automatic inventory updates",
       "Smart notifications and reminders",
       "Auto-generated reports and invoices",
     ],
-    liveBadge: "LIVE · AUTOMATION ",
+    liveBadge: "LIVE · AUTOMATION",
     statusBadge: "RUNNING",
     orderTitle: "Stock Sync",
     orderDetail: "Completed",
@@ -163,84 +159,123 @@ const SHOWCASE_CARDS: ShowcaseCard[] = [
     ],
   },
   {
-  label: "04 · Manage — Anytime Anywhere",
-  title: "Your business",
-  accent: "Always with you",
-
-  description:
-    "Review sales, inventory, and business performance anytime from your phone or tablet — wherever you go.",
-
-  points: [
-    "Access your business from any device",
-    "Monitor operations in real time",
-    "Stay connected anytime, anywhere",
-  ],
-
-  liveBadge: "LIVE · MOBILE ACCESS",
-  statusBadge: "CONNECTED",
-
-  orderTitle: "Mobile Dashboard",
-  orderDetail: "iPhone • iPad • Tablet",
-  orderState: "Online",
-  orderIcon: Smartphone,
-
-  rows: [
-    {
-      title: "Sales Overview",
-      detail: "Check revenue anytime",
-      icon: BarChart3,
-      iconClassName: "bg-brand text-white",
-    },
-    {
-      title: "Inventory Status",
-      detail: "Monitor stock anywhere",
-      icon: Boxes,
-      iconClassName: "bg-amber text-white",
-    },
-    {
-      title: "Business Alerts",
-      detail: "Instant notifications",
-      icon: BellRing,
-      iconClassName: "bg-[#1046c9] text-white",
-    },
-  ],
-}
-  
+    label: "04 · Manage Anytime, Anywhere",
+    title: "Your business",
+    accent: "Always with you",
+    description:
+      "Review sales, inventory, and business performance anytime from your phone or tablet—wherever you go.",
+    points: [
+      "Access your business from any device",
+      "Monitor operations in real time",
+      "Stay connected anytime, anywhere",
+    ],
+    liveBadge: "LIVE · MOBILE ACCESS",
+    statusBadge: "CONNECTED",
+    orderTitle: "Mobile Dashboard",
+    orderDetail: "iPhone • iPad • Tablet",
+    orderState: "Online",
+    orderIcon: Smartphone,
+    rows: [
+      {
+        title: "Sales Overview",
+        detail: "Check revenue anytime",
+        icon: BarChart3,
+        iconClassName: "bg-brand text-white",
+      },
+      {
+        title: "Inventory Status",
+        detail: "Monitor stock anywhere",
+        icon: Boxes,
+        iconClassName: "bg-amber text-white",
+      },
+      {
+        title: "Business Alerts",
+        detail: "Instant notifications",
+        icon: BellRing,
+        iconClassName: "bg-[#1046c9] text-white",
+      },
+    ],
+  },
 ];
 
 function DashboardCard({ card }: { card: ShowcaseCard }) {
   const OrderIcon = card.orderIcon;
 
   return (
-    <div className="px-5 py-4 sm:px-7 lg:h-full lg:overflow-hidden lg:px-9 lg:py-3">
-      {/* Card label */}
+    <div className="px-5 py-5 sm:px-7 lg:h-full lg:overflow-hidden lg:px-9 lg:py-4">
       <p className="font-mono text-xs font-semibold tracking-[0.16em] text-brand sm:text-sm">
         {card.label}
       </p>
 
-      {/* Main two-column content */}
-      <div className="mt-3 grid items-center gap-5 lg:mt-0 lg:grid-cols-[0.95fr_1.05fr] lg:gap-8">
+      <div
+        className="
+          mt-4 grid items-center gap-7
+          lg:mt-1
+          lg:grid-cols-[1.15fr_0.85fr]
+          lg:gap-10
+          xl:grid-cols-[1.2fr_0.8fr]
+          xl:gap-12
+        "
+      >
         {/* Left content */}
-        <div className="lg:py-3">
-          <h2 className="text-4xl font-extrabold leading-[1.02] tracking-[-0.045em] text-brand sm:text-5xl lg:text-[2.55rem]">
-            {card.title}
+        <div className="min-w-0 lg:py-3">
+          <h2
+            className="
+              max-w-[760px]
+              font-sans
+              text-[2.8rem]
+              font-medium
+              leading-[0.92]
+              tracking-[-0.055em]
+              text-brand
+              sm:text-[3.6rem]
+              md:text-[4.1rem]
+             lg:text-[2 rem]
+             xl:text-[2 rem]
+              2xl:text-[2 rem]
+            "
+          >
+            <span className="block">{card.title}</span>
 
-            <br />
-
-            <span className="text-amber">{card.accent}</span>
+            <span className="mt-1 block text-amber">
+              {card.accent}
+            </span>
           </h2>
 
-          <p className="mt-3 max-w-xl text-[15px] leading-6 text-[#626d65] dark:text-muted-foreground lg:text-base">
+          <p
+            className="
+              mt-5 max-w-xl
+              text-[15px]
+              leading-6
+              text-muted-foreground
+              sm:text-base
+              lg:text-[1.05rem]
+              lg:leading-7
+            "
+          >
             {card.description}
           </p>
 
-          <ul className="mt-4 space-y-2.5">
+          <ul className="mt-5 space-y-3">
             {card.points.map((point) => (
               <li
                 key={point}
-                className="flex items-center gap-3 text-base font-medium text-[#344239] dark:text-foreground"
+                className="
+                  flex items-center gap-3
+                  text-[15px]
+                  font-medium
+                  text-foreground
+                  sm:text-base
+                "
               >
-                <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand-soft">
+                <span
+                  className="
+                    grid size-6 shrink-0 place-items-center
+                    rounded-full
+                    bg-brand-soft
+                    dark:bg-brand/15
+                  "
+                >
                   <Check
                     className="size-3.5 text-brand"
                     strokeWidth={2.5}
@@ -253,26 +288,58 @@ function DashboardCard({ card }: { card: ShowcaseCard }) {
           </ul>
         </div>
 
-        {/* Right dashboard content */}
-        <div>
-          {/* Status badges */}
+        {/* Right dashboard */}
+        <div className="min-w-0">
           <div className="flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#083b22] px-3.5 py-1.5 text-xs font-bold text-white sm:text-sm">
+            <span
+              className="
+                inline-flex items-center gap-2
+                rounded-full
+                bg-[#083b22]
+                px-3.5 py-1.5
+                text-xs font-bold text-white
+                sm:text-sm
+              "
+            >
               <span className="size-2 rounded-full bg-amber" />
-
               {card.liveBadge}
             </span>
 
-            <span className="inline-flex items-center gap-2 rounded-full bg-muted px-3.5 py-1.5 text-xs font-semibold text-muted-foreground sm:text-sm">
+            <span
+              className="
+                inline-flex items-center gap-2
+                rounded-full
+                bg-muted
+                px-3.5 py-1.5
+                text-xs font-semibold
+                text-muted-foreground
+                sm:text-sm
+              "
+            >
               <span className="size-2 rounded-full bg-brand" />
-
               {card.statusBadge}
             </span>
           </div>
 
-          {/* Current order */}
-          <div className="mt-3 flex items-center gap-3 rounded-[16px] border border-secondary bg-amber-soft px-3.5 py-2.5">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-white">
+          <div
+            className="
+              mt-4 flex items-center gap-3
+              rounded-[18px]
+              border border-secondary
+              bg-amber-soft
+              px-3.5 py-3
+              dark:border-amber/30
+              dark:bg-amber/10
+            "
+          >
+            <span
+              className="
+                grid size-11 shrink-0 place-items-center
+                rounded-xl
+                bg-brand
+                text-white
+              "
+            >
               <OrderIcon className="size-5" />
             </span>
 
@@ -286,25 +353,38 @@ function DashboardCard({ card }: { card: ShowcaseCard }) {
               </p>
             </div>
 
-
-            <span className="shrink-0 rounded-full bg-[#FEB90D] px-3.5 py-1 text-sm font-bold text-[#3d2a00]">
+            <span
+              className="
+                shrink-0 rounded-full
+                bg-[#FEB90D]
+                px-3.5 py-1
+                text-sm font-bold
+                text-[#3d2a00]
+              "
+            >
               {card.orderState}
             </span>
           </div>
 
-          {/* Dashboard rows */}
-          <div className="mt-2.5 space-y-2.5">
+          <div className="mt-3 space-y-2.5">
             {card.rows.map((item) => {
               const Icon = item.icon;
 
               return (
                 <div
                   key={item.title}
-                  className="flex items-center gap-3 rounded-[16px] border border-border bg-background px-3.5 py-2.5"
+                  className="
+                    flex items-center gap-3
+                    rounded-[18px]
+                    border border-border
+                    bg-card
+                    px-3.5 py-3
+                    shadow-sm
+                  "
                 >
                   <span
                     className={[
-                      "grid size-10 shrink-0 place-items-center rounded-xl",
+                      "grid size-11 shrink-0 place-items-center rounded-xl",
                       item.iconClassName,
                     ].join(" ")}
                   >
@@ -312,7 +392,7 @@ function DashboardCard({ card }: { card: ShowcaseCard }) {
                   </span>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-base font-bold text-foreground">
+                    <p className="truncate text-base font-bold text-card-foreground">
                       {item.title}
                     </p>
 
@@ -336,20 +416,36 @@ export function DashboardSyncShowcase() {
   return (
     <section
       aria-label="Dashboard and inventory sync showcase"
-      className="relative bg-[linear-gradient(180deg,#f8fbf8_0%,#edf8f0_100%)] px-5 pb-4 pt-14 dark:bg-[linear-gradient(180deg,#0b1210_0%,#101915_100%)] md:px-8 lg:pb-6 lg:pt-20"
+      className="
+        relative
+        overflow-visible
+        px-4
+        pb-8
+        pt-8
+        dark:bg-background
+        sm:px-5
+        md:px-8
+        md:pt-10
+        lg:pb-6
+        lg:pt-20
+      "
     >
-      <div className="relative mx-auto w-full max-w-6xl">
-  {SHOWCASE_CARDS.map((card, index) => (
-    <StickyStackCard
-      key={`${card.label}-${index}`}
-      index={index}
-    >
-      <DashboardCard card={card} />
-    </StickyStackCard>
-  ))}
+      <div className="relative mx-auto w-full max-w-7xl">
+        {SHOWCASE_CARDS.map((card, index) => (
+          <StickyStackCard
+            key={`${card.label}-${index}`}
+            index={index}
+          >
+            <DashboardCard card={card} />
+          </StickyStackCard>
+        ))}
 
-  <div aria-hidden className="hidden lg:block lg:h-[45vh]" />
-</div>
+        {/* Extra scrolling space for the sticky animation */}
+        <div
+          aria-hidden="true"
+          className="h-[25vh] sm:h-[35vh] lg:h-[45vh]"
+        />
+      </div>
     </section>
   );
 }

@@ -25,7 +25,7 @@ export default function FeaturePage() {
       <DashboardSyncShowcase />
       <ToolsBento />
       <FeatureModules />
-       <DayTimeline />
+      <DayTimeline />
       <FeatureBento />
       <TechnologyMarquee />
       <FeatureCta />
