@@ -34,33 +34,24 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     <div
       className="
         group relative mx-auto mt-3 
-        w-68 cursor-pointer 
-        overflow-hidden pt-0 
-        transition-shadow
+        w-65 cursor-pointer p-2
+        overflow-hidden  rounded-lg duration-100 hover:duration-100 hover:shadow-sm  hover:scale-98 ease-out transition-transform
+      
     "
     >
       {/* Store Image */}
 
-      <div
-        className="
-            relative grow 
-            h-38 w-full 
-            overflow-hidden 
-            rounded-lg
-        "
-      >
+      <div className="  relative grow  h-38 w-full overflow-hidden rounded-lg   ">
         <Image
           src={image}
           fill
           alt={`${name} cover`}
           sizes="(max-width: 768px) 50vw, 272px"
-          className="
-                object-cover 
-                transition-transform 
-                duration-300 
-                ease-out 
-                group-hover:scale-110"/>
+          className=" object-cover   "
+        />
+
         {/* Discount Label */}
+
         {discountLabel && (
           <div
             className="
@@ -68,15 +59,21 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
                     z-10 flex 
                     h-11 w-11 
                     items-center justify-center
+
                     rounded-full
                     text-foreground
+
                     text-xs font-bold
+
                     border-2 border-dashed 
                     border-input
-                    bg-red-500">
+                    bg-accent
+                "
+          >
             {discountLabel}
           </div>
         )}
+
         {/* Open / Closed Label */}
 
         <div
@@ -84,8 +81,10 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
                 absolute top-2 right-2 
                 z-10 rounded-full 
                 px-3 py-1 
+
                 text-xs font-semibold
                 text-primary-foreground
+
                 ${isOpen ? "bg-primary" : "bg-muted"}
             `}
         >
@@ -110,7 +109,9 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
           className="
                 line-clamp-1 
                 text-sm 
-                text-muted-foreground">
+                text-muted-foreground
+            "
+        >
           {description}
         </p>
 
@@ -147,7 +148,6 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
                         text-primary
                     "
             />
-
             <span>{hours}</span>
           </div>
         </div>
