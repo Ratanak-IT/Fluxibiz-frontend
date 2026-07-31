@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { ArrowRightIcon } from "lucide-react";
+import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
+import { ArrowRightIcon } from 'lucide-react';
+import { Chart } from './Chart';
 
 export interface AboutHeroSectionProps {
   eyebrow?: string;
@@ -166,26 +168,20 @@ export default function HeroSection({
               strokeWidth="2"
               strokeDasharray="6 7"
             />
+            <circle r="4.5" className="fill-brand [filter:drop-shadow(0_0_6px_var(--ah-glow))]">
+              <animateMotion dur="2.6s" repeatCount="indefinite" path={connectorPath} />
+            </circle>
+          </svg>
 
-            <circle
-  r="4.5"
-  className="fill-[#FFC83D] [filter:drop-shadow(0_0_6px_rgba(255,200,61,0.55))]"
->
-  <animateMotion
-    dur="2.6s"
-    repeatCount="indefinite"
-    path={connectorPath}
-  />
-</circle>
-</svg>
+          {/* pulsing badge */}
+          <div className="animate-pulse-badge absolute left-[24%] top-[39%] z-[3] flex h-[30px] w-[30px] items-center justify-center rounded-full bg-brand text-[0.85rem] text-white shadow-[0_8px_18px_-6px_var(--ah-glow)]">
+            ★
+          </div>
+          <Chart/>
 
-{/* Pulsing indicator */}
-<div className="animate-pulse-badge absolute left-[24%] top-[39%] z-[3] flex size-[30px] items-center justify-center rounded-full bg-[#FFC83D] text-[0.85rem] text-[#003377] shadow-[0_8px_18px_-6px_rgba(255,200,61,0.55)]">
-  ★
-</div>
 
-          {/* Revenue card */}
-          <div className="absolute left-[2%] top-[8%] w-[20%] min-w-[160px]">
+          {/* dashboard chart card */}
+          <div className="absolute left-[20%] top-[90%] w-[20%] min-w-[160px]">
             <div className="animate-float-dashboard border-line w-full rounded-[14px] border bg-surface p-[0.7rem] opacity-0 shadow-[0_1px_2px_var(--ah-shadow-sm),0_14px_28px_-14px_var(--ah-shadow-md),0_34px_60px_-34px_var(--ah-shadow-lg)]">
               <div className="text-ink mb-[0.45rem] text-[0.82rem] font-extrabold tracking-[-0.01em]">
                 ${Number(revenue).toLocaleString("en-US")}
@@ -208,19 +204,16 @@ export default function HeroSection({
             </div>
           </div>
 
-          {/* Main overview card */}
-          <div className="absolute left-[29%] top-[12%] w-[50%] min-w-[300px]">
-            <div className="animate-float-overview border-line min-h-[200px] w-full rounded-[14px] border bg-surface-dark px-[1.1rem] pb-[0.9rem] pt-4 text-white/70 opacity-0 shadow-[0_1px_2px_var(--ah-shadow-md),0_18px_34px_-16px_var(--ah-shadow-md),0_40px_70px_-40px_var(--ah-glow)]">
-              <div className="mb-[0.7rem] text-[0.85rem] font-semibold">
-                Today&apos;s overview
-              </div>
-
+          {/* today's overview: breathing equalizer */}
+          <div className="absolute left-[29%] top-[15%] w-[50%] min-w-[300px]">
+            <div className="animate-float-overview border-line min-h-[200px] w-full rounded-[14px] border bg-surface-dark dark:bg-neutral-800 px-[1.1rem] pb-[0.9rem] pt-4 text-white/70 opacity-0 shadow-[0_1px_2px_var(--ah-shadow-md),0_18px_34px_-16px_var(--ah-shadow-md),0_40px_70px_-40px_var(--ah-glow)]">
+              <div className="mb-[0.7rem] text-[0.85rem] font-semibold">Today&apos;s overview</div>
               <div className="mb-[0.7rem] flex h-[200px] items-end gap-[2px]">
                 {BAR_HEIGHTS.map((height, index) => (
                   <span
                     key={index}
                     className={`animate-eq flex-1 origin-bottom rounded-[2px] ${
-                      index % 3 === 0 ? "bg-brand" : "bg-white/20"
+                      i % 3 === 0 ? 'bg-brand' : 'bg-white/90'
                     }`}
                     style={
                       {
@@ -244,26 +237,16 @@ export default function HeroSection({
             </div>
           </div>
 
-          {/* New order notification */}
-          <div className="absolute right-0 top-[3%] w-[31%] min-w-[240px]">
-            <div className="animate-float-rating border-line w-full rounded-[14px] border bg-surface px-[1.05rem] py-2 opacity-0 shadow-[0_1px_2px_var(--ah-shadow-sm),0_14px_28px_-14px_var(--ah-shadow-md),0_34px_60px_-34px_var(--ah-shadow-lg)]">
-              <div className="mb-3 flex items-center gap-2">
-                <span className="rounded-full bg-secondary px-[0.6rem] py-[0.22rem] text-[0.66rem] font-semibold text-black">
-                  Order #1048
-                </span>
-
-                <span className="text-faint text-[0.7rem]">2m ago</span>
-              </div>
-
-              <div className="text-ink mb-2 text-[0.88rem] font-bold">
-                New order paid.
-              </div>
-
-              <div className="text-[0.75rem] leading-[1.6] text-[var(--ah-muted)]">
-                Your inventory and dashboard updated automatically.
+          {/* rating badge
+          <div className="absolute right-0 top-[4%] w-[26%] min-w-[220px]">
+            <div className="animate-float-rating border-line flex w-full flex-col gap-[0.3rem] rounded-[14px] border bg-surface px-4 py-[0.7rem] opacity-0 shadow-[0_1px_2px_var(--ah-shadow-sm),0_14px_28px_-14px_var(--ah-shadow-md),0_34px_60px_-34px_var(--ah-shadow-lg)]">
+              <span className="text-brand-secondary text-[0.85rem] tracking-[1px]">★★★★★</span>
+              <div className="text-faint flex flex-col text-[0.72rem]">
+                <strong className="text-ink text-[0.88rem]">5.0 / 5.0</strong>
+                <span>Loved by {Number(loved).toLocaleString('en-US')}+ businesses</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Payment form */}
           <div className="absolute right-[1%] top-[57%] w-[30%] min-w-[160px]">
@@ -286,7 +269,23 @@ export default function HeroSection({
             </div>
           </div>
 
-          {/* Successful payment receipt */}
+          {/* order notification card */}
+          <div className="absolute left-[29%] top-[70%] w-[30%] min-w-[220px]">
+            <div className="animate-float-order border-line w-full rounded-[14px] border bg-surface px-[1.05rem] py-[0.9rem] opacity-0 shadow-[0_1px_2px_var(--ah-shadow-sm),0_14px_28px_-14px_var(--ah-shadow-md),0_34px_60px_-34px_var(--ah-shadow-lg)]">
+              <div className="mb-[0.4rem] flex items-center gap-2">
+                <span className="rounded-full bg-text px-[0.55rem] py-[0.2rem] text-[0.66rem] font-semibold text-gray-100 dark:text-gray-900">
+                  Order #1048
+                </span>
+                <span className="text-faint text-[0.7rem]">2m ago</span>
+              </div>
+              <div className="text-ink mb-[0.2rem] text-[0.85rem] font-bold">New order paid.</div>
+              <div className="text-[var(--ah-muted)] text-[0.75rem] leading-[1.4]">
+                Your inventory and dashboard updated automatically.
+              </div>
+            </div>
+          </div>
+
+          {/* payment successful receipt */}
           <div className="absolute left-[2%] top-[55%] w-[22%] min-w-[150px]">
             <div className="animate-float-receipt border-line w-full rounded-[14px] border bg-surface p-[0.8rem] text-center opacity-0 shadow-[0_1px_2px_var(--ah-shadow-sm),0_14px_28px_-14px_var(--ah-shadow-md),0_34px_60px_-34px_var(--ah-shadow-lg)]">
               <div className="mb-[0.5rem] flex justify-center gap-1">

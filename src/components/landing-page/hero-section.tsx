@@ -256,6 +256,7 @@ function HeroWave() {
                     strokeDasharray="6 7"
                     opacity="0.7"
                 />
+                
                 <path
                     d="M0 132C160 170 320 84 480 110C640 136 720 206 880 182C1040 158 1120 68 1280 96C1360 110 1400 124 1440 118V300H0Z"
                     fill="var(--brand)"
@@ -290,15 +291,15 @@ export function HeroSection() {
             <FloatingDots containerRef={dotsRef} />
 
             <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-16 px-5 md:px-8 lg:grid-cols-[1.05fr_1fr]">
-                <div className="relative">
-                    <Badge className="gap-2 rounded-full bg-brand-soft py-1 pl-1 pr-3 text-brand-ink hover:bg-brand-soft">
+                <div className="py-8 relative">
+                    {/* <Badge className="gap-2 rounded-full bg-brand-soft py-1 pl-1 pr-3 text-brand-ink hover:bg-brand-soft">
                         <span className="rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                             News
                         </span>
                         <span className="text-xs font-medium">
-                            Explore our new AI features
+                            Explore our new business features
                         </span>
-                    </Badge>
+                    </Badge> */}
 
                     <h1 className="mt-6 font-display text-[2.85rem] font-extrabold leading-[1.02] tracking-tight text-brand-ink md:text-[4rem]">
                         Run your whole{" "}
@@ -337,21 +338,7 @@ export function HeroSection() {
                         complexity.
                     </p>
 
-                    <div className="mt-8 flex flex-wrap items-center gap-6">
-                        <Button
-                            size="lg"
-                            className="h-12 rounded-full bg-brand-deep px-7 text-sm font-semibold hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 dark:hover:bg-green-600"
-                        >
-                            Start a free trial
-                        </Button>
-                        <a
-                            href="#features"
-                            className="group inline-flex items-center gap-2 border-b-2 border-amber pb-0.5 text-sm font-medium text-brand-ink"
-                        >
-                            Learn more
-                            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                        </a>
-                    </div>
+                   
                 </div>
 
                 {/* ── Preview cluster ──────────────────────────────────── */}
