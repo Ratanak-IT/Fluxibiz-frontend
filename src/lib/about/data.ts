@@ -8,7 +8,7 @@ export const mentors: Mentor[] = [
 
 export const team: TeamMember[] = [
   { name: "Liep Sokkeang",  role: "Fullstack", level: "Team Leader", avatar: "/image/team/members/keang.jpg",  github: "https://github.com/Sokkeang-Liep", telegram: "https://t.me/Liepsokkeang", linkedin: "https://www.linkedin.com/in/liep-sokkeang-23bbb6341/" },
-  { name: "Srey ChanChhay", role: "Fullstack", level: "Team Leader", avatar: "/image/team/members/chhay.jpg", github: "https://github.com/Chanchhay", telegram: "https://t.me/chanchhayy", linkedin: "" },
+  { name: "Srey ChanChhay", role: "Fullstack", level: "Team Leader", avatar: "/image/team/members/chhay.jpg", github: "https://github.com/Chanchhay", telegram: "https://t.me/chanchhayy", linkedin: "https://www.linkedin.com/in/srey-chanchhay-885748335/" },
   { name: "Pech Phakley",   role: "Fullstack",  level: "Member",      avatar: "/image/team/members/lokbong.png",   github: "https://github.com/pechphakley", telegram: "https://t.me/phakley", linkedin: "https://www.linkedin.com/in/pech-phakley-undefined-53b5a8404/" },
   { name: "Dorn Dana",      role: "Fullstack", level: "Member",      avatar: "/image/team/members/dana.jpg",      github: "https://github.com/danadorn", telegram: "https://t.me/dorndana", linkedin: "https://www.linkedin.com/in/dana-dorn-242724205/" },
   { name: "Maiy Leangngim",     role: "Fullstack", level: "Member",      avatar: "/image/team/members/leangngim.JPG",       github: "https://github.com/maiyleangngim", telegram: "https://t.me/maiyleangngim", linkedin: "https://www.linkedin.com/in/maiy-leangngim-969715382/" },
