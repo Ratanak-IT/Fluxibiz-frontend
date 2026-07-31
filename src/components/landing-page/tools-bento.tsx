@@ -61,8 +61,8 @@ function ToolCard({
 
 export function ToolsBento() {
   return (
-    <Section>
-    <Eyebrow>01 — Everything in one place</Eyebrow>
+    <Section className="dark: bg-background">
+    <Eyebrow>Everything in one place</Eyebrow>
 
     <SectionHeading className="mt-3">
         Four tools. One counter.

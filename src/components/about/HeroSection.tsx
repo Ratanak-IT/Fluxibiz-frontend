@@ -43,13 +43,13 @@ function useCountUp(target: number, duration = 1500, decimals = 0) {
 }
 
 export default function HeroSection({
-  eyebrow = 'About FluxiBiz',
+  eyebrow = 'Explore FluxiBiz’s powerful features',
   headlineHighlight = 'One Platform',
   headlineSuffix = 'To Run Your Whole Business',
-  description = 'Founded in Phnom Penh in 2026 by a group of IT enthusiasts, FluxiBiz brings everything a business needs to sell, manage and grow into one simple place.',
+  description = 'The all-in-one system built to help small businesses take orders, track stock, and grow revenue — without the complexity',
   primaryCta = 'Start for free',
   secondaryCta = 'Contact us',
-  tags = ['No card required', 'Cancel anytime', 'Built in Cambodia'],
+  tags = ['Free Trail', 'Cancel anytime', 'Built in Cambodia'],
   className = '',
 }: AboutHeroSectionProps) {
   const revenue = useCountUp(12480, 1600);
@@ -60,7 +60,7 @@ export default function HeroSection({
 
   return (
     <section
-      className={`ah-scope font-googlesans text-ink relative mx-auto flex w-full max-w-[1900px] flex-wrap items-center gap-10 overflow-hidden px-[5.5%] py-20 antialiased bg-[radial-gradient(1200px_500px_at_80%_-10%,var(--ah-brand-soft),transparent_60%),var(--background)] ${className}`}
+      className={`ah-scope font-googlesans text-ink relative mx-auto flex w-full max-w-[1900px] flex-wrap items-center gap-10 overflow-hidden px-[5.5%] py-20 antialiased bg-[radial-gradient(1200px_500px_at_80%_-10%,var(--ah-brand-soft),transparent_60%),var(--background)] dark:bg-background ${className}` }
     >
       {/* -------- left copy -------- */}
       <div className="relative z-[2] max-w-[640px] flex-[1_1_380px]">
@@ -77,7 +77,7 @@ export default function HeroSection({
           <span className="text-ink">{headlineSuffix}</span>
         </h1>
 
-        <p className="text-[var(--ah-muted)] animate-fade-up-2 m-0 mb-[1.9rem] max-w-[46ch] translate-y-[14px] text-[clamp(1.1rem,1.7vw,1.35rem)] leading-[1.65] opacity-0">
+        <p className="text-[var(--ah-muted)] animate-fade-up-2 m-0 mb-[1.9rem] max-w-[46ch] translate-y-[14px] text-[clamp(1.1rem,1.7vw,1.35rem)] leading-[1.65] opacity-0 dark:text-white">
           {description}
         </p>
 
@@ -99,7 +99,7 @@ export default function HeroSection({
           </button>
         </div>
 
-        <div className="text-faint animate-fade-up-4 flex flex-wrap items-center gap-[0.55rem] text-[0.82rem] opacity-0">
+        <div className="text-faint animate-fade-up-4 flex flex-wrap items-center gap-[0.55rem] text-[0.82rem] opacity-0 dark:text-white">
           {tags.filter(Boolean).map((t, i) => (
             <React.Fragment key={t}>
               {i > 0 && <span className="bg-input h-1 w-1 rounded-full" />}
@@ -254,16 +254,6 @@ export default function HeroSection({
             </div>
           </div>
 
-          {/* sale banner (your asset) */}
-          <div className="absolute right-[1%] top-[76%] w-[40%] min-w-[210px]">
-            <Image
-              src="/about/image.png"
-              width={500}
-              height={500}
-              alt="Mega sale"
-              className="animate-sale block h-auto w-full rounded-[14px]"
-            />
-          </div>
         </div>
       </div>
     </section>
