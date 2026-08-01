@@ -39,12 +39,22 @@ const BASE_COOKIE = {
 export const TRANSIENT_COOKIE = { ...BASE_COOKIE, maxAge: 60 * 10 };
 
 
-export function appOrigin(requestOrigin: string) {
-    return process.env.NEXT_PUBLIC_APP_URL || requestOrigin;
+export function appOrigin(requestOrigin?: string, reqHeaders?: Headers) {
+    if (process.env.NEXT_PUBLIC_APP_URL) {
+        return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+    }
+    if (reqHeaders) {
+        const host = reqHeaders.get("x-forwarded-host") || reqHeaders.get("host");
+        const proto = reqHeaders.get("x-forwarded-proto") || "http";
+        if (host) {
+            return `${proto}://${host}`.replace(/\/$/, "");
+        }
+    }
+    return requestOrigin ? requestOrigin.replace(/\/$/, "") : "";
 }
 
-export function redirectUri(requestOrigin: string) {
-    return `${appOrigin(requestOrigin)}/api/auth/callback`;
+export function redirectUri(requestOrigin?: string, reqHeaders?: Headers) {
+    return `${appOrigin(requestOrigin, reqHeaders)}/api/auth/callback`;
 }
 
 export function safeReturnTo(value: string | null | undefined) {
