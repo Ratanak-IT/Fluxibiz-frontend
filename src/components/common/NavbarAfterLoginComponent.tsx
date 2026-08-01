@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   ChevronDown,
   LogOut,
@@ -13,11 +14,15 @@ import {
 
 import englishFlag from "../../../public/image/flags/english.png";
 import khmerFlag from "../../../public/image/flags/khmer.png";
-import fluxibizLogo from "../../../public/image/logo.png";
+import fluxibizLogo from "../../../public/image/footer/fluxiBix-logo(2).png";
 
-import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/common/ThemeToggle";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,8 +38,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
-
 
 type NavbarAfterLoginComponentProps = {
   user?: {
@@ -52,10 +55,6 @@ type NavigationItem = {
 };
 
 const navigationItems: NavigationItem[] = [
-  {
-    label: "Store",
-    href: "/store",
-  },
   {
     label: "Feature",
     href: "/feature",
@@ -80,46 +79,65 @@ export default function NavbarAfterLoginComponent({
   cartCount = 3,
   onLogout,
 }: NavbarAfterLoginComponentProps) {
+  const pathname = usePathname();
+
+  const isActiveRoute = (href: string) => {
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-white  text-foreground backdrop-blur dark:bg-background">
+    <header className="sticky top-0 z-50 w-full border-b border-[#e5e7eb] bg-white text-[#1f2937]">
       <div className="mx-auto flex h-[55px] max-w-[1330px] items-center justify-between px-6 sm:px-10">
-        {/* Desktop Logo */}
-        <Link href="/" aria-label="FluxiBiz home">
+        {/* Logo */}
+        <Link href="/store" aria-label="FluxiBiz store">
           <Image
             src={fluxibizLogo}
             alt="FluxiBiz"
             width={240}
             height={90}
             priority
-            className="h-auto w-32.5 object-contain"
+            className="h-auto w-33 translate-y-2 object-contain"
           />
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-8 lg:flex">
-          {navigationItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {item.label}
-            </Link>
-          ))}
+        {/* Desktop navigation */}
+        <nav className="hidden h-full items-center gap-8 lg:flex">
+          {navigationItems.map((item) => {
+            const isActive = isActiveRoute(item.href);
+
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                className={
+                  isActive
+                    ? "relative flex h-full items-center text-sm font-semibold text-primary transition-colors after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-full after:rounded-t-full after:bg-primary after:content-['']"
+                    : "relative flex h-full items-center text-sm font-semibold text-[#6b7280] transition-colors hover:text-primary"
+                }
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Desktop actions */}
-        <div className="hidden items-center gap-4 lg:flex">
+        <div className="hidden items-center gap-4 text-[#4b5563] lg:flex">
           <ThemeToggle />
+
           <LanguageDropdown />
 
           <CartButton cartCount={cartCount} />
 
-          <UserDropdown user={user} onLogout={onLogout} />
+          <UserDropdown
+            user={user}
+            onLogout={onLogout}
+          />
         </div>
 
         {/* Mobile actions */}
-        <div className="flex items-center gap-1 lg:hidden">
+        <div className="flex items-center gap-1 text-[#4b5563] lg:hidden">
           <CartButton cartCount={cartCount} />
 
           <ThemeToggle />
@@ -132,7 +150,18 @@ export default function NavbarAfterLoginComponent({
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="size-12"
+                  className="
+                    size-12
+                    !bg-transparent
+                    text-[#4b5563]
+                    shadow-none
+                    hover:!bg-transparent
+                    hover:text-secondary
+                    focus-visible:!bg-transparent
+                    active:!bg-transparent
+                    dark:!bg-transparent
+                    dark:hover:!bg-transparent
+                  "
                   aria-label="Open navigation menu"
                 />
               }
@@ -140,58 +169,80 @@ export default function NavbarAfterLoginComponent({
               <Menu size={32} />
             </SheetTrigger>
 
-            <SheetContent side="right" className="w-[340px] sm:w-[400px]">
+            <SheetContent
+              side="right"
+              className="w-[340px] border-l border-[#e5e7eb] bg-white text-[#1f2937] sm:w-[400px]"
+            >
               <SheetHeader>
                 <SheetTitle className="text-left">
-                  <Image
-                    src={fluxibizLogo}
-                    alt="FluxiBiz"
-                    width={180}
-                    height={80}
-                    className="h-auto w-30 object-contain"
-                  />
+                  <Link href="/store" aria-label="FluxiBiz store">
+                    <Image
+                      src={fluxibizLogo}
+                      alt="FluxiBiz"
+                      width={180}
+                      height={80}
+                      className="h-auto w-30 object-contain"
+                    />
+                  </Link>
                 </SheetTitle>
               </SheetHeader>
 
               <div className="mt-8 flex flex-col gap-2">
                 <ThemeToggle mobile />
 
-                {/* User info card */}
-                <div className="mb-3 flex items-center gap-3 rounded-xl bg-muted p-3">
+                {/* User information */}
+                <div className="mb-3 flex items-center gap-3 rounded-xl bg-[#f3f4f6] p-3">
                   <Avatar className="size-11">
                     {user.image && (
-                      <AvatarImage src={user.image} alt={user.name} />
+                      <AvatarImage
+                        src={user.image}
+                        alt={user.name}
+                      />
                     )}
-                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+
+                    <AvatarFallback className="bg-[#e5e7eb] text-[#1f2937]">
+                      {getInitials(user.name)}
+                    </AvatarFallback>
                   </Avatar>
 
                   <div className="min-w-0">
-                    <p className="truncate font-bold text-foreground">
+                    <p className="truncate font-bold text-[#1f2937]">
                       {user.name}
                     </p>
-                    <p className="truncate text-sm font-medium text-muted-foreground">
+
+                    <p className="truncate text-sm font-medium text-[#6b7280]">
                       {user.email}
                     </p>
                   </div>
                 </div>
 
-                {navigationItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className="block rounded-lg px-3 py-2.5 text-base font-bold text-foreground transition-colors hover:text-foreground dark:text-text dark:hover:text-secondary"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {/* Mobile navigation */}
+                {navigationItems.map((item) => {
+                  const isActive = isActiveRoute(item.href);
 
-                <div className="my-2 border-t border-border" />
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      aria-current={isActive ? "page" : undefined}
+                      className={
+                        isActive
+                          ? "relative block rounded-lg px-3 py-2.5 text-base font-bold text-primary transition-colors after:absolute after:bottom-1 after:left-3 after:h-[2px] after:w-10 after:rounded-full after:bg-primary after:content-['']"
+                          : "block rounded-lg px-3 py-2.5 text-base font-bold text-[#1f2937] transition-colors hover:text-primary"
+                      }
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+
+                <div className="my-2 border-t border-[#e5e7eb]" />
 
                 <LanguageDropdown mobile />
 
                 <Link
                   href="/profile"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-foreground transition-colors hover:bg-muted"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-[#1f2937] transition-colors hover:bg-[#f3f4f6]"
                 >
                   <UserRound size={19} />
                   Profile
@@ -199,7 +250,7 @@ export default function NavbarAfterLoginComponent({
 
                 <Link
                   href="/settings"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-foreground transition-colors hover:bg-muted"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-[#1f2937] transition-colors hover:bg-[#f3f4f6]"
                 >
                   <Settings size={19} />
                   Settings
@@ -222,8 +273,6 @@ export default function NavbarAfterLoginComponent({
   );
 }
 
-
-
 function CartButton({ cartCount }: { cartCount: number }) {
   return (
     <Button
@@ -234,18 +283,44 @@ function CartButton({ cartCount }: { cartCount: number }) {
         />
       }
       variant="ghost"
-      size="icon"
-      className="relative rounded-full"
+      className="
+        group
+        relative
+        flex
+        size-12
+        items-center
+        justify-center
+        rounded-full
+        !bg-transparent
+        p-0
+        text-[#4b5563]
+        shadow-none
+        hover:!bg-transparent
+        focus-visible:!bg-transparent
+        active:!bg-transparent
+        aria-expanded:!bg-transparent
+        dark:!bg-transparent
+        dark:hover:!bg-transparent
+        dark:focus-visible:!bg-transparent
+        dark:active:!bg-transparent
+      "
     >
-      <ShoppingCart size={25} />
+      <ShoppingCart
+        className="
+          !size-5
+          stroke-current
+          transition-colors
+          duration-200
+          group-hover:stroke-secondary
+        "
+        strokeWidth={2.3}
+      />
 
-        {cartCount > 0 && (
-          <span
-            className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white"
-          >
-            {cartCount > 99 ? "99+" : cartCount}
-          </span>
-        )}
+      {cartCount > 0 && (
+        <span className="absolute right-0 top-0 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+          {cartCount > 99 ? "99+" : cartCount}
+        </span>
+      )}
     </Button>
   );
 }
@@ -264,34 +339,66 @@ function UserDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={<Button
-          type="button"
-          variant="ghost"
-          className="h-auto rounded-full p-1"
-          aria-label="Open user menu"
-        />}
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            className="
+              group
+              h-auto
+              rounded-full
+              !bg-transparent
+              p-1
+              shadow-none
+              hover:!bg-transparent
+              focus-visible:!bg-transparent
+              active:!bg-transparent
+              aria-expanded:!bg-transparent
+              dark:!bg-transparent
+              dark:hover:!bg-transparent
+              dark:focus-visible:!bg-transparent
+              dark:active:!bg-transparent
+              dark:aria-expanded:!bg-transparent
+            "
+            aria-label="Open user menu"
+          />
+        }
       >
-          <Avatar className="size-11 border border-border">
-            {user.image && <AvatarImage src={user.image} alt={user.name} />}
-            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-          </Avatar>
+        <Avatar className="size-11 border border-[#e5e7eb] transition-colors duration-200 group-hover:border-secondary">
+          {user.image && (
+            <AvatarImage
+              src={user.image}
+              alt={user.name}
+            />
+          )}
+
+          <AvatarFallback className="bg-[#f3f4f6] text-[#1f2937]">
+            {getInitials(user.name)}
+          </AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-64">
+      <DropdownMenuContent
+        align="end"
+        className="w-64 border-[#e5e7eb] bg-white text-[#1f2937]"
+      >
         <DropdownMenuLabel>
           <div className="flex flex-col gap-1">
-            <p className="font-medium text-foreground">{user.name}</p>
-            <p className="truncate text-xs font-normal text-muted-foreground">
+            <p className="font-medium text-[#1f2937]">
+              {user.name}
+            </p>
+
+            <p className="truncate text-xs font-normal text-[#6b7280]">
               {user.email}
             </p>
           </div>
         </DropdownMenuLabel>
 
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-[#e5e7eb]" />
 
         <DropdownMenuItem
           render={<Link href="/profile" />}
-          className="cursor-pointer gap-2"
+          className="cursor-pointer gap-2 text-[#1f2937] focus:bg-[#f3f4f6] focus:text-[#1f2937]"
         >
           <UserRound size={17} />
           Profile
@@ -299,13 +406,13 @@ function UserDropdown({
 
         <DropdownMenuItem
           render={<Link href="/settings" />}
-          className="cursor-pointer gap-2"
+          className="cursor-pointer gap-2 text-[#1f2937] focus:bg-[#f3f4f6] focus:text-[#1f2937]"
         >
           <Settings size={17} />
           Settings
         </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-[#e5e7eb]" />
 
         <DropdownMenuItem
           onClick={onLogout}
@@ -318,7 +425,12 @@ function UserDropdown({
     </DropdownMenu>
   );
 }
-function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
+
+function LanguageDropdown({
+  mobile = false,
+}: {
+  mobile?: boolean;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -328,8 +440,49 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             variant="ghost"
             className={
               mobile
-                ? "w-full justify-start gap-3 text-base font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
-                : "h-10 gap-2 rounded-full px-3 text-sm font-semibold hover:bg-transparent hover:text-inherit aria-expanded:bg-transparent aria-expanded:text-inherit"
+                ? `
+                    group
+                    w-full
+                    justify-start
+                    gap-3
+                    !bg-transparent
+                    text-base
+                    font-semibold
+                    text-[#1f2937]
+                    shadow-none
+                    hover:!bg-transparent
+                    hover:text-secondary
+                    focus-visible:!bg-transparent
+                    active:!bg-transparent
+                    aria-expanded:!bg-transparent
+                    dark:!bg-transparent
+                    dark:hover:!bg-transparent
+                    dark:focus-visible:!bg-transparent
+                    dark:active:!bg-transparent
+                    dark:aria-expanded:!bg-transparent
+                  `
+                : `
+                    group
+                    h-10
+                    gap-2
+                    rounded-full
+                    !bg-transparent
+                    px-3
+                    text-sm
+                    font-semibold
+                    text-[#4b5563]
+                    shadow-none
+                    hover:!bg-transparent
+                    hover:text-secondary
+                    focus-visible:!bg-transparent
+                    active:!bg-transparent
+                    aria-expanded:!bg-transparent
+                    dark:!bg-transparent
+                    dark:hover:!bg-transparent
+                    dark:focus-visible:!bg-transparent
+                    dark:active:!bg-transparent
+                    dark:aria-expanded:!bg-transparent
+                  `
             }
           />
         }
@@ -339,16 +492,22 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
           alt="English"
           width={40}
           height={28}
-          className="h-5 w-8  object-cover"
+          className="h-5 w-8 object-cover"
         />
 
         {mobile && <span>English</span>}
 
-        <ChevronDown size={16} />
+        <ChevronDown
+          size={16}
+          className="stroke-current transition-colors duration-200 group-hover:stroke-secondary"
+        />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align={mobile ? "start" : "end"} className="p-2">
-        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium">
+      <DropdownMenuContent
+        align={mobile ? "start" : "end"}
+        className="border-[#e5e7eb] bg-white p-2 text-[#1f2937]"
+      >
+        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium text-[#1f2937] focus:bg-[#f3f4f6] focus:text-[#1f2937]">
           <Image
             src={englishFlag}
             alt=""
@@ -356,17 +515,19 @@ function LanguageDropdown({ mobile = false }: { mobile?: boolean }) {
             height={24}
             className="h-5 w-8 object-cover"
           />
+
           English
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium">
+        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium text-[#1f2937] focus:bg-[#f3f4f6] focus:text-[#1f2937]">
           <Image
             src={khmerFlag}
             alt=""
             width={32}
             height={24}
-            className="h-5 w-8  object-cover"
+            className="h-5 w-8 object-cover"
           />
+
           Khmer
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -383,4 +544,3 @@ function getInitials(name: string) {
     .slice(0, 2)
     .toUpperCase();
 }
-
