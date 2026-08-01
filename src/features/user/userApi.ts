@@ -14,6 +14,15 @@ const baseQuery = fetchBaseQuery({
     },
 });
 
+export type UpdateUserProfileArgs = {
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    gender?: string;
+    address?: string;
+    file?: File | null;
+};
+
 export const userApi = createApi({
     reducerPath: "userApi",
     baseQuery,
@@ -26,16 +35,55 @@ export const userApi = createApi({
 
         updateMyProfile: builder.mutation<
             UserProfileResponse,
-            Partial<UserProfileResponse>
+            UpdateUserProfileArgs
         >({
-            query: (body) => ({
-                url: "/user-profiles/me",
-                method: "PATCH",
-                body,
+            query: (args) => {
+                const formData = new FormData();
+                if (args.firstName && args.firstName.trim() !== "") {
+                    formData.append("firstName", args.firstName.trim());
+                }
+                if (args.lastName && args.lastName.trim() !== "") {
+                    formData.append("lastName", args.lastName.trim());
+                }
+                if (args.phoneNumber && args.phoneNumber.trim().length >= 8) {
+                    formData.append("phoneNumber", args.phoneNumber.trim());
+                }
+                if (
+                    args.gender &&
+                    ["MALE", "FEMALE", "OTHER", "UNSPECIFIED"].includes(
+                        args.gender.toUpperCase()
+                    )
+                ) {
+                    formData.append("gender", args.gender.toUpperCase());
+                }
+                if (args.address && args.address.trim() !== "") {
+                    formData.append("address", args.address.trim());
+                }
+                if (args.file) {
+                    formData.append("file", args.file);
+                }
+
+                return {
+                    url: "/user-profiles/me",
+                    method: "PATCH",
+                    body: formData,
+                };
+            },
+            invalidatesTags: ["Profile"],
+        }),
+
+        removeProfilePicture: builder.mutation<void, void>({
+            query: () => ({
+                url: "/user-profiles/me/picture",
+                method: "DELETE",
             }),
             invalidatesTags: ["Profile"],
         }),
     }),
 });
 
-export const { useGetMyProfileQuery, useUpdateMyProfileMutation } = userApi;
+export const {
+    useGetMyProfileQuery,
+    useUpdateMyProfileMutation,
+    useRemoveProfilePictureMutation,
+} = userApi;

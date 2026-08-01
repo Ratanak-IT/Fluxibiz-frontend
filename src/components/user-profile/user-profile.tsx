@@ -1,14 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link2, Pencil, User, Check, Loader2 } from "lucide-react";
+import { Link2, Pencil, User, Check, Loader2, Camera, Trash2 } from "lucide-react";
 import { useAuth } from "@/features/auth/useAuth";
-import { useGetMyProfileQuery, useUpdateMyProfileMutation } from "@/features/user/userApi";
+import {
+  useGetMyProfileQuery,
+  useUpdateMyProfileMutation,
+  useRemoveProfilePictureMutation,
+} from "@/features/user/userApi";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 
 const connectedProviders = [
@@ -45,13 +49,20 @@ export default function UserProfile() {
     skip: status !== "authenticated",
   });
   const [updateProfile, { isLoading: isSaving }] = useUpdateMyProfileMutation();
+  const [removeProfilePicture, { isLoading: isDeletingPhoto }] =
+    useRemoveProfilePictureMutation();
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState("UNSPECIFIED");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -68,7 +79,7 @@ export default function UserProfile() {
       setEmail(profile.email ?? user?.email ?? "");
       setPhone(profile.phoneNumber ?? "");
       setAddress(profile.address ?? "");
-      setGender(profile.gender ?? "");
+      setGender(profile.gender ? profile.gender.toUpperCase() : "UNSPECIFIED");
     } else if (user) {
       setFirstName(user.firstName ?? "");
       setLastName(user.lastName ?? "");
@@ -76,75 +87,171 @@ export default function UserProfile() {
     }
   }, [profile, user]);
 
-  const fullName = [firstName, lastName].filter(Boolean).join(" ") || user?.name || "User Profile";
-  const avatarSrc = resolveMediaUrl(profile?.profilePicture) ?? user?.image ?? "https://github.com/shadcn.png";
+  // Handle local image file selection
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  }
+
+  // Handle profile photo removal
+  async function handleRemovePhoto() {
+    try {
+      await removeProfilePicture().unwrap();
+      setSelectedFile(null);
+      setImagePreview(null);
+    } catch (err) {
+      console.error("Failed to remove profile picture", err);
+      setSaveError("Failed to remove profile picture.");
+    }
+  }
+
+  const fullName =
+    [firstName, lastName].filter(Boolean).join(" ") || user?.name || "User Profile";
+
+  const resolvedApiAvatar = resolveMediaUrl(profile?.profilePicture);
+  const avatarSrc =
+    imagePreview ||
+    resolvedApiAvatar ||
+    user?.image ||
+    "https://github.com/shadcn.png";
+
   const fallbackInitials = (fullName.slice(0, 2) || "UP").toUpperCase();
+  const hasCustomPicture = Boolean(selectedFile || profile?.profilePicture);
 
   async function handleSaveChanges() {
     setSaveError(null);
     setSaveSuccess(false);
 
+    if (phone && phone.trim() !== "" && phone.trim().length < 8) {
+      setSaveError("Phone number must be at least 8 digits (e.g. +855 12 345 678).");
+      return;
+    }
+
     try {
       await updateProfile({
         firstName,
         lastName,
-        email,
         phoneNumber: phone,
         address,
         gender,
+        file: selectedFile,
       }).unwrap();
 
+      setSelectedFile(null);
+      setImagePreview(null);
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2500);
-    } catch (err) {
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err: any) {
       console.error("Failed to update profile", err);
-      setSaveError("Could not save profile changes. Please try again.");
+      const errMsg =
+        err?.data?.message ||
+        err?.data?.error ||
+        err?.data?.detail ||
+        "Could not save profile changes. Please check your input.";
+      setSaveError(errMsg);
     }
   }
 
   if (isLoading || status === "loading") {
     return (
       <div className="flex h-96 items-center justify-center text-muted-foreground">
-        <Loader2 className="h-6 w-6 animate-spin" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#00932A]" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-background">
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
       <div className="container mx-auto px-4 py-8 md:px-6 2xl:max-w-[1400px]">
         <div className="mx-auto max-w-3xl">
-          {/* Header */}
-          <div className="mb-8 flex items-center gap-6">
-            <div className="relative shrink-0">
-              <Avatar className="size-28 border-2 border-white shadow-sm sm:size-32 dark:border-border">
-                <AvatarImage src={avatarSrc} alt={fullName} />
-                <AvatarFallback className="text-2xl">{fallbackInitials}</AvatarFallback>
+          {/* Header & Avatar Upload Section */}
+          <div className="mb-8 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+            <div className="group relative shrink-0">
+              <Avatar className="size-28 border-2 border-white shadow-md sm:size-32 dark:border-border">
+                <AvatarImage src={avatarSrc} alt={fullName} className="object-cover" />
+                <AvatarFallback className="bg-muted text-2xl font-bold">
+                  {fallbackInitials}
+                </AvatarFallback>
               </Avatar>
+
+              {/* Upload trigger button */}
               <button
                 type="button"
-                aria-label="Update profile photo"
-                className="absolute bottom-1 right-1 flex size-9 items-center justify-center rounded-full bg-green-600 text-white shadow-sm ring-2 ring-gray-50 transition-colors hover:bg-green-700 dark:bg-primary dark:ring-background"
+                onClick={() => fileInputRef.current?.click()}
+                aria-label="Upload profile photo"
+                className="absolute bottom-1 right-1 flex size-9 items-center justify-center rounded-full bg-[#00932A] text-white shadow-md ring-2 ring-white transition-transform hover:scale-105 hover:bg-[#007d24] dark:ring-background"
               >
-                <Pencil className="size-4" />
+                <Camera className="size-4.5" />
               </button>
             </div>
-            <div>
-              <h1 className="text-2xl font-semibold text-neutral-900 sm:text-3xl dark:text-foreground">
-                {fullName}
-              </h1>
-              <p className="text-sm text-muted-foreground sm:text-base">
-                {profile?.role ? `Role: ${profile.role}` : "Manage your account settings"}
+
+            <div className="flex flex-1 flex-col justify-center">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl dark:text-foreground">
+                  {fullName}
+                </h1>
+                {profile?.role && (
+                  <span className="rounded-full bg-[#00932A]/10 px-3 py-0.5 text-xs font-semibold text-[#00932A]">
+                    {profile.role}
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+                {profile?.email || user?.email || "Manage your account information and preferences"}
               </p>
+
+              {/* Photo Actions */}
+              <div className="mt-3 flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-8 gap-1.5 rounded-full border-gray-300 text-xs font-semibold hover:border-[#00932A] hover:text-[#00932A]"
+                >
+                  <Pencil className="size-3.5" />
+                  Change Photo
+                </Button>
+
+                {hasCustomPicture && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRemovePhoto}
+                    disabled={isDeletingPhoto}
+                    className="h-8 gap-1.5 rounded-full text-xs font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    {isDeletingPhoto ? (
+                      <Loader2 className="size-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="size-3.5" />
+                    )}
+                    Remove
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="space-y-6">
-            {/* Personal Information */}
+            {/* Personal Information Card */}
             <Card className="border-0 p-0 shadow-sm">
               <CardContent className="p-5 sm:p-6">
-                <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-neutral-900 dark:text-foreground">
-                  <User className="size-4 text-green-600 dark:text-primary" />
+                <h2 className="mb-5 flex items-center gap-2 text-base font-bold text-neutral-900 dark:text-foreground">
+                  <User className="size-4.5 text-[#00932A]" />
                   Personal Information
                 </h2>
 
@@ -152,7 +259,7 @@ export default function UserProfile() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="firstName"
-                      className="text-xs font-medium text-muted-foreground"
+                      className="text-xs font-semibold text-muted-foreground"
                     >
                       First Name
                     </Label>
@@ -160,14 +267,15 @@ export default function UserProfile() {
                       id="firstName"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
-                      className="h-11 rounded-full px-4"
+                      placeholder="Enter first name"
+                      className="h-11 rounded-full px-4 border-gray-200 focus-visible:ring-[#00932A]"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label
                       htmlFor="lastName"
-                      className="text-xs font-medium text-muted-foreground"
+                      className="text-xs font-semibold text-muted-foreground"
                     >
                       Last Name
                     </Label>
@@ -175,30 +283,31 @@ export default function UserProfile() {
                       id="lastName"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
-                      className="h-11 rounded-full px-4"
+                      placeholder="Enter last name"
+                      className="h-11 rounded-full px-4 border-gray-200 focus-visible:ring-[#00932A]"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label
                       htmlFor="email"
-                      className="text-xs font-medium text-muted-foreground"
+                      className="text-xs font-semibold text-muted-foreground"
                     >
-                      Email Address
+                      Email Address (Read-only)
                     </Label>
                     <Input
                       id="email"
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-11 rounded-full px-4"
+                      disabled
+                      className="h-11 rounded-full px-4 bg-neutral-100 text-neutral-500 opacity-80 cursor-not-allowed dark:bg-neutral-800"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label
                       htmlFor="phone"
-                      className="text-xs font-medium text-muted-foreground"
+                      className="text-xs font-semibold text-muted-foreground"
                     >
                       Phone Number
                     </Label>
@@ -207,14 +316,35 @@ export default function UserProfile() {
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="h-11 rounded-full px-4"
+                      placeholder="+855 12 345 678"
+                      className="h-11 rounded-full px-4 border-gray-200 focus-visible:ring-[#00932A]"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label
+                      htmlFor="gender"
+                      className="text-xs font-semibold text-muted-foreground"
+                    >
+                      Gender
+                    </Label>
+                    <select
+                      id="gender"
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value)}
+                      className="flex h-11 w-full rounded-full border border-gray-200 bg-background px-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00932A]"
+                    >
+                      <option value="UNSPECIFIED">Unspecified</option>
+                      <option value="MALE">Male</option>
+                      <option value="FEMALE">Female</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label
                       htmlFor="address"
-                      className="text-xs font-medium text-muted-foreground"
+                      className="text-xs font-semibold text-muted-foreground"
                     >
                       Address
                     </Label>
@@ -222,23 +352,8 @@ export default function UserProfile() {
                       id="address"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      className="h-11 rounded-full px-4"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="gender"
-                      className="text-xs font-medium text-muted-foreground"
-                    >
-                      Gender
-                    </Label>
-                    <Input
-                      id="gender"
-                      value={gender}
-                      onChange={(e) => setGender(e.target.value)}
-                      placeholder="e.g. Male, Female, Other"
-                      className="h-11 rounded-full px-4"
+                      placeholder="Phnom Penh, Cambodia"
+                      className="h-11 rounded-full px-4 border-gray-200 focus-visible:ring-[#00932A]"
                     />
                   </div>
                 </div>
@@ -248,32 +363,33 @@ export default function UserProfile() {
             {/* Connected Accounts */}
             <Card className="border-0 p-0 shadow-sm">
               <CardContent className="p-5 sm:p-6">
-                <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-neutral-900 dark:text-foreground">
-                  <Link2 className="size-4 text-green-600 dark:text-primary" />
+                <h2 className="mb-5 flex items-center gap-2 text-base font-bold text-neutral-900 dark:text-foreground">
+                  <Link2 className="size-4.5 text-[#00932A]" />
                   Connected Accounts
                 </h2>
 
                 <div className="divide-y divide-neutral-100 dark:divide-border">
-                  {connectedProviders.map(({ name, email, connected, icon }) => (
+                  {connectedProviders.map(({ name, email, icon }) => (
                     <div
                       key={name}
                       className="flex flex-col items-start justify-between gap-3 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex size-10 items-center justify-center rounded-md border border-neutral-200 bg-white dark:border-border">
+                        <div className="flex size-10 items-center justify-center rounded-lg border border-neutral-200 bg-white dark:border-border">
                           {icon}
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-neutral-900 dark:text-foreground">
+                          <p className="text-sm font-semibold text-neutral-900 dark:text-foreground">
                             {name}
                           </p>
-                          <p className="text-sm text-muted-foreground">{email}</p>
+                          <p className="text-xs text-muted-foreground">{email}</p>
                         </div>
                       </div>
 
                       <Button
                         variant="outline"
-                        className="rounded-full border-muted bg-muted/50 text-foreground cursor-default"
+                        size="sm"
+                        className="rounded-full border-gray-200 bg-gray-50 text-xs font-semibold text-neutral-700 cursor-default dark:border-border dark:bg-muted"
                       >
                         Connected
                       </Button>
@@ -283,25 +399,28 @@ export default function UserProfile() {
               </CardContent>
             </Card>
 
-            <div className="flex flex-col items-end gap-2">
+            {/* Submit Action & Alerts */}
+            <div className="flex flex-col items-end gap-3 pt-2">
               <Button
                 onClick={handleSaveChanges}
                 disabled={isSaving}
-                className="h-11 rounded-full bg-green-600 px-6 font-semibold text-white hover:bg-green-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
+                className="h-11 min-w-[140px] rounded-full bg-[#00932A] px-8 text-sm font-bold text-white shadow-sm hover:bg-[#007d24] focus-visible:ring-2 focus-visible:ring-[#00932A]"
               >
                 {saveSuccess ? (
                   <span className="flex items-center gap-2">
-                    <Check className="h-4 w-4" /> Saved
+                    <Check className="size-4 stroke-[3]" /> Saved Successfully
                   </span>
                 ) : isSaving ? (
-                  "Saving..."
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="size-4 animate-spin" /> Saving...
+                  </span>
                 ) : (
                   "Save Changes"
                 )}
               </Button>
 
               {saveError && (
-                <p className="text-xs text-destructive">{saveError}</p>
+                <p className="text-xs font-medium text-destructive">{saveError}</p>
               )}
             </div>
           </div>

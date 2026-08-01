@@ -85,11 +85,11 @@ export default function OrderSummaryComponent({ store }: { store: StoreCart }) {
                     </Link>
                 )}
 
-                <p className="text-center text-xs text-neutral-500 dark:text-muted-foreground">
+                {/* <p className="text-center text-xs text-neutral-500 dark:text-muted-foreground">
                     {pendingElsewhere
                         ? `Finish or cancel your payment at ${pendingElsewhere.storeName} to pay ${store.name}.`
                         : `This pays ${store.name} only.`}
-                </p>
+                </p> */}
             </CardFooter>
         </Card>
     );

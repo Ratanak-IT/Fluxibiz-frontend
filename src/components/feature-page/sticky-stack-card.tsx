@@ -1,49 +1,69 @@
-"use client";
-
-import { motion, useTransform, type MotionValue } from "framer-motion";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 interface StickyStackCardProps {
   index: number;
-  total: number;
-  /** Smoothed scroll progress (0 → 1) shared across the whole stack */
-  progress: MotionValue<number>;
   children: ReactNode;
 }
 
-/**
- * A single full-screen card that pins to the top of the viewport.
- * As the next card slides up over it, this one scales to 0.96 and fades to 0.9.
- * Only `transform` (scale) + `opacity` are animated — both GPU-composited.
- */
+const MOBILE_STACK_STEP = 14;
+const TABLET_STACK_STEP = 22;
+const DESKTOP_STACK_STEP = 34;
+
 export function StickyStackCard({
   index,
-  total,
-  progress,
   children,
 }: StickyStackCardProps) {
-  const isLast = index === total - 1;
-
-  // Each card "owns" a slice of the total scroll timeline.
-  // Card i finishes pinning at i/(total-1); the next card covers it by (i+1)/(total-1).
-  const step = total > 1 ? 1 / (total - 1) : 1;
-  const start = index * step;
-  const end = isLast ? start + 0.001 : Math.min((index + 1) * step, 1);
-
-  const scale = useTransform(progress, [start, end], [1, isLast ? 1 : 0.96]);
-  const opacity = useTransform(progress, [start, end], [1, isLast ? 1 : 0.9]);
+  const stackStyle = {
+    "--mobile-stack-shift": `${index * MOBILE_STACK_STEP}px`,
+    "--tablet-stack-shift": `${index * TABLET_STACK_STEP}px`,
+    "--desktop-stack-shift": `${index * DESKTOP_STACK_STEP}px`,
+    zIndex: index + 10,
+  } as CSSProperties;
 
   return (
- <div
-  className="sticky top-[6svh] flex h-[88svh] items-center justify-center"
-  style={{ zIndex: index + 1 }}
->
-  <motion.article
-    style={{ scale, opacity, willChange: "transform" }}
-    className="h-[78svh] min-h-[560px] max-h-[680px] w-full overflow-hidden rounded-[32px] bg-white dark:bg-card shadow-[0_40px_90px_-25px_rgba(15,23,42,0.35)] dark:shadow-[0_40px_90px_-25px_rgba(0,0,0,0.6)] ring-1 ring-slate-900/5 dark:ring-white/10 transition-shadow duration-500 hover:shadow-[0_50px_110px_-25px_rgba(15,23,42,0.45)] dark:hover:shadow-[0_50px_110px_-25px_rgba(0,0,0,0.7)]"
-  >
-    {children}
-  </motion.article>
-</div>
+    <div
+      className={[
+        // Base card
+        "relative mx-auto w-full",
+        "overflow-hidden rounded-[22px]",
+        "border border-border dark:border-white/10",
+        "bg-card text-card-foreground",
+
+        // Shadow
+        "shadow-[0_20px_50px_-24px_rgba(0,0,0,0.38)]",
+        "dark:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]",
+
+        // Sticky stack for mobile
+        "sticky",
+        "top-[72px]",
+        "translate-y-[var(--mobile-stack-shift)]",
+        "mb-[18vh]",
+        "min-h-[500px]",
+
+        // Smooth animation
+        "transition-[transform,box-shadow,border-color]",
+        "duration-500",
+        "ease-out",
+        "will-change-transform",
+
+        // Tablet
+        "sm:top-[80px]",
+        "sm:translate-y-[var(--tablet-stack-shift)]",
+        "sm:rounded-[26px]",
+        "sm:min-h-[510px]",
+        "sm:mb-[20vh]",
+
+        // Desktop
+        "lg:top-[64px]",
+        "lg:translate-y-[var(--desktop-stack-shift)]",
+        "lg:rounded-[28px]",
+        "lg:mb-[16vh]",
+        "lg:h-[clamp(470px,62vh,530px)]",
+        "lg:min-h-0",
+      ].join(" ")}
+      style={stackStyle}
+    >
+      {children}
+    </div>
   );
 }
