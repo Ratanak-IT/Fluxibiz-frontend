@@ -1,4 +1,3 @@
-import {ContactSection} from "@/components/about/ContactSection";
 import FeaturesSection from "@/components/about/FeaturesSection";
 import MentorsSection from "@/components/about/MentorsSection";
 import MissionSection from "@/components/about/MissionSection";
@@ -19,7 +18,6 @@ export default function AboutPage() {
       <FeaturesSection/>
       <MissionSection/>
       <VisionSection stepDurationMs={900} dwellMs={1200}/>
-      <ContactSection />
       <MentorsSection />
     </main>
   );
