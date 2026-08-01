@@ -1,11 +1,24 @@
+"use client";
+
 import { Card, CardTitle } from "@/components/ui/card";
 import { StoreCardComponentProps } from "./store-cart-component";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+
+const DEFAULT_STORE_IMAGE =
+  "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&auto=format&fit=crop&q=60";
 
 const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
   const { name, description, location, image, isOpen } = store;
+  const [imgSrc, setImgSrc] = useState<string>(
+    image && image.trim() ? image : DEFAULT_STORE_IMAGE
+  );
+
+  useEffect(() => {
+    setImgSrc(image && image.trim() ? image : DEFAULT_STORE_IMAGE);
+  }, [image]);
 
   return (
     <Card
@@ -14,9 +27,11 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
         cursor-pointer 
         flex-row items-start 
         gap-3 
-        rounded-sm
+        p-2
+        rounded-xl
         text-card-foreground
-        transition-shadow
+
+        hover:duration-100 hover:shadow-sm  hover:scale-99 ease-out transition-transform
     "
     >
       {/* Logo */}
@@ -29,19 +44,28 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
             rounded-xl
         "
       >
-        <Image
-          src={image}
-          width={100}
-          height={100}
-          alt={name}
+        {store.discountLabel && (
+          <div className="absolute top-1 left-1 z-10 rounded-md bg-red-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white shadow-xs">
+            {store.discountLabel}
+          </div>
+        )}
+        <div
           className="
-                object-cover 
-                transition-transform 
-                duration-300 
-                ease-out 
-                group-hover:scale-110
-            "
-        />
+            relative size-20 
+            shrink-0 
+            overflow-hidden 
+            rounded-xl
+        "
+        >
+          <Image
+            src={imgSrc}
+            width={100}
+            height={100}
+            alt={name}
+            onError={() => setImgSrc(DEFAULT_STORE_IMAGE)}
+            className="object-cover transition-transform duration-300 ease-out group-hover:scale-110 "
+          />
+        </div>
       </div>
 
       {/* Content */}
@@ -83,22 +107,13 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
                 line-clamp-1 
                 truncate 
                 text-sm 
-                text-muted-foreground">
+                text-muted-foreground"
+        >
           {description}
         </div>
 
-        <div
-          className="
-                flex items-center 
-                gap-1 
-                text-sm 
-                text-muted-foreground">
-          <MapPin
-            className="
-                    h-4 w-4 
-                    shrink-0 
-                    text-primary" />
-
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <MapPin className="h-4 w-4 shrink-0 text-primary" />
           <span className="truncate">{location}</span>
         </div>
       </div>

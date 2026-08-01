@@ -46,13 +46,11 @@ export function ProductCard({ item }: ProductCardProps) {
             sm:text-xl " >
           {item.name}
         </CardTitle>
-
         <p
           className=" text-2xl font-bold 
             text-destructive sm:text-lg" >
           $ {item.price}
         </p>
-
 
         <CardDescription
           className="
@@ -63,9 +61,7 @@ export function ProductCard({ item }: ProductCardProps) {
           {item.description}
         </CardDescription>
 
-
       </CardHeader>
-
 
       <div>
         <span
@@ -79,9 +75,6 @@ export function ProductCard({ item }: ProductCardProps) {
 
 
     </div>
-
-
-    {/* Right Column: Image & Plus Action */}
 
     <div
       className="
@@ -97,8 +90,6 @@ export function ProductCard({ item }: ProductCardProps) {
         height={112}
         className="h-full w-full object-contain"
       />
-
-
 
       <Button
         type="button"
@@ -125,11 +116,7 @@ export function ProductCard({ item }: ProductCardProps) {
         />
 
       </Button>
-
-
     </div>
-
-
   </div>
 </Card>
   );

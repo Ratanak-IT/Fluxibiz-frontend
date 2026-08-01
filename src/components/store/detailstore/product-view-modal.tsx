@@ -1,219 +1,403 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Minus, Plus, ShoppingBag, Check, X, ArrowUpRight } from "lucide-react";
+import {
+  Minus,
+  Plus,
+  ShoppingBag,
+  Check,
+  X,
+  ImageOff,
+  LogIn,
+  Truck,
+  ShieldCheck,
+  RotateCcw,
+} from "lucide-react";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { formatPrice } from "@/lib/store/productdetail/product";
+import { useAddToCartMutation } from "@/features/cart/cartApi";
+import { useAuth } from "@/features/auth/useAuth";
+import { MenuItemData } from "@/lib/store/detailstore/detailstore";
 import {
-  formatPrice,
-  computeDiscountPct,} from "@/lib/store/productdetail/product";
+  StorefrontItemResponse,
+  ItemVariant,
+  primaryItemImage,
+  itemImageUrl,
+} from "@/lib/type/storeType";
 import {
-  useAddToCartMutation,
-  useGetProductQuery,} from "@/lib/store/productdetail/productApi";
+  resolveMediaUrl,
+  apiErrorMessage,
+  isUnauthorized,
+} from "@/lib/type/cartType";
 
 interface ProductQuickViewModalProps {
-  productId: string;
+  productId?: string;
+  item?: MenuItemData;
+  rawItem?: StorefrontItemResponse;
   open: boolean;
-  onOpenChange: (open: boolean) => void;}
+  onOpenChange: (open: boolean) => void;
+}
 
 export default function ProductQuickViewModal({
-  productId,
+  item,
+  rawItem,
   open,
   onOpenChange,
 }: ProductQuickViewModalProps) {
-  const { data: product, isLoading, isError } = useGetProductQuery(productId);
-  const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
+  const product: StorefrontItemResponse | undefined = rawItem ?? item?.rawItem;
 
-  const [sugarLevel, setSugarLevel] = useState("");
-  const [size, setSize] = useState("");
+  const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
+  const { isAuthenticated, status: authStatus, login } = useAuth();
+
+  const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+  const [needsLogin, setNeedsLogin] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  const selectedSize = product?.sizes.find((s) => s.value === size);
-  const unitPrice = product ? product.price + (selectedSize?.priceModifier ?? 0) : 0;
-  const discountPct = product
-    ? computeDiscountPct(product.price, product.compareAtPrice)
-    : null;
+  const name = product?.name ?? item?.name ?? "Product";
+  const description = product?.description ?? item?.description ?? "";
 
-  
+  const allImages = useMemo(() => {
+    const list: string[] = [];
+    if (product?.images && product.images.length > 0) {
+      product.images.forEach((img) => {
+        const url = itemImageUrl(img);
+        if (url) list.push(url);
+      });
+    }
+    if (list.length === 0 && item?.image) {
+      const url = resolveMediaUrl(item.image);
+      if (url) list.push(url);
+    }
+    return list;
+  }, [product, item]);
+
+  const mainImage = useMemo(
+    () => allImages[activeImageIndex] ?? primaryItemImage(product) ?? resolveMediaUrl(item?.image) ?? null,
+    [allImages, activeImageIndex, product, item],
+  );
+
+  const basePrice =
+    product?.price !== undefined && product?.price !== null
+      ? Number(product.price)
+      : item?.price
+        ? parseFloat(item.price)
+        : 0;
+
+  const variants: ItemVariant[] = product?.variants ?? [];
+
+  const attributes: Record<string, unknown> =
+    product?.attributes && typeof product.attributes === "object"
+      ? product.attributes
+      : {};
+
+  useEffect(() => {
+    if (!open) return;
+
+    setQuantity(1);
+    setJustAdded(false);
+    setAddError(null);
+    setNeedsLogin(false);
+    setActiveImageIndex(0);
+    setSelectedVariant(variants.length > 0 ? variants[0] : null);
+
+    const initialAttrs: Record<string, string> = {};
+    Object.entries(attributes).forEach(([key, val]) => {
+      if (Array.isArray(val) && val.length > 0) {
+        initialAttrs[key] = String(val[0]);
+      } else if (typeof val === "string" || typeof val === "number") {
+        initialAttrs[key] = String(val);
+      }
+    });
+    setSelectedAttributes(initialAttrs);
+
+    const rafId = requestAnimationFrame(() => {
+      const modalEl = document.querySelector('[data-slot="dialog-content"]');
+      if (modalEl) {
+        modalEl.scrollTop = 0;
+      }
+    });
+
+    return () => cancelAnimationFrame(rafId);
+  }, [open, product?.id]);
+
+  const unitPrice =
+    selectedVariant?.price !== undefined && selectedVariant?.price !== null
+      ? Number(selectedVariant.price)
+      : basePrice;
+
   async function handleAddToCart() {
-    if (!product) return;
+    setAddError(null);
+    setNeedsLogin(false);
+
+    if (!product?.businessId || !product?.id) {
+      setAddError("This product is not available for ordering yet.");
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setNeedsLogin(true);
+      return;
+    }
+
     try {
       await addToCartMutation({
-        productId: product.id,
-        sugarLevel,
-        size,
+        businessId: product.businessId,
+        itemId: product.id,
+        variantId: selectedVariant?.id,
         quantity,
       }).unwrap();
+
       setJustAdded(true);
-      setTimeout(() => setJustAdded(false), 1500);
+      setTimeout(() => {
+        setJustAdded(false);
+        onOpenChange(false);
+      }, 1200);
     } catch (err) {
-      console.error("Failed to add to cart", err);
+      if (isUnauthorized(err)) {
+        setNeedsLogin(true);
+        return;
+      }
+      setAddError(apiErrorMessage(err, "Could not add to cart. Please try again."));
     }
   }
 
+  const canOrder = Boolean(product?.businessId && product?.id);
+  const disabled = isAdding || authStatus === "loading" || !canOrder;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm gap-0 overflow-hidden rounded-3xl border-none p-0 shadow-2xl sm:max-w-md [&>button]:hidden">
-        {isLoading || !product ? (
-          <div className="flex flex-col gap-3 p-8">
-            <div className="h-40 w-full animate-pulse rounded-2xl bg-muted" />
-            <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
-            <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
-          </div>
-        ) : isError ? (
-          <div className="p-8 text-sm text-destructive">
-            Couldn&apos;t load this product. Try again in a moment.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1">
-            {/* Image */}
-            <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-              <Image
-                src={product.images[0]}
-                alt={product.name}
-                fill
-                sizes="450px"
-                className="object-cover"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+      <DialogContent className="relative flex max-h-[82vh] w-[92vw] max-w-3xl flex-col overflow-hidden rounded-3xl border-none bg-background p-4 sm:p-6 md:max-w-4xl md:p-7 shadow-2xl [&>button]:hidden">
+        <DialogTitle className="sr-only">{name}</DialogTitle>
 
-              <button
-                onClick={() => onOpenChange(false)}
-                aria-label="Close"
-                className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-neutral-700 shadow-sm backdrop-blur transition-colors hover:bg-white dark:bg-black/60 dark:text-neutral-200 dark:hover:bg-black/80"
-              >
-                <X className="h-4 w-4" />
-              </button>
+        <button
+          autoFocus
+          onClick={() => onOpenChange(false)}
+          aria-label="Close"
+          className="absolute right-4 top-4 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-muted/80 text-foreground transition-colors hover:bg-muted dark:bg-black/60 dark:text-neutral-200"
+        >
+          <X className="h-4 w-4" />
+        </button>
 
-              {discountPct !== null && (
-                <motion.span
-                  animate={{ scale: [1, 1.08, 1] }}
-                  transition={{ duration: 1.2, repeat: Infinity }}
-                  className="absolute left-3 top-3 rounded-full bg-destructive px-2.5 py-1 text-[10px] font-semibold text-white shadow-sm"
-                >
-                  {discountPct}% OFF
-                </motion.span>
+        <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden md:flex-row md:gap-7">
+          {/* Left Column: Product Showcase */}
+          <div className="flex shrink-0 flex-col gap-3 max-h-[300px] sm:flex-row sm:max-h-[340px] md:max-h-full md:w-1/2">
+            {allImages.length > 1 && (
+              <div className="flex shrink-0 gap-2 overflow-x-auto py-1 sm:flex-col sm:overflow-y-auto">
+                {allImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border-2 transition-all sm:h-14 sm:w-14 ${
+                      activeImageIndex === idx
+                        ? "border-[#00932A] ring-2 ring-[#00932A]/20"
+                        : "border-border/60 opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <Image
+                      src={img}
+                      alt={`${name} thumbnail ${idx + 1}`}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="relative aspect-square w-full flex-1 overflow-hidden rounded-2xl border border-border/40 bg-muted/30">
+              {mainImage ? (
+                <Image
+                  src={mainImage}
+                  alt={name}
+                  fill
+                  unoptimized
+                  sizes="(max-width: 768px) 100vw, 450px"
+                  className="object-cover transition-all duration-300"
+                />
+              ) : (
+                <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <ImageOff className="h-10 w-10 text-muted-foreground/50" />
+                  <span className="text-xs">No image available</span>
+                </div>
               )}
             </div>
+          </div>
 
-            <div className="flex flex-col gap-4 p-4 sm:p-5">
-              {/* Title + price */}
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  {product.badge && (
-                    <span className="text-[10px] font-semibold uppercase tracking-wide text-brand">
-                      {product.badge}
-                    </span>
-                  )}
-                  <h2 className="mt-0.5 text-lg font-bold leading-snug sm:text-xl">
-                    {product.name}
-                  </h2>
+          {/* Right Column: Scrollable Details & Fixed Purchase Action Bar */}
+          <div className="flex min-h-0 flex-1 flex-col justify-between overflow-hidden md:w-1/2">
+            {/* Scrollable Upper Area (Title, Price, Options, Details) */}
+            <div className="flex-1 space-y-3 overflow-y-auto pr-1.5 scrollbar-thin">
+              {/* Category / Badge */}
+              <div className="flex items-center gap-2">
+                <span className="rounded-md bg-[#00932A]/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-[#00932A]">
+                  {product?.itemGroup?.name ?? item?.category ?? "NEW ARRIVAL"}
+                </span>
+              </div>
 
-                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                    <div className="text-xl font-bold text-brand">
-                      {formatPrice(unitPrice)}
-                    </div>
-                    
-                      <>
-                        <span className="text-muted-foreground">·</span>
-                        
-                        
-                      </>
-                  
+              {/* Title */}
+              <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+                {name}
+              </h1>
+
+              {/* Pricing */}
+              <div className="flex items-baseline gap-3">
+                <span className="text-2xl font-extrabold text-[#00932A] sm:text-3xl">
+                  {formatPrice(unitPrice)}
+                </span>
+                {basePrice > unitPrice && (
+                  <span className="text-sm text-muted-foreground line-through">
+                    {formatPrice(basePrice)}
+                  </span>
+                )}
+              </div>
+
+              {/* Description */}
+              {description && (
+                <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                  {description}
+                </p>
+              )}
+
+              {/* Variants */}
+              {variants.length > 0 && (
+                <div className="space-y-1.5 pt-1">
+                  <p className="text-xs font-semibold text-foreground">
+                    Variant Options:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {variants.map((v) => {
+                      const isSelected = selectedVariant?.id === v.id;
+                      const variantDisplayName =
+                        v.variantName ||
+                        v.name ||
+                        v.variant_name ||
+                        v.title ||
+                        `Option ${v.id}`;
+
+                      return (
+                        <button
+                          key={v.id}
+                          onClick={() => setSelectedVariant(v)}
+                          className={`flex min-w-16 flex-col items-center rounded-xl border px-3 py-1.5 text-xs transition-all ${
+                            isSelected
+                              ? "border-[#00932A] bg-[#00932A]/10 font-bold text-[#00932A] shadow-xs"
+                              : "border-border bg-card text-foreground hover:border-[#00932A]"
+                          }`}
+                        >
+                          <span>{variantDisplayName}</span>
+                          <span className="text-[10px] opacity-80">
+                            {formatPrice(Number(v.price))}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
+              )}
 
-                <Link
-                  href={"storeSlug/product/productSlug"}
-                  aria-label="View full product details"
-                  className="group flex shrink-0 items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:border-brand/50 hover:text-brand"
-                >
-                  Details
-                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
-              </div>
+              {/* Dynamic Attributes */}
+              {Object.entries(attributes).map(([attrKey, attrVal]) => {
+                const options = Array.isArray(attrVal)
+                  ? attrVal.map(String)
+                  : [String(attrVal)];
+                const currentSelected = selectedAttributes[attrKey];
 
-              <div className="h-px w-full bg-border" />
+                return (
+                  <div key={attrKey} className="space-y-1.5 pt-1">
+                    <p className="text-xs font-semibold text-foreground">
+                      {attrKey}:{" "}
+                      {currentSelected && (
+                        <span className="font-bold text-[#00932A]">
+                          {currentSelected}
+                        </span>
+                      )}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {options.map((opt) => {
+                        const isSelected = currentSelected === opt;
+                        return (
+                          <button
+                            key={opt}
+                            onClick={() =>
+                              setSelectedAttributes((prev) => ({
+                                ...prev,
+                                [attrKey]: opt,
+                              }))
+                            }
+                            className={`rounded-xl border px-3 py-1.5 text-xs transition-all ${
+                              isSelected
+                                ? "border-[#00932A] bg-[#00932A]/10 font-bold text-[#00932A] shadow-xs"
+                                : "border-border bg-card text-foreground hover:border-[#00932A]"
+                            }`}
+                          >
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
 
-              {/* Sugar Level */}
-              <div>
-                <p className="mb-1.5 text-xs text-muted-foreground">
-                  Sugar Level{" "}
-                  {sugarLevel && (
-                    <span className="font-medium text-foreground">
-                      · {sugarLevel}%
-                    </span>
+              {/* Item Specifications & Details */}
+              <div className="mt-4 border-t border-border/50 pt-3">
+                <h3 className="mb-1.5 text-xs font-bold text-foreground">Description & Details</h3>
+                <div className="grid grid-cols-2 gap-2 rounded-xl bg-muted/30 p-2.5 text-[11px] text-muted-foreground sm:grid-cols-3">
+                  {item?.category && (
+                    <div>
+                      <span className="font-medium text-foreground">Category: </span>
+                      {item.category}
+                    </div>
                   )}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {product.sugarLevels.map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => setSugarLevel(opt.value)}
-                      className={`min-w-12 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                        sugarLevel === opt.value
-                          ? "border-brand bg-brand-soft text-brand"
-                          : "border-border bg-card text-foreground hover:border-brand/50"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
+                  {product?.unit?.name && (
+                    <div>
+                      <span className="font-medium text-foreground">Unit: </span>
+                      {product.unit.name} ({product.unit.symbol})
+                    </div>
+                  )}
+                  {product?.code && (
+                    <div>
+                      <span className="font-medium text-foreground">Code: </span>
+                      {product.code}
+                    </div>
+                  )}
+                  {product?.sku && (
+                    <div>
+                      <span className="font-medium text-foreground">SKU: </span>
+                      {product.sku}
+                    </div>
+                  )}
                 </div>
               </div>
+            </div>
 
-              {/* Size */}
-              <div>
-                <p className="mb-1.5 text-xs text-muted-foreground">
-                  Size{" "}
-                  {selectedSize && (
-                    <span className="font-medium text-foreground">
-                      · {selectedSize.label}
-                    </span>
-                  )}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {product.sizes.map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => setSize(opt.value)}
-                      className={`flex min-w-16 flex-col items-center rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
-                        size === opt.value
-                          ? "border-brand bg-brand-soft text-brand"
-                          : "border-border bg-card text-foreground hover:border-brand/50"
-                      }`}
-                    >
-                      <span>{opt.label}</span>
-                      <span className="text-[10px] opacity-80">
-                        {formatPrice(product.price + (opt.priceModifier ?? 0))}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Quantity + Add to cart */}
-              <div className="flex items-center gap-3 pt-1">
-                <div className="flex items-center gap-1 rounded-full border border-border bg-card px-1">
+            {/* Bottom Fixed Action Bar (Stepper + Add to Cart + Badges) */}
+            <div className="shrink-0 space-y-2.5 border-t border-border/60 bg-background pt-3">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1 rounded-full border border-border bg-card p-1 shadow-xs">
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={quantity <= 1}
                     aria-label="Decrease quantity"
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors hover:bg-brand-soft hover:text-brand disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-foreground"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors hover:bg-[#00932A]/10 hover:text-[#00932A] disabled:opacity-30"
                   >
                     <Minus className="h-3.5 w-3.5" />
                   </button>
-                  <span className="w-5 text-center text-sm font-semibold tabular-nums">
+                  <span className="w-6 text-center text-sm font-bold tabular-nums">
                     {quantity}
                   </span>
                   <button
                     onClick={() => setQuantity((q) => q + 1)}
                     aria-label="Increase quantity"
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors hover:bg-brand-soft hover:text-brand"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors hover:bg-[#00932A]/10 hover:text-[#00932A]"
                   >
                     <Plus className="h-3.5 w-3.5" />
                   </button>
@@ -221,8 +405,8 @@ export default function ProductQuickViewModal({
 
                 <button
                   onClick={handleAddToCart}
-                  disabled={isAdding}
-                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+                  disabled={disabled}
+                  className="flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#00932A] text-sm font-semibold text-white shadow-md transition-all hover:bg-[#007a22] active:scale-98 disabled:opacity-60"
                 >
                   <AnimatePresence mode="wait" initial={false}>
                     {justAdded ? (
@@ -231,10 +415,10 @@ export default function ProductQuickViewModal({
                         initial={{ opacity: 0, y: 4 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -4 }}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 font-bold"
                       >
                         <Check className="h-4 w-4" />
-                        Added
+                        Added to Cart
                       </motion.span>
                     ) : (
                       <motion.span
@@ -247,17 +431,48 @@ export default function ProductQuickViewModal({
                         <ShoppingBag className="h-4 w-4" />
                         {isAdding
                           ? "Adding..."
-                          : `Add · ${formatPrice(unitPrice * quantity)}`}
+                          : `Add to Cart · ${formatPrice(unitPrice * quantity)}`}
                       </motion.span>
                     )}
                   </AnimatePresence>
                 </button>
               </div>
 
-             
+              {needsLogin && (
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/50 px-3 py-1.5">
+                  <p className="text-xs text-muted-foreground">
+                    Sign in to save this to your cart.
+                  </p>
+                  <button
+                    onClick={login}
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#00932A] px-3 py-1 text-xs font-medium text-white hover:bg-[#007a22]"
+                  >
+                    <LogIn className="h-3.5 w-3.5" />
+                    Sign in
+                  </button>
+                </div>
+              )}
+
+              {addError && <p className="text-xs text-destructive">{addError}</p>}
+
+              {/* Service Guarantee Badges */}
+              <div className="grid grid-cols-3 gap-1 pt-1 text-[10px] text-muted-foreground">
+                <div className="flex items-center justify-center gap-1 text-center">
+                  <Truck className="h-3.5 w-3.5 shrink-0 text-[#00932A]" />
+                  <span className="font-medium text-foreground">Free Delivery</span>
+                </div>
+                <div className="flex items-center justify-center gap-1 text-center">
+                  <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-[#00932A]" />
+                  <span className="font-medium text-foreground">1 Year Warranty</span>
+                </div>
+                <div className="flex items-center justify-center gap-1 text-center">
+                  <RotateCcw className="h-3.5 w-3.5 shrink-0 text-[#00932A]" />
+                  <span className="font-medium text-foreground">Easy Returns</span>
+                </div>
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </DialogContent>
     </Dialog>
   );

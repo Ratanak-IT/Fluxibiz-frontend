@@ -417,17 +417,16 @@ export function DashboardSyncShowcase() {
     <section
       aria-label="Dashboard and inventory sync showcase"
       className="
-        relative
+         relative
         overflow-visible
-        px-4
+        px-6
         pb-8
-        pt-8
+        pt-6
         dark:bg-background
-        sm:px-5
-        md:px-8
-        md:pt-10
+        sm:px-10
+        sm:pt-8
         lg:pb-6
-        lg:pt-20
+        lg:pt-10
       "
     >
       <div className="relative mx-auto w-full max-w-7xl">

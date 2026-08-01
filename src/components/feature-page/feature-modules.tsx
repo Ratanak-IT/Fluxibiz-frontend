@@ -120,11 +120,11 @@ export function FeatureModules() {
               onPointerMove={handlePointerMove}
               onPointerLeave={resetPointer}
               className="
-  relative
-  min-h-[780px]
-  sm:min-h-[850px]
-  lg:min-h-[620px]
-"
+                relative
+                min-h-[780px]
+                sm:min-h-[850px]
+                lg:min-h-[620px]
+              "
             >
               <AnimatePresence mode="wait">
                 <motion.article
@@ -134,20 +134,20 @@ export function FeatureModules() {
                   exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -54 }}
                   transition={{ duration: reduceMotion ? 0 : 0.5, ease }}
                   className="
-  absolute
-  inset-0
-  grid
-  content-center
-  gap-6
-  pb-12
-  pt-6
-  sm:gap-8
-  lg:grid-cols-[0.86fr_1.14fr]
-  lg:items-center
-  lg:gap-16
-  lg:pb-0
-  lg:pt-0
-"
+                            absolute
+                            inset-0
+                            grid
+                            content-center
+                            gap-6
+                            pb-12
+                            pt-6
+                            sm:gap-8
+                            lg:grid-cols-[0.86fr_1.14fr]
+                            lg:items-center   
+                            lg:gap-16
+                            lg:pb-0
+                            lg:pt-0
+                                "
                 >
                   <motion.div
                     className={cn("relative z-10", imageFirst && "lg:order-2")}
@@ -191,7 +191,7 @@ export function FeatureModules() {
                           transition: { duration: 0.58, ease },
                         },
                       }}
-                      className="mt-7 text-4xl font-extrabold leading-[1.02] tracking-[-0.05em] text-text sm:text-5xl "
+                      className="mt-7 text-4xl font-extrabold leading-[1.02] tracking-[-0.05em] text-secondary sm:text-5xl "
                     >
                       {activeModule.title}
                     </motion.h3>
@@ -247,58 +247,60 @@ export function FeatureModules() {
                   </motion.div>
 
                   <motion.div
-  className={cn(
-    "relative mx-auto w-full [perspective:1400px]",
-    imageFirst && "lg:order-1",
-    isPhone
-      ? "max-w-[320px] sm:max-w-[390px]"
-      : activeIndex % 3 === 0
-        ? "max-w-[720px]"
-        : "max-w-[640px]",
-  )}
-  initial={reduceMotion ? false : { opacity: 0, scale: 0.9, y: 48 }}
-  animate={{ opacity: 1, scale: 1, y: 0 }}
-  transition={{
-    duration: reduceMotion ? 0 : 0.35,
-    delay: 0.01,
-    ease,
-  }}
->
-  <motion.div
-    style={
-      reduceMotion
-        ? undefined
-        : {
-            rotateX,
-            rotateY,
-            transformStyle: "preserve-3d",
-          }
-    }
-    className="relative"
-  >
-    <div
-      className={cn(
-        "relative",
-        isPhone
-          ? "h-[330px] sm:h-[430px] lg:h-[500px]"
-          : "h-[250px] sm:h-[340px] lg:h-auto lg:aspect-[1.48/1]",
-      )}
-      style={{ transform: "translateZ(34px)" }}
-    >
-      <Image
-        src={activeModule.image}
-        alt={activeModule.alt}
-        fill
-        priority={activeIndex === 0}
-        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 85vw, 58vw"
-        className={cn(
-          "object-contain object-center",
-          activeModule.imageClassName,
-        )}
-      />
-    </div>
-  </motion.div>
-</motion.div>
+                    className={cn(
+                      "relative mx-auto w-full [perspective:1400px]",
+                      imageFirst && "lg:order-1",
+                      isPhone
+                        ? "max-w-[320px] sm:max-w-[390px]"
+                        : activeIndex % 3 === 0
+                          ? "max-w-[720px]"
+                          : "max-w-[640px]",
+                    )}
+                    initial={
+                      reduceMotion ? false : { opacity: 0, scale: 0.9, y: 48 }
+                    }
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{
+                      duration: reduceMotion ? 0 : 0.35,
+                      delay: 0.01,
+                      ease,
+                    }}
+                  >
+                    <motion.div
+                      style={
+                        reduceMotion
+                          ? undefined
+                          : {
+                              rotateX,
+                              rotateY,
+                              transformStyle: "preserve-3d",
+                            }
+                      }
+                      className="relative"
+                    >
+                      <div
+                        className={cn(
+                          "relative",
+                          isPhone
+                            ? "h-[330px] sm:h-[430px] lg:h-[500px]"
+                            : "h-[250px] sm:h-[340px] lg:h-auto lg:aspect-[1.48/1]",
+                        )}
+                        style={{ transform: "translateZ(34px)" }}
+                      >
+                        <Image
+                          src={activeModule.image}
+                          alt={activeModule.alt}
+                          fill
+                          priority={activeIndex === 0}
+                          sizes="(max-width: 640px) 92vw, (max-width: 1024px) 85vw, 58vw"
+                          className={cn(
+                            "object-contain object-center",
+                            activeModule.imageClassName,
+                          )}
+                        />
+                      </div>
+                    </motion.div>
+                  </motion.div>
                 </motion.article>
               </AnimatePresence>
 

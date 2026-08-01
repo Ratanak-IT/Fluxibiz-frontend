@@ -1,11 +1,15 @@
 // store card
 export interface StoreCardData {
+  id?: string
   image: string
   category: string
   name: string
   description: string
   location: string
   hours: string
+  openTime?: string | null
+  closeTime?: string | null
+  discountLabel?: string | null
 }
 
 export const mockStore: StoreCardData = {

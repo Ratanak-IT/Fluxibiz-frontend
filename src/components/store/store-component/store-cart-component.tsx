@@ -1,17 +1,23 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
-import { Clock, MapPin } from "lucide-react";
+import { Clock, MapPin, Store as StoreIcon } from "lucide-react";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 export interface Store {
   id: string;
+  slug?: string;
   name: string;
   category: string;
   description: string;
   location: string;
-  hours: string;
+  hours?: string;
+  openTime?: string | null;
+  closeTime?: string | null;
   image: string;
   discountLabel?: string;
-  isOpen: boolean;
+  isOpen?: boolean;
 }
 
 export interface StoreCardComponentProps {
@@ -25,67 +31,94 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     description,
     location,
     hours,
+    openTime,
+    closeTime,
     image,
     discountLabel,
     isOpen,
   } = store;
 
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [image]);
+
+  const displayHours =
+    openTime && closeTime ? `${openTime} – ${closeTime}` : hours;
+
   return (
     <div
       className="
         group relative mx-auto mt-3 
-        w-68 cursor-pointer 
-        overflow-hidden pt-0 
-        transition-shadow
+        w-65 cursor-pointer p-2
+        overflow-hidden  rounded-lg duration-100 hover:duration-100 hover:shadow-sm  hover:scale-98 ease-out transition-transform
+      
     "
     >
-      {/* Store Image */}
 
-      <div
-        className="
-            relative grow 
-            h-38 w-full 
-            overflow-hidden 
-            rounded-lg
-        "
-      >
-        <Image
-          src={image}
-          fill
-          alt={`${name} cover`}
-          sizes="(max-width: 768px) 50vw, 272px"
-          className="
-                object-cover 
-                transition-transform 
-                duration-300 
-                ease-out 
-                group-hover:scale-110"/>
-        {/* Discount Label */}
+      <div className="relative grow h-38 w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
+        {image && !hasError ? (
+          <Image
+            src={image}
+            unoptimized
+            fill
+            alt={`${name} cover`}
+            onError={() => setHasError(true)}
+            sizes="(max-width: 768px) 50vw, 272px"
+            className="object-cover"
+          />
+        ) : (
+          <StoreIcon className="h-12 w-12 text-muted-foreground" />
+        )}
+
+
         {discountLabel && (
           <div
             className="
-                    absolute top-2 left-2 
-                    z-10 flex 
-                    h-11 w-11 
-                    items-center justify-center
-                    rounded-full
-                    text-foreground
-                    text-xs font-bold
-                    border-2 border-dashed 
-                    border-input
-                    bg-red-500">
-            {discountLabel}
+              absolute top-2 left-2 
+              z-10 flex flex-col 
+              h-12 w-12 
+              items-center justify-center 
+              text-center leading-none 
+              rounded-full
+              text-foreground
+              border-2 border-dashed 
+              border-input
+              bg-accent shadow-xs p-0.5
+            "
+          >
+            {discountLabel.includes(" ") ? (
+              discountLabel.split(" ").map((part, idx) => (
+                <span
+                  key={idx}
+                  className={
+                    idx === 0
+                      ? "text-[11px] font-extrabold leading-tight tracking-tight"
+                      : "text-[9px] font-bold opacity-90 leading-tight uppercase"
+                  }
+                >
+                  {part}
+                </span>
+              ))
+            ) : (
+              <span className="text-[11px] font-extrabold leading-tight">
+                {discountLabel}
+              </span>
+            )}
           </div>
         )}
-        {/* Open / Closed Label */}
+
 
         <div
           className={`
                 absolute top-2 right-2 
                 z-10 rounded-full 
                 px-3 py-1 
+
                 text-xs font-semibold
                 text-primary-foreground
+
                 ${isOpen ? "bg-primary" : "bg-muted"}
             `}
         >
@@ -93,7 +126,6 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
         </div>
       </div>
 
-      {/* Store Information */}
 
       <CardContent className="space-y-1 p-1">
         <h3
@@ -110,7 +142,9 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
           className="
                 line-clamp-1 
                 text-sm 
-                text-muted-foreground">
+                text-muted-foreground
+            "
+        >
           {description}
         </p>
 
@@ -133,23 +167,24 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
             <span>{location}</span>
           </div>
 
-          <div
-            className="
-                    flex items-center gap-2 
-                    text-sm 
-                    text-muted-foreground
-                "
-          >
-            <Clock
+          {displayHours && (
+            <div
               className="
-                        h-4 w-4 
-                        shrink-0 
-                        text-primary
-                    "
-            />
-
-            <span>{hours}</span>
-          </div>
+                      flex items-center gap-2 
+                      text-sm 
+                      text-muted-foreground
+                  "
+            >
+              <Clock
+                className="
+                          h-4 w-4 
+                          shrink-0 
+                          text-primary
+                      "
+              />
+              <span>{displayHours}</span>
+            </div>
+          )}
         </div>
       </CardContent>
     </div>

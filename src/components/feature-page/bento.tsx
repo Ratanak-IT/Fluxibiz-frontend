@@ -174,9 +174,9 @@ export function FeatureBento() {
             Greater than a feature list
           </p>
 
-          <h2 className="mt-4 text-4xl font-bold tracking-[-0.04em] text-text md:text-6xl dark:text-white">
+          <h2 className="mt-5 text-4xl font-bold tracking-[-0.04em] text-text md:text-6xl dark:text-white">
             One powerful platform.
-            <span className="block text-primary">
+            <span className="block text-primary mt-3">
               Built for how you work.
             </span>
           </h2>
