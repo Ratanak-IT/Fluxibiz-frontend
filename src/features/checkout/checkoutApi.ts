@@ -12,7 +12,7 @@ import {
 
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
+    baseUrl: "/api/v1",
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as { auth: AuthState }).auth.accessToken;
         if (token) headers.set("Authorization", `Bearer ${token}`);

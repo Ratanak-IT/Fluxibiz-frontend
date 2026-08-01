@@ -6,7 +6,7 @@ import type { AuthState } from "@/features/auth/authSlice";
 import type { UserProfileResponse } from "@/lib/type/authType";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
+    baseUrl: "/api/v1",
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as { auth: AuthState }).auth.accessToken;
         if (token) headers.set("Authorization", `Bearer ${token}`);
@@ -26,6 +26,7 @@ export type UpdateUserProfileArgs = {
 export const userApi = createApi({
     reducerPath: "userApi",
     baseQuery,
+    keepUnusedDataFor: 300,
     tagTypes: ["Profile"],
     endpoints: (builder) => ({
         getMyProfile: builder.query<UserProfileResponse, void>({

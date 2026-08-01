@@ -229,6 +229,7 @@ export interface ItemVariant {
 export interface StorefrontItemResponse {
     id: string;
     businessId: string;
+    businessName?: string | null;
     itemGroup: { id: string; name: string; slug: string } | null;
     unit: { id: string; name: string; symbol: string } | null;
     slug: string;

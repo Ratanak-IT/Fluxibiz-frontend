@@ -154,3 +154,50 @@ export function UserProfileSkeleton() {
     </div>
   );
 }
+
+export function StoreCardHorizontalSkeleton() {
+  return (
+    <Card className="flex max-w-sm gap-3 p-2 rounded-xl">
+      <Skeleton className="size-20 shrink-0 rounded-xl" />
+      <div className="flex flex-1 flex-col gap-2 min-w-0 justify-center">
+        <Skeleton className="h-4 w-3/4 rounded-md" />
+        <Skeleton className="h-3 w-full rounded-md" />
+        <Skeleton className="h-3 w-1/2 rounded-md" />
+      </div>
+    </Card>
+  );
+}
+
+export function StoreCardVerticalSkeleton() {
+  return (
+    <div className="w-65 p-2 space-y-2 rounded-lg border border-border/20 bg-card">
+      <Skeleton className="h-38 w-full rounded-lg" />
+      <Skeleton className="h-4 w-3/4 rounded-md" />
+      <Skeleton className="h-3 w-1/2 rounded-md" />
+      <Skeleton className="h-3 w-full rounded-md" />
+      <Skeleton className="h-3 w-2/3 rounded-md" />
+    </div>
+  );
+}
+
+export function RecommendedRowSkeleton({ count = 4 }: { count?: number }) {
+  return (
+    <div className="flex gap-4 overflow-hidden py-1">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="basis-[calc((100%-3*(--spacing(4)))/4)] shrink-0">
+          <StoreCardHorizontalSkeleton />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function StoreRowSkeleton({ count = 4 }: { count?: number }) {
+  return (
+    <div className="flex gap-4 overflow-hidden py-1">
+      {Array.from({ length: count }).map((_, i) => (
+        <StoreCardVerticalSkeleton key={i} />
+      ))}
+    </div>
+  );
+}

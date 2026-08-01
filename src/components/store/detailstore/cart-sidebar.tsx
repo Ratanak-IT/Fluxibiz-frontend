@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ImageOff, Loader2, LogIn, Minus, Plus, X } from "lucide-react";
@@ -155,16 +156,32 @@ function CartSidebarLine({
   const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
+  const [pendingQty, setPendingQty] = useState(line.quantity);
+
+  useEffect(() => {
+    setPendingQty(line.quantity);
+  }, [line.quantity]);
+
   const busy = isUpdating || isRemoving;
   const imageUrl = resolveMediaUrl(line.imageUrl);
 
   const decrease = () => {
-    if (line.quantity <= 1) {
+    if (pendingQty <= 1) {
       removeItem(line.cartItemId).unwrap().then(() => toast.info(`Removed ${line.name} from cart`));
     } else {
-      updateItem({ cartItemId: line.cartItemId, quantity: line.quantity - 1 });
+      const nextQty = pendingQty - 1;
+      setPendingQty(nextQty);
+      updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
     }
   };
+
+  const increase = () => {
+    const nextQty = pendingQty + 1;
+    setPendingQty(nextQty);
+    updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+  };
+
+  const currentSubtotal = line.unitPrice * pendingQty;
 
   return (
     <div className="flex items-center gap-3 rounded-xl bg-neutral-50 p-2 dark:bg-muted/40">
@@ -200,31 +217,27 @@ function CartSidebarLine({
           <button
             type="button"
             onClick={decrease}
-            disabled={busy}
             aria-label={`Decrease ${line.name}`}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-neutral-600 transition-colors hover:bg-neutral-100 disabled:opacity-40 dark:text-neutral-300 dark:hover:bg-card"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-card"
           >
             <Minus className="h-3 w-3" />
           </button>
 
           <span className="w-4 text-center text-xs font-semibold tabular-nums">
-            {line.quantity}
+            {pendingQty}
           </span>
 
           <button
             type="button"
-            onClick={() =>
-              updateItem({ cartItemId: line.cartItemId, quantity: line.quantity + 1 })
-            }
-            disabled={busy}
+            onClick={increase}
             aria-label={`Increase ${line.name}`}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-primary transition-colors hover:bg-primary/10 disabled:opacity-40"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-primary transition-colors hover:bg-primary/10"
           >
             <Plus className="h-3 w-3" />
           </button>
 
           <span className="ml-auto text-sm font-semibold text-red-500 dark:text-destructive">
-            {formatMoney(line.subtotal, currency)}
+            {formatMoney(currentSubtotal, currency)}
           </span>
         </div>
       </div>

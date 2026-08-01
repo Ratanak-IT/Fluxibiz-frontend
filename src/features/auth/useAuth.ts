@@ -10,7 +10,6 @@ import {
     selectUser,
 } from "@/features/auth/authSlice";
 
-
 export function useAuth() {
     const user = useAppSelector(selectUser);
     const status = useAppSelector(selectAuthStatus);
@@ -18,14 +17,20 @@ export function useAuth() {
 
     const pathname = usePathname() || "/";
 
-    const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(pathname)}`;
+    const isAuthPath = pathname.startsWith("/register") || pathname.startsWith("/login");
+    const defaultReturnTo = isAuthPath ? "/store" : pathname;
+
+    const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(defaultReturnTo)}`;
     const logoutHref = "/api/auth/logout?returnTo=%2F";
 
-    const login = useCallback(() => {
-        const returnTo =
-            typeof window === "undefined"
-                ? pathname
-                : window.location.pathname + window.location.search;
+    const login = useCallback((targetPath?: string | unknown) => {
+        let returnTo = typeof targetPath === "string" ? targetPath : undefined;
+        if (!returnTo) {
+            const currentPath = typeof window === "undefined" ? pathname : window.location.pathname;
+            returnTo = (currentPath.startsWith("/register") || currentPath.startsWith("/login"))
+                ? "/store"
+                : currentPath + (typeof window === "undefined" ? "" : window.location.search);
+        }
 
         window.location.href = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
     }, [pathname]);

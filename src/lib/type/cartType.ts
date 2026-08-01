@@ -43,6 +43,12 @@ export interface AddToCartPayload {
     itemId: string;
     variantId?: string;
     quantity: number;
+    itemDetails?: {
+        name: string;
+        price: number;
+        imageUrl?: string | null;
+        storeName?: string;
+    };
 }
 
 export function formatMoney(amount: number, currency = "USD"): string {

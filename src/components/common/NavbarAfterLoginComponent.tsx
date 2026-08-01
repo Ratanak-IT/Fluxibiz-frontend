@@ -25,6 +25,8 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import type { SessionUser } from "@/lib/type/authType";
+import { useGetMyProfileQuery } from "@/features/user/userApi";
+import { resolveMediaUrl } from "@/lib/type/cartType";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,6 +78,11 @@ export default function NavbarAfterLoginComponent({
 }: NavbarAfterLoginComponentProps) {
   const pathname = usePathname();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { data: profile } = useGetMyProfileQuery(undefined, { skip: !user });
+
+  const resolvedProfilePic = resolveMediaUrl(profile?.profilePicture);
+  const resolvedUserPic = resolveMediaUrl(user.image);
+  const avatarSrc = resolvedProfilePic || resolvedUserPic || user.image || undefined;
 
   const isActiveRoute = (href: string) => {
     return pathname === href || pathname.startsWith(`${href}/`);
@@ -125,7 +132,7 @@ export default function NavbarAfterLoginComponent({
           <LanguageDropdown />
 
           <CartDrawer />
-          <UserDropdown user={user} onLogout={onLogout} />
+          <UserDropdown user={user} avatarSrc={avatarSrc} onLogout={onLogout} />
         </div>
 
         {/* Mobile actions */}
@@ -183,12 +190,13 @@ export default function NavbarAfterLoginComponent({
                 {/* User information */}
                 <div className="mb-3 flex items-center gap-3 bg-[#f3f4f6] p-3">
                   <Avatar className="size-11">
-                    {user.image && (
+                    {avatarSrc ? (
                       <AvatarImage
-                        src={user.image}
+                        src={avatarSrc}
                         alt={user.name}
+                        className="object-cover"
                       />
-                    )}
+                    ) : null}
 
                     <AvatarFallback className="bg-[#e5e7eb] text-[#1f2937]">
                       {getInitials(user.name)}
@@ -280,9 +288,11 @@ export default function NavbarAfterLoginComponent({
 
 function UserDropdown({
   user,
+  avatarSrc,
   onLogout,
 }: {
   user: SessionUser;
+  avatarSrc?: string;
   onLogout?: () => void;
 }) {
   return (
@@ -314,12 +324,13 @@ function UserDropdown({
         }
       >
         <Avatar className="size-11 border border-[#e5e7eb] transition-colors duration-200 group-hover:border-secondary">
-          {user.image && (
+          {avatarSrc ? (
             <AvatarImage
-              src={user.image}
+              src={avatarSrc}
               alt={user.name}
+              className="object-cover"
             />
-          )}
+          ) : null}
 
           <AvatarFallback className="bg-[#f3f4f6] text-[#1f2937]">
             {getInitials(user.name)}

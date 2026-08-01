@@ -58,8 +58,9 @@ export function redirectUri(requestOrigin?: string, reqHeaders?: Headers) {
 }
 
 export function safeReturnTo(value: string | null | undefined) {
-    if (!value) return "/";
-    if (!value.startsWith("/") || value.startsWith("//")) return "/";
+    if (!value) return "/store";
+    if (!value.startsWith("/") || value.startsWith("//")) return "/store";
+    if (value.startsWith("/register") || value.startsWith("/login")) return "/store";
     return value;
 }
 

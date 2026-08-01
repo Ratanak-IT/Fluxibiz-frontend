@@ -239,7 +239,7 @@ export default function NavbarBeforeLoginComponent({
           <LanguageDropdown />
 
           <Link
-            href="/register"
+            href="/register/business"
             className="
               text-sm
               font-bold
@@ -435,7 +435,7 @@ export default function NavbarBeforeLoginComponent({
               <LanguageDropdown mobile />
 
               <Link
-                href="/register"
+                href="/register/business"
                 onClick={() => setMobileNavOpen(false)}
                 className="
                   rounded-lg

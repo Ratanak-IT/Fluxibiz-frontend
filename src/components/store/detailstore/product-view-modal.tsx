@@ -147,21 +147,22 @@ export default function ProductQuickViewModal({
       return;
     }
 
+    toast.success(`Added ${quantity} × ${name} to cart`);
+    onOpenChange(false);
+
     try {
       await addToCartMutation({
         businessId: product.businessId,
         itemId: product.id,
         variantId: selectedVariant?.id,
         quantity,
+        itemDetails: {
+          name,
+          price: unitPrice,
+          imageUrl: mainImage,
+          storeName: product?.businessName ?? "Store",
+        },
       }).unwrap();
-
-      toast.success(`Added ${quantity} × ${name} to cart`);
-
-      setJustAdded(true);
-      setTimeout(() => {
-        setJustAdded(false);
-        onOpenChange(false);
-      }, 1200);
     } catch (err) {
       if (isUnauthorized(err)) {
         setNeedsLogin(true);
