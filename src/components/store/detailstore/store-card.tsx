@@ -30,52 +30,59 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
   return (
     <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
       <Card className="overflow-hidden bg-card p-0">
-        <div className="flex h-full flex-col sm:flex-row">
-          <div className="relative h-48 w-full shrink-0 p-3 sm:h-auto sm:w-44 sm:p-4 md:w-52">
+        <div className="flex flex-col sm:h-44 sm:flex-row">
+          <div className="relative h-44 w-full shrink-0 p-3 sm:w-44 md:w-48">
             {imageUrl ? (
               <Image
                 src={imageUrl}
                 alt={store.name || "Store logo"}
-                height={176}
-                width={156}
+                fill
                 unoptimized
-                className="h-full w-full rounded-lg object-cover"
+                className="h-full w-full rounded-xl object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-lg bg-muted">
+              <div className="flex h-full w-full items-center justify-center rounded-xl bg-muted">
                 <ImageOff className="h-6 w-6 text-neutral-300" />
               </div>
             )}
           </div>
 
-          {/* Content */}
-          <div className="relative flex flex-1 flex-col justify-center gap-3 p-4 sm:p-6 sm:pl-0">
-            {store.discountLabel && (
-              <div className="self-start rounded-full bg-red-500/10 px-3 py-1 text-xs font-bold text-red-600 dark:bg-red-500/20 dark:text-red-400 border border-red-500/20 flex items-center gap-1.5">
-                <span>🏷️</span>
-                <span>PROMOTION: {store.discountLabel}</span>
-              </div>
-            )}
-
-            <CardHeader className="gap-1 p-0">
-              <CardDescription className="text-xs text-muted-foreground sm:text-sm">
+          {/* Content — 3 Vertical Sections: Top, Middle, Bottom */}
+          <div className="flex flex-1 flex-col justify-between p-4 sm:px-6 sm:py-3.5">
+            {/* 1. Top Section: Category & Promotion */}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-medium text-muted-foreground sm:text-sm">
                 {store.category}
-              </CardDescription>
+              </span>
 
-              <CardTitle className="text-lg font-semibold sm:text-xl md:text-2xl">
+              {store.discountLabel && (
+                <div className="rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-xs font-bold text-red-600 dark:bg-red-500/20 dark:text-red-400">
+                  🏷️ PROMOTION: {store.discountLabel}
+                </div>
+              )}
+            </div>
+
+            {/* 2. Middle Section: Store Name */}
+            <div className="my-1">
+              <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl md:text-3xl">
                 {store.name}
-              </CardTitle>
-            </CardHeader>
+              </h1>
+            </div>
 
-            <div className="flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:gap-6 sm:text-sm">
+            {/* 3. Bottom Section: Location & Operating Hours */}
+            <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground sm:gap-6 sm:text-sm">
               <div className="flex min-w-0 items-center gap-1.5">
-                <MapPin className="h-4 w-4 shrink-0 text-primary dark:text-primary" />
+                <MapPin className="h-4 w-4 shrink-0 text-primary" />
                 <span className="truncate">{store.location}</span>
               </div>
 
               <div className="flex shrink-0 items-center gap-1.5">
-                <Clock className="h-4 w-4 shrink-0 text-primary dark:text-primary" />
-                <span>{store.hours}</span>
+                <Clock className="h-4 w-4 shrink-0 text-primary" />
+                <span>
+                  {store.openTime && store.closeTime
+                    ? `${store.openTime} – ${store.closeTime}`
+                    : store.hours || "Open 24/7"}
+                </span>
               </div>
             </div>
           </div>

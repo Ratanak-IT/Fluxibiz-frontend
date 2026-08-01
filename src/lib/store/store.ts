@@ -7,6 +7,8 @@ export interface StoreCardData {
   description: string
   location: string
   hours: string
+  openTime?: string | null
+  closeTime?: string | null
   discountLabel?: string | null
 }
 

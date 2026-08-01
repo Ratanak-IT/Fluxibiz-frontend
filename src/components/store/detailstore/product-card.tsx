@@ -19,12 +19,6 @@ interface MenuProductCardProps {
 export function MenuProductCard({ item }: MenuProductCardProps) {
   const [quickViewOpen, setQuickViewOpen] = useState(false);
 
-  const hasVariants = (item.rawItem?.variants?.length ?? 0) > 0;
-  const hasAttributes =
-    item.rawItem?.attributes &&
-    typeof item.rawItem.attributes === "object" &&
-    Object.keys(item.rawItem.attributes).length > 0;
-
   const imageUrl = item.image?.trim() ? item.image : null;
 
   return (
@@ -51,18 +45,6 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
               <span className="text-[11px] font-bold text-primary sm:text-xs dark:text-primary">
                 {item.category}
               </span>
-
-              {hasVariants && (
-                <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold text-brand">
-                  {item.rawItem?.variants?.length} Variants
-                </span>
-              )}
-
-              {hasAttributes && (
-                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:bg-muted dark:text-muted-foreground">
-                  Customizable
-                </span>
-              )}
             </div>
           </div>
 

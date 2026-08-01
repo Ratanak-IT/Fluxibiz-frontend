@@ -145,6 +145,8 @@ export default function StoreDetail({
         description: storeDetail.about ?? "",
         location: storeDetail.cityOrProvince ?? storeDetail.address ?? "Phnom Penh",
         hours: operatingHours,
+        openTime: storeDetail.openTime ?? undefined,
+        closeTime: storeDetail.closeTime ?? undefined,
         image: resolvedImage,
         discountLabel: storeDetail.discountLabel,
       }

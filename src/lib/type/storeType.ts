@@ -104,6 +104,8 @@ export interface Store {
     location: string;
     image: string;
     hours?: string;
+    openTime?: string | null;
+    closeTime?: string | null;
     isOpen?: boolean;
     discountLabel?: string;
 }
@@ -176,6 +178,8 @@ export function toStoreCard(store: PublicStore): Store {
         location: store.cityOrProvince ?? "",
         image: resolvedImage ?? "",
         hours: operatingHours ?? undefined,
+        openTime: openTime ?? undefined,
+        closeTime: closeTime ?? undefined,
         isOpen: computedOpen,
         discountLabel,
     };
@@ -214,8 +218,11 @@ export function primaryItemImage(
 
 export interface ItemVariant {
     id: string;
-    slug: string;
-    variantName: string;
+    slug?: string;
+    variantName?: string;
+    name?: string;
+    variant_name?: string;
+    title?: string;
     price: number;
 }
 

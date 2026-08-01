@@ -13,6 +13,8 @@ export interface Store {
   description: string;
   location: string;
   hours?: string;
+  openTime?: string | null;
+  closeTime?: string | null;
   image: string;
   discountLabel?: string;
   isOpen?: boolean;
@@ -29,6 +31,8 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     description,
     location,
     hours,
+    openTime,
+    closeTime,
     image,
     discountLabel,
     isOpen,
@@ -39,6 +43,9 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
   useEffect(() => {
     setHasError(false);
   }, [image]);
+
+  const displayHours =
+    openTime && closeTime ? `${openTime} – ${closeTime}` : hours;
 
   return (
     <div
@@ -160,22 +167,24 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
             <span>{location}</span>
           </div>
 
-          <div
-            className="
-                    flex items-center gap-2 
-                    text-sm 
-                    text-muted-foreground
-                "
-          >
-            <Clock
+          {displayHours && (
+            <div
               className="
-                        h-4 w-4 
-                        shrink-0 
-                        text-primary
-                    "
-            />
-            <span>{hours}</span>
-          </div>
+                      flex items-center gap-2 
+                      text-sm 
+                      text-muted-foreground
+                  "
+            >
+              <Clock
+                className="
+                          h-4 w-4 
+                          shrink-0 
+                          text-primary
+                      "
+              />
+              <span>{displayHours}</span>
+            </div>
+          )}
         </div>
       </CardContent>
     </div>
