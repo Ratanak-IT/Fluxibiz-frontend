@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Check, Loader2, RefreshCw, ShieldCheck, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -144,6 +145,20 @@ export default function KhqrPaymentComponent({
                 <p className="mt-1 font-mono text-xs text-neutral-500 dark:text-muted-foreground">
                     {session.invoiceNumber}
                 </p>
+
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                    <Link href={`/receipt/${session.orderId}`}>
+                        <Button className="w-full sm:w-auto rounded-full bg-[#00932A] font-bold text-white hover:bg-[#007d24]">
+                            View E-Receipt
+                        </Button>
+                    </Link>
+
+                    <Link href="/payment-history">
+                        <Button variant="outline" className="w-full sm:w-auto rounded-full">
+                            Payment History
+                        </Button>
+                    </Link>
+                </div>
             </div>
         );
     }

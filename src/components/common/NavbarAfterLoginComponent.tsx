@@ -7,6 +7,7 @@ import {
   ChevronDown,
   LogOut,
   Menu,
+  Receipt,
   Settings,
   UserRound,
 } from "lucide-react";
@@ -238,6 +239,14 @@ export default function NavbarAfterLoginComponent({
                 </Link>
 
                 <Link
+                  href="/payment-history"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-[#1f2937] transition-colors hover:bg-[#f3f4f6]"
+                >
+                  <Receipt size={19} />
+                  Payment history
+                </Link>
+
+                <Link
                   href="/settings"
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-[#1f2937] transition-colors hover:bg-[#f3f4f6]"
                 >
@@ -338,6 +347,14 @@ function UserDropdown({
           >
             <UserRound size={17} />
             View profile
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            render={<Link href="/payment-history" />}
+            className="cursor-pointer gap-2 text-[#1f2937] focus:bg-[#f3f4f6] focus:text-[#1f2937]"
+          >
+            <Receipt size={17} />
+            Payment history
           </DropdownMenuItem>
 
           <DropdownMenuItem

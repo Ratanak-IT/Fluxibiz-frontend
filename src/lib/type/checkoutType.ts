@@ -38,6 +38,39 @@ export interface CreateCheckoutPayload {
     note?: string;
 }
 
+export interface StorefrontOrderItem {
+    itemId: string | null;
+    itemName: string;
+    quantity: number;
+    unitPrice: number;
+    lineTotal: number;
+}
+
+export interface StorefrontOrder {
+    orderId: string;
+    invoiceNumber: string;
+    businessId: string;
+    storeName: string;
+    storeSlug: string;
+    storeLogo: string | null;
+    storeAddress: string | null;
+    storePhone: string | null;
+    customerName: string | null;
+    customerEmail: string | null;
+    customerPhone: string | null;
+    status: OrderStatus;
+    channel: string;
+    paymentMethod: string;
+    subtotal: number;
+    discountAmount: number;
+    total: number;
+    currency: string;
+    itemCount: number;
+    createdDate: string;
+    paidAt: string | null;
+    items: StorefrontOrderItem[];
+}
+
 export function checkoutErrorMessage(error: unknown, fallback: string): string {
     if (typeof error !== "object" || error === null) return fallback;
 

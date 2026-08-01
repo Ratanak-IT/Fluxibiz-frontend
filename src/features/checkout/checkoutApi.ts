@@ -2,7 +2,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { cartApi } from "@/features/cart/cartApi";
 import type { AuthState } from "@/features/auth/authSlice";
-import { ActiveCheckout, CheckoutSession, CreateCheckoutPayload, PaymentStatus } from "@/lib/type/checkoutType";
+import {
+    ActiveCheckout,
+    CheckoutSession,
+    CreateCheckoutPayload,
+    PaymentStatus,
+    StorefrontOrder,
+} from "@/lib/type/checkoutType";
 
 
 const baseQuery = fetchBaseQuery({
@@ -17,7 +23,7 @@ const baseQuery = fetchBaseQuery({
 export const checkoutApi = createApi({
     reducerPath: "checkoutApi",
     baseQuery,
-    tagTypes: ["Checkout"],
+    tagTypes: ["Checkout", "OrderHistory"],
     endpoints: (builder) => ({
    
         createCheckout: builder.mutation<CheckoutSession, CreateCheckoutPayload>({
@@ -26,7 +32,7 @@ export const checkoutApi = createApi({
                 method: "POST",
                 body,
             }),
-            invalidatesTags: ["Checkout"],
+            invalidatesTags: ["Checkout", "OrderHistory"],
         }),
 
         getActiveCheckout: builder.query<ActiveCheckout, void>({
@@ -43,6 +49,7 @@ export const checkoutApi = createApi({
                     const { data } = await queryFulfilled;
                     if (data.paid) {
                         dispatch(cartApi.util.invalidateTags(["Cart"]));
+                        dispatch(checkoutApi.util.invalidateTags(["OrderHistory"]));
                     }
                 } catch {
                 }
@@ -54,7 +61,17 @@ export const checkoutApi = createApi({
                 url: `/storefront/checkout/${orderId}/cancel`,
                 method: "PATCH",
             }),
-            invalidatesTags: ["Checkout"],
+            invalidatesTags: ["Checkout", "OrderHistory"],
+        }),
+
+        getOrderHistory: builder.query<StorefrontOrder[], void>({
+            query: () => "/storefront/checkout/history",
+            providesTags: ["OrderHistory"],
+        }),
+
+        getOrderReceipt: builder.query<StorefrontOrder, string>({
+            query: (orderId) => `/storefront/checkout/${orderId}/receipt`,
+            providesTags: (_result, _error, orderId) => [{ type: "OrderHistory", id: orderId }],
         }),
     }),
 });
@@ -64,4 +81,6 @@ export const {
     useGetActiveCheckoutQuery,
     useGetPaymentStatusMutation,
     useCancelCheckoutMutation,
+    useGetOrderHistoryQuery,
+    useGetOrderReceiptQuery,
 } = checkoutApi;
