@@ -2,10 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-/**
- * OWASP A01 & A10: Path Traversal and SSRF Protection
- * Sanitizes path segments to prevent directory traversal (e.g. ../) and protocol injection.
- */
+
 function sanitizePath(pathSegments: string[]): string | null {
   if (!pathSegments || pathSegments.length === 0) return "";
 
@@ -32,7 +29,6 @@ async function proxyHandler(
   const { path } = await context.params;
   const sanitizedPath = sanitizePath(path);
 
-  // OWASP A01 & A10: Fail-closed if path contains suspicious directory traversal or SSRF patterns
   if (sanitizedPath === null) {
     console.warn(`[OWASP Security Guard] Blocked malformed or suspicious API path:`, path);
     return NextResponse.json(
@@ -43,7 +39,6 @@ async function proxyHandler(
 
   const searchParams = req.nextUrl.search;
 
-  // OWASP A05: Secure Backend URL Resolution
   const backendBaseUrl = (
     process.env.BACKEND_API_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
@@ -52,11 +47,9 @@ async function proxyHandler(
 
   const destinationUrl = `${backendBaseUrl}/api/v1/${sanitizedPath}${searchParams}`;
 
-  // OWASP A03 & A05: Header Hygiene & Protection against Header Injection
   const headers = new Headers();
   req.headers.forEach((value, key) => {
     const lowerKey = key.toLowerCase();
-    // Do NOT forward untrusted host headers or system connection headers
     if (
       lowerKey !== "host" &&
       lowerKey !== "connection" &&
@@ -86,7 +79,6 @@ async function proxyHandler(
       headers: responseHeaders,
     });
   } catch (err) {
-    // OWASP A09: Security Audit Logging without exposing internal stack traces to client
     console.error(`[OWASP Security Logger] Proxy Error for ${req.method} -> ${destinationUrl}:`, err);
     return NextResponse.json(
       { error: "Backend API service unavailable" },
