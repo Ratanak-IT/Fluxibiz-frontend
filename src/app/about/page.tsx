@@ -14,10 +14,10 @@ export default function AboutPage() {
   return (
     <main className="about-page">
       <HeroSection />
-      <GoalFeature/>
-      <MissionSection/>
-      <VisionSection stepDurationMs={900} dwellMs={1200}/>
-      <MentorsSection />      
+      <GoalFeature />
+      <MissionSection />
+      <VisionSection stepDurationMs={900} dwellMs={1200} />
+      <MentorsSection />
     </main>
   );
 }

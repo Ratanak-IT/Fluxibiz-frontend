@@ -68,7 +68,7 @@ function MigrationArtwork() {
             <div className="hero-float-slow absolute bottom-1 left-1 h-24 w-36 rounded-xl border-[5px] border-foreground bg-amber shadow-[inset_0_-8px_0_rgba(0,0,0,0.08)]" />
             <div className="hero-float-sm absolute bottom-5 right-1 flex h-36 w-28 items-center justify-center rounded-t-lg border-[5px] border-foreground bg-card shadow-sm">
                 <span className="absolute right-0 top-0 size-10 border-b-[5px] border-l-[5px] border-foreground bg-muted [clip-path:polygon(0_0,100%_100%,0_100%)]" />
-                <span className="mt-8 flex size-16 items-center justify-center rounded-full border-4 border-foreground bg-[#6bd94d]">
+                <span className="mt-8 flex size-16 items-center justify-center rounded-full border-4 border-foreground bg-primary">
                     <FileDown className="size-10 stroke-3 text-foreground" />
                 </span>
             </div>
@@ -140,7 +140,7 @@ function MigrationCard({
 
 export function MigrationSection() {
     return (
-     <Section className="bg-background">
+     <Section className="bg-background py-16 md:py-20 lg:py-24">
     <div className="text-center">
         <RuledEyebrow>Reliability guaranteed</RuledEyebrow>
 
