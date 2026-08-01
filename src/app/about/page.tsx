@@ -1,3 +1,4 @@
+import FeaturesSection from "@/components/about/FeaturesSection";
 import MentorsSection from "@/components/about/MentorsSection";
 import MissionSection from "@/components/about/MissionSection";
 import VisionSection from "@/components/about/VisionSection";
