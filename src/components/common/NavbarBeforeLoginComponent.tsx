@@ -137,10 +137,9 @@ export default function NavbarBeforeLoginComponent({
                       font-semibold
                       outline-none
                       transition-colors
-                      ${
-                        menuActive
-                          ? "text-primary"
-                          : "text-[#6b7280] hover:text-primary"
+                      ${menuActive
+                        ? "text-primary"
+                        : "text-[#6b7280] hover:text-primary"
                       }
                     `}
                   >
@@ -183,10 +182,9 @@ export default function NavbarBeforeLoginComponent({
                             font-medium
                             focus:bg-primary/10
                             focus:text-primary
-                            ${
-                              childActive
-                                ? "bg-primary/10 text-primary"
-                                : "text-[#4b5563]"
+                            ${childActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-[#4b5563]"
                             }
                           `}
                         >
@@ -210,10 +208,9 @@ export default function NavbarBeforeLoginComponent({
                   text-sm
                   font-semibold
                   transition-colors
-                  ${
-                    active
-                      ? "text-primary"
-                      : "text-[#6b7280] hover:text-primary"
+                  ${active
+                    ? "text-primary"
+                    : "text-[#6b7280] hover:text-primary"
                   }
                 `}
               >
@@ -232,9 +229,8 @@ export default function NavbarBeforeLoginComponent({
 
         {/* Desktop actions */}
         <div
-          className={`hidden items-center gap-4 lg:flex ${
-            pending || isLoggingIn ? "pointer-events-none opacity-60" : ""
-          }`}
+          className={`hidden items-center gap-4 lg:flex ${pending || isLoggingIn ? "pointer-events-none opacity-60" : ""
+            }`}
         >
           <ThemeToggle />
 
@@ -383,10 +379,9 @@ export default function NavbarBeforeLoginComponent({
                         text-base
                         font-bold
                         transition-colors
-                        ${
-                          active
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-transparent text-[#374151] hover:bg-[#f3f4f6] hover:text-primary"
+                        ${active
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-transparent text-[#374151] hover:bg-[#f3f4f6] hover:text-primary"
                         }
                       `}
                     >
@@ -416,10 +411,9 @@ export default function NavbarBeforeLoginComponent({
                                 text-sm
                                 font-medium
                                 transition-colors
-                                ${
-                                  childActive
-                                    ? "bg-primary/10 text-primary"
-                                    : "text-[#6b7280] hover:bg-[#f3f4f6] hover:text-primary"
+                                ${childActive
+                                  ? "bg-primary/10 text-primary"
+                                  : "text-[#6b7280] hover:bg-[#f3f4f6] hover:text-primary"
                                 }
                               `}
                             >
