@@ -213,7 +213,7 @@ export default function HeroSection({
                   <span
                     key={index}
                     className={`animate-eq flex-1 origin-bottom rounded-[2px] ${
-                      i % 3 === 0 ? 'bg-brand' : 'bg-white/90'
+                      index % 3 === 0 ? 'bg-brand' : 'bg-white/90'
                     }`}
                     style={
                       {
