@@ -63,11 +63,7 @@ export function ContactSection() {
   }
 
   return (
-<<<<<<< HEAD
-<section className="py-20 font-body">
-=======
 <section className="bg-background dark:bg-background py-20 font-body">
->>>>>>> 57de76b (add: support page)
   <div className="mx-auto grid max-w-[1900px] gap-10 px-[5.5%] lg:grid-cols-2 lg:gap-12">
         {/* Left: heading + contact details */}
         <div>
