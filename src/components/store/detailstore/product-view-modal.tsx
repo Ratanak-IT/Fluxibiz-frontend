@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { formatPrice } from "@/lib/store/productdetail/product";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
@@ -154,6 +155,8 @@ export default function ProductQuickViewModal({
         quantity,
       }).unwrap();
 
+      toast.success(`Added ${quantity} × ${name} to cart`);
+
       setJustAdded(true);
       setTimeout(() => {
         setJustAdded(false);
@@ -162,9 +165,12 @@ export default function ProductQuickViewModal({
     } catch (err) {
       if (isUnauthorized(err)) {
         setNeedsLogin(true);
+        toast.error("Please sign in to add items to your cart.");
         return;
       }
-      setAddError(apiErrorMessage(err, "Could not add to cart. Please try again."));
+      const errMsg = apiErrorMessage(err, "Could not add to cart. Please try again.");
+      setAddError(errMsg);
+      toast.error(errMsg);
     }
   }
 

@@ -47,8 +47,8 @@ export function HeroSection() {
           {/* Headline */}
           <h1 className="mt-8 font-serif text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.25rem]">
             <span
-              className="hero-in block"
-              style={{ color: INK, animationDelay: "0.15s" }}
+              className="hero-in block dark:text-gray-300"
+
             >
               Welcome to our site
             </span>
@@ -109,8 +109,7 @@ export function HeroSection() {
             </a>
             <a
               href="#faq"
-              className="flex items-center gap-3 rounded-full border border-[#E2E6E3] py-2 pl-2 pr-8 text-sm font-semibold transition-colors hover:border-[#C9D2CC]"
-              style={{ color: INK }}
+              className="flex items-center gap-3 dark:text-gray-300 rounded-full border border-[#E2E6E3] py-2 pl-2 pr-8 text-sm font-semibold transition-colors hover:border-[#C9D2CC]"
             >
               <span
                 className="flex h-11 w-11 items-center justify-center rounded-full"

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ImageOff, Loader2, LogIn, Minus, Plus, X } from "lucide-react";
+import { toast } from "sonner";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,7 @@ export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
   const canCheckout = lines.length > 0 && Boolean(slug);
 
   return (
-    <Card className="w-full gap-0 rounded-2xl border-neutral-100 shadow-sm sm:p-5 dark:border-neutral-800 dark:bg-card">
+    <Card className="w-full gap-0 rounded-2xl border-neutral-100 p-4 shadow-sm sm:p-5 dark:border-neutral-800 dark:bg-card">
       <CardContent className="space-y-4 p-0">
         <div className="flex items-center justify-between">
           <p className="text-base font-bold text-neutral-900 dark:text-neutral-50">
@@ -159,7 +160,7 @@ function CartSidebarLine({
 
   const decrease = () => {
     if (line.quantity <= 1) {
-      removeItem(line.cartItemId);
+      removeItem(line.cartItemId).unwrap().then(() => toast.info(`Removed ${line.name} from cart`));
     } else {
       updateItem({ cartItemId: line.cartItemId, quantity: line.quantity - 1 });
     }
@@ -230,7 +231,7 @@ function CartSidebarLine({
 
       <button
         type="button"
-        onClick={() => removeItem(line.cartItemId)}
+        onClick={() => removeItem(line.cartItemId).unwrap().then(() => toast.info(`Removed ${line.name} from cart`))}
         disabled={busy}
         aria-label={`Remove ${line.name}`}
         className="shrink-0 self-start text-neutral-400 transition-colors hover:text-red-500 disabled:opacity-40"

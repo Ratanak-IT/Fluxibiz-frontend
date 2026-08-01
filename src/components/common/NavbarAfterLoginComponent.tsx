@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -74,6 +75,7 @@ export default function NavbarAfterLoginComponent({
   onLogout,
 }: NavbarAfterLoginComponentProps) {
   const pathname = usePathname();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const isActiveRoute = (href: string) => {
     return pathname === href || pathname.startsWith(`${href}/`);
@@ -132,7 +134,7 @@ export default function NavbarAfterLoginComponent({
 
           <ThemeToggle />
 
-          <Sheet>
+          <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
             <SheetTrigger
               className="lg:hidden"
               render={
@@ -163,9 +165,9 @@ export default function NavbarAfterLoginComponent({
               side="right"
               className="w-[340px] border-l border-[#e5e7eb] bg-white text-[#1f2937] sm:w-[400px]"
             >
-              <SheetHeader>
+              <SheetHeader className="pb-0">
                 <SheetTitle className="text-left">
-                  <Link href="/store" aria-label="FluxiBiz store">
+                  <Link href="/store" onClick={() => setMobileNavOpen(false)} aria-label="FluxiBiz store">
                     <Image
                       src={fluxibizLogo}
                       alt="FluxiBiz"
@@ -177,11 +179,9 @@ export default function NavbarAfterLoginComponent({
                 </SheetTitle>
               </SheetHeader>
 
-              <div className="mt-8 flex flex-col gap-2">
-                <ThemeToggle mobile />
-
+              <div className="mt-0 flex flex-col gap-2">
                 {/* User information */}
-                <div className="mb-3 flex items-center gap-3 rounded-xl bg-[#f3f4f6] p-3">
+                <div className="mb-3 flex items-center gap-3 bg-[#f3f4f6] p-3">
                   <Avatar className="size-11">
                     {user.image && (
                       <AvatarImage
@@ -214,6 +214,7 @@ export default function NavbarAfterLoginComponent({
                     <Link
                       key={item.label}
                       href={item.href}
+                      onClick={() => setMobileNavOpen(false)}
                       aria-current={isActive ? "page" : undefined}
                       className={
                         isActive
@@ -232,6 +233,7 @@ export default function NavbarAfterLoginComponent({
 
                 <Link
                   href="/user-profile"
+                  onClick={() => setMobileNavOpen(false)}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-[#1f2937] transition-colors hover:bg-[#f3f4f6]"
                 >
                   <UserRound size={19} />
@@ -240,6 +242,7 @@ export default function NavbarAfterLoginComponent({
 
                 <Link
                   href="/payment-history"
+                  onClick={() => setMobileNavOpen(false)}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-[#1f2937] transition-colors hover:bg-[#f3f4f6]"
                 >
                   <Receipt size={19} />
@@ -248,6 +251,7 @@ export default function NavbarAfterLoginComponent({
 
                 <Link
                   href="/settings"
+                  onClick={() => setMobileNavOpen(false)}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-bold text-[#1f2937] transition-colors hover:bg-[#f3f4f6]"
                 >
                   <Settings size={19} />
@@ -256,7 +260,10 @@ export default function NavbarAfterLoginComponent({
 
                 <button
                   type="button"
-                  onClick={onLogout}
+                  onClick={() => {
+                    setMobileNavOpen(false);
+                    onLogout?.();
+                  }}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-base font-bold text-destructive transition-colors hover:bg-destructive/10"
                 >
                   <LogOut size={19} />

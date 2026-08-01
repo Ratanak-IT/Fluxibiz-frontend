@@ -14,6 +14,8 @@ import {
   useRemoveProfilePictureMutation,
 } from "@/features/user/userApi";
 import { resolveMediaUrl } from "@/lib/type/cartType";
+import { toast } from "sonner";
+import { UserProfileSkeleton } from "@/components/common/Skeletons";
 
 const connectedProviders = [
   {
@@ -103,9 +105,11 @@ export default function UserProfile() {
       await removeProfilePicture().unwrap();
       setSelectedFile(null);
       setImagePreview(null);
+      toast.success("Profile photo removed.");
     } catch (err) {
       console.error("Failed to remove profile picture", err);
       setSaveError("Failed to remove profile picture.");
+      toast.error("Failed to remove profile picture.");
     }
   }
 
@@ -144,6 +148,7 @@ export default function UserProfile() {
       setSelectedFile(null);
       setImagePreview(null);
       setSaveSuccess(true);
+      toast.success("Profile updated successfully!");
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err: any) {
       console.error("Failed to update profile", err);
@@ -153,15 +158,12 @@ export default function UserProfile() {
         err?.data?.detail ||
         "Could not save profile changes. Please check your input.";
       setSaveError(errMsg);
+      toast.error(errMsg);
     }
   }
 
   if (isLoading || status === "loading") {
-    return (
-      <div className="flex h-96 items-center justify-center text-muted-foreground">
-        <Loader2 className="h-6 w-6 animate-spin text-[#00932A]" />
-      </div>
-    );
+    return <UserProfileSkeleton />;
   }
 
   return (

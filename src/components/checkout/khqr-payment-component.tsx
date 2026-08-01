@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Check, Loader2, RefreshCw, ShieldCheck, X } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +24,12 @@ type Phase = "waiting" | "paid" | "expired" | "cancelled";
 function secondsLeft(expiresAt: string | null): number {
     if (!expiresAt) return 0;
   
-    const diff = new Date(expiresAt).getTime() - Date.now();
+    const normalizedDate =
+        expiresAt.endsWith("Z") || expiresAt.includes("+")
+            ? expiresAt
+            : `${expiresAt}Z`;
+
+    const diff = new Date(normalizedDate).getTime() - Date.now();
     return Math.max(0, Math.floor(diff / 1000));
 }
 
@@ -85,17 +91,20 @@ export default function KhqrPaymentComponent({
 
             if (status.paid) {
                 setPhase("paid");
+                toast.success("Payment confirmed by Bakong!");
                 onPaid();
                 return;
             }
 
             if (status.qrStatus === "EXPIRED") {
                 setPhase("expired");
+                toast.error("KHQR code has expired.");
                 return;
             }
 
             if (status.qrStatus === "CANCELLED" || status.orderStatus === "CANCELLED") {
                 setPhase("cancelled");
+                toast.info("Order cancelled");
                 return;
             }
         } catch (error) {

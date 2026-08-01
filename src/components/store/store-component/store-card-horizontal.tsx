@@ -7,8 +7,7 @@ import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
-const DEFAULT_STORE_IMAGE =
-  "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&auto=format&fit=crop&q=60";
+const DEFAULT_STORE_IMAGE = "/image/card/defaultstore.png";
 
 const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
   const { name, description, location, image, isOpen } = store;
@@ -36,37 +35,22 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
     >
       {/* Logo */}
 
-      <div
-        className="
-            relative size-20 
-            shrink-0 
-            overflow-hidden 
-            rounded-xl
-        "
-      >
-        {store.discountLabel && (
-          <div className="absolute top-1 left-1 z-10 rounded-md bg-red-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white shadow-xs">
-            {store.discountLabel}
-          </div>
-        )}
-        <div
-          className="
-            relative size-20 
-            shrink-0 
-            overflow-hidden 
-            rounded-xl
-        "
-        >
-          <Image
-            src={imgSrc}
-            width={100}
-            height={100}
-            alt={name}
-            onError={() => setImgSrc(DEFAULT_STORE_IMAGE)}
-            className="object-cover transition-transform duration-300 ease-out group-hover:scale-110 "
-          />
-        </div>
-      </div>
+      <div className="relative size-20 shrink-0 overflow-hidden rounded-xl">
+  {store.discountLabel && (
+    <div className="absolute top-1 left-1 z-10 rounded-md bg-red-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white shadow-xs">
+      {store.discountLabel}
+    </div>
+  )}
+
+  <Image
+    src={imgSrc}
+    alt={name}
+    fill
+    sizes="80px"
+    onError={() => setImgSrc(DEFAULT_STORE_IMAGE)}
+    className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+  />
+</div>
 
       {/* Content */}
 

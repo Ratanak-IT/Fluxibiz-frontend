@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -66,6 +67,7 @@ export default function NavbarBeforeLoginComponent({
   onLogin,
 }: NavbarBeforeLoginProps) {
   const pathname = usePathname();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { loginHref, login } = useAuth();
 
   const handleLogin = (event: React.MouseEvent) => {
@@ -300,7 +302,7 @@ export default function NavbarBeforeLoginComponent({
         </div>
 
         {/* Mobile navigation */}
-        <Sheet>
+        <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <SheetTrigger
             className="lg:hidden"
             render={
@@ -340,11 +342,12 @@ export default function NavbarBeforeLoginComponent({
               sm:w-[400px]
             "
           >
-            <SheetHeader>
+            <SheetHeader className="pb-0">
               <SheetTitle className="text-left text-[#111827] dark:text-[#111827]">
                 {/* Mobile logo redirects to Store */}
                 <Link
                   href="/store"
+                  onClick={() => setMobileNavOpen(false)}
                   aria-label="Go to FluxiBiz store"
                   className="inline-flex items-center"
                 >
@@ -359,9 +362,7 @@ export default function NavbarBeforeLoginComponent({
               </SheetTitle>
             </SheetHeader>
 
-            <div className="mt-8 flex flex-col gap-2">
-              <ThemeToggle mobile />
-
+            <div className="mt-0 flex flex-col gap-2">
               {navigationItems.map((item) => {
                 const active = isRouteActive(pathname, item.href);
 
@@ -369,6 +370,7 @@ export default function NavbarBeforeLoginComponent({
                   <div key={item.label}>
                     <Link
                       href={item.href}
+                      onClick={() => setMobileNavOpen(false)}
                       aria-current={active ? "page" : undefined}
                       className={`
                         block
@@ -400,6 +402,7 @@ export default function NavbarBeforeLoginComponent({
                             <Link
                               key={child.label}
                               href={child.href}
+                              onClick={() => setMobileNavOpen(false)}
                               aria-current={
                                 childActive ? "page" : undefined
                               }
@@ -433,6 +436,7 @@ export default function NavbarBeforeLoginComponent({
 
               <Link
                 href="/register"
+                onClick={() => setMobileNavOpen(false)}
                 className="
                   rounded-lg
                   px-3
@@ -451,7 +455,10 @@ export default function NavbarBeforeLoginComponent({
               <Button
                 nativeButton={false}
                 render={<a href={loginHref} />}
-                onClick={handleLogin}
+                onClick={(e) => {
+                  setMobileNavOpen(false);
+                  handleLogin(e);
+                }}
                 disabled={pending || isLoggingIn}
                 className="
                   mt-4
@@ -473,6 +480,7 @@ export default function NavbarBeforeLoginComponent({
               <Button
                 nativeButton={false}
                 render={<Link href="/register" />}
+                onClick={() => setMobileNavOpen(false)}
                 variant="outline"
                 className="
                   h-11

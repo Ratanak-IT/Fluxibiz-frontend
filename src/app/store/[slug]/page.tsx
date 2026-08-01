@@ -8,6 +8,7 @@ import StoreCard from "@/components/store/detailstore/store-card";
 import { MenuItemData } from "@/lib/store/detailstore/detailstore";
 import { ChevronLeft, ShoppingCart, UtensilsCrossed } from "lucide-react";
 import Link from "next/link";
+import { StorePageSkeleton } from "@/components/common/Skeletons";
 import {
   useGetPublicStoreQuery,
   useGetPublicStoreItemsQuery,
@@ -169,7 +170,7 @@ export default function StoreDetail({
   const isLoading = isLoadingStore || isLoadingItems;
 
   return (
-    <div className="mx-auto max-w-362.5 space-y-10 py-6 sm:px-10 dark:bg-background">
+    <div className="mx-auto max-w-362.5 space-y-10 py-6 px-4 sm:px-10 dark:bg-background">
       <div className="mb-4 flex items-center justify-between px-4 sm:px-8 md:px-14 lg:px-23">
         <Link
           href="/store"
@@ -179,19 +180,17 @@ export default function StoreDetail({
           Store
         </Link>
 
-        <Link
+        {/* <Link
           href={`/cart?shop=${encodeURIComponent(slug)}`}
           className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary sm:h-11 sm:px-5 lg:hidden"
         >
           <ShoppingCart className="h-4 w-4" />
           Cart
-        </Link>
+        </Link> */}
       </div>
 
       {isLoading ? (
-        <div className="flex h-40 items-center justify-center text-sm text-muted-foreground">
-          Loading store details...
-        </div>
+        <StorePageSkeleton />
       ) : isStoreError ? (
         <div className="flex h-40 items-center justify-center text-sm text-destructive">
           Store not found or failed to load details.
@@ -214,7 +213,7 @@ export default function StoreDetail({
             />
           </div>
 
-          <div className="grid grid-cols-1 items-start justify-center gap-0 pr-6 sm:pr-10 lg:grid-cols-[1fr_400px] lg:gap-0 lg:pr-25">
+          <div className="grid grid-cols-1 items-start justify-center gap-6 lg:grid-cols-[1fr_400px] lg:gap-0 lg:pr-25">
             <div className="min-w-0 space-y-2">
               {hasFilteredItems ? (
                 menuSections.map(([groupTitle, items]) => (

@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";
 import AuthProvider from "@/components/common/AuthProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 import "./about/about.css";
@@ -41,6 +42,7 @@ export default function RootLayout({
 
                             <main className="flex-1">{children}</main>
                             <Footer />
+                            <Toaster position="top-right" richColors closeButton />
                         </ThemeProvider>
                     </AuthProvider>
                 </StoreProvider>
