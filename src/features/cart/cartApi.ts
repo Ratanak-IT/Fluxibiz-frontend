@@ -7,14 +7,79 @@ import type {
     CartSummary,
 } from "@/lib/type/cartType";
 
-const baseQuery = fetchBaseQuery({
+const rawBaseQuery = fetchBaseQuery({
     baseUrl: "/api/v1",
     prepareHeaders: (headers, { getState }) => {
-        const token = (getState() as { auth: AuthState }).auth.accessToken;
-        if (token) headers.set("Authorization", `Bearer ${token}`);
+        let token = (getState() as { auth: AuthState }).auth.accessToken;
+        if (!token && typeof document !== "undefined") {
+            const match = document.cookie.match(/(?:^|; )kc_at=([^;]*)/);
+            if (match && match[1]) {
+                try {
+                    token = decodeURIComponent(match[1].trim());
+                } catch {
+                    token = match[1].trim();
+                }
+            }
+        }
+        if (token) {
+            headers.set("Authorization", `Bearer ${token}`);
+        }
         return headers;
     },
 });
+
+const baseQuery: typeof rawBaseQuery = async (args, api, extraOptions) => {
+    const state = api.getState() as { auth: AuthState };
+    const hasReduxToken = Boolean(state.auth.accessToken);
+    const hasCookieToken =
+        typeof document !== "undefined" &&
+        Boolean(document.cookie.match(/(?:^|; )kc_at=([^;]*)/));
+    const hasToken = hasReduxToken || hasCookieToken;
+
+    const urlStr = typeof args === "string" ? args : args.url;
+    const method = (typeof args === "object" ? args.method : "GET") || "GET";
+
+    if (!hasToken && method === "GET" && urlStr === "/storefront/cart") {
+        return {
+            data: {
+                storeCount: 0,
+                totalItems: 0,
+                stores: [],
+            } as any,
+        };
+    }
+
+    if (!hasToken && method === "GET" && urlStr === "/storefront/cart/count") {
+        return {
+            data: {
+                count: 0,
+            } as any,
+        };
+    }
+
+    const result = await rawBaseQuery(args, api, extraOptions);
+
+    if (result.error && (result.error.status === 400 || result.error.status === 401 || result.error.status === 403)) {
+        if (method === "GET" && urlStr === "/storefront/cart") {
+            return {
+                data: {
+                    storeCount: 0,
+                    totalItems: 0,
+                    stores: [],
+                } as any,
+            };
+        }
+        if (method === "GET" && urlStr === "/storefront/cart/count") {
+            return {
+                data: {
+                    count: 0,
+                } as any,
+            };
+        }
+    }
+
+    return result;
+};
 
 let pendingMutationsCount = 0;
 

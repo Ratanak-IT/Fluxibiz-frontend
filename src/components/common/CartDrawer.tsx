@@ -32,6 +32,7 @@ import {
     useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
 import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
+import { useAuth } from "@/features/auth/useAuth";
 import {
     formatMoney,
     resolveMediaUrl,
@@ -41,8 +42,9 @@ import {
 
 export default function CartDrawer() {
     const [open, setOpen] = useState(false);
+    const { isAuthenticated } = useAuth();
 
-    const { data: cart, isLoading } = useGetCartQuery();
+    const { data: cart, isLoading } = useGetCartQuery(undefined, { skip: !isAuthenticated });
 
     const totalItems = cart?.totalItems ?? 0;
 

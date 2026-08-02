@@ -137,7 +137,10 @@ export default function ProductQuickViewModal({
     setAddError(null);
     setNeedsLogin(false);
 
-    if (!product?.businessId || !product?.id) {
+    const targetBusinessId = product?.businessId || (rawItem as any)?.businessId || (rawItem as any)?.rawItem?.businessId;
+    const targetItemId = product?.id || (rawItem as any)?.id || (rawItem as any)?.rawItem?.id;
+
+    if (!targetBusinessId || !targetItemId) {
       setAddError("This product is not available for ordering yet.");
       return;
     }
@@ -147,13 +150,10 @@ export default function ProductQuickViewModal({
       return;
     }
 
-    toast.success(`Added ${quantity} × ${name} to cart`);
-    onOpenChange(false);
-
     try {
       await addToCartMutation({
-        businessId: product.businessId,
-        itemId: product.id,
+        businessId: targetBusinessId,
+        itemId: targetItemId,
         variantId: selectedVariant?.id,
         quantity,
         itemDetails: {
@@ -163,6 +163,9 @@ export default function ProductQuickViewModal({
           storeName: product?.businessName ?? "Store",
         },
       }).unwrap();
+
+      toast.success(`Added ${quantity} × ${name} to cart`);
+      onOpenChange(false);
     } catch (err) {
       if (isUnauthorized(err)) {
         setNeedsLogin(true);
@@ -175,7 +178,9 @@ export default function ProductQuickViewModal({
     }
   }
 
-  const canOrder = Boolean(product?.businessId && product?.id);
+  const targetBusinessId = product?.businessId || (rawItem as any)?.businessId || (rawItem as any)?.rawItem?.businessId;
+  const targetItemId = product?.id || (rawItem as any)?.id || (rawItem as any)?.rawItem?.id;
+  const canOrder = Boolean(targetBusinessId && targetItemId);
   const disabled = isAdding || authStatus === "loading" || !canOrder;
 
   return (

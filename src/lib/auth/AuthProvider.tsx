@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import type { SessionUser } from "@/lib/type/authType";
+import { clearClientCookies } from "@/lib/auth/keycloak";
 
 type AuthContextValue = {
   isLoading: boolean;
@@ -51,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    clearClientCookies();
     window.location.href = "/api/auth/logout";
   }, []);
 

@@ -18,16 +18,21 @@ function buildLogout(request: NextRequest) {
 
   const idToken = request.cookies.get(COOKIE.idToken)?.value;
 
-  // Build Keycloak end-session URL to invalidate Keycloak SSO session as well
-  const keycloakLogoutUrl = new URL(KC_ENDPOINTS.logout);
-  if (idToken) {
-    keycloakLogoutUrl.searchParams.set("id_token_hint", idToken);
-  }
-  keycloakLogoutUrl.searchParams.set("post_logout_redirect_uri", postLogoutRedirectUri);
-  keycloakLogoutUrl.searchParams.set("client_id", CLIENT_ID);
+  let redirectTarget = postLogoutRedirectUri;
 
-  // Clear local session cookies (kc_at, kc_rt, kc_it) and redirect to Keycloak end-session
-  const response = NextResponse.redirect(keycloakLogoutUrl.toString());
+  if (idToken && idToken.trim()) {
+    try {
+      const keycloakLogoutUrl = new URL(KC_ENDPOINTS.logout);
+      keycloakLogoutUrl.searchParams.set("id_token_hint", idToken.trim());
+      keycloakLogoutUrl.searchParams.set("post_logout_redirect_uri", postLogoutRedirectUri);
+      keycloakLogoutUrl.searchParams.set("client_id", CLIENT_ID);
+      redirectTarget = keycloakLogoutUrl.toString();
+    } catch {
+      redirectTarget = postLogoutRedirectUri;
+    }
+  }
+
+  const response = NextResponse.redirect(redirectTarget);
   return clearSessionCookies(response);
 }
 

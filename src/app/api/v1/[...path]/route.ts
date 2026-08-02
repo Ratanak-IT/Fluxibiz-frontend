@@ -2,41 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-
-function sanitizePath(pathSegments: string[]): string | null {
-  if (!pathSegments || pathSegments.length === 0) return "";
-
-  for (const segment of pathSegments) {
-    const decoded = decodeURIComponent(segment);
-    // Block Path Traversal (../ or ..\) and Protocol Injection (http://, file://, etc.)
-    if (
-      decoded.includes("..") ||
-      decoded.includes(":\\") ||
-      decoded.includes("://") ||
-      decoded.startsWith("/")
-    ) {
-      return null;
-    }
-  }
-
-  return pathSegments.join("/");
-}
-
 async function proxyHandler(
   req: NextRequest,
   context: { params: Promise<{ path: string[] }> }
 ) {
   const { path } = await context.params;
-  const sanitizedPath = sanitizePath(path);
-
-  if (sanitizedPath === null) {
-    console.warn(`[OWASP Security Guard] Blocked malformed or suspicious API path:`, path);
-    return NextResponse.json(
-      { error: "Access Denied: Malformed API path request." },
-      { status: 400 }
-    );
-  }
-
+  const pathString = path ? path.join("/") : "";
   const searchParams = req.nextUrl.search;
 
   const backendBaseUrl = (
@@ -45,23 +16,53 @@ async function proxyHandler(
     "http://localhost:8080"
   ).replace(/\/$/, "");
 
-  const destinationUrl = `${backendBaseUrl}/api/v1/${sanitizedPath}${searchParams}`;
+  const destinationUrl = `${backendBaseUrl}/api/v1/${pathString}${searchParams}`;
 
   const headers = new Headers();
+  const allowedHeaders = [
+    "authorization",
+    "content-type",
+    "accept",
+    "accept-language",
+    "x-requested-with",
+  ];
+
   req.headers.forEach((value, key) => {
     const lowerKey = key.toLowerCase();
-    if (
-      lowerKey !== "host" &&
-      lowerKey !== "connection" &&
-      lowerKey !== "transfer-encoding"
-    ) {
+    if (allowedHeaders.includes(lowerKey)) {
       headers.set(key, value);
     }
   });
 
+  if (!headers.has("authorization")) {
+    const rawToken = req.cookies.get("kc_at")?.value;
+    if (rawToken && rawToken.trim()) {
+      try {
+        const decoded = decodeURIComponent(rawToken.trim());
+        headers.set("authorization", `Bearer ${decoded}`);
+      } catch {
+        headers.set("authorization", `Bearer ${rawToken.trim()}`);
+      }
+    }
+  }
+
   try {
     const isGetOrHead = req.method === "GET" || req.method === "HEAD";
-    const body = isGetOrHead ? undefined : await req.blob();
+    const reqContentType = req.headers.get("content-type") || "";
+
+    let body: any = undefined;
+
+    if (!isGetOrHead) {
+      if (reqContentType.includes("multipart/form-data")) {
+        body = await req.formData();
+        headers.delete("content-type");
+      } else {
+        const buffer = await req.arrayBuffer();
+        if (buffer && buffer.byteLength > 0) {
+          body = buffer;
+        }
+      }
+    }
 
     const response = await fetch(destinationUrl, {
       method: req.method,
@@ -72,14 +73,48 @@ async function proxyHandler(
 
     const responseHeaders = new Headers(response.headers);
     responseHeaders.delete("transfer-encoding");
+    responseHeaders.delete("content-length");
 
-    return new NextResponse(response.body, {
+    const responseText = await response.text();
+    const contentType = response.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+      try {
+        const jsonData = JSON.parse(responseText);
+        return NextResponse.json(jsonData, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: responseHeaders,
+        });
+      } catch {
+        // Fallthrough if JSON parse fails
+      }
+    }
+
+    if (responseText.trim().startsWith("<")) {
+      return NextResponse.json(
+        {
+          status: response.status,
+          error: response.statusText || "Bad Request",
+          message:
+            response.status === 400
+              ? "Invalid request parameters or payload."
+              : "Backend API request failed.",
+        },
+        {
+          status: response.status,
+          headers: responseHeaders,
+        }
+      );
+    }
+
+    return new NextResponse(responseText, {
       status: response.status,
       statusText: response.statusText,
       headers: responseHeaders,
     });
   } catch (err) {
-    console.error(`[OWASP Security Logger] Proxy Error for ${req.method} -> ${destinationUrl}:`, err);
+    console.error(`Proxy Error for ${req.method} -> ${destinationUrl}:`, err);
     return NextResponse.json(
       { error: "Backend API service unavailable" },
       { status: 502 }

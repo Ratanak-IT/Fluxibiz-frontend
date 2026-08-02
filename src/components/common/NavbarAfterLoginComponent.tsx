@@ -25,6 +25,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import type { SessionUser } from "@/lib/type/authType";
+import { useAuth } from "@/features/auth/useAuth";
 import { useGetMyProfileQuery } from "@/features/user/userApi";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 import {
@@ -78,7 +79,8 @@ export default function NavbarAfterLoginComponent({
 }: NavbarAfterLoginComponentProps) {
   const pathname = usePathname();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { data: profile } = useGetMyProfileQuery(undefined, { skip: !user });
+  const { isAuthenticated } = useAuth();
+  const { data: profile } = useGetMyProfileQuery(undefined, { skip: !isAuthenticated });
 
   const resolvedProfilePic = resolveMediaUrl(profile?.profilePicture);
   const avatarSrc = profile

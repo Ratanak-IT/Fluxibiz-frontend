@@ -1,4 +1,3 @@
-
 import type { NextResponse } from "next/server";
 import type { SessionUser } from "@/lib/type/authType";
 
@@ -38,7 +37,6 @@ const BASE_COOKIE = {
 
 export const TRANSIENT_COOKIE = { ...BASE_COOKIE, maxAge: 60 * 10 };
 
-
 export function appOrigin(requestOrigin?: string, reqHeaders?: Headers) {
     if (process.env.NEXT_PUBLIC_APP_URL) {
         return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
@@ -64,7 +62,6 @@ export function safeReturnTo(value: string | null | undefined) {
     return value;
 }
 
-
 function base64url(input: ArrayBuffer | Uint8Array) {
     const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
     return Buffer.from(bytes).toString("base64url");
@@ -81,7 +78,6 @@ export async function pkceChallenge(verifier: string) {
     );
     return base64url(digest);
 }
-
 
 export type KeycloakTokens = {
     access_token: string;
@@ -129,7 +125,6 @@ export function refreshTokens(refreshToken: string) {
         refresh_token: refreshToken,
     });
 }
-
 
 type AccessTokenClaims = {
     sub: string;
@@ -199,18 +194,76 @@ export function setSessionCookies(res: NextResponse, tokens: KeycloakTokens) {
     return res;
 }
 
-export function clearSessionCookies(res: NextResponse) {
-    const pathsToClear = ["/", "/api", "/api/auth", "/api/v1"];
-    const cookieNames = Object.values(COOKIE);
+export function clearClientCookies() {
+    if (typeof document === "undefined") return;
+
+    const cookieNames = Array.from(
+        new Set([
+            "kc_at",
+            "kc_rt",
+            "kc_it",
+            "kc_pkce_verifier",
+            "kc_state",
+            "kc_return_to",
+            ...Object.values(COOKIE),
+        ])
+    );
+
+    const host = typeof window !== "undefined" ? window.location.hostname : "";
 
     for (const name of cookieNames) {
-        for (const path of pathsToClear) {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+        if (host) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${host};`;
+        }
+    }
+
+    if (document.cookie) {
+        const cookies = document.cookie.split(";");
+        for (const cookie of cookies) {
+            const eqPos = cookie.indexOf("=");
+            const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
+            if (name) {
+                document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+                if (host) {
+                    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${host};`;
+                }
+            }
+        }
+    }
+}
+
+export function clearSessionCookies(res: NextResponse) {
+    const cookieNames = Array.from(
+        new Set([
+            "kc_at",
+            "kc_rt",
+            "kc_it",
+            "kc_pkce_verifier",
+            "kc_state",
+            "kc_return_to",
+            ...Object.values(COOKIE),
+        ])
+    );
+
+    for (const name of cookieNames) {
+        try {
+            res.cookies.delete(name);
+        } catch {
+            // Ignore native delete error
+        }
+
+        try {
             res.cookies.set(name, "", {
-                ...BASE_COOKIE,
-                path,
+                httpOnly: true,
+                sameSite: "lax",
+                secure: SECURE,
+                path: "/",
                 maxAge: 0,
                 expires: new Date(0),
             });
+        } catch {
+            // Ignore cookie set error
         }
     }
     return res;

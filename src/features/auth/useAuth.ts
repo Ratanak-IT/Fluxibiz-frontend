@@ -12,6 +12,7 @@ import {
 } from "@/features/auth/authSlice";
 import { cartApi } from "@/features/cart/cartApi";
 import { userApi } from "@/features/user/userApi";
+import { clearClientCookies } from "@/lib/auth/keycloak";
 
 export function useAuth() {
     const dispatch = useAppDispatch();
@@ -25,7 +26,7 @@ export function useAuth() {
     const defaultReturnTo = isAuthPath ? "/store" : pathname;
 
     const loginHref = `/api/auth/login?prompt=login&returnTo=${encodeURIComponent(defaultReturnTo)}`;
-    const logoutHref = "/api/auth/logout?returnTo=%2F";
+    const logoutHref = "/api/auth/logout?returnTo=%2Fstore";
 
     const login = useCallback((targetPath?: string | unknown) => {
         let returnTo = typeof targetPath === "string" ? targetPath : undefined;
@@ -43,6 +44,9 @@ export function useAuth() {
         dispatch(signedOut());
         dispatch(cartApi.util.resetApiState());
         dispatch(userApi.util.resetApiState());
+
+        clearClientCookies();
+
         window.location.href = logoutHref;
     }, [logoutHref, dispatch]);
 
