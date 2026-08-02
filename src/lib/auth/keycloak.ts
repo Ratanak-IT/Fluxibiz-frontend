@@ -200,8 +200,18 @@ export function setSessionCookies(res: NextResponse, tokens: KeycloakTokens) {
 }
 
 export function clearSessionCookies(res: NextResponse) {
-    for (const name of Object.values(COOKIE)) {
-        res.cookies.set(name, "", { ...BASE_COOKIE, maxAge: 0 });
+    const pathsToClear = ["/", "/api", "/api/auth", "/api/v1"];
+    const cookieNames = Object.values(COOKIE);
+
+    for (const name of cookieNames) {
+        for (const path of pathsToClear) {
+            res.cookies.set(name, "", {
+                ...BASE_COOKIE,
+                path,
+                maxAge: 0,
+                expires: new Date(0),
+            });
+        }
     }
     return res;
 }

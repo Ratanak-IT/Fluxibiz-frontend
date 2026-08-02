@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   const origin = appOrigin(req.nextUrl.origin, req.headers);
   const returnTo = safeReturnTo(req.nextUrl.searchParams.get("returnTo"));
-  const prompt = req.nextUrl.searchParams.get("prompt");
+  const prompt = req.nextUrl.searchParams.get("prompt") || "login";
 
   const verifier = randomUrlSafe();
   const state = randomUrlSafe();

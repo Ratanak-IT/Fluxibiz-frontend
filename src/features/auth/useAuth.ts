@@ -3,14 +3,18 @@
 import { useCallback } from "react";
 import { usePathname } from "next/navigation";
 
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
     selectAuthStatus,
     selectIsAuthenticated,
     selectUser,
+    signedOut,
 } from "@/features/auth/authSlice";
+import { cartApi } from "@/features/cart/cartApi";
+import { userApi } from "@/features/user/userApi";
 
 export function useAuth() {
+    const dispatch = useAppDispatch();
     const user = useAppSelector(selectUser);
     const status = useAppSelector(selectAuthStatus);
     const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -20,7 +24,7 @@ export function useAuth() {
     const isAuthPath = pathname.startsWith("/register") || pathname.startsWith("/login");
     const defaultReturnTo = isAuthPath ? "/store" : pathname;
 
-    const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(defaultReturnTo)}`;
+    const loginHref = `/api/auth/login?prompt=login&returnTo=${encodeURIComponent(defaultReturnTo)}`;
     const logoutHref = "/api/auth/logout?returnTo=%2F";
 
     const login = useCallback((targetPath?: string | unknown) => {
@@ -32,12 +36,15 @@ export function useAuth() {
                 : currentPath + (typeof window === "undefined" ? "" : window.location.search);
         }
 
-        window.location.href = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
+        window.location.href = `/api/auth/login?prompt=login&returnTo=${encodeURIComponent(returnTo)}`;
     }, [pathname]);
 
     const logout = useCallback(() => {
+        dispatch(signedOut());
+        dispatch(cartApi.util.resetApiState());
+        dispatch(userApi.util.resetApiState());
         window.location.href = logoutHref;
-    }, [logoutHref]);
+    }, [logoutHref, dispatch]);
 
     return { user, status, isAuthenticated, loginHref, logoutHref, login, logout };
 }
