@@ -5,6 +5,7 @@ import { shopApi } from '@/features/shop/shopApi'
 import { storeCateApi } from '@/features/store-api/store-api'
 import { menuApi } from '@/lib/store/detailstore/detailstore'
 
+
 import { productApi } from '@/lib/store/productdetail/productApi'
 
 import {configureStore} from '@reduxjs/toolkit'
@@ -17,7 +18,8 @@ export const makeStore = () => {
       [shopApi.reducerPath] : shopApi.reducer,
       [storeCateApi.reducerPath]  :storeCateApi.reducer,
       [productApi.reducerPath]: productApi.reducer,
-      [menuApi.reducerPath]: menuApi.reducer
+      [menuApi.reducerPath]: menuApi.reducer,
+     
      
     },
     middleware: (getDefaultMiddleware) => 

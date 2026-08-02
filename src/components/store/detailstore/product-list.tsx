@@ -1,13 +1,26 @@
-import { MenuItemData } from "@/lib/store/detailstore/detailstore";
+"use client";
+
+import { MenuItemData, useGetPopularMenuQuery, useGetTeaMenuQuery } from "@/lib/store/detailstore/detailstore";
 import { MenuProductCard } from "./product-card";
 
 
+type MenuSectionType = "popular" | "tea";
+
 interface ProductListProps {
     title?: string;
-    items: MenuItemData[];
+    type: MenuSectionType;
 }
 
-export default function ProductList({ title, items = [] }: ProductListProps) {
+function useMenuSection(type: MenuSectionType) {
+    const popular = useGetPopularMenuQuery(undefined, { skip: type !== "popular" });
+    const tea = useGetTeaMenuQuery(undefined, { skip: type !== "tea" });
+
+    return type === "popular" ? popular : tea;
+}
+
+export default function ProductList({ title, type }: ProductListProps) {
+    const { data: items = [], isLoading, isError } = useMenuSection(type);
+
     return (
         <section className=" px-6 py-8  sm:px-10 lg:px-20">
             {title && (
@@ -16,13 +29,21 @@ export default function ProductList({ title, items = [] }: ProductListProps) {
                 </h2>
             )}
 
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                {items.map((item) => (
-                   
-                     <MenuProductCard key={item.id} item={item} /> 
-                  
-                ))}
-            </div>
+            {isLoading && (
+                <p className="text-neutral-500 dark:text-neutral-400">Loading...</p>
+            )}
+
+            {isError && (
+                <p className="text-red-500">Failed to load menu items.</p>
+            )}
+
+            {!isLoading && !isError && (
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    {items.map((item: MenuItemData) => (
+                        <MenuProductCard key={item.id} item={item} />
+                    ))}
+                </div>
+            )}
         </section>
     );
 }

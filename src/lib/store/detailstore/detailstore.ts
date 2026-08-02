@@ -97,7 +97,6 @@ export const popularMenuItems: MenuItemData[] = [
   },
 ]
 
-
 export async function getPopularMenuItems(): Promise<MenuItemData[]> {
   return popularMenuItems
 }
@@ -106,10 +105,7 @@ export async function getTeaMenuItems(): Promise<MenuItemData[]> {
   return teaMenuItems
 }
 
-
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-
-
 export const menuApi = createApi({
   reducerPath: "menuApi",
   baseQuery: fakeBaseQuery(),

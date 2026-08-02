@@ -1,18 +1,12 @@
 import SearchFilterBar from "@/components/store/detailstore/button";
 import ProductList from "@/components/store/detailstore/product-list";
 import CartSidebar from "@/components/store/detailstore/cart-sidebar";
-
 import StoreCard from "@/components/store/detailstore/store-card";
-import {
-  getPopularMenuItems,
-  getTeaMenuItems,
-} from "@/lib/store/detailstore/detailstore";
 import { ChevronLeft, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 
 export default async function StoreDetail() {
-  const popularMenuItems = await getPopularMenuItems();
-  const teaMenuItems = await getTeaMenuItems();
+
  
   return (
     <div className="mx-auto max-w-362.5 space-y-10 py-6 sm:px-10 dark:bg-background">
@@ -38,12 +32,10 @@ export default async function StoreDetail() {
         <SearchFilterBar />
       </div>
  
-      {/* Two-column shell: menu on the left, sticky cart on the right (matches reference layout) */}
-      {/* items-start: keeps the cart column sized to its own content instead of stretching to match the (much taller) menu column */}
       <div className="grid grid-cols-1 items-start justify-center gap-0 pr-6 sm:pr-10 lg:pr-25 lg:grid-cols-[1fr_400px] lg:gap-0">
         <div className="min-w-0 space-y-2">
-          <ProductList title="Popular Menu" items={popularMenuItems} />
-          <ProductList title="Tea Menu" items={teaMenuItems} />
+          <ProductList title="Popular" type="popular" />
+      <ProductList title="Tea Series" type="tea" />
         </div>
  
         {/* Cart sidebar: hidden on mobile (use the Cart link above instead), sticky on desktop */}

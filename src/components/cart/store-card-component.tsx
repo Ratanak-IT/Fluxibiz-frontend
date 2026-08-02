@@ -15,7 +15,7 @@ export function StoreCardComponent({ store = mockStore }: StoreCardComponentProp
    <Card className="h-auto overflow-hidden p-0 sm:h-36 md:h-45">
   <div className="flex h-full flex-row items-center">
     {/* Image */}
-    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg sm:h-full sm:w-32 md:h-40 md:w-40">
+    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg sm:h-full sm:w-40 md:h-40 md:w-40">
       <Image
         src={store.image}
         alt={store.name}
