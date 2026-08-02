@@ -1,4 +1,3 @@
-
 import { NextResponse, type NextRequest } from "next/server";
 import {
   KC_ENDPOINTS,
@@ -17,12 +16,13 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   const origin = appOrigin(req.nextUrl.origin, req.headers);
   const returnTo = safeReturnTo(req.nextUrl.searchParams.get("returnTo"));
+  const prompt = req.nextUrl.searchParams.get("prompt");
 
   const verifier = randomUrlSafe();
   const state = randomUrlSafe();
   const challenge = await pkceChallenge(verifier);
 
-  const params = new URLSearchParams({
+  const queryObj: Record<string, string> = {
     client_id: CLIENT_ID,
     response_type: "code",
     scope: "openid profile email",
@@ -30,7 +30,13 @@ export async function GET(req: NextRequest) {
     state,
     code_challenge: challenge,
     code_challenge_method: "S256",
-  });
+  };
+
+  if (prompt) {
+    queryObj.prompt = prompt;
+  }
+
+  const params = new URLSearchParams(queryObj);
 
   const res = NextResponse.redirect(`${KC_ENDPOINTS.authorize}?${params}`);
 

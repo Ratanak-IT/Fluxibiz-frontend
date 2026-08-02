@@ -4,17 +4,30 @@ import {
   appOrigin,
   clearSessionCookies,
   safeReturnTo,
+  KC_ENDPOINTS,
+  CLIENT_ID,
+  COOKIE,
 } from "@/lib/auth/keycloak";
 
 export const dynamic = "force-dynamic";
 
 function buildLogout(request: NextRequest) {
-  const origin = appOrigin(request.nextUrl.origin);
+  const origin = appOrigin(request.nextUrl.origin, request.headers);
   const returnTo = safeReturnTo(request.nextUrl.searchParams.get("returnTo"));
-  const targetUrl = new URL(returnTo, origin);
+  const postLogoutRedirectUri = `${origin}${returnTo}`;
 
-  // Clear local session cookies and redirect directly to application home/store without sending user to Keycloak page
-  const response = NextResponse.redirect(targetUrl);
+  const idToken = request.cookies.get(COOKIE.idToken)?.value;
+
+  // Build Keycloak end-session URL to invalidate Keycloak SSO session as well
+  const keycloakLogoutUrl = new URL(KC_ENDPOINTS.logout);
+  if (idToken) {
+    keycloakLogoutUrl.searchParams.set("id_token_hint", idToken);
+  }
+  keycloakLogoutUrl.searchParams.set("post_logout_redirect_uri", postLogoutRedirectUri);
+  keycloakLogoutUrl.searchParams.set("client_id", CLIENT_ID);
+
+  // Clear local session cookies (kc_at, kc_rt, kc_it) and redirect to Keycloak end-session
+  const response = NextResponse.redirect(keycloakLogoutUrl.toString());
   return clearSessionCookies(response);
 }
 
