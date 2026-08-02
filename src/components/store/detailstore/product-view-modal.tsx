@@ -461,22 +461,6 @@ export default function ProductQuickViewModal({
               )}
 
               {addError && <p className="text-xs text-destructive">{addError}</p>}
-
-              {/* Service Guarantee Badges */}
-              <div className="grid grid-cols-3 gap-1 pt-1 text-[10px] text-muted-foreground">
-                <div className="flex items-center justify-center gap-1 text-center">
-                  <Truck className="h-3.5 w-3.5 shrink-0 text-[#00932A]" />
-                  <span className="font-medium text-foreground">Free Delivery</span>
-                </div>
-                <div className="flex items-center justify-center gap-1 text-center">
-                  <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-[#00932A]" />
-                  <span className="font-medium text-foreground">1 Year Warranty</span>
-                </div>
-                <div className="flex items-center justify-center gap-1 text-center">
-                  <RotateCcw className="h-3.5 w-3.5 shrink-0 text-[#00932A]" />
-                  <span className="font-medium text-foreground">Easy Returns</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>

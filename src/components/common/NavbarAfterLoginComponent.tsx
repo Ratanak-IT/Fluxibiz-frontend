@@ -81,8 +81,9 @@ export default function NavbarAfterLoginComponent({
   const { data: profile } = useGetMyProfileQuery(undefined, { skip: !user });
 
   const resolvedProfilePic = resolveMediaUrl(profile?.profilePicture);
-  const resolvedUserPic = resolveMediaUrl(user.image);
-  const avatarSrc = resolvedProfilePic || resolvedUserPic || user.image || undefined;
+  const avatarSrc = profile
+    ? (resolvedProfilePic || undefined)
+    : (resolveMediaUrl(user.image) || user.image || undefined);
 
   const isActiveRoute = (href: string) => {
     return pathname === href || pathname.startsWith(`${href}/`);

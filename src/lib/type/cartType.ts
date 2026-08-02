@@ -63,8 +63,16 @@ export function resolveMediaUrl(keyOrUrl: string | null | undefined): string | n
 
     let value = keyOrUrl.trim();
 
+    const base = (process.env.NEXT_PUBLIC_MINIO_URL || "https://s3.careerpatch.site").replace(/\/$/, "");
+
     if (value.includes("storage.careerpatch.site")) {
         value = value.replace("storage.careerpatch.site", "s3.careerpatch.site");
+    }
+
+    if (value.startsWith("http://minio:9000") || value.startsWith("https://minio:9000")) {
+        value = value.replace(/^https?:\/\/minio:9000/, base);
+    } else if (value.startsWith("http://localhost:9000") || value.startsWith("https://localhost:9000")) {
+        value = value.replace(/^https?:\/\/localhost:9000/, base);
     }
 
     if (
@@ -75,7 +83,6 @@ export function resolveMediaUrl(keyOrUrl: string | null | undefined): string | n
         return value;
     }
 
-    const base = (process.env.NEXT_PUBLIC_MINIO_URL || "https://s3.careerpatch.site").replace(/\/$/, "");
     const bucket = process.env.NEXT_PUBLIC_MINIO_BUCKET || "fluxibix";
 
     if (value.startsWith(`${bucket}/`)) {

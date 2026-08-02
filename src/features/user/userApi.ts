@@ -40,13 +40,13 @@ export const userApi = createApi({
         >({
             query: (args) => {
                 const formData = new FormData();
-                if (args.firstName && args.firstName.trim() !== "") {
+                if (args.firstName !== undefined && args.firstName !== null && args.firstName.trim() !== "") {
                     formData.append("firstName", args.firstName.trim());
                 }
-                if (args.lastName && args.lastName.trim() !== "") {
+                if (args.lastName !== undefined && args.lastName !== null && args.lastName.trim() !== "") {
                     formData.append("lastName", args.lastName.trim());
                 }
-                if (args.phoneNumber && args.phoneNumber.trim().length >= 8) {
+                if (args.phoneNumber !== undefined && args.phoneNumber !== null && args.phoneNumber.trim() !== "") {
                     formData.append("phoneNumber", args.phoneNumber.trim());
                 }
                 if (
@@ -57,7 +57,7 @@ export const userApi = createApi({
                 ) {
                     formData.append("gender", args.gender.toUpperCase());
                 }
-                if (args.address && args.address.trim() !== "") {
+                if (args.address !== undefined && args.address !== null && args.address.trim() !== "") {
                     formData.append("address", args.address.trim());
                 }
                 if (args.file) {

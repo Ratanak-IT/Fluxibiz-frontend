@@ -36,6 +36,7 @@ export default function CheckoutPage({
     const [cancelCheckout, { isLoading: cancelling }] = useCancelCheckoutMutation();
 
     const [session, setSession] = useState<CheckoutSession | null>(null);
+    const [cancelledOrderId, setCancelledOrderId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [paid, setPaid] = useState(false);
 
@@ -48,10 +49,16 @@ export default function CheckoutPage({
     const blockedBy = pending && !pendingIsThisStore ? pending : null;
 
     useEffect(() => {
-        if (pending && pendingIsThisStore && pending.qr && !session) {
+        if (
+            pending &&
+            pendingIsThisStore &&
+            pending.qr &&
+            !session &&
+            cancelledOrderId !== pending.orderId
+        ) {
             setSession(pending);
         }
-    }, [pending, pendingIsThisStore, session]);
+    }, [pending, pendingIsThisStore, session, cancelledOrderId]);
 
     const startPayment = async () => {
         if (!store) return;
@@ -235,6 +242,9 @@ export default function CheckoutPage({
                         regenerating={creating}
                         onPaid={() => setPaid(true)}
                         onCancelled={() => {
+                            if (session?.orderId) {
+                                setCancelledOrderId(session.orderId);
+                            }
                             setSession(null);
                             refetchActive();
                         }}

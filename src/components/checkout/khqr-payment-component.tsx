@@ -17,6 +17,8 @@ import {
     type CheckoutSession,
 } from "@/lib/type/checkoutType";
 
+import { useStompTopic } from "@/lib/websocket/useWebSocket";
+
 const POLL_INTERVAL_MS = 3000;
 
 type Phase = "waiting" | "paid" | "expired" | "cancelled";
@@ -62,6 +64,21 @@ export default function KhqrPaymentComponent({
     const inFlight = useRef(false);
 
     const { orderId, expiresAt } = session;
+
+    // Real-time WebSocket listener for order / payment updates
+    useStompTopic(orderId ? `/topic/orders/${orderId}` : null, (msg: any) => {
+        if (msg?.paid || msg?.status === "PAID" || msg?.orderStatus === "COMPLETED") {
+            setPhase("paid");
+            toast.success("Payment confirmed in real-time via WebSocket!");
+            onPaid();
+        } else if (msg?.qrStatus === "EXPIRED" || msg?.status === "EXPIRED") {
+            setPhase("expired");
+            toast.error("KHQR code has expired.");
+        } else if (msg?.status === "CANCELLED") {
+            setPhase("cancelled");
+            toast.info("Order cancelled");
+        }
+    });
 
     useEffect(() => {
         setPhase("waiting");

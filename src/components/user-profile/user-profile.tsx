@@ -176,9 +176,7 @@ export default function UserProfile() {
   const resolvedApiAvatar = resolveMediaUrl(profile?.profilePicture);
   const avatarSrc =
     imagePreview ||
-    resolvedApiAvatar ||
-    user?.image ||
-    "https://github.com/shadcn.png";
+    (profile ? (resolvedApiAvatar || undefined) : (user?.image || undefined));
 
   const fallbackInitials = (fullName.slice(0, 2) || "UP").toUpperCase();
   const hasCustomPicture = Boolean(selectedFile || profile?.profilePicture);
@@ -189,11 +187,11 @@ export default function UserProfile() {
 
     try {
       await updateProfile({
-        firstName: data.firstName || undefined,
-        lastName: data.lastName || undefined,
-        phoneNumber: data.phoneNumber || undefined,
-        address: data.address || undefined,
-        gender: data.gender || undefined,
+        firstName: data.firstName?.trim() ? data.firstName.trim() : undefined,
+        lastName: data.lastName?.trim() ? data.lastName.trim() : undefined,
+        phoneNumber: data.phoneNumber?.trim() ? data.phoneNumber.trim() : undefined,
+        address: data.address?.trim() ? data.address.trim() : undefined,
+        gender: data.gender ? data.gender : undefined,
         file: selectedFile || undefined,
       }).unwrap();
 
