@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { RegisterForm } from "./RegisterForm";
 import { BusinessRegisterForm } from "./BusinessRegisterForm";
+import { useAuth } from "@/features/auth/useAuth";
 import {
   type UserRegisterFormData,
   type BusinessRegisterFormData,
@@ -16,7 +16,7 @@ import {
 } from "@/features/business-registration/businessApi";
 
 export function BusinessMultiStepRegister() {
-  const router = useRouter();
+  const { login } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
   const [userData, setUserData] = useState<UserRegisterFormData | undefined>();
   const [registerUser, { isLoading: isRegisteringUser }] = useRegisterUserMutation();
@@ -66,7 +66,7 @@ export function BusinessMultiStepRegister() {
 
       toast.success("Account created successfully! Redirecting to login...");
       setTimeout(() => {
-        router.push("/login");
+        login();
       }, 1500);
     } catch (err: any) {
       console.error("API Error during user registration:", err);
