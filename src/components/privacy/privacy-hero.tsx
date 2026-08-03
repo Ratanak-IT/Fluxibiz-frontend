@@ -4,7 +4,7 @@ import { ShieldCheck, Clock } from "lucide-react";
 
 export function PrivacyHero() {
   return (
-    <header className="relative overflow-hidden border-b border-gray-200 bg-gradient-to-b from-[#00932A]/5 via-white to-white dark:border-[#2D2D2D] dark:from-[#21B94B]/10 dark:via-[#121212] dark:to-[#121212]">
+    <header className="relative overflow-hidden border-b border-gray-200 bg-gradient-to-b from-[#00932A]/5 via-white to-white dark:border-card dark:from-[#21B94B]/10 dark:via-background dark:to-background">
       {/* subtle decorative glow, purely presentational */}
       <div
         aria-hidden="true"

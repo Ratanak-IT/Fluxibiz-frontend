@@ -33,7 +33,7 @@ import {
 
 
 export const LAST_UPDATED = "August 1, 2026";
-export const COMPANY_NAME = "Northbeam";
+export const COMPANY_NAME = "FluxiBiz";
 
 export interface NavItem {
   id: string;
@@ -52,7 +52,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: "third-party-services", label: "Third-Party Services" },
   { id: "marketplace", label: "Marketplace" },
   { id: "pos-system", label: "POS System" },
-  { id: "social-commerce", label: "Social Commerce" },
+  // { id: "social-commerce", label: "Social Commerce" },
   { id: "telegram-chatbot", label: "Telegram Chatbot" },
   { id: "childrens-privacy", label: "Children's Privacy" },
   { id: "changes-to-policy", label: "Changes to Policy" },
@@ -228,12 +228,10 @@ export const POS_DATA_POINTS = [
 
 export const SOCIAL_CHANNELS = [
   { icon: Bot, title: "Telegram Bot", description: "Automated ordering and support through Telegram." },
-  { icon: MessageCircle, title: "Messenger", description: "Facebook Messenger integration for customer chat." },
-  { icon: Globe, title: "Live Chat", description: "Real-time chat widget embedded on storefronts." },
+  { icon: MessageCircle, title: "Messenger", description: "Facebook Messenger integration for customer chat." }
 ];
 
 export const SOCIAL_DATA_POINTS = [
-  "Chat history between customers and store staff",
   "Order requests submitted through chat",
   "Product inquiries and availability questions",
   "Customer support conversations and resolutions",

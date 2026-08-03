@@ -4,19 +4,20 @@ const CONTACT_DETAILS = [
   {
     icon: Mail,
     label: "Email",
-    value: "privacy@northbeam.io",
+    value: "ipos.istad@gmail.com",
     href: "mailto:privacy@northbeam.io",
   },
   {
     icon: Phone,
     label: "Phone",
-    value: "+1 (415) 555-0182",
-    href: "tel:+14155550182",
+    value: "+885 15 33 88 26",
+    href: "tel:+885 15 33 88 26",
   },
   {
     icon: MapPin,
     label: "Address",
-    value: "548 Market Street, Suite 62000, San Francisco, CA 94104",
+    value: "40 Street 273, Sangkat Boeung Kak Ti Mouy, Khan Toul Kork, Phnom Penh",
+
   },
   {
     icon: Clock,
@@ -31,10 +32,10 @@ export function ContactCard() {
       {CONTACT_DETAILS.map(({ icon: Icon, label, value, href }) => (
         <div
           key={label}
-          className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-[#2D2D2D] dark:bg-[#121212]"
+          className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-card dark:bg-background"
         >
           <span
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#00932A]/10 text-[#00932A] dark:bg-[#21B94B]/10 dark:text-[#21B94B]"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#00932A]/10 text-primary dark:bg-[#21B94B]/10 dark:text-[#21B94B]"
             aria-hidden="true"
           >
             <Icon className="h-4.5 w-4.5" />
@@ -46,7 +47,7 @@ export function ContactCard() {
             {href ? (
               <a
                 href={href}
-                className="font-medium text-gray-900 underline-offset-4 hover:text-[#00932A] hover:underline dark:text-[#F5F5F5] dark:hover:text-[#21B94B]"
+                className="font-medium text-gray-900 underline-offset-4 hover:text-[#00932A] hover:underline dark:text-text dark:hover:text-[#21B94B]"
               >
                 {value}
               </a>

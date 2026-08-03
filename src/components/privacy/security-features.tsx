@@ -8,7 +8,7 @@ export function SecurityFeatures() {
       {SECURITY_FEATURES.map(({ icon: Icon, title, description }) => (
         <div
           key={title}
-          className="rounded-xl border border-gray-200 bg-white p-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-[#2D2D2D] dark:bg-[#121212]"
+          className="rounded-xl border border-gray-200 bg-white p-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-card dark:bg-background"
         >
           <span
             className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#00932A]/10 text-[#00932A] dark:bg-[#21B94B]/10 dark:text-[#21B94B]"

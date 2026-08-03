@@ -7,7 +7,7 @@ export function InfoCollectionGrid() {
       {INFORMATION_CARDS.map(({ icon: Icon, title, description, points }) => (
         <div
           key={title}
-          className="group rounded-xl border border-gray-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-[#2D2D2D] dark:bg-[#121212]"
+          className="group rounded-xl border border-gray-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-card dark:bg-background"
         >
           <div className="mb-3 flex items-center gap-2.5">
             <span

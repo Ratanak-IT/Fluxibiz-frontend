@@ -7,7 +7,7 @@ export function UserRightsGrid() {
       {USER_RIGHTS.map(({ icon: Icon, title, description }) => (
         <div
           key={title}
-          className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-[#2D2D2D] dark:bg-[#121212]"
+          className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-card dark:bg-background"
         >
           <span
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#00932A]/10 text-[#00932A] dark:bg-[#21B94B]/10 dark:text-[#21B94B]"

@@ -16,7 +16,7 @@ export function PolicySection({ id, icon: Icon, title, children }: PolicySection
       <section
         id={id}
         aria-labelledby={`${id}-heading`}
-        className="scroll-mt-28 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-[#2D2D2D] dark:bg-[#1E1E1E] sm:p-8"
+        className="scroll-mt-28 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-card dark:bg-[#1E1E1E] sm:p-8"
       >
         <div className="mb-4 flex items-center gap-3">
           <span

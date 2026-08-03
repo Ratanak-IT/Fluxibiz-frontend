@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 
 import { PrivacyHero } from "@/components/privacy/privacy-hero";
-// import { TableOfContents } from "@/components/privacy/table-of-contents";
+
 import { PolicyList, PolicySection } from "@/components/privacy/policy-section";
 import { InfoCollectionGrid } from "@/components/privacy/info-collection-grid";
 import { SecurityFeatures } from "@/components/privacy/security-features";
@@ -33,7 +33,7 @@ import { COMPANY_NAME, MARKETPLACE_FEATURES, POS_DATA_POINTS, SOCIAL_CHANNELS, S
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen scroll-smooth bg-white dark:bg-[#121212]">
+    <div className="min-h-screen scroll-smooth bg-white dark:bg-background">
       <PrivacyHero />
 
       <main className="mx-auto flex max-w-6xl gap-8 px-6 py-12">
@@ -194,7 +194,7 @@ export default function PrivacyPolicyPage() {
 
           <PolicySection id="social-commerce" icon={MessageCircle} title="Social Commerce">
             <p>We integrate with several messaging platforms to support chat-based selling:</p>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               {SOCIAL_CHANNELS.map(({ icon: Icon, title, description }) => (
                 <div
                   key={title}
