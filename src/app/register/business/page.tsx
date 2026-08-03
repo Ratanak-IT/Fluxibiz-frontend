@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 
-import { BusinessRegisterForm } from "@/components/login/BusinessRegisterForm";
 import { RegistrationShell } from "@/components/login/RegistrationShell";
+import { BusinessMultiStepRegister } from "@/components/login/BusinessMultiStepRegister";
 
 export const metadata: Metadata = {
-    title: "Business details | FluxiBiz",
-    description: "Add your store details to finish creating your account.",
+    title: "Business Registration | FluxiBiz",
+    description: "Create your user account and business details on FluxiBiz.",
 };
 
 export default function BusinessRegisterPage() {
     return (
         <RegistrationShell contentClassName="lg:-translate-y-4">
-            <BusinessRegisterForm />
+            <BusinessMultiStepRegister />
         </RegistrationShell>
     );
 }

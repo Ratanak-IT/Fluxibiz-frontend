@@ -15,6 +15,7 @@ import {
   useGetRecommendedStoresQuery,
 } from "@/features/store-api/store-api";
 import { PublicStore, toStoreCard } from "@/lib/type/storeType";
+import { RecommendedRowSkeleton, StoreRowSkeleton } from "@/components/common/Skeletons";
 
 function SectionHeader({ title }: { title: string }) {
   return (
@@ -141,9 +142,7 @@ function RecommendedSection() {
     return (
       <section className="space-y-3">
         <SectionHeader title="Recommend" />
-        <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-          Loading recommended stores...
-        </div>
+        <RecommendedRowSkeleton count={4} />
       </section>
     );
   }
@@ -179,9 +178,10 @@ function StoresByCategorySection({ selectedCategoryIds }: { selectedCategoryIds?
 
   if (isLoading) {
     return (
-      <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-        Loading stores...
-      </div>
+      <section className="space-y-3">
+        <SectionHeader title="Stores" />
+        <StoreRowSkeleton count={4} />
+      </section>
     );
   }
 
@@ -227,7 +227,16 @@ function PromotionsSection() {
     .map(toStoreCard)
     .filter((store) => Boolean(store.discountLabel));
 
-  if (isLoading || promoStores.length === 0) {
+  if (isLoading) {
+    return (
+      <section className="space-y-3">
+        <SectionHeader title="Promotions" />
+        <StoreRowSkeleton count={4} />
+      </section>
+    );
+  }
+
+  if (promoStores.length === 0) {
     return null;
   }
 

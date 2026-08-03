@@ -10,6 +10,7 @@ import { ImageOff, Plus } from "lucide-react";
 import Image from "next/image";
 import { MenuItemData } from "@/lib/store/detailstore/detailstore";
 import { useState } from "react";
+import { useRouter, useParams } from "next/navigation";
 import ProductQuickViewModal from "./product-view-modal";
 
 interface MenuProductCardProps {
@@ -18,13 +19,25 @@ interface MenuProductCardProps {
 
 export function MenuProductCard({ item }: MenuProductCardProps) {
   const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const router = useRouter();
+  const params = useParams();
+  const storeSlug = (params?.slug as string) || "";
 
   const imageUrl = item.image?.trim() ? item.image : null;
+
+  const handleCardClick = () => {
+    const itemTarget = item.rawItem?.slug || item.rawItem?.id || item.id;
+    if (storeSlug && itemTarget) {
+      router.push(`/store/${storeSlug}/product/${itemTarget}`);
+    } else {
+      setQuickViewOpen(true);
+    }
+  };
 
   return (
     <>
       <Card
-        onClick={() => setQuickViewOpen(true)}
+        onClick={handleCardClick}
         className="max-w-xl cursor-pointer overflow-hidden border-0 bg-white p-0 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg dark:bg-card"
       >
         <div className="flex h-full min-h-25 sm:min-h-30">

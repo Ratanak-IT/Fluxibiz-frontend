@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -32,6 +32,7 @@ import {
     useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
 import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
+import { useAuth } from "@/features/auth/useAuth";
 import {
     formatMoney,
     resolveMediaUrl,
@@ -41,8 +42,9 @@ import {
 
 export default function CartDrawer() {
     const [open, setOpen] = useState(false);
+    const { isAuthenticated } = useAuth();
 
-    const { data: cart, isLoading } = useGetCartQuery();
+    const { data: cart, isLoading } = useGetCartQuery(undefined, { skip: !isAuthenticated });
 
     const totalItems = cart?.totalItems ?? 0;
 
@@ -264,8 +266,32 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
     const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
     const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
+    const [pendingQty, setPendingQty] = useState(line.quantity);
+
+    useEffect(() => {
+        setPendingQty(line.quantity);
+    }, [line.quantity]);
+
     const imageUrl = resolveMediaUrl(line.imageUrl);
     const busy = isUpdating || isRemoving;
+
+    const handleDecrease = () => {
+        if (pendingQty <= 1) {
+            removeItem(line.cartItemId);
+        } else {
+            const nextQty = pendingQty - 1;
+            setPendingQty(nextQty);
+            updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+        }
+    };
+
+    const handleIncrease = () => {
+        const nextQty = pendingQty + 1;
+        setPendingQty(nextQty);
+        updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+    };
+
+    const currentSubtotal = line.unitPrice * pendingQty;
 
     return (
         <div className="flex items-center gap-3 rounded-lg bg-white p-2 dark:bg-background">
@@ -314,41 +340,29 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                     <Button
                         variant="outline"
                         size="icon"
-                        disabled={busy}
-                        onClick={() =>
-                            updateItem({
-                                cartItemId: line.cartItemId,
-                                quantity: line.quantity - 1,
-                            })
-                        }
-                        className="h-5 w-5 text-yellow-400 disabled:opacity-40 dark:border-border dark:bg-card"
+                        onClick={handleDecrease}
+                        className="h-5 w-5 text-yellow-400 dark:border-border dark:bg-card"
                         aria-label="Decrease quantity"
                     >
                         <Minus className="h-3 w-3" />
                     </Button>
 
                     <span className="w-4 text-center text-sm font-medium dark:text-card-foreground">
-                        {line.quantity}
+                        {pendingQty}
                     </span>
 
                     <Button
                         variant="outline"
                         size="icon"
-                        disabled={busy}
-                        onClick={() =>
-                            updateItem({
-                                cartItemId: line.cartItemId,
-                                quantity: line.quantity + 1,
-                            })
-                        }
-                        className="h-5 w-5 text-green-600 disabled:opacity-40 dark:border-border dark:bg-card dark:text-primary"
+                        onClick={handleIncrease}
+                        className="h-5 w-5 text-green-600 dark:border-border dark:bg-card dark:text-primary"
                         aria-label="Increase quantity"
                     >
                         <Plus className="h-3 w-3" />
                     </Button>
 
                     <span className="ml-auto whitespace-nowrap text-sm font-semibold text-red-500 dark:text-destructive">
-                        {formatMoney(line.subtotal, currency)}
+                        {formatMoney(currentSubtotal, currency)}
                     </span>
                 </div>
             </div>

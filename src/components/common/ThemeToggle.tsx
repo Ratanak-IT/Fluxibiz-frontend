@@ -86,16 +86,18 @@ export default function ThemeToggle({
             rounded-lg
             bg-transparent
             px-3
-            text-[#6a6a6a]
+            text-base
+            font-bold
+            text-[#1f2937]
             shadow-none
             hover:!bg-transparent
-            hover:text-secondary
+            hover:text-primary
             focus-visible:!bg-transparent
             active:!bg-transparent
             dark:bg-transparent
-            dark:text-[#6a6a6a]
+            dark:text-[#1f2937]
             dark:hover:!bg-transparent
-            dark:hover:text-secondary
+            dark:hover:text-primary
           `
           : `
             group

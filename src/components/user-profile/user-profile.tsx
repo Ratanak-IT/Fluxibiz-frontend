@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +17,38 @@ import {
   useRemoveProfilePictureMutation,
 } from "@/features/user/userApi";
 import { resolveMediaUrl } from "@/lib/type/cartType";
+import { toast } from "sonner";
+import { UserProfileSkeleton } from "@/components/common/Skeletons";
+import { validateEmailFormat } from "@/lib/validations/authSchema";
+
+const userProfileSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  email: z
+    .string()
+    .optional()
+    .superRefine((val, ctx) => {
+      if (!val || val.trim() === "") return;
+      const res = validateEmailFormat(val);
+      if (res !== true) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: res,
+        });
+      }
+    }),
+  phoneNumber: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || val.trim() === "" || val.trim().length >= 8,
+      "Phone number must be at least 8 digits (e.g. +855 12 345 678)"
+    ),
+  address: z.string().optional(),
+  gender: z.string().optional(),
+});
+
+type UserProfileFormData = z.infer<typeof userProfileSchema>;
 
 const connectedProviders = [
   {
@@ -54,17 +89,31 @@ export default function UserProfile() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [gender, setGender] = useState("UNSPECIFIED");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<UserProfileFormData>({
+    resolver: zodResolver(userProfileSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      address: "",
+      gender: "UNSPECIFIED",
+    },
+  });
+
+  const watchFirstName = watch("firstName");
+  const watchLastName = watch("lastName");
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -74,27 +123,35 @@ export default function UserProfile() {
 
   useEffect(() => {
     if (profile) {
-      setFirstName(profile.firstName ?? "");
-      setLastName(profile.lastName ?? "");
-      setEmail(profile.email ?? user?.email ?? "");
-      setPhone(profile.phoneNumber ?? "");
-      setAddress(profile.address ?? "");
-      setGender(profile.gender ? profile.gender.toUpperCase() : "UNSPECIFIED");
+      reset({
+        firstName: profile.firstName ?? "",
+        lastName: profile.lastName ?? "",
+        email: profile.email ?? user?.email ?? "",
+        phoneNumber: profile.phoneNumber ?? "",
+        address: profile.address ?? "",
+        gender: profile.gender ? profile.gender.toUpperCase() : "UNSPECIFIED",
+      });
     } else if (user) {
-      setFirstName(user.firstName ?? "");
-      setLastName(user.lastName ?? "");
-      setEmail(user.email ?? "");
+      reset({
+        firstName: user.firstName ?? "",
+        lastName: user.lastName ?? "",
+        email: user.email ?? "",
+        phoneNumber: "",
+        address: "",
+        gender: "UNSPECIFIED",
+      });
     }
-  }, [profile, user]);
+  }, [profile, user, reset]);
 
-  // Handle local image file selection
+  // Handle local image file selection (Preview only, uploaded on Save Changes)
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
-    }
+    if (!file) return;
+
+    setSelectedFile(file);
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+    toast.info("Photo selected. Click 'Save Changes' to update your profile.");
   }
 
   // Handle profile photo removal
@@ -103,47 +160,45 @@ export default function UserProfile() {
       await removeProfilePicture().unwrap();
       setSelectedFile(null);
       setImagePreview(null);
+      toast.success("Profile photo removed.");
     } catch (err) {
       console.error("Failed to remove profile picture", err);
       setSaveError("Failed to remove profile picture.");
+      toast.error("Failed to remove profile picture.");
     }
   }
 
   const fullName =
-    [firstName, lastName].filter(Boolean).join(" ") || user?.name || "User Profile";
+    [watchFirstName, watchLastName].filter(Boolean).join(" ") ||
+    user?.name ||
+    "User Profile";
 
   const resolvedApiAvatar = resolveMediaUrl(profile?.profilePicture);
   const avatarSrc =
     imagePreview ||
-    resolvedApiAvatar ||
-    user?.image ||
-    "https://github.com/shadcn.png";
+    (profile ? (resolvedApiAvatar || undefined) : (user?.image || undefined));
 
   const fallbackInitials = (fullName.slice(0, 2) || "UP").toUpperCase();
   const hasCustomPicture = Boolean(selectedFile || profile?.profilePicture);
 
-  async function handleSaveChanges() {
+  async function handleSaveChanges(data: UserProfileFormData) {
     setSaveError(null);
     setSaveSuccess(false);
 
-    if (phone && phone.trim() !== "" && phone.trim().length < 8) {
-      setSaveError("Phone number must be at least 8 digits (e.g. +855 12 345 678).");
-      return;
-    }
-
     try {
       await updateProfile({
-        firstName,
-        lastName,
-        phoneNumber: phone,
-        address,
-        gender,
-        file: selectedFile,
+        firstName: data.firstName?.trim() ? data.firstName.trim() : undefined,
+        lastName: data.lastName?.trim() ? data.lastName.trim() : undefined,
+        phoneNumber: data.phoneNumber?.trim() ? data.phoneNumber.trim() : undefined,
+        address: data.address?.trim() ? data.address.trim() : undefined,
+        gender: data.gender ? data.gender : undefined,
+        file: selectedFile || undefined,
       }).unwrap();
 
       setSelectedFile(null);
       setImagePreview(null);
       setSaveSuccess(true);
+      toast.success("Profile updated successfully!");
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err: any) {
       console.error("Failed to update profile", err);
@@ -153,15 +208,12 @@ export default function UserProfile() {
         err?.data?.detail ||
         "Could not save profile changes. Please check your input.";
       setSaveError(errMsg);
+      toast.error(errMsg);
     }
   }
 
   if (isLoading || status === "loading") {
-    return (
-      <div className="flex h-96 items-center justify-center text-muted-foreground">
-        <Loader2 className="h-6 w-6 animate-spin text-[#00932A]" />
-      </div>
-    );
+    return <UserProfileSkeleton />;
   }
 
   return (
@@ -219,7 +271,7 @@ export default function UserProfile() {
                   variant="outline"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="h-8 gap-1.5 rounded-full border-gray-300 text-xs font-semibold hover:border-[#00932A] hover:text-[#00932A]"
+                  className="h-8 gap-1.5 rounded-full border-gray-300 text-xs font-semibold hover:border-[#00932A] hover:text-[#00932A] dark:border-neutral-700 dark:text-neutral-200 dark:hover:border-[#00932A] dark:hover:text-[#00932A]"
                 >
                   <Pencil className="size-3.5" />
                   Change Photo
@@ -246,9 +298,9 @@ export default function UserProfile() {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <form onSubmit={handleSubmit(handleSaveChanges)} className="space-y-6">
             {/* Personal Information Card */}
-            <Card className="border-0 p-0 shadow-sm">
+            <Card className="border border-neutral-200/80 p-0 shadow-sm dark:border-border dark:bg-card">
               <CardContent className="p-5 sm:p-6">
                 <h2 className="mb-5 flex items-center gap-2 text-base font-bold text-neutral-900 dark:text-foreground">
                   <User className="size-4.5 text-[#00932A]" />
@@ -259,109 +311,166 @@ export default function UserProfile() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="firstName"
-                      className="text-xs font-semibold text-muted-foreground"
+                      className="text-xs font-semibold text-muted-foreground dark:text-neutral-300"
                     >
                       First Name
                     </Label>
-                    <Input
-                      id="firstName"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="Enter first name"
-                      className="h-11 rounded-full px-4 border-gray-200 focus-visible:ring-[#00932A]"
+                    <Controller
+                      name="firstName"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          id="firstName"
+                          placeholder="Enter first name"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                        />
+                      )}
                     />
+                    {errors.firstName?.message && (
+                      <span className="text-xs font-medium text-red-500">
+                        {errors.firstName.message}
+                      </span>
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label
                       htmlFor="lastName"
-                      className="text-xs font-semibold text-muted-foreground"
+                      className="text-xs font-semibold text-muted-foreground dark:text-neutral-300"
                     >
                       Last Name
                     </Label>
-                    <Input
-                      id="lastName"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Enter last name"
-                      className="h-11 rounded-full px-4 border-gray-200 focus-visible:ring-[#00932A]"
+                    <Controller
+                      name="lastName"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          id="lastName"
+                          placeholder="Enter last name"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                        />
+                      )}
                     />
+                    {errors.lastName?.message && (
+                      <span className="text-xs font-medium text-red-500">
+                        {errors.lastName.message}
+                      </span>
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label
                       htmlFor="email"
-                      className="text-xs font-semibold text-muted-foreground"
+                      className="text-xs font-semibold text-muted-foreground dark:text-neutral-300"
                     >
                       Email Address (Read-only)
                     </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      disabled
-                      className="h-11 rounded-full px-4 bg-neutral-100 text-neutral-500 opacity-80 cursor-not-allowed dark:bg-neutral-800"
+                    <Controller
+                      name="email"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          id="email"
+                          type="email"
+                          disabled
+                          placeholder="user@example.com"
+                          className="h-11 rounded-full px-4 bg-neutral-100 text-neutral-500 opacity-80 cursor-not-allowed dark:bg-neutral-800/80 dark:text-neutral-400 dark:border-neutral-800"
+                        />
+                      )}
                     />
+                    {errors.email?.message && (
+                      <span className="text-xs font-medium text-red-500">
+                        {errors.email.message}
+                      </span>
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label
-                      htmlFor="phone"
-                      className="text-xs font-semibold text-muted-foreground"
+                      htmlFor="phoneNumber"
+                      className="text-xs font-semibold text-muted-foreground dark:text-neutral-300"
                     >
                       Phone Number
                     </Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+855 12 345 678"
-                      className="h-11 rounded-full px-4 border-gray-200 focus-visible:ring-[#00932A]"
+                    <Controller
+                      name="phoneNumber"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          id="phoneNumber"
+                          type="tel"
+                          placeholder="+855 12 345 678"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                        />
+                      )}
                     />
+                    {errors.phoneNumber?.message && (
+                      <span className="text-xs font-medium text-red-500">
+                        {errors.phoneNumber.message}
+                      </span>
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label
                       htmlFor="gender"
-                      className="text-xs font-semibold text-muted-foreground"
+                      className="text-xs font-semibold text-muted-foreground dark:text-neutral-300"
                     >
                       Gender
                     </Label>
-                    <select
-                      id="gender"
-                      value={gender}
-                      onChange={(e) => setGender(e.target.value)}
-                      className="flex h-11 w-full rounded-full border border-gray-200 bg-background px-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00932A]"
-                    >
-                      <option value="UNSPECIFIED">Unspecified</option>
-                      <option value="MALE">Male</option>
-                      <option value="FEMALE">Female</option>
-                      <option value="OTHER">Other</option>
-                    </select>
+                    <Controller
+                      name="gender"
+                      control={control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          id="gender"
+                          className="flex h-11 w-full rounded-full border border-gray-200 bg-background px-4 text-sm transition-colors dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00932A]"
+                        >
+                          <option value="UNSPECIFIED" className="dark:bg-neutral-900 dark:text-foreground">Unspecified</option>
+                          <option value="MALE" className="dark:bg-neutral-900 dark:text-foreground">Male</option>
+                          <option value="FEMALE" className="dark:bg-neutral-900 dark:text-foreground">Female</option>
+                          <option value="OTHER" className="dark:bg-neutral-900 dark:text-foreground">Other</option>
+                        </select>
+                      )}
+                    />
                   </div>
 
                   <div className="space-y-2 sm:col-span-2">
                     <Label
                       htmlFor="address"
-                      className="text-xs font-semibold text-muted-foreground"
+                      className="text-xs font-semibold text-muted-foreground dark:text-neutral-300"
                     >
                       Address
                     </Label>
-                    <Input
-                      id="address"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      placeholder="Phnom Penh, Cambodia"
-                      className="h-11 rounded-full px-4 border-gray-200 focus-visible:ring-[#00932A]"
+                    <Controller
+                      name="address"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          id="address"
+                          placeholder="Phnom Penh, Cambodia"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                        />
+                      )}
                     />
+                    {errors.address?.message && (
+                      <span className="text-xs font-medium text-red-500">
+                        {errors.address.message}
+                      </span>
+                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Connected Accounts */}
-            <Card className="border-0 p-0 shadow-sm">
+            <Card className="border border-neutral-200/80 p-0 shadow-sm dark:border-border dark:bg-card">
               <CardContent className="p-5 sm:p-6">
                 <h2 className="mb-5 flex items-center gap-2 text-base font-bold text-neutral-900 dark:text-foreground">
                   <Link2 className="size-4.5 text-[#00932A]" />
@@ -375,7 +484,7 @@ export default function UserProfile() {
                       className="flex flex-col items-start justify-between gap-3 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex size-10 items-center justify-center rounded-lg border border-neutral-200 bg-white dark:border-border">
+                        <div className="flex size-10 items-center justify-center rounded-lg border border-neutral-200 bg-white dark:border-border dark:bg-neutral-900">
                           {icon}
                         </div>
                         <div>
@@ -402,7 +511,7 @@ export default function UserProfile() {
             {/* Submit Action & Alerts */}
             <div className="flex flex-col items-end gap-3 pt-2">
               <Button
-                onClick={handleSaveChanges}
+                type="submit"
                 disabled={isSaving}
                 className="h-11 min-w-[140px] rounded-full bg-[#00932A] px-8 text-sm font-bold text-white shadow-sm hover:bg-[#007d24] focus-visible:ring-2 focus-visible:ring-[#00932A]"
               >
@@ -423,7 +532,7 @@ export default function UserProfile() {
                 <p className="text-xs font-medium text-destructive">{saveError}</p>
               )}
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

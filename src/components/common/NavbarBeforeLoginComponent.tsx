@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -66,6 +67,7 @@ export default function NavbarBeforeLoginComponent({
   onLogin,
 }: NavbarBeforeLoginProps) {
   const pathname = usePathname();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { loginHref, login } = useAuth();
 
   const handleLogin = (event: React.MouseEvent) => {
@@ -137,10 +139,9 @@ export default function NavbarBeforeLoginComponent({
                       font-semibold
                       outline-none
                       transition-colors
-                      ${
-                        menuActive
-                          ? "text-primary"
-                          : "text-[#6b7280] hover:text-primary"
+                      ${menuActive
+                        ? "text-primary"
+                        : "text-[#6b7280] hover:text-primary"
                       }
                     `}
                   >
@@ -183,10 +184,9 @@ export default function NavbarBeforeLoginComponent({
                             font-medium
                             focus:bg-primary/10
                             focus:text-primary
-                            ${
-                              childActive
-                                ? "bg-primary/10 text-primary"
-                                : "text-[#4b5563]"
+                            ${childActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-[#4b5563]"
                             }
                           `}
                         >
@@ -210,10 +210,9 @@ export default function NavbarBeforeLoginComponent({
                   text-sm
                   font-semibold
                   transition-colors
-                  ${
-                    active
-                      ? "text-primary"
-                      : "text-[#6b7280] hover:text-primary"
+                  ${active
+                    ? "text-primary"
+                    : "text-[#6b7280] hover:text-primary"
                   }
                 `}
               >
@@ -232,16 +231,15 @@ export default function NavbarBeforeLoginComponent({
 
         {/* Desktop actions */}
         <div
-          className={`hidden items-center gap-4 lg:flex ${
-            pending || isLoggingIn ? "pointer-events-none opacity-60" : ""
-          }`}
+          className={`hidden items-center gap-4 lg:flex ${pending || isLoggingIn ? "pointer-events-none opacity-60" : ""
+            }`}
         >
           <ThemeToggle />
 
           <LanguageDropdown />
 
           <Link
-            href="/register"
+            href="/register/business"
             className="
               text-sm
               font-bold
@@ -304,7 +302,7 @@ export default function NavbarBeforeLoginComponent({
         </div>
 
         {/* Mobile navigation */}
-        <Sheet>
+        <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <SheetTrigger
             className="lg:hidden"
             render={
@@ -344,11 +342,12 @@ export default function NavbarBeforeLoginComponent({
               sm:w-[400px]
             "
           >
-            <SheetHeader>
+            <SheetHeader className="pb-0">
               <SheetTitle className="text-left text-[#111827] dark:text-[#111827]">
                 {/* Mobile logo redirects to Store */}
                 <Link
                   href="/store"
+                  onClick={() => setMobileNavOpen(false)}
                   aria-label="Go to FluxiBiz store"
                   className="inline-flex items-center"
                 >
@@ -363,9 +362,7 @@ export default function NavbarBeforeLoginComponent({
               </SheetTitle>
             </SheetHeader>
 
-            <div className="mt-8 flex flex-col gap-2">
-              <ThemeToggle mobile />
-
+            <div className="mt-0 flex flex-col gap-2">
               {navigationItems.map((item) => {
                 const active = isRouteActive(pathname, item.href);
 
@@ -373,6 +370,7 @@ export default function NavbarBeforeLoginComponent({
                   <div key={item.label}>
                     <Link
                       href={item.href}
+                      onClick={() => setMobileNavOpen(false)}
                       aria-current={active ? "page" : undefined}
                       className={`
                         block
@@ -383,10 +381,9 @@ export default function NavbarBeforeLoginComponent({
                         text-base
                         font-bold
                         transition-colors
-                        ${
-                          active
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-transparent text-[#374151] hover:bg-[#f3f4f6] hover:text-primary"
+                        ${active
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-transparent text-[#374151] hover:bg-[#f3f4f6] hover:text-primary"
                         }
                       `}
                     >
@@ -405,6 +402,7 @@ export default function NavbarBeforeLoginComponent({
                             <Link
                               key={child.label}
                               href={child.href}
+                              onClick={() => setMobileNavOpen(false)}
                               aria-current={
                                 childActive ? "page" : undefined
                               }
@@ -416,10 +414,9 @@ export default function NavbarBeforeLoginComponent({
                                 text-sm
                                 font-medium
                                 transition-colors
-                                ${
-                                  childActive
-                                    ? "bg-primary/10 text-primary"
-                                    : "text-[#6b7280] hover:bg-[#f3f4f6] hover:text-primary"
+                                ${childActive
+                                  ? "bg-primary/10 text-primary"
+                                  : "text-[#6b7280] hover:bg-[#f3f4f6] hover:text-primary"
                                 }
                               `}
                             >
@@ -438,7 +435,8 @@ export default function NavbarBeforeLoginComponent({
               <LanguageDropdown mobile />
 
               <Link
-                href="/register"
+                href="/register/business"
+                onClick={() => setMobileNavOpen(false)}
                 className="
                   rounded-lg
                   px-3
@@ -457,7 +455,10 @@ export default function NavbarBeforeLoginComponent({
               <Button
                 nativeButton={false}
                 render={<a href={loginHref} />}
-                onClick={handleLogin}
+                onClick={(e) => {
+                  setMobileNavOpen(false);
+                  handleLogin(e);
+                }}
                 disabled={pending || isLoggingIn}
                 className="
                   mt-4
@@ -479,6 +480,7 @@ export default function NavbarBeforeLoginComponent({
               <Button
                 nativeButton={false}
                 render={<Link href="/register" />}
+                onClick={() => setMobileNavOpen(false)}
                 variant="outline"
                 className="
                   h-11

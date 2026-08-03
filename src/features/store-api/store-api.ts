@@ -19,7 +19,7 @@ import {
  * this slice sends no Authorization header.
  */
 const baseQuery = fetchBaseQuery({
-    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
+    baseUrl: "/api/v1",
 });
 
 function buildStoresRequest(
@@ -96,6 +96,7 @@ async function fetchMergedStores(
 export const storeCateApi = createApi({
     reducerPath: "storeCateApi",
     baseQuery,
+    keepUnusedDataFor: 300,
     tagTypes: ["BusinessCategory", "PublicStore"],
     endpoints: (builder) => ({
         getBusinessCategory: builder.query<BusinessCategory[], void>({

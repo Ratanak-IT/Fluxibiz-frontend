@@ -1,4 +1,4 @@
-import FeaturesSection from "@/components/about/FeaturesSection";
+
 import MentorsSection from "@/components/about/MentorsSection";
 import MissionSection from "@/components/about/MissionSection";
 import VisionSection from "@/components/about/VisionSection";
@@ -15,10 +15,10 @@ export default function AboutPage() {
   return (
     <main className="about-page">
       <HeroSection />
-      <GoalFeature/>
-      <MissionSection/>
-      <VisionSection stepDurationMs={900} dwellMs={1200}/>
-      <MentorsSection />      
+      <GoalFeature />
+      <MissionSection />
+      <VisionSection stepDurationMs={900} dwellMs={1200} />
+      <MentorsSection />
     </main>
   );
 }

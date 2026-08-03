@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Store } from "lucide-react";
 
 import { useGetCartQuery } from "@/features/cart/cartApi";
+import { useAuth } from "@/features/auth/useAuth";
 import StoreGroupComponent from "./store-group-component";
 import EmptyCartComponent from "./empty-cart-component";
 import CartSkeletonComponent from "./cart-skeleton-component";
@@ -13,18 +14,41 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
     const searchParams = useSearchParams();
     const slug = shopSlug ?? searchParams.get("shop");
 
-    const { data: cart, isLoading, isError } = useGetCartQuery();
+    const { status: authStatus, isAuthenticated } = useAuth();
+
+    const { data: cart, isLoading, isError, error } = useGetCartQuery(undefined, {
+        // Don't fire until we know the real auth state. While AuthProvider's
+        // session fetch is still in flight (authStatus === "loading"), skip
+        // entirely instead of firing an unauthenticated request that would
+        // 401 and get stuck cached as an error forever.
+        skip: authStatus === "loading" || !isAuthenticated,
+    });
+
+    // Auth itself still resolving, or user genuinely not logged in and about
+    // to be redirected — show the skeleton instead of a scary error.
+    if (authStatus === "loading" || !isAuthenticated) {
+        return <CartSkeletonComponent />;
+    }
 
     if (isLoading) {
         return <CartSkeletonComponent />;
     }
 
     if (isError) {
+        // TEMP DEBUG: remove this console.error once the root cause is confirmed.
+        // Shows the real HTTP status + body instead of the generic message below.
+        console.error("[CartList] getCart failed:", error);
+
         return (
             <div className="rounded-2xl bg-gray-100 py-16 text-center dark:bg-card">
                 <p className="text-sm text-destructive">
                     Could not load your cart. Please refresh the page.
                 </p>
+                {process.env.NODE_ENV !== "production" && (
+                    <pre className="mx-auto mt-3 max-w-md overflow-auto text-left text-xs text-neutral-500">
+                        {JSON.stringify(error, null, 2)}
+                    </pre>
+                )}
             </div>
         );
     }

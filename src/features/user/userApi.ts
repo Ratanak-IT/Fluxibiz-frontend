@@ -1,18 +1,54 @@
-
-
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import type { AuthState } from "@/features/auth/authSlice";
 import type { UserProfileResponse } from "@/lib/type/authType";
 
-const baseQuery = fetchBaseQuery({
-    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
+const rawBaseQuery = fetchBaseQuery({
+    baseUrl: "/api/v1",
     prepareHeaders: (headers, { getState }) => {
-        const token = (getState() as { auth: AuthState }).auth.accessToken;
-        if (token) headers.set("Authorization", `Bearer ${token}`);
+        let token = (getState() as { auth: AuthState }).auth.accessToken;
+        if (!token && typeof document !== "undefined") {
+            const match = document.cookie.match(/(?:^|; )kc_at=([^;]*)/);
+            if (match && match[1]) {
+                try {
+                    token = decodeURIComponent(match[1].trim());
+                } catch {
+                    token = match[1].trim();
+                }
+            }
+        }
+        if (token) {
+            headers.set("Authorization", `Bearer ${token}`);
+        }
         return headers;
     },
 });
+
+const baseQuery: typeof rawBaseQuery = async (args, api, extraOptions) => {
+    const state = api.getState() as { auth: AuthState };
+    const hasReduxToken = Boolean(state.auth.accessToken);
+    const hasCookieToken =
+        typeof document !== "undefined" &&
+        Boolean(document.cookie.match(/(?:^|; )kc_at=([^;]*)/));
+    const hasToken = hasReduxToken || hasCookieToken;
+
+    const urlStr = typeof args === "string" ? args : args.url;
+    const method = (typeof args === "object" ? args.method : "GET") || "GET";
+
+    if (!hasToken && method === "GET" && urlStr.startsWith("/user-profiles/me")) {
+        return { data: null as any };
+    }
+
+    const result = await rawBaseQuery(args, api, extraOptions);
+
+    if (result.error && (result.error.status === 400 || result.error.status === 401 || result.error.status === 403)) {
+        if (method === "GET" && urlStr.startsWith("/user-profiles/me")) {
+            return { data: null as any };
+        }
+    }
+
+    return result;
+};
 
 export type UpdateUserProfileArgs = {
     firstName?: string;
@@ -26,6 +62,7 @@ export type UpdateUserProfileArgs = {
 export const userApi = createApi({
     reducerPath: "userApi",
     baseQuery,
+    keepUnusedDataFor: 300,
     tagTypes: ["Profile"],
     endpoints: (builder) => ({
         getMyProfile: builder.query<UserProfileResponse, void>({
@@ -39,13 +76,13 @@ export const userApi = createApi({
         >({
             query: (args) => {
                 const formData = new FormData();
-                if (args.firstName && args.firstName.trim() !== "") {
+                if (args.firstName !== undefined && args.firstName !== null && args.firstName.trim() !== "") {
                     formData.append("firstName", args.firstName.trim());
                 }
-                if (args.lastName && args.lastName.trim() !== "") {
+                if (args.lastName !== undefined && args.lastName !== null && args.lastName.trim() !== "") {
                     formData.append("lastName", args.lastName.trim());
                 }
-                if (args.phoneNumber && args.phoneNumber.trim().length >= 8) {
+                if (args.phoneNumber !== undefined && args.phoneNumber !== null && args.phoneNumber.trim() !== "") {
                     formData.append("phoneNumber", args.phoneNumber.trim());
                 }
                 if (
@@ -56,7 +93,7 @@ export const userApi = createApi({
                 ) {
                     formData.append("gender", args.gender.toUpperCase());
                 }
-                if (args.address && args.address.trim() !== "") {
+                if (args.address !== undefined && args.address !== null && args.address.trim() !== "") {
                     formData.append("address", args.address.trim());
                 }
                 if (args.file) {

@@ -1,4 +1,3 @@
-
 import type { NextResponse } from "next/server";
 import type { SessionUser } from "@/lib/type/authType";
 
@@ -38,21 +37,30 @@ const BASE_COOKIE = {
 
 export const TRANSIENT_COOKIE = { ...BASE_COOKIE, maxAge: 60 * 10 };
 
-
-export function appOrigin(requestOrigin: string) {
-    return process.env.NEXT_PUBLIC_APP_URL || requestOrigin;
+export function appOrigin(requestOrigin?: string, reqHeaders?: Headers) {
+    if (process.env.NEXT_PUBLIC_APP_URL) {
+        return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+    }
+    if (reqHeaders) {
+        const host = reqHeaders.get("x-forwarded-host") || reqHeaders.get("host");
+        const proto = reqHeaders.get("x-forwarded-proto") || "http";
+        if (host) {
+            return `${proto}://${host}`.replace(/\/$/, "");
+        }
+    }
+    return requestOrigin ? requestOrigin.replace(/\/$/, "") : "";
 }
 
-export function redirectUri(requestOrigin: string) {
-    return `${appOrigin(requestOrigin)}/api/auth/callback`;
+export function redirectUri(requestOrigin?: string, reqHeaders?: Headers) {
+    return `${appOrigin(requestOrigin, reqHeaders)}/api/auth/callback`;
 }
 
 export function safeReturnTo(value: string | null | undefined) {
-    if (!value) return "/";
-    if (!value.startsWith("/") || value.startsWith("//")) return "/";
+    if (!value) return "/store";
+    if (!value.startsWith("/") || value.startsWith("//")) return "/store";
+    if (value.startsWith("/register") || value.startsWith("/login")) return "/store";
     return value;
 }
-
 
 function base64url(input: ArrayBuffer | Uint8Array) {
     const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
@@ -70,7 +78,6 @@ export async function pkceChallenge(verifier: string) {
     );
     return base64url(digest);
 }
-
 
 export type KeycloakTokens = {
     access_token: string;
@@ -118,7 +125,6 @@ export function refreshTokens(refreshToken: string) {
         refresh_token: refreshToken,
     });
 }
-
 
 type AccessTokenClaims = {
     sub: string;
@@ -188,9 +194,77 @@ export function setSessionCookies(res: NextResponse, tokens: KeycloakTokens) {
     return res;
 }
 
+export function clearClientCookies() {
+    if (typeof document === "undefined") return;
+
+    const cookieNames = Array.from(
+        new Set([
+            "kc_at",
+            "kc_rt",
+            "kc_it",
+            "kc_pkce_verifier",
+            "kc_state",
+            "kc_return_to",
+            ...Object.values(COOKIE),
+        ])
+    );
+
+    const host = typeof window !== "undefined" ? window.location.hostname : "";
+
+    for (const name of cookieNames) {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+        if (host) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${host};`;
+        }
+    }
+
+    if (document.cookie) {
+        const cookies = document.cookie.split(";");
+        for (const cookie of cookies) {
+            const eqPos = cookie.indexOf("=");
+            const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
+            if (name) {
+                document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+                if (host) {
+                    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${host};`;
+                }
+            }
+        }
+    }
+}
+
 export function clearSessionCookies(res: NextResponse) {
-    for (const name of Object.values(COOKIE)) {
-        res.cookies.set(name, "", { ...BASE_COOKIE, maxAge: 0 });
+    const cookieNames = Array.from(
+        new Set([
+            "kc_at",
+            "kc_rt",
+            "kc_it",
+            "kc_pkce_verifier",
+            "kc_state",
+            "kc_return_to",
+            ...Object.values(COOKIE),
+        ])
+    );
+
+    for (const name of cookieNames) {
+        try {
+            res.cookies.delete(name);
+        } catch {
+            // Ignore native delete error
+        }
+
+        try {
+            res.cookies.set(name, "", {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: SECURE,
+                path: "/",
+                maxAge: 0,
+                expires: new Date(0),
+            });
+        } catch {
+            // Ignore cookie set error
+        }
     }
     return res;
 }

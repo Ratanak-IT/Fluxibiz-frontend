@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { formatPrice } from "@/lib/store/productdetail/product";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
@@ -136,7 +137,10 @@ export default function ProductQuickViewModal({
     setAddError(null);
     setNeedsLogin(false);
 
-    if (!product?.businessId || !product?.id) {
+    const targetBusinessId = product?.businessId || (rawItem as any)?.businessId || (rawItem as any)?.rawItem?.businessId;
+    const targetItemId = product?.id || (rawItem as any)?.id || (rawItem as any)?.rawItem?.id;
+
+    if (!targetBusinessId || !targetItemId) {
       setAddError("This product is not available for ordering yet.");
       return;
     }
@@ -148,27 +152,35 @@ export default function ProductQuickViewModal({
 
     try {
       await addToCartMutation({
-        businessId: product.businessId,
-        itemId: product.id,
+        businessId: targetBusinessId,
+        itemId: targetItemId,
         variantId: selectedVariant?.id,
         quantity,
+        itemDetails: {
+          name,
+          price: unitPrice,
+          imageUrl: mainImage,
+          storeName: product?.businessName ?? "Store",
+        },
       }).unwrap();
 
-      setJustAdded(true);
-      setTimeout(() => {
-        setJustAdded(false);
-        onOpenChange(false);
-      }, 1200);
+      toast.success(`Added ${quantity} × ${name} to cart`);
+      onOpenChange(false);
     } catch (err) {
       if (isUnauthorized(err)) {
         setNeedsLogin(true);
+        toast.error("Please sign in to add items to your cart.");
         return;
       }
-      setAddError(apiErrorMessage(err, "Could not add to cart. Please try again."));
+      const errMsg = apiErrorMessage(err, "Could not add to cart. Please try again.");
+      setAddError(errMsg);
+      toast.error(errMsg);
     }
   }
 
-  const canOrder = Boolean(product?.businessId && product?.id);
+  const targetBusinessId = product?.businessId || (rawItem as any)?.businessId || (rawItem as any)?.rawItem?.businessId;
+  const targetItemId = product?.id || (rawItem as any)?.id || (rawItem as any)?.rawItem?.id;
+  const canOrder = Boolean(targetBusinessId && targetItemId);
   const disabled = isAdding || authStatus === "loading" || !canOrder;
 
   return (
@@ -454,22 +466,6 @@ export default function ProductQuickViewModal({
               )}
 
               {addError && <p className="text-xs text-destructive">{addError}</p>}
-
-              {/* Service Guarantee Badges */}
-              <div className="grid grid-cols-3 gap-1 pt-1 text-[10px] text-muted-foreground">
-                <div className="flex items-center justify-center gap-1 text-center">
-                  <Truck className="h-3.5 w-3.5 shrink-0 text-[#00932A]" />
-                  <span className="font-medium text-foreground">Free Delivery</span>
-                </div>
-                <div className="flex items-center justify-center gap-1 text-center">
-                  <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-[#00932A]" />
-                  <span className="font-medium text-foreground">1 Year Warranty</span>
-                </div>
-                <div className="flex items-center justify-center gap-1 text-center">
-                  <RotateCcw className="h-3.5 w-3.5 shrink-0 text-[#00932A]" />
-                  <span className="font-medium text-foreground">Easy Returns</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>

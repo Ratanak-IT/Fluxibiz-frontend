@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -118,31 +119,47 @@ function Stepper({
     busy: boolean;
     onChange: (args: { cartItemId: string; quantity: number }) => void;
 }) {
+    const [pendingQty, setPendingQty] = useState(line.quantity);
+
+    useEffect(() => {
+        setPendingQty(line.quantity);
+    }, [line.quantity]);
+
+    const handleDecrease = () => {
+        const nextQty = Math.max(1, pendingQty - 1);
+        setPendingQty(nextQty);
+        onChange({ cartItemId: line.cartItemId, quantity: nextQty });
+    };
+
+    const handleIncrease = () => {
+        const nextQty = pendingQty + 1;
+        setPendingQty(nextQty);
+        onChange({ cartItemId: line.cartItemId, quantity: nextQty });
+    };
+
     return (
         <div className="flex items-center gap-4">
             <Button
                 type="button"
                 variant="outline"
                 size="icon"
-                disabled={busy}
-                onClick={() => onChange({ cartItemId: line.cartItemId, quantity: line.quantity - 1 })}
-                className="h-6 w-6 text-yellow-400 disabled:opacity-40 dark:border-border dark:bg-card dark:text-secondary"
+                onClick={handleDecrease}
+                className="h-6 w-6 text-yellow-400 dark:border-border dark:bg-card dark:text-secondary"
                 aria-label="Decrease quantity"
             >
                 <Minus className="h-3.5 w-3.5" />
             </Button>
 
             <span className="text-md w-4 text-center font-medium dark:text-card-foreground">
-                {line.quantity}
+                {pendingQty}
             </span>
 
             <Button
                 type="button"
                 variant="outline"
                 size="icon"
-                disabled={busy}
-                onClick={() => onChange({ cartItemId: line.cartItemId, quantity: line.quantity + 1 })}
-                className="h-6 w-6 text-green-600 disabled:opacity-40 dark:border-border dark:bg-card dark:text-primary"
+                onClick={handleIncrease}
+                className="h-6 w-6 text-green-600 dark:border-border dark:bg-card dark:text-primary"
                 aria-label="Increase quantity"
             >
                 <Plus className="h-3.5 w-3.5" />

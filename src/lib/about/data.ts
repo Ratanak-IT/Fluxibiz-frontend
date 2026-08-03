@@ -2,8 +2,8 @@
 import type { TeamMember, Mentor } from "./types";
 
 export const mentors: Mentor[] = [
-  { name: "Chan Chhaya",    title: "Senior IT Instructor", avatar: "/image/team/instructors/chhaya.jpg", tag:"Mentor"},
-  { name: "Srorng Sokcheat", title: "IT Instructor",       avatar: "/image/team/instructors/sokcheat.JPG" , tag:"Mentor"},
+  { name: "Chan Chhaya", title: "Senior IT Instructor", avatar: "/image/team/instructors/chhaya.jpg", tag: "Mentor" },
+  { name: "Srorng Sokcheat", title: "IT Instructor", avatar: "/image/team/instructors/sokcheat.JPG", tag: "Mentor" },
 ];
 
 export const team: TeamMember[] = [
