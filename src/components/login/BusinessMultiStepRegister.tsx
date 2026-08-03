@@ -5,7 +5,6 @@ import { toast } from "sonner";
 
 import { RegisterForm } from "./RegisterForm";
 import { BusinessRegisterForm } from "./BusinessRegisterForm";
-import { useAuth } from "@/features/auth/useAuth";
 import {
   type UserRegisterFormData,
   type BusinessRegisterFormData,
@@ -16,7 +15,6 @@ import {
 } from "@/features/business-registration/businessApi";
 
 export function BusinessMultiStepRegister() {
-  const { login } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
   const [userData, setUserData] = useState<UserRegisterFormData | undefined>();
   const [registerUser, { isLoading: isRegisteringUser }] = useRegisterUserMutation();
@@ -64,9 +62,9 @@ export function BusinessMultiStepRegister() {
         console.warn("Store creation pending user session:", bizErr);
       }
 
-      toast.success("Account created successfully! Redirecting to login...");
+      toast.success("Account created successfully! Redirecting to dashboard...");
       setTimeout(() => {
-        login();
+        window.location.href = "https://bo-dashboard-ite-basic-lyart.vercel.app";
       }, 1500);
     } catch (err: any) {
       console.error("API Error during user registration:", err);
