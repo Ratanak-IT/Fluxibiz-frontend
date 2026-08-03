@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,7 +8,12 @@ import { ChevronDown, Menu } from "lucide-react";
 
 import englishFlag from "../../../public/image/flags/english.png";
 import khmerFlag from "../../../public/image/flags/khmer.png";
+
+// Light-mode logo
 import fluxibizLogo from "../../../public/image/footer/fluxiBix-logo(2).png";
+
+// Dark-mode logo
+import fluxibizDarkMode from "../../../public/image/footer/fluxibiz-logo-darkmode.png";
 
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/common/ThemeToggle";
@@ -70,13 +75,15 @@ export default function NavbarBeforeLoginComponent({
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { loginHref, login } = useAuth();
 
-  const handleLogin = (event: React.MouseEvent) => {
+  const handleLogin = (event: MouseEvent) => {
     event.preventDefault();
+
     if (onLogin) {
-      onLogin();
-    } else {
-      login();
+      void onLogin();
+      return;
     }
+
+    login();
   };
 
   return (
@@ -92,10 +99,28 @@ export default function NavbarBeforeLoginComponent({
         text-[#111827]
         backdrop-blur
         [color-scheme:light]
+
+        dark:border-white/10
+        dark:bg-background
+        dark:text-white
+        dark:[color-scheme:dark]
       "
     >
-      <div className="mx-auto flex h-13.75 max-w-332.5 items-center justify-between px-6 sm:px-10">
-        {/* Logo redirects to Store */}
+      <div
+        className="
+          mx-auto
+          flex
+          h-13.75
+          max-w-332.5
+          items-center
+          justify-between
+          px-4
+          sm:px-6
+          md:px-8
+          lg:px-10
+        "
+      >
+        {/* Main logo */}
         <Link
           href="/store"
           aria-label="Go to FluxiBiz store"
@@ -107,7 +132,33 @@ export default function NavbarBeforeLoginComponent({
             width={240}
             height={90}
             priority
-            className="h-auto w-33 translate-y-2 object-contain"
+            className="
+              h-auto
+              w-28
+              translate-y-2.5
+              object-contain
+              sm:w-30
+              md:w-33
+              dark:hidden
+            "
+          />
+
+          <Image
+            src={fluxibizDarkMode}
+            alt="FluxiBiz"
+            width={240}
+            height={90}
+            priority
+            className="
+              hidden
+              h-auto
+              w-28
+              translate-y-0.5
+              object-contain
+              sm:w-30
+              md:w-33
+              dark:block
+            "
           />
         </Link>
 
@@ -119,7 +170,7 @@ export default function NavbarBeforeLoginComponent({
           {navigationItems.map((item) => {
             const active = isRouteActive(pathname, item.href);
 
-            if (item.children) {
+            if (item.children?.length) {
               const childActive = item.children.some((child) =>
                 isRouteActive(pathname, child.href),
               );
@@ -139,9 +190,16 @@ export default function NavbarBeforeLoginComponent({
                       font-semibold
                       outline-none
                       transition-colors
-                      ${menuActive
-                        ? "text-primary"
-                        : "text-[#6b7280] hover:text-primary"
+
+                      ${
+                        menuActive
+                          ? "text-primary"
+                          : `
+                              text-[#6b7280]
+                              hover:text-primary
+                              dark:text-white
+                              dark:hover:text-primary
+                            `
                       }
                     `}
                   >
@@ -151,8 +209,15 @@ export default function NavbarBeforeLoginComponent({
 
                     {menuActive && (
                       <span
-                        aria-hidden
-                        className="absolute inset-x-0 -bottom-1 h-0.5 rounded-full bg-primary"
+                        aria-hidden="true"
+                        className="
+                          absolute
+                          inset-x-0
+                          -bottom-1
+                          h-0.5
+                          rounded-full
+                          bg-primary
+                        "
                       />
                     )}
                   </DropdownMenuTrigger>
@@ -166,6 +231,11 @@ export default function NavbarBeforeLoginComponent({
                       p-2
                       text-[#111827]
                       [color-scheme:light]
+
+                      dark:border-white/10
+                      dark:bg-background
+                      dark:text-white
+                      dark:[color-scheme:dark]
                     "
                   >
                     {item.children.map((child) => {
@@ -184,9 +254,14 @@ export default function NavbarBeforeLoginComponent({
                             font-medium
                             focus:bg-primary/10
                             focus:text-primary
-                            ${childActive
-                              ? "bg-primary/10 text-primary"
-                              : "text-[#4b5563]"
+
+                            dark:focus:bg-primary/10
+                            dark:focus:text-primary
+
+                            ${
+                              childActive
+                                ? "bg-primary/10 text-primary"
+                                : "text-[#4b5563] dark:text-white"
                             }
                           `}
                         >
@@ -210,9 +285,16 @@ export default function NavbarBeforeLoginComponent({
                   text-sm
                   font-semibold
                   transition-colors
-                  ${active
-                    ? "text-primary"
-                    : "text-[#6b7280] hover:text-primary"
+
+                  ${
+                    active
+                      ? "text-primary"
+                      : `
+                          text-[#6b7280]
+                          hover:text-primary
+                          dark:text-white
+                          dark:hover:text-primary
+                        `
                   }
                 `}
               >
@@ -220,8 +302,15 @@ export default function NavbarBeforeLoginComponent({
 
                 {active && (
                   <span
-                    aria-hidden
-                    className="absolute inset-x-0 -bottom-1 h-0.5 rounded-full bg-primary"
+                    aria-hidden="true"
+                    className="
+                      absolute
+                      inset-x-0
+                      -bottom-1
+                      h-0.5
+                      rounded-full
+                      bg-primary
+                    "
                   />
                 )}
               </Link>
@@ -231,8 +320,18 @@ export default function NavbarBeforeLoginComponent({
 
         {/* Desktop actions */}
         <div
-          className={`hidden items-center gap-4 lg:flex ${pending || isLoggingIn ? "pointer-events-none opacity-60" : ""
-            }`}
+          className={`
+            hidden
+            items-center
+            gap-4
+            lg:flex
+
+            ${
+              pending || isLoggingIn
+                ? "pointer-events-none opacity-60"
+                : ""
+            }
+          `}
         >
           <ThemeToggle />
 
@@ -246,6 +345,9 @@ export default function NavbarBeforeLoginComponent({
               text-[#374151]
               transition-colors
               hover:text-secondary
+
+              dark:text-white
+              dark:hover:text-secondary
             "
           >
             Business
@@ -268,6 +370,10 @@ export default function NavbarBeforeLoginComponent({
               text-white
               shadow-none
               hover:bg-[#007d24]
+
+              dark:border-primary
+              dark:bg-primary
+              dark:text-white
               dark:hover:bg-[#007d24]
             "
           >
@@ -283,26 +389,35 @@ export default function NavbarBeforeLoginComponent({
               rounded-full
               border-2
               border-primary
-              bg-white
+              !bg-transparent
               px-8
               text-sm
               font-bold
               text-primary
-              hover:bg-primary/10
+              shadow-none
+              hover:!bg-transparent
               hover:text-primary
+              focus-visible:!bg-transparent
+              active:!bg-transparent
+
               dark:border-primary
-              dark:bg-white
+              dark:!bg-transparent
               dark:text-primary
-              dark:hover:bg-primary/10
+              dark:hover:!bg-transparent
               dark:hover:text-primary
+              dark:focus-visible:!bg-transparent
+              dark:active:!bg-transparent
             "
           >
             Register
           </Button>
         </div>
 
-        {/* Mobile navigation */}
-        <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+        {/* Phone and tablet navigation */}
+        <Sheet
+          open={mobileNavOpen}
+          onOpenChange={setMobileNavOpen}
+        >
           <SheetTrigger
             className="lg:hidden"
             render={
@@ -311,199 +426,339 @@ export default function NavbarBeforeLoginComponent({
                 variant="ghost"
                 size="icon"
                 className="
-                  size-12
-                  bg-transparent
+                  size-9
+                  shrink-0
+                  !bg-transparent
+                  p-0
                   text-[#111827]
-                  hover:bg-transparent
+                  shadow-none
+                  hover:!bg-transparent
                   hover:text-primary
-                  dark:bg-transparent
-                  dark:text-[#111827]
-                  dark:hover:bg-transparent
+                  focus-visible:!bg-transparent
+                  active:!bg-transparent
+
+                  sm:size-10
+
+                  dark:!bg-transparent
+                  dark:text-white
+                  dark:hover:!bg-transparent
                   dark:hover:text-primary
+                  dark:focus-visible:!bg-transparent
+                  dark:active:!bg-transparent
                 "
                 aria-label="Open navigation menu"
               />
             }
           >
-            <Menu size={32} />
+            <Menu className="size-5 sm:size-6" />
           </SheetTrigger>
 
-          <SheetContent
-            side="right"
+         <SheetContent
+  side="right"
+  className="
+    flex
+    w-[62vw]
+    min-w-[235px]
+    max-w-[255px]
+    flex-col
+    gap-0
+    overflow-y-auto
+    border-[#e5e7eb]
+    bg-white
+    px-3
+    text-[#111827]
+    [color-scheme:light]
+
+    min-[390px]:w-[60vw]
+    min-[390px]:max-w-[265px]
+
+    sm:w-[340px]
+    sm:max-w-[340px]
+    sm:px-6
+
+    md:w-[370px]
+    md:max-w-[370px]
+
+    dark:border-white/10
+    dark:bg-background
+    dark:text-white
+    dark:[color-scheme:dark]
+  "
+>
+  {/* One consistent vertical gap for all sidebar elements */}
+  <div className="flex w-full flex-col gap-3 py-4">
+    {/* Logo */}
+    <SheetHeader className="w-full shrink-0 p-0 text-left">
+      <SheetTitle className="w-full p-0 text-left">
+        <Link
+          href="/store"
+          onClick={() => setMobileNavOpen(false)}
+          aria-label="Go to FluxiBiz store"
+          className="
+            flex
+            h-11
+            w-full
+            items-center
+            justify-start
+            px-3
+          "
+        >
+          <span
             className="
-              w-[340px]
-              border-[#e5e7eb]
-              bg-white
-              text-[#111827]
-              [color-scheme:light]
-              dark:border-[#e5e7eb]
-              dark:bg-white
-              dark:text-[#111827]
-              sm:w-[400px]
+              relative
+              block
+              h-10
+              w-30
+              shrink-0
             "
           >
-            <SheetHeader className="pb-0">
-              <SheetTitle className="text-left text-[#111827] dark:text-[#111827]">
-                {/* Mobile logo redirects to Store */}
-                <Link
-                  href="/store"
-                  onClick={() => setMobileNavOpen(false)}
-                  aria-label="Go to FluxiBiz store"
-                  className="inline-flex items-center"
-                >
-                  <Image
-                    src={fluxibizLogo}
-                    alt="FluxiBiz"
-                    width={180}
-                    height={80}
-                    className="h-auto w-30 object-contain"
-                  />
-                </Link>
-              </SheetTitle>
-            </SheetHeader>
+            <Image
+              src={fluxibizLogo}
+              alt="FluxiBiz"
+              fill
+              sizes="120px"
+              className="
+                object-contain
+                object-left
+                dark:hidden
+              "
+            />
 
-            <div className="mt-0 flex flex-col gap-2">
-              {navigationItems.map((item) => {
-                const active = isRouteActive(pathname, item.href);
+            <Image
+              src={fluxibizDarkMode}
+              alt="FluxiBiz"
+              fill
+              sizes="120px"
+              className="
+                hidden
+                object-contain
+                object-left
+                dark:block
+              "
+            />
+          </span>
+        </Link>
+      </SheetTitle>
+    </SheetHeader>
+
+    {/* Theme */}
+    <div
+      className="
+        flex
+        h-11
+        shrink-0
+        items-center
+        justify-start
+        px-3
+      "
+    >
+      <div className="grid size-10 shrink-0 place-items-center">
+        <ThemeToggle mobile />
+      </div>
+    </div>
+
+    {/* Navigation */}
+    {navigationItems.map((item) => {
+      const active = isRouteActive(pathname, item.href);
+
+      return (
+        <div key={item.label} className="w-full">
+          <Link
+            href={item.href}
+            onClick={() => setMobileNavOpen(false)}
+            aria-current={active ? "page" : undefined}
+            className={`
+              flex
+              h-11
+              w-full
+              items-center
+              rounded-lg
+              border-l-4
+              px-3
+              text-base
+              font-bold
+              transition-colors
+
+              ${
+                active
+                  ? "border-primary bg-primary/10 text-primary"
+                  : `
+                      border-transparent
+                      text-[#374151]
+                      hover:bg-[#f3f4f6]
+                      hover:text-primary
+
+                      dark:text-white
+                      dark:hover:bg-white/5
+                      dark:hover:text-primary
+                    `
+              }
+            `}
+          >
+            {item.label}
+          </Link>
+
+          {item.children?.length ? (
+            <div
+              className="
+                mt-3
+                flex
+                flex-col
+                gap-3
+                border-l-2
+                border-[#e5e7eb]
+                pl-4
+                dark:border-white/10
+              "
+            >
+              {item.children.map((child) => {
+                const childActive = isRouteActive(
+                  pathname,
+                  child.href,
+                );
 
                 return (
-                  <div key={item.label}>
-                    <Link
-                      href={item.href}
-                      onClick={() => setMobileNavOpen(false)}
-                      aria-current={active ? "page" : undefined}
-                      className={`
-                        block
-                        rounded-lg
-                        border-l-4
-                        px-3
-                        py-2.5
-                        text-base
-                        font-bold
-                        transition-colors
-                        ${active
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-transparent text-[#374151] hover:bg-[#f3f4f6] hover:text-primary"
-                        }
-                      `}
-                    >
-                      {item.label}
-                    </Link>
+                  <Link
+                    key={child.label}
+                    href={child.href}
+                    onClick={() => setMobileNavOpen(false)}
+                    aria-current={
+                      childActive ? "page" : undefined
+                    }
+                    className={`
+                      flex
+                      h-10
+                      items-center
+                      rounded-lg
+                      px-3
+                      text-sm
+                      font-medium
+                      transition-colors
 
-                    {item.children && (
-                      <div className="ml-4 border-l-2 border-[#e5e7eb] pl-4">
-                        {item.children.map((child) => {
-                          const childActive = isRouteActive(
-                            pathname,
-                            child.href,
-                          );
+                      ${
+                        childActive
+                          ? "bg-primary/10 text-primary"
+                          : `
+                              text-[#6b7280]
+                              hover:bg-[#f3f4f6]
+                              hover:text-primary
 
-                          return (
-                            <Link
-                              key={child.label}
-                              href={child.href}
-                              onClick={() => setMobileNavOpen(false)}
-                              aria-current={
-                                childActive ? "page" : undefined
-                              }
-                              className={`
-                                block
-                                rounded-lg
-                                px-3
-                                py-2
-                                text-sm
-                                font-medium
-                                transition-colors
-                                ${childActive
-                                  ? "bg-primary/10 text-primary"
-                                  : "text-[#6b7280] hover:bg-[#f3f4f6] hover:text-primary"
-                                }
-                              `}
-                            >
-                              {child.label}
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
+                              dark:text-white
+                              dark:hover:bg-white/5
+                              dark:hover:text-primary
+                            `
+                      }
+                    `}
+                  >
+                    {child.label}
+                  </Link>
                 );
               })}
-
-              <div className="my-2 border-t border-[#e5e7eb]" />
-
-              <LanguageDropdown mobile />
-
-              <Link
-                href="/register/business"
-                onClick={() => setMobileNavOpen(false)}
-                className="
-                  rounded-lg
-                  px-3
-                  py-2.5
-                  text-base
-                  font-bold
-                  text-[#374151]
-                  transition-colors
-                  hover:bg-[#f3f4f6]
-                  hover:text-primary
-                "
-              >
-                Business
-              </Link>
-
-              <Button
-                nativeButton={false}
-                render={<a href={loginHref} />}
-                onClick={(e) => {
-                  setMobileNavOpen(false);
-                  handleLogin(e);
-                }}
-                disabled={pending || isLoggingIn}
-                className="
-                  mt-4
-                  h-11
-                  rounded-full
-                  bg-primary
-                  text-base
-                  font-bold
-                  text-white
-                  hover:bg-[#007d24]
-                  dark:bg-primary
-                  dark:text-white
-                  dark:hover:bg-[#007d24]
-                "
-              >
-                {isLoggingIn ? "Logging in..." : "Login"}
-              </Button>
-
-              <Button
-                nativeButton={false}
-                render={<Link href="/register" />}
-                onClick={() => setMobileNavOpen(false)}
-                variant="outline"
-                className="
-                  h-11
-                  rounded-full
-                  border-2
-                  border-primary
-                  bg-white
-                  text-base
-                  font-bold
-                  text-primary
-                  hover:bg-primary/10
-                  hover:text-primary
-                  dark:border-primary
-                  dark:bg-white
-                  dark:text-primary
-                  dark:hover:bg-primary/10
-                  dark:hover:text-primary
-                "
-              >
-                Register
-              </Button>
             </div>
-          </SheetContent>
+          ) : null}
+        </div>
+      );
+    })}
+
+    {/* Divider */}
+    <div className="h-px w-full shrink-0 bg-[#e5e7eb] dark:bg-white/10" />
+
+    {/* Language */}
+    <div className="h-11 w-full">
+      <LanguageDropdown mobile />
+    </div>
+
+    {/* Business */}
+    <Link
+      href="/register/business"
+      onClick={() => setMobileNavOpen(false)}
+      className="
+        flex
+        h-11
+        w-full
+        items-center
+        rounded-lg
+        px-3
+        text-base
+        font-bold
+        text-[#374151]
+        transition-colors
+        hover:bg-[#f3f4f6]
+        hover:text-primary
+
+        dark:text-white
+        dark:hover:bg-white/5
+        dark:hover:text-primary
+      "
+    >
+      Business
+    </Link>
+
+    {/* Login */}
+    <Button
+      nativeButton={false}
+      render={<a href={loginHref} />}
+      onClick={(event) => {
+        setMobileNavOpen(false);
+        handleLogin(event);
+      }}
+      disabled={pending || isLoggingIn}
+      className="
+        h-11
+        w-full
+        shrink-0
+        rounded-full
+        bg-primary
+        text-base
+        font-bold
+        text-white
+        shadow-none
+        hover:bg-[#007d24]
+
+        dark:bg-primary
+        dark:text-white
+        dark:hover:bg-[#007d24]
+      "
+    >
+      {isLoggingIn ? "Logging in..." : "Login"}
+    </Button>
+
+    {/* Register */}
+    <Button
+      nativeButton={false}
+      render={<Link href="/register" />}
+      onClick={() => setMobileNavOpen(false)}
+      variant="outline"
+      className="
+        h-11
+        w-full
+        shrink-0
+        rounded-full
+        border-2
+        border-primary
+        !bg-transparent
+        text-base
+        font-bold
+        text-primary
+        shadow-none
+        hover:!bg-transparent
+        hover:text-primary
+        focus-visible:!bg-transparent
+        active:!bg-transparent
+
+        dark:border-primary
+        dark:!bg-transparent
+        dark:text-primary
+        dark:hover:!bg-transparent
+        dark:hover:text-primary
+        dark:focus-visible:!bg-transparent
+        dark:active:!bg-transparent
+      "
+    >
+      Register
+    </Button>
+  </div>
+</SheetContent>
         </Sheet>
       </div>
     </header>
@@ -525,40 +780,56 @@ function LanguageDropdown({
             className={
               mobile
                 ? `
-                  w-full
-                  justify-start
-                  gap-3
-                  bg-white
-                  text-base
-                  font-semibold
-                  text-[#374151]
-                  hover:bg-transparent
-                  hover:text-primary
-                  aria-expanded:bg-transparent
-                  aria-expanded:text-primary
-                  dark:bg-white
-                  dark:text-[#374151]
-                  dark:hover:bg-transparent
-                  dark:hover:text-primary
-                `
+                    w-full
+                    justify-start
+                    gap-3
+                    !bg-transparent
+                    text-base
+                    font-semibold
+                    text-[#374151]
+                    shadow-none
+                    hover:!bg-transparent
+                    hover:text-primary
+                    focus-visible:!bg-transparent
+                    active:!bg-transparent
+                    aria-expanded:!bg-transparent
+                    aria-expanded:text-primary
+
+                    dark:!bg-transparent
+                    dark:text-white
+                    dark:hover:!bg-transparent
+                    dark:hover:text-primary
+                    dark:focus-visible:!bg-transparent
+                    dark:active:!bg-transparent
+                    dark:aria-expanded:!bg-transparent
+                    dark:aria-expanded:text-primary
+                  `
                 : `
-                  h-10
-                  gap-2
-                  rounded-full
-                  bg-white
-                  px-3
-                  text-sm
-                  font-semibold
-                  text-[#374151]
-                  hover:bg-transparent
-                  hover:text-primary
-                  aria-expanded:bg-transparent
-                  aria-expanded:text-primary
-                  dark:bg-white
-                  dark:text-[#374151]
-                  dark:hover:bg-transparent
-                  dark:hover:text-primary
-                `
+                    h-10
+                    gap-2
+                    rounded-full
+                    !bg-transparent
+                    px-3
+                    text-sm
+                    font-semibold
+                    text-[#374151]
+                    shadow-none
+                    hover:!bg-transparent
+                    hover:text-primary
+                    focus-visible:!bg-transparent
+                    active:!bg-transparent
+                    aria-expanded:!bg-transparent
+                    aria-expanded:text-primary
+
+                    dark:!bg-transparent
+                    dark:text-white
+                    dark:hover:!bg-transparent
+                    dark:hover:text-primary
+                    dark:focus-visible:!bg-transparent
+                    dark:active:!bg-transparent
+                    dark:aria-expanded:!bg-transparent
+                    dark:aria-expanded:text-primary
+                  `
             }
           />
         }
@@ -584,15 +855,31 @@ function LanguageDropdown({
           p-2
           text-[#111827]
           [color-scheme:light]
-          dark:border-[#e5e7eb]
-          dark:bg-white
-          dark:text-[#111827]
+
+          dark:border-white/10
+          dark:bg-background
+          dark:text-white
+          dark:[color-scheme:dark]
         "
       >
-        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium text-[#374151] focus:bg-primary/10 focus:text-primary">
+        <DropdownMenuItem
+          className="
+            gap-3
+            py-2
+            text-sm
+            font-medium
+            text-[#374151]
+            focus:bg-primary/10
+            focus:text-primary
+
+            dark:text-white
+            dark:focus:bg-primary/10
+            dark:focus:text-primary
+          "
+        >
           <Image
             src={englishFlag}
-            alt=""
+            alt="English"
             width={32}
             height={24}
             className="h-5 w-8 object-cover"
@@ -601,10 +888,24 @@ function LanguageDropdown({
           English
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="gap-3 py-2 text-sm font-medium text-[#374151] focus:bg-primary/10 focus:text-primary">
+        <DropdownMenuItem
+          className="
+            gap-3
+            py-2
+            text-sm
+            font-medium
+            text-[#374151]
+            focus:bg-primary/10
+            focus:text-primary
+
+            dark:text-white
+            dark:focus:bg-primary/10
+            dark:focus:text-primary
+          "
+        >
           <Image
             src={khmerFlag}
-            alt=""
+            alt="Khmer"
             width={32}
             height={24}
             className="h-5 w-8 object-cover"
