@@ -38,6 +38,7 @@ export default function RootLayout({
                             enableSystem
                         >
                             <Navbar />
+                            
 
                             <main className="flex-1">{children}</main>
                             <Footer />
