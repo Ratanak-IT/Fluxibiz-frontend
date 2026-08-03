@@ -29,21 +29,11 @@ export default function ProductList({ title, type }: ProductListProps) {
                 </h2>
             )}
 
-            {isLoading && (
-                <p className="text-neutral-500 dark:text-neutral-400">Loading...</p>
-            )}
-
-            {isError && (
-                <p className="text-red-500">Failed to load menu items.</p>
-            )}
-
-            {!isLoading && !isError && (
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                    {items.map((item: MenuItemData) => (
-                        <MenuProductCard key={item.id} item={item} />
-                    ))}
-                </div>
-            )}
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                {Array.isArray(items) && items.map((item) => (
+                     <MenuProductCard key={item.id} item={item} /> 
+                ))}
+            </div>
         </section>
     );
 }

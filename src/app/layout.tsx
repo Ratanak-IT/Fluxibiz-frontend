@@ -1,9 +1,12 @@
+
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { ThemeProvider } from "next-themes";
 
 import Footer from "@/components/common/Footer";
-import NavbarBeforeLoginComponent from "@/components/common/NavbarBeforeLoginComponent";
+import Navbar from "@/components/common/Navbar";
+import AuthProvider from "@/components/common/AuthProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 import "./about/about.css";
@@ -27,18 +30,21 @@ export default function RootLayout({
             suppressHydrationWarning
             data-scroll-behavior="smooth"
         >
-            <body className="min-h-full flex flex-col">
+            <body className="min-h-full flex flex-col" >
                 <StoreProvider>
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="light"
-                        enableSystem
-                    >
-                        <NavbarBeforeLoginComponent />
-                        
-                        <main className="flex-1">{children}</main>
-                        <Footer />
-                    </ThemeProvider>
+                    <AuthProvider>
+                        <ThemeProvider
+                            attribute="class"
+                            defaultTheme="light"
+                            enableSystem
+                        >
+                            <Navbar />
+
+                            <main className="flex-1">{children}</main>
+                            <Footer />
+                            <Toaster position="top-right" richColors closeButton />
+                        </ThemeProvider>
+                    </AuthProvider>
                 </StoreProvider>
             </body>
         </html>

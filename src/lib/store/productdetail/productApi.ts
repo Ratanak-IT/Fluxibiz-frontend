@@ -13,6 +13,7 @@ interface AddToCartPayload {
 export const productApi = createApi({
   reducerPath: "productApi",
   baseQuery: fakeBaseQuery<{ message: string }>(),
+  keepUnusedDataFor: 300,
   tagTypes: ["Product", "Cart", "RelatedProducts"],
   endpoints: (builder) => ({
     getProduct: builder.query<Product, string>({

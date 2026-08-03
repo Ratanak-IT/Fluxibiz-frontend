@@ -1,13 +1,72 @@
-"use client"
+"use client";
 
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
+import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
-export default function ThemeToggle({ mobile = false }: { mobile?: boolean }) {
-  const { resolvedTheme, setTheme } = useTheme()
-  const isDark = resolvedTheme === "dark"
+export default function ThemeToggle({
+  mobile = false,
+}: {
+  mobile?: boolean;
+}) {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        size={mobile ? "default" : "icon"}
+        className={
+          mobile
+            ? `
+              group
+              h-11
+              w-full
+              justify-start
+              gap-3
+              rounded-lg
+              bg-transparent
+              px-3
+              text-[#6a6a6a]
+              shadow-none
+              hover:!bg-transparent
+              hover:text-secondary
+              focus-visible:!bg-transparent
+              active:!bg-transparent
+            `
+            : `
+              group
+              relative
+              size-10
+              rounded-full
+              bg-transparent
+              text-[#6a6a6a]
+              shadow-none
+              hover:!bg-transparent
+              hover:text-secondary
+              focus-visible:!bg-transparent
+              active:!bg-transparent
+            `
+        }
+        aria-label="Switch theme"
+      >
+        <Sun className="size-6 stroke-current transition-colors duration-200 group-hover:stroke-secondary" />
+
+        {mobile && <span>Theme</span>}
+      </Button>
+    );
+  }
+
+  const isDark = resolvedTheme === "dark";
 
   return (
     <Button
@@ -17,17 +76,105 @@ export default function ThemeToggle({ mobile = false }: { mobile?: boolean }) {
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className={
         mobile
-          ? "h-11 w-full justify-start gap-3 rounded-lg px-3 text-foreground"
-          : "relative size-10 rounded-full text-[#6a6a6a] hover:bg-[#6a6a6a]/10 hover:text-[#6a6a6a]"
+          ? `
+            group
+            relative
+            h-11
+            w-full
+            justify-start
+            gap-3
+            rounded-lg
+            bg-transparent
+            px-3
+            text-base
+            font-bold
+            text-[#1f2937]
+            shadow-none
+            hover:!bg-transparent
+            hover:text-primary
+            focus-visible:!bg-transparent
+            active:!bg-transparent
+            dark:bg-transparent
+            dark:text-[#1f2937]
+            dark:hover:!bg-transparent
+            dark:hover:text-primary
+          `
+          : `
+            group
+            relative
+            size-10
+            rounded-full
+            bg-transparent
+            text-[#6a6a6a]
+            shadow-none
+            hover:!bg-transparent
+            hover:text-secondary
+            focus-visible:!bg-transparent
+            active:!bg-transparent
+            dark:bg-transparent
+            dark:text-[#6a6a6a]
+            dark:hover:!bg-transparent
+            dark:hover:text-secondary
+          `
       }
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      <Sun className="size-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <Moon className={mobile ? "absolute size-6 rotate-90 scale-0 transition-all dark:relative dark:rotate-0 dark:scale-100" : "absolute size-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"} />
-      {mobile && <span>{isDark ? "Light mode" : "Dark mode"}</span>}
+      <Sun
+        className="
+          size-6
+          rotate-0
+          scale-100
+          stroke-current
+          transition-all
+          duration-200
+          group-hover:stroke-secondary
+          dark:-rotate-90
+          dark:scale-0
+        "
+      />
+
+      <Moon
+        className={
+          mobile
+            ? `
+              absolute
+              left-3
+              size-6
+              rotate-90
+              scale-0
+              stroke-current
+              transition-all
+              duration-200
+              group-hover:stroke-secondary
+              dark:relative
+              dark:left-auto
+              dark:rotate-0
+              dark:scale-100
+            `
+            : `
+              absolute
+              size-6
+              rotate-90
+              scale-0
+              stroke-current
+              transition-all
+              duration-200
+              group-hover:stroke-secondary
+              dark:rotate-0
+              dark:scale-100
+            `
+        }
+      />
+
+      {mobile && (
+        <span>
+          {isDark ? "Light mode" : "Dark mode"}
+        </span>
+      )}
+
       <span className="sr-only">
         {isDark ? "Switch to light mode" : "Switch to dark mode"}
       </span>
     </Button>
-  )
+  );
 }

@@ -1,18 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { userRegisterSchema, type UserRegisterFormData } from "@/lib/validations/authSchema";
+import { useAuth } from "@/features/auth/useAuth";
 
 export type RegisterFieldProps = React.ComponentProps<typeof Input> & {
     label: string;
     required?: boolean;
     density?: "compact" | "figma";
+    error?: string;
 };
 
 export function RegisterField({
@@ -21,41 +25,47 @@ export function RegisterField({
     id: providedId,
     required = true,
     density = "compact",
+    error,
     ...props
 }: RegisterFieldProps) {
     const generatedId = useId();
     const id = providedId ?? generatedId;
 
     return (
-        <label
-            htmlFor={id}
-            className={cn(
-                "grid font-sans",
-                density === "figma" ? "gap-[15px]" : "gap-2.5",
-            )}
-        >
-            <span
+        <div className="grid gap-1 font-sans">
+            <label
+                htmlFor={id}
                 className={cn(
-                    "font-semibold leading-none text-[#636b74]",
-                    density === "figma" ? "text-base" : "text-[15px]",
+                    "grid gap-2 font-sans",
+                    density === "figma" ? "gap-[10px]" : "gap-2.5",
                 )}
             >
-                {label}{" "}
-                {required ? <span className="text-[#c24040]">*</span> : null}
-            </span>
-            <Input
-                id={id}
-                required={required}
-                className={cn(
-                    "border-input bg-white text-[#636b74] shadow-none placeholder:text-[#636b74] focus-visible:ring-2",
-                    density === "figma"
-                        ? "h-[47px] rounded-[12px] px-5 py-2.5 text-base"
-                        : "h-11 rounded-[11px] px-[18px] py-2 text-[15px]",
-                    className,
-                )}
-                {...props}
-            />
-        </label>
+                <span
+                    className={cn(
+                        "font-semibold leading-none text-[#636b74]",
+                        density === "figma" ? "text-base" : "text-[15px]",
+                    )}
+                >
+                    {label}{" "}
+                    {required ? <span className="text-[#c24040]">*</span> : null}
+                </span>
+                <Input
+                    id={id}
+                    className={cn(
+                        "border-input bg-white text-[#636b74] shadow-none placeholder:text-[#636b74] focus-visible:ring-2",
+                        density === "figma"
+                            ? "h-[47px] rounded-[12px] px-5 py-2.5 text-base"
+                            : "h-11 rounded-[11px] px-[18px] py-2 text-[15px]",
+                        error && "border-red-500 focus-visible:ring-2 focus-visible:ring-red-500",
+                        className,
+                    )}
+                    {...props}
+                />
+            </label>
+            {error && (
+                <span className="text-xs font-medium text-red-500">{error}</span>
+            )}
+        </div>
     );
 }
 
@@ -82,6 +92,7 @@ export function PasswordField(props: PasswordFieldProps) {
                     isFigma
                         ? "size-[47px] rounded-r-[12px]"
                         : "size-11 rounded-r-[11px]",
+                    props.error && "bottom-5"
                 )}
             >
                 {isVisible ? (
@@ -94,66 +105,129 @@ export function PasswordField(props: PasswordFieldProps) {
     );
 }
 
-export function RegisterForm() {
-    const router = useRouter();
+interface RegisterFormProps {
+    defaultValues?: Partial<UserRegisterFormData>;
+    onNext?: (data: UserRegisterFormData) => void;
+}
+
+export function RegisterForm({ defaultValues, onNext }: RegisterFormProps) {
+    const { login, loginHref } = useAuth();
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<UserRegisterFormData>({
+        resolver: zodResolver(userRegisterSchema),
+        defaultValues: {
+            firstName: defaultValues?.firstName ?? "",
+            lastName: defaultValues?.lastName ?? "",
+            phone: defaultValues?.phone ?? "",
+            email: defaultValues?.email ?? "",
+            password: defaultValues?.password ?? "",
+            confirmPassword: defaultValues?.confirmPassword ?? "",
+        },
+    });
+
+    const onSubmit = (data: UserRegisterFormData) => {
+        if (onNext) {
+            onNext(data);
+        }
+    };
 
     return (
-        <form
-            className="grid gap-2.5 font-sans"
-            onSubmit={(event) => {
-                event.preventDefault();
-                router.push("/register/business");
-            }}
-        >
-            <div className="grid gap-5 sm:grid-cols-[265px_265px] sm:justify-between sm:gap-[19px]">
-                <RegisterField
-                    label="First name"
-                    density="figma"
+        <form className="grid gap-3.5 font-sans" onSubmit={handleSubmit(onSubmit)}>
+            <div className="grid gap-5 sm:grid-cols-2 sm:gap-[19px]">
+                <Controller
                     name="firstName"
-                    autoComplete="given-name"
-                    placeholder="Sokkhim"
+                    control={control}
+                    render={({ field }) => (
+                        <RegisterField
+                            {...field}
+                            label="First name"
+                            density="figma"
+                            autoComplete="given-name"
+                            placeholder="Sokkhim"
+                            error={errors.firstName?.message}
+                        />
+                    )}
                 />
-                <RegisterField
-                    label="Last name"
-                    density="figma"
+                <Controller
                     name="lastName"
-                    autoComplete="family-name"
-                    placeholder="Sokkhim"
+                    control={control}
+                    render={({ field }) => (
+                        <RegisterField
+                            {...field}
+                            label="Last name"
+                            density="figma"
+                            autoComplete="family-name"
+                            placeholder="Khorn"
+                            error={errors.lastName?.message}
+                        />
+                    )}
                 />
             </div>
 
-            <RegisterField
-                label="Phone Number"
-                density="figma"
+            <Controller
                 name="phone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                placeholder="0998877666"
+                control={control}
+                render={({ field }) => (
+                    <RegisterField
+                        {...field}
+                        label="Phone Number"
+                        density="figma"
+                        type="tel"
+                        inputMode="tel"
+                        autoComplete="tel"
+                        placeholder="0998877666"
+                        error={errors.phone?.message}
+                    />
+                )}
             />
-            <RegisterField
-                label="Email"
-                density="figma"
+
+            <Controller
                 name="email"
-                type="email"
-                autoComplete="email"
-                placeholder="Sokhim@gmail.com"
+                control={control}
+                render={({ field }) => (
+                    <RegisterField
+                        {...field}
+                        label="Email"
+                        density="figma"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="sokkhim@gmail.com"
+                        error={errors.email?.message}
+                    />
+                )}
             />
-            <PasswordField
-                label="Password"
-                density="figma"
+
+            <Controller
                 name="password"
-                autoComplete="new-password"
-                placeholder="••••••••••••"
-                minLength={8}
+                control={control}
+                render={({ field }) => (
+                    <PasswordField
+                        {...field}
+                        label="Password"
+                        density="figma"
+                        autoComplete="new-password"
+                        placeholder="••••••••••••"
+                        error={errors.password?.message}
+                    />
+                )}
             />
-            <PasswordField
-                label="Confirm password"
-                density="figma"
+
+            <Controller
                 name="confirmPassword"
-                autoComplete="new-password"
-                placeholder="••••••••••••"
-                minLength={8}
+                control={control}
+                render={({ field }) => (
+                    <PasswordField
+                        {...field}
+                        label="Confirm password"
+                        density="figma"
+                        autoComplete="new-password"
+                        placeholder="••••••••••••"
+                        error={errors.confirmPassword?.message}
+                    />
+                )}
             />
 
             <Button
@@ -165,12 +239,16 @@ export function RegisterForm() {
 
             <p className="mt-1 text-center text-[17px] leading-5 text-[#6b776f]">
                 Already have an account?{" "}
-                <Link
-                    href="/login"
-                    className="text-blue-600 hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring "
+                <a
+                    href={loginHref}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        login();
+                    }}
+                    className="text-blue-600 font-bold hover:underline cursor-pointer focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                     Log in
-                </Link>
+                </a>
             </p>
         </form>
     );

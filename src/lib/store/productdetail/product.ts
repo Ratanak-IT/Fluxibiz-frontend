@@ -4,7 +4,7 @@ export interface ProductOption {
   priceModifier?: number;
 }
 
-export  interface Product {
+export interface Product {
   id: string;
   badge?: string;
   name: string;
@@ -21,9 +21,16 @@ export  interface Product {
     title: string;
     subtitle: string;
   }[];
+  businessId: string;
+  storeSlug: string;
+  storeName: string;
+  storeCategory: string;
+  storeLogo: string;
+  storeLocation: string;
+  storeHours: string;
+  currency?: string;
 }
 
-// --- Related products (card grid shape) ---
 export interface Products {
   id: string;
   name: string;
@@ -32,7 +39,6 @@ export interface Products {
   category: string;
   image: string;
 }
-
 export async function getProduct(id: string): Promise<Product> {
   return {
     id,
@@ -63,6 +69,15 @@ export async function getProduct(id: string): Promise<Product> {
       { icon: "shield", title: "1 Year Warranty", subtitle: "Official warranty" },
       { icon: "refresh", title: "Easy Returns", subtitle: "30-day return policy" },
     ],
+
+    businessId: "biz-001",
+    storeSlug: "fluxi-coffee-tea",
+    storeName: "Fluxi Coffee & Tea",
+    storeCategory: "Beverages",
+    storeLogo: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&q=80&w=200",
+    storeLocation: "Phnom Penh, Cambodia",
+    storeHours: "7:00 AM - 9:00 PM",
+    currency: "USD",
   };
 }
 
@@ -114,7 +129,7 @@ export function formatPrice(value: number): string {
 
 export function computeDiscountPct(
   price: number,
-  compareAtPrice?: number
+  compareAtPrice?: number,
 ): number | null {
   if (!compareAtPrice || compareAtPrice <= price) return null;
   return Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
