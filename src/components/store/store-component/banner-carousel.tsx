@@ -136,7 +136,7 @@ const BannerCarousel = () => {
 
   return (
     <Carousel
-      className='flex w-full flex-col items-center gap-4 py-4 select-none sm:gap-6 sm:py-6 lg:gap-8 lg:py-8'
+      className='flex w-full flex-col items-center gap-4  select-none sm:gap-6 sm:py-6 lg:gap-8 lg:py-8'
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
