@@ -67,7 +67,7 @@ export function UserRegisterForm() {
         lastName: data.lastName,
         phoneNumber: data.phone,
         gender: "UNSPECIFIED",
-        role: "CUSTOMER",
+         role: "CUSTOMER" as const,
       };
 
       await registerUser(userPayload).unwrap();
