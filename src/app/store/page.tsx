@@ -252,7 +252,7 @@ export default function HomePage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   return (
-    <div className="mx-auto max-w-362.5 space-y-10 px-4 py-6">
+    <div className="mx-auto max-w-362.5 space-y-10 px-4 py-6 ">
       <BannerCarousel />
 
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
@@ -261,13 +261,12 @@ export default function HomePage() {
             <div className="flex-1 overflow-y-auto pr-1">
               <StoreFilterComponent
                 selected={selectedCategories}
-                onSelectedChange={setSelectedCategories}
-              />
+                onSelectedChange={setSelectedCategories}/>
             </div>
           </div>
         </aside>
 
-        <div className="min-w-0 flex-1 space-y-10">
+        <div className="min-w-0 flex-1 space-y-10 ">
           <RecommendedSection />
 
           <PromotionsSection />

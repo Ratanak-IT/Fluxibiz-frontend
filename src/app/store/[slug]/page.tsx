@@ -2,7 +2,7 @@
 
 import { use, useState, useMemo } from "react";
 import SearchFilterBar from "@/components/store/detailstore/button";
-import ProductList from "@/components/store/detailstore/product-list";
+
 import CartSidebar from "@/components/store/detailstore/cart-sidebar";
 import StoreCard from "@/components/store/detailstore/store-card";
 import { MenuItemData } from "@/lib/store/detailstore/detailstore";
@@ -14,8 +14,10 @@ import {
   useGetPublicStoreItemsQuery,
 } from "@/features/store-api/store-api";
 import { resolveMediaUrl } from "@/lib/type/cartType";
-import { StoreCardData } from "@/lib/store/store";
+
 import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
+import { StoreCardData } from "@/lib/store/detailstore/store";
+import ProductList from "@/components/store/detailstore/product-list";
 
 function toMenuItem(item: StorefrontItemResponse): MenuItemData {
   return {

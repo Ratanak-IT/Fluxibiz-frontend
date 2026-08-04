@@ -1,82 +1,176 @@
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
 
 import registerIllustration from "../../../public/image/auth/register-illustration.png";
 import { cn } from "@/lib/utils";
 
 type RegistrationShellProps = {
-    children: ReactNode;
-    contentClassName?: string;
-    variant?: "compact" | "figma";
+  children: ReactNode;
+  contentClassName?: string;
+  variant?: "compact" | "figma";
 };
 
 export function RegistrationShell({
-    children,
-    contentClassName,
-    variant = "compact",
+  children,
+  contentClassName,
+  variant = "compact",
 }: RegistrationShellProps) {
-    const isFigma = variant === "figma";
+  const isFigma = variant === "figma";
 
-    return (
-        <section className="registration-page fixed inset-0 z-50 overflow-y-auto bg-white transition-colors ">
-    <div
-        className={cn(
-            "mx-auto flex min-h-full w-full items-center justify-center px-4 sm:px-8 md:px-10",
-            isFigma
-                ? "max-w-[1440px] py-4 lg:px-[100px]"
-                : "max-w-[1360px] py-6 sm:py-7 lg:px-20",
-        )}
+  return (
+    <section
+      className={cn(
+        "registration-page fixed inset-0 z-50 overflow-y-auto",
+        "bg-white transition-colors",
+        "dark:bg-background",
+      )}
     >
+      <div
+        className={cn(
+          "mx-auto flex min-h-full w-full items-center justify-center",
+          "px-4 sm:px-8 md:px-10",
+          isFigma
+            ? "max-w-[1440px] py-4 lg:px-[100px]"
+            : "max-w-[1360px] py-6 sm:py-7 lg:px-20",
+        )}
+      >
         <div
-            className={cn(
-                "grid w-full items-center bg-white shadow-[4px_4px_10px_4px_#e5e7eb] transition-colors",
-                ")]",
-                isFigma
-                    ? "max-w-[1240px] gap-6 sm:gap-8 lg:gap-20 rounded-[16px] sm:rounded-[20px] lg:rounded-[25px] p-4 sm:p-6 lg:p-5 lg:h-[min(700px,calc(100dvh-32px))] lg:min-h-[650px] lg:grid-cols-[minmax(0,620px)_minmax(360px,513px)]"
-                    : "max-w-[1120px] gap-6 sm:gap-8 lg:gap-16 rounded-[16px] sm:rounded-[20px] lg:rounded-[22px] p-4 sm:p-5 lg:p-[18px] lg:min-h-[700px] lg:grid-cols-[minmax(0,540px)_minmax(340px,460px)]",
-            )}
+          className={cn(
+            "grid w-full items-center",
+            "border border-transparent",
+            "bg-white shadow-[4px_4px_10px_4px_#e5e7eb]",
+            "transition-colors",
+            "dark:border-border",
+            "dark:bg-background",
+            "dark:shadow-[4px_4px_18px_4px_rgba(0,0,0,0.45)]",
+
+            isFigma
+              ? "max-w-[1240px] gap-6 rounded-[16px] p-4 sm:gap-8 sm:rounded-[20px] sm:p-6 lg:min-h-[650px] lg:grid-cols-[minmax(0,620px)_minmax(360px,513px)] lg:gap-20 lg:rounded-[25px] lg:p-5"
+              : "max-w-[1120px] gap-6 rounded-[16px] p-4 sm:gap-8 sm:rounded-[20px] sm:p-5 lg:min-h-[700px] lg:grid-cols-[minmax(0,540px)_minmax(340px,460px)] lg:gap-16 lg:rounded-[22px] lg:p-[18px]",
+          )}
         >
-            <div
-                className={cn(
-                    "mx-auto w-full",
-                    isFigma ? "max-w-[580px]" : "max-w-[520px]",
-                    contentClassName,
-                )}
+          {/* Registration form */}
+          <div
+            className={cn(
+              "mx-auto w-full text-foreground",
+              isFigma ? "max-w-[580px]" : "max-w-[520px]",
+              contentClassName,
+            )}
+          >
+            <h1
+              className={cn(
+                "text-center font-bold text-primary",
+                isFigma
+                  ? "mb-2 text-xl tracking-[-0.6px] sm:mb-3 sm:text-2xl md:text-[30px]"
+                  : "mb-4 text-lg tracking-[-0.54px] sm:mb-6 sm:text-xl md:text-[27px]",
+              )}
             >
-                <h1
-                    className={cn(
-                        "text-center font-bold text-primary ",
-                        isFigma
-                            ? "mb-2 sm:mb-3 text-xl sm:text-2xl md:text-[30px] tracking-[-0.6px]"
-                            : "mb-4 sm:mb-6 text-lg sm:text-xl md:text-[27px] tracking-[-0.54px]",
-                    )}
-                >
-                    Create Your Account
-                </h1>
-                {children}
+              Create Your Account
+            </h1>
+
+            {children}
+          </div>
+
+          {/* Illustration and Back to website button */}
+          <div className="mx-auto hidden w-full flex-col lg:flex">
+            <div
+              className={cn(
+                "mb-4 flex w-full justify-end",
+                isFigma ? "max-w-[513px]" : "max-w-[460px]",
+              )}
+            >
+              <Link
+                href="/store"
+                aria-label="Back to website"
+                className={cn(
+                  "inline-flex h-11 items-center justify-center gap-2",
+                  "rounded-full border-2 border-secondary bg-transparent px-5",
+                  "text-sm font-semibold text-secondary",
+                  "transition-all duration-200",
+
+                  "hover:-translate-y-0.5",
+                  "hover:bg-secondary/10",
+                  "hover:shadow-sm",
+
+                  "focus-visible:outline-none",
+                  "focus-visible:ring-2",
+                  "focus-visible:ring-secondary/50",
+                  "focus-visible:ring-offset-2",
+
+                  "dark:border-secondary",
+                  "dark:bg-transparent",
+                  "dark:text-secondary",
+                  "dark:hover:bg-secondary/10",
+                  "dark:focus-visible:ring-offset-background",
+                )}
+              >
+                <span>Back to website</span>
+
+                <ArrowRight
+                  className="size-4"
+                  aria-hidden="true"
+                />
+              </Link>
             </div>
 
             <div
-                className={cn(
-                    "relative mx-auto hidden aspect-[512.828/523.867] w-full overflow-hidden lg:block",
-                   
-                    isFigma
-                        ? "max-w-[513px] rounded-[25px]"
-                        : "max-w-[460px] rounded-[22px]",
-                )}
+              className={cn(
+                "relative w-full overflow-hidden",
+                "aspect-[512.828/523.867]",
+                isFigma
+                  ? "max-w-[513px] rounded-[25px]"
+                  : "max-w-[460px] rounded-[22px]",
+              )}
             >
-                <Image
-                    src={registerIllustration}
-                    alt="Account security illustration"
-                    width={645}
-                    height={645}
-                    priority
-                    sizes="513px"
-                    className="absolute left-[-12.92%] top-[-12.26%] h-[123.18%] w-[125.83%] max-w-none"
-                />
+              <Image
+                src={registerIllustration}
+                alt="Account security illustration"
+                width={645}
+                height={645}
+                priority
+                sizes="513px"
+                className="absolute left-[-12.92%] top-[-12.26%] h-[123.18%] w-[125.83%] max-w-none"
+              />
             </div>
+          </div>
+
+          {/* Mobile and tablet Back to website button */}
+          {/* Mobile and tablet Back to website button */}
+<div className="flex justify-center lg:hidden">
+  <Link
+    href="/"
+    aria-label="Back to website"
+    className={cn(
+      "inline-flex h-11 items-center justify-center gap-2",
+      "rounded-full bg-transparent px-5",
+      "text-sm font-semibold text-secondary",
+      "transition-all duration-200",
+
+      "hover:bg-secondary/10",
+
+      "focus-visible:outline-none",
+      "focus-visible:ring-2",
+      "focus-visible:ring-secondary/50",
+      "focus-visible:ring-offset-2",
+
+      "dark:bg-transparent",
+      "dark:text-secondary",
+      "dark:hover:bg-secondary/10",
+      "dark:focus-visible:ring-offset-background",
+    )}
+  >
+    <span>Back to website</span>
+
+    <ArrowRight
+      className="size-4"
+      aria-hidden="true"
+    />
+  </Link>
+</div>
         </div>
-    </div>
-</section>
-    );
+      </div>
+    </section>
+  );
 }

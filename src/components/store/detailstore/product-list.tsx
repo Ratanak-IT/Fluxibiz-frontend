@@ -19,7 +19,7 @@ function useMenuSection(type: MenuSectionType) {
 }
 
 export default function ProductList({ title, type }: ProductListProps) {
-    const { data: items = [], isLoading, isError } = useMenuSection(type);
+    const { data: items = [], } = useMenuSection(type);
 
     return (
         <section className=" px-6 py-8  sm:px-10 lg:px-20">

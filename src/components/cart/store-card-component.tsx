@@ -6,27 +6,8 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Button } from "@/components/ui/button";
 import { MapPin, Clock, Trash2, Store } from "lucide-react";
 
-<<<<<<< HEAD
-export function StoreCardComponent({ store = mockStore }: StoreCardComponentProps) {
-  return (
-    <>
-    
-   <Card className="h-auto overflow-hidden p-0 sm:h-36 md:h-45">
-  <div className="flex h-full flex-row items-center">
-    {/* Image */}
-    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg sm:h-full sm:w-40 md:h-40 md:w-40">
-      <Image
-        src={store.image}
-        alt={store.name}
-        width={180}
-        height={180}
-        className="h-full w-full object-cover"
-      />
-    </div>
-=======
 import { resolveMediaUrl, type StoreCart } from "@/lib/type/cartType";
 import { useRemoveCartStoreMutation } from "@/features/cart/cartApi";
->>>>>>> 55cf66b51ed933e2cb683cce7f85fbf14dd84c64
 
 export function StoreCardComponent({ store }: { store: StoreCart }) {
     const [removeStore, { isLoading: isRemoving }] = useRemoveCartStoreMutation();

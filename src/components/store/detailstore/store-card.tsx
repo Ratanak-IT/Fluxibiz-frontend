@@ -1,7 +1,8 @@
 import Image from "next/image";
-import { Card, CardDescription, CardHeader, CardTitle } from "../../ui/card";
+import { Card } from "../../ui/card";
 import { Clock, ImageOff, MapPin } from "lucide-react";
-import { StoreCardData } from "@/lib/store/store";
+import { StoreCardData } from "@/lib/store/detailstore/store";
+
 
 interface StoreCardComponentProps {
   store?: StoreCardData;

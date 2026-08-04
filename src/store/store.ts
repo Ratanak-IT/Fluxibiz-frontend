@@ -11,16 +11,8 @@ import { userApi } from '../features/user/userApi';
 import { cartApi } from '@/features/cart/cartApi';
 import { checkoutApi } from '@/features/checkout/checkoutApi';
 import { businessRegisterApi } from '@/features/business-registration/businessApi';
+import { menuApi } from '@/lib/store/detailstore/detailstore';
 
-<<<<<<< HEAD
-
-import { productApi } from '@/lib/store/productdetail/productApi'
-
-import {configureStore} from '@reduxjs/toolkit'
-
-// set up the store
-=======
->>>>>>> 55cf66b51ed933e2cb683cce7f85fbf14dd84c64
 export const makeStore = () => {
   return configureStore({
     reducer: {
@@ -31,15 +23,10 @@ export const makeStore = () => {
       [shopApi.reducerPath]: shopApi.reducer,
       [storeCateApi.reducerPath]: storeCateApi.reducer,
       [productApi.reducerPath]: productApi.reducer,
-<<<<<<< HEAD
-      [menuApi.reducerPath]: menuApi.reducer,
-     
-     
-=======
       [sessionApi.reducerPath]: sessionApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
       [businessRegisterApi.reducerPath]: businessRegisterApi.reducer,
->>>>>>> 55cf66b51ed933e2cb683cce7f85fbf14dd84c64
+      [menuApi.reducerPath]: menuApi.reducer,
     },
     middleware: (getDefaultMiddleware) => 
       getDefaultMiddleware().concat(
@@ -51,7 +38,8 @@ export const makeStore = () => {
         productApi.middleware,
         sessionApi.middleware,
         userApi.middleware,
-        businessRegisterApi.middleware
+        businessRegisterApi.middleware,
+        menuApi.middleware
       )
   }) 
 }
