@@ -9,17 +9,17 @@ import { Carousel, CarouselNext, CarouselPrevious } from '@/components/ui/carous
 
 const Images = [
   {
-    image: 'https://i.pinimg.com/1200x/c0/f8/ba/c0f8ba42bf6326a396e2142e4c07c06f.jpg',
+    image: '/carousel/banner1.jpg',
     title: 'Mountain Sunrise',
     category: 'Nature'
   },
   {
-    image: 'https://i.pinimg.com/1200x/47/8a/89/478a89478549995ede493208120f391a.jpg',
+    image: '/carousel/banner2.jpg',
     title: 'Ocean Waves',
     category: 'Seascape'
   },
   {
-    image: 'https://i.pinimg.com/1200x/d8/c1/d4/d8c1d4cb5a8c9a61d52455f5ecebe932.jpg',
+    image: '/carousel/banner3.jpg',
     title: 'Forest Path',
     category: 'Woodland'
   }

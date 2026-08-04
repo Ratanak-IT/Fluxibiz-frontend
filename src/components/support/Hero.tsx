@@ -45,7 +45,7 @@ export function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1 className="mt-8 font-serif text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.25rem]">
+          <h1 className="mt-8  text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.25rem]">
             <span
               className="hero-in block dark:text-gray-300"
 
@@ -87,7 +87,7 @@ export function HeroSection() {
 
           {/* Paragraph */}
           <p
-            className="hero-in mt-14 max-w-lg text-base leading-relaxed text-[#717171] lg:text-lg"
+            className=" mt-14 max-w-lg text-base leading-relaxed text-[#717171] lg:text-lg"
             style={{ animationDelay: "0.45s" }}
           >
             Setting up your first register, migrating from another system, or
@@ -100,25 +100,7 @@ export function HeroSection() {
             className="hero-in mt-10 flex flex-wrap items-center gap-4"
             style={{ animationDelay: "0.55s" }}
           >
-            <a
-              href="#message"
-              className="rounded-full px-10 py-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ backgroundColor: PRIMARY }}
-            >
-              Get Started
-            </a>
-            <a
-              href="#faq"
-              className="flex items-center gap-3 dark:text-gray-300 rounded-full border border-[#E2E6E3] py-2 pl-2 pr-8 text-sm font-semibold transition-colors hover:border-[#C9D2CC]"
-            >
-              <span
-                className="flex h-11 w-11 items-center justify-center rounded-full"
-                style={{ backgroundColor: ACCENT }}
-              >
-                <Play className="h-4 w-4 fill-white text-white" />
-              </span>
-              Watch Video
-            </a>
+            
           </div>
 
           {/* Doodle arrow */}
