@@ -1,26 +1,13 @@
-"use client";
-
-import { MenuItemData, useGetPopularMenuQuery, useGetTeaMenuQuery } from "@/lib/store/detailstore/detailstore";
+import { MenuItemData } from "@/lib/store/detailstore/detailstore";
 import { MenuProductCard } from "./product-card";
 
 
-type MenuSectionType = "popular" | "tea";
-
 interface ProductListProps {
     title?: string;
-    type: MenuSectionType;
+    items: MenuItemData[];
 }
 
-function useMenuSection(type: MenuSectionType) {
-    const popular = useGetPopularMenuQuery(undefined, { skip: type !== "popular" });
-    const tea = useGetTeaMenuQuery(undefined, { skip: type !== "tea" });
-
-    return type === "popular" ? popular : tea;
-}
-
-export default function ProductList({ title, type }: ProductListProps) {
-    const { data: items = [], } = useMenuSection(type);
-
+export default function ProductList({ title, items = [] }: ProductListProps) {
     return (
         <section className=" px-6 py-8  sm:px-10 lg:px-20">
             {title && (

@@ -33,12 +33,12 @@ import { COMPANY_NAME, MARKETPLACE_FEATURES, POS_DATA_POINTS, SOCIAL_CHANNELS, S
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen scroll-smooth bg-white dark:bg-background">
+    <div className="min-h-screen  scroll-smooth bg-white dark:bg-background">
       <PrivacyHero />
 
       <main className="mx-auto flex max-w-6xl gap-8 px-6 py-12">
       
-        <div className="mx-auto w-full max-w-[900px] space-y-6">
+        <div className="mx-auto w-full max-w-1000 space-y-6">
           <PolicySection id="introduction" icon={Info} title="Introduction">
             <p>
               {COMPANY_NAME} provides commerce tools that help

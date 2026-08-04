@@ -11,7 +11,7 @@ export function PrivacyHero() {
         className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-[#FEB90D]/10 blur-3xl dark:bg-[#F5B91B]/10"
       />
 
-      <div className="mx-auto max-w-[900px] px-6 py-16 sm:py-20">
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
         <div
           className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00932A] text-white shadow-lg shadow-[#00932A]/20 dark:bg-[#21B94B] dark:shadow-[#21B94B]/20"
           aria-hidden="true"
@@ -28,12 +28,12 @@ export function PrivacyHero() {
           marketplace, point-of-sale, and messaging products, and how we protect it.
         </p>
 
-        <div className="mt-6 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+        {/* <div className="mt-6 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <Clock className="h-4 w-4" aria-hidden="true" />
           <span>
             Last updated: <time dateTime="2026-08-01">{LAST_UPDATED}</time>
           </span>
-        </div>
+        </div> */}
       </div>
     </header>
   );
