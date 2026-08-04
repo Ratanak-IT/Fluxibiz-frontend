@@ -11,10 +11,17 @@ import {
   FaYoutube,
 } from "react-icons/fa6";
 
+// Light mode logos
 import cbrdFundLogo from "../../../public/image/footer/cbrd-fund.png";
 import fluxibizLogo from "../../../public/image/footer/fluxiBix-logo(2).png";
 import istadLogo from "../../../public/image/footer/istad.png";
 import mptcLogo from "../../../public/image/footer/mptc.png";
+
+// Dark mode logos
+import cbrdDarkMode from "../../../public/image/footer/cbrd-darkmode.png";
+import fluxibizDarkMode from "../../../public/image/footer/fluxibiz-logo-darkmode.png";
+import istadDarkMode from "../../../public/image/footer/istad-darkmode.png";
+import mptcDarkMode from "../../../public/image/footer/mptc-darkmode.png";
 
 const usefulLinks = [
   { label: "About Us", href: "/about" },
@@ -58,19 +65,31 @@ const socialLinks = [
 
 const partners = [
   {
-    src: istadLogo,
+    lightSrc: istadLogo,
+    darkSrc: istadDarkMode,
     alt: "ISTAD",
-    className: "w-full max-w-[120px] sm:max-w-[150px]",
+    className:
+      "w-full max-w-[130px] sm:max-w-[160px] min-[768px]:max-[1100px]:max-w-[150px] min-[1101px]:max-w-[160px]",
+    imageClassName:
+      "sm:-translate-x-[6px] min-[768px]:max-[1100px]:translate-x-0 min-[1101px]:translate-x-0",
   },
   {
-    src: mptcLogo,
+    lightSrc: mptcLogo,
+    darkSrc: mptcDarkMode,
     alt: "Ministry of Post and Telecommunications",
-    className: "w-full max-w-[280px] sm:max-w-[320px]",
+    className:
+      "w-full max-w-[270px] sm:max-w-[320px] min-[768px]:max-[1100px]:max-w-[230px] min-[1101px]:max-w-[320px]",
+    imageClassName:
+      "sm:-translate-x-[6px] min-[768px]:max-[1100px]:translate-x-0 min-[1101px]:translate-x-0",
   },
   {
-    src: cbrdFundLogo,
+    lightSrc: cbrdFundLogo,
+    darkSrc: cbrdDarkMode,
     alt: "CBRD Fund",
-    className: "w-full max-w-[135px] sm:max-w-[165px]",
+    className:
+      "w-full max-w-[130px] sm:max-w-[165px] min-[768px]:max-[1100px]:max-w-[110px] min-[1101px]:max-w-[165px]",
+    imageClassName:
+      "sm:-translate-x-[6px] min-[768px]:max-[1100px]:translate-x-0 min-[1101px]:translate-x-0",
   },
 ];
 
@@ -86,11 +105,15 @@ export default function Footer() {
         bg-white
         text-[#111827]
         [color-scheme:light]
+        dark:border-white/10
+        dark:bg-background
+        dark:text-white
+        dark:[color-scheme:dark]
       "
     >
       <div className="container mx-auto w-full max-w-7xl overflow-hidden px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 lg:px-10 lg:py-14">
         {/* Top section */}
-        <div className="container mx-auto grid max-w-7xl grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 md:gap-0">
+        <div className="container mx-auto grid max-w-7xl grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-8 md:grid-cols-[1.05fr_0.8fr_1.15fr] md:gap-x-6 md:gap-y-0 lg:grid-cols-3 lg:gap-0">
           {/* Logo and description */}
           <section
             className="flex flex-col items-start text-left"
@@ -99,25 +122,57 @@ export default function Footer() {
             <Link
               href="/store"
               aria-label="FluxiBiz home"
-              className="inline-flex"
+              className="inline-flex h-[48px] items-center sm:h-[54px] md:h-[63px]"
             >
               <Image
                 src={fluxibizLogo}
                 alt="FluxiBiz"
                 priority
-                className="h-auto w-[140px] object-contain sm:w-[155px] md:w-[180px]"
+                className="block h-full w-[140px] object-contain object-left sm:w-[155px] md:w-[180px] dark:hidden"
+              />
+
+              <Image
+                src={fluxibizDarkMode}
+                alt="FluxiBiz"
+                priority
+                className="hidden h-full w-[140px] object-contain object-left sm:w-[155px] md:w-[180px] dark:block"
               />
             </Link>
 
-            <div className="mt-4 max-w-md space-y-1 text-sm leading-6 text-[#6b7280] sm:mt-5 sm:space-y-2 sm:text-[15px] sm:leading-7">
+            <div className="mt-4 max-w-md space-y-1 text-sm leading-6 text-[#6b7280] sm:mt-5 sm:space-y-2 sm:text-[15px] sm:leading-7 md:max-w-[230px] md:text-sm md:leading-6 lg:max-w-md lg:text-[15px] lg:leading-7 dark:text-white">
               <p>Powering Business Without Limits.</p>
-              <p>Manage Better. Sell More. Grow Faster.</p>
-              <p>Everything Your Business Needs, All in One.</p>
+              <p>
+                Manage Better. Sell More.
+                <br className="hidden md:block lg:hidden" />
+                Grow Faster.
+              </p>
+              <p>
+                Everything Your Business Needs,
+                <br className="hidden md:block lg:hidden" />
+                All in One.
+              </p>
             </div>
           </section>
 
           {/* Useful links */}
-          <section className="rounded-2xl border border-[#e5e7eb] bg-white p-5 text-left sm:p-6 md:rounded-none md:border-0 md:bg-transparent md:p-0">
+          <section
+            className="
+              rounded-2xl
+              border
+              border-[#e5e7eb]
+              bg-white
+              p-5
+              text-left
+              sm:p-6
+              md:rounded-none
+              md:border-0
+              md:bg-transparent
+              md:p-0
+              dark:border-white/10
+              dark:bg-background
+              md:dark:bg-transparent
+            "
+          >
             <FooterTitle>Useful Links</FooterTitle>
 
             <nav
@@ -139,6 +194,7 @@ export default function Footer() {
                     focus-visible:outline-offset-4
                     focus-visible:outline-[#00932A]
                     sm:text-base
+                    dark:text-white
                   "
                 >
                   {label}
@@ -148,10 +204,27 @@ export default function Footer() {
           </section>
 
           {/* Contact */}
-          <section className="rounded-2xl border border-[#e5e7eb] bg-white p-5 text-left sm:p-6 md:rounded-none md:border-0 md:bg-transparent md:p-0">
+          <section
+            className="
+              rounded-2xl
+              border
+              border-[#e5e7eb]
+              bg-white
+              p-5
+              text-left
+              sm:p-6
+              md:rounded-none
+              md:border-0
+              md:bg-transparent
+              md:p-0
+              dark:border-white/10
+              dark:bg-background
+              md:dark:bg-transparent
+            "
+          >
             <FooterTitle>Contact Us</FooterTitle>
 
-            <address className="mt-5 max-w-md space-y-4 text-sm not-italic leading-6 text-[#6b7280] sm:text-base">
+            <address className="mt-5 max-w-md space-y-4 text-sm not-italic leading-6 text-[#6b7280] sm:text-base dark:text-white">
               <div className="flex items-start gap-3 text-left">
                 <House
                   aria-hidden="true"
@@ -192,19 +265,62 @@ export default function Footer() {
         </div>
 
         {/* Supported by */}
-        <div className="mt-10 border-t border-[#e5e7eb] pt-8 sm:mt-12 sm:pt-9 md:mt-14 md:pt-10">
-          <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6b7280] sm:mb-7 sm:text-xs md:mb-8">
+        <div className="mt-10 border-t border-[#e5e7eb] pt-8 sm:mt-12 sm:pt-9 md:mt-14 md:pt-10 dark:border-white/10">
+          <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6b7280] sm:mb-7 sm:text-xs md:mb-8 dark:text-white">
             Organized and Sponsored by
           </p>
 
-          <div className="container mx-auto grid max-w-7xl grid-cols-2 items-center gap-6 sm:grid-cols-3 sm:gap-8 md:grid-cols-3 md:gap-0">
-            {partners.map((partner) => (
-              <Image
+          <div
+            className="
+              mx-auto
+              grid
+              w-[300px]
+              grid-cols-1
+              items-center
+              gap-y-7
+              sm:w-fit
+              sm:grid-cols-[150px_320px]
+              sm:gap-x-5
+              sm:gap-y-8
+              md:w-full
+              md:max-w-[620px]
+              md:grid-cols-[105px_230px_110px]
+              md:justify-center
+              md:gap-x-8
+              md:gap-y-0
+              lg:w-full
+              lg:max-w-7xl
+              lg:grid-cols-3
+              lg:gap-0
+            "
+          >
+            {partners.map((partner, index) => (
+              <div
                 key={partner.alt}
-                src={partner.src}
-                alt={partner.alt}
-                className={`mx-auto md:mx-0 ${partner.className}`}
-              />
+                className={`
+                  w-full
+                  justify-self-start
+                  ${
+                    index === 2
+                      ? "sm:col-span-2 sm:justify-self-center md:col-span-1 md:justify-self-start lg:justify-self-start"
+                      : ""
+                  }
+                  ${index === 0 ? "md:translate-x-0 lg:translate-x-0" : ""}
+                  ${partner.className}
+                `}
+              >
+                <Image
+                  src={partner.lightSrc}
+                  alt={partner.alt}
+                  className={`block h-auto w-full object-contain object-left dark:hidden ${partner.imageClassName}`}
+                />
+
+                <Image
+                  src={partner.darkSrc}
+                  alt={partner.alt}
+                  className={`hidden h-auto w-full object-contain object-left dark:block ${partner.imageClassName}`}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -255,7 +371,7 @@ export default function Footer() {
 function FooterTitle({ children }: { children: ReactNode }) {
   return (
     <div>
-      <h2 className="text-lg font-semibold tracking-wide text-[#111827] sm:text-xl">
+      <h2 className="text-lg font-semibold tracking-wide text-[#111827] sm:text-xl dark:text-white">
         {children}
       </h2>
 
@@ -293,6 +409,7 @@ function ContactLink({
         focus-visible:outline-2
         focus-visible:outline-offset-4
         focus-visible:outline-[#00932A]
+        dark:text-white
       "
     >
       <span className="shrink-0 text-[#00932A]">

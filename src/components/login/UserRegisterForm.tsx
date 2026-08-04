@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { PasswordField, RegisterField } from "./RegisterForm";
 import { useAuth } from "@/features/auth/useAuth";
 import { useRegisterUserMutation } from "@/features/business-registration/businessApi";
+import { cn } from "@/lib/utils";
 import {
   userRegisterSchema,
   type UserRegisterFormData,
@@ -33,7 +34,9 @@ const SOCIAL_PROVIDERS = [
 
 export function UserRegisterForm() {
   const { login, loginHref } = useAuth();
-  const [registerUser, { isLoading: isRegistering }] = useRegisterUserMutation();
+
+  const [registerUser, { isLoading: isRegistering }] =
+    useRegisterUserMutation();
 
   const {
     control,
@@ -67,23 +70,31 @@ export function UserRegisterForm() {
 
       await registerUser(userPayload).unwrap();
 
-      toast.success("Account registered successfully! Redirecting to login...");
+      toast.success(
+        "Account registered successfully! Redirecting to login...",
+      );
+
       setTimeout(() => {
         login();
       }, 1200);
     } catch (err: any) {
       console.error("Failed to register customer account:", err);
+
       const errorMsg =
         err?.data?.message ||
         err?.data?.error ||
         err?.data?.detail ||
         "Registration failed. Please check your information and try again.";
+
       toast.error(errorMsg);
     }
   };
 
   return (
-    <form className="grid gap-3.5 font-sans" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="grid gap-3.5 font-sans text-foreground dark:text-white"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
         <Controller
           name="firstName"
@@ -98,6 +109,7 @@ export function UserRegisterForm() {
             />
           )}
         />
+
         <Controller
           name="lastName"
           control={control}
@@ -158,6 +170,7 @@ export function UserRegisterForm() {
             />
           )}
         />
+
         <Controller
           name="confirmPassword"
           control={control}
@@ -173,31 +186,59 @@ export function UserRegisterForm() {
         />
       </div>
 
-      <label className="flex min-h-8 items-center gap-2 text-[15px] tracking-[0.6px] text-[#636b74]">
-        <Checkbox required className="size-[18px] rounded-[2px]" />
+      <label
+        className={cn(
+          "flex min-h-8 items-center gap-2",
+          "text-[15px] tracking-[0.6px]",
+          "text-[#636b74] dark:text-white",
+        )}
+      >
+        <Checkbox
+          required
+          className={cn(
+            "size-[18px] rounded-[2px]",
+            "border-gray-400",
+            "dark:border-gray-400",
+            "dark:bg-background",
+            "dark:data-[state=checked]:border-primary",
+            "dark:data-[state=checked]:bg-primary",
+            "dark:data-[state=checked]:text-white",
+          )}
+        />
+
         <span>I accept the Terms &amp; Conditions</span>
       </label>
 
       <Button
         type="submit"
         disabled={isRegistering}
-        className="h-[48px] w-full rounded-[11px] text-xl font-semibold tracking-[1.2px]"
+        className={cn(
+          "h-[48px] w-full rounded-[11px]",
+          "text-xl font-semibold tracking-[1.2px]",
+          "dark:text-white",
+        )}
       >
         {isRegistering ? (
           <span className="flex items-center justify-center gap-2">
-            <Loader2 className="size-5 animate-spin" /> Registering...
+            <Loader2 className="size-5 animate-spin" />
+            Registering...
           </span>
         ) : (
           "Register"
         )}
       </Button>
 
-      <div className="flex items-center gap-4" aria-hidden="true">
-        <span className="h-px flex-1 bg-[#313131]/25" />
-        <span className="text-base font-medium text-[#313131]/50">
+      <div
+        className="flex items-center gap-4"
+        aria-hidden="true"
+      >
+        <span className="h-px flex-1 bg-[#313131]/25 dark:bg-white/30" />
+
+        <span className="text-base font-medium text-[#313131]/50 dark:text-white">
           Or login with
         </span>
-        <span className="h-px flex-1 bg-[#313131]/25" />
+
+        <span className="h-px flex-1 bg-[#313131]/25 dark:bg-white/30" />
       </div>
 
       <div className="grid gap-[10px] sm:grid-cols-2">
@@ -206,7 +247,18 @@ export function UserRegisterForm() {
             key={provider.label}
             type="button"
             onClick={() => login()}
-            className="flex h-[50px] items-center justify-center gap-3 rounded-[11px] border border-border bg-white text-sm font-medium text-[#636b74] transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(
+              "flex h-[50px] items-center justify-center gap-3",
+              "rounded-[11px] border border-border",
+              "bg-white text-sm font-medium text-[#636b74]",
+              "transition-colors hover:bg-muted",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+
+              "dark:border-gray-400",
+              "dark:bg-background",
+              "dark:text-white",
+              "dark:hover:bg-white/10",
+            )}
           >
             <Image
               src={provider.icon}
@@ -219,22 +271,27 @@ export function UserRegisterForm() {
                   : "h-[35.937px] w-[35px]"
               }
             />
+
             {provider.label}
           </button>
         ))}
       </div>
 
-      <p className="text-center text-base text-[#636b74]">
-        Already signed up?{" "}
+      <p className="text-center text-base text-[#636b74] dark:text-white">
+        Already have account?{" "}
         <a
           href={loginHref}
-          onClick={(e) => {
-            e.preventDefault();
+          onClick={(event) => {
+            event.preventDefault();
             login();
           }}
-          className="font-bold text-[#258bf1] hover:underline cursor-pointer"
+          className={cn(
+            "cursor-pointer font-bold text-[#258bf1]",
+            "hover:underline",
+            "dark:text-blue-400",
+          )}
         >
-          click here
+          Log in
         </a>
       </p>
     </form>

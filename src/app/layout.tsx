@@ -12,6 +12,7 @@ import "./globals.css";
 import "./about/about.css";
 import { cn } from "@/lib/utils";
 import StoreProvider from "./StoreProvider";
+import NavbarAfterLoginComponent from "@/components/common/NavbarAfterLoginComponent";
 
 
 export const metadata: Metadata = {
@@ -39,6 +40,7 @@ export default function RootLayout({
                             enableSystem
                         >
                             <Navbar />
+                            
 
                             <main className="flex-1">{children}</main>
                             <Footer />

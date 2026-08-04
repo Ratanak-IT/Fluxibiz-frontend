@@ -63,8 +63,8 @@ export function ContactSection() {
   }
 
   return (
-    <section className="bg-slate-50/50 py-20 font-body dark:bg-background">
-      <div className="mx-auto grid max-w-[1900px] gap-10 px-[5.5%] lg:grid-cols-2 lg:gap-12">
+<section className="bg-background dark:bg-background py-20 font-body">
+  <div className="mx-auto grid max-w-[1900px] gap-10 px-[5.5%] lg:grid-cols-2 lg:gap-12">
         {/* Left: heading + contact details */}
         <div>
           <p className="font-body text-xs font-semibold uppercase tracking-widest text-primary dark:text-green-400">
