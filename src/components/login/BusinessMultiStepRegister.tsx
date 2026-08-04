@@ -43,7 +43,6 @@ export function BusinessMultiStepRegister() {
     business: BusinessRegisterFormData;
   }) => {
     try {
-      // Step 1: Register user account on Keycloak / Backend
       const userPayload = {
         username: data.user.email,
         password: data.user.password,
@@ -58,8 +57,6 @@ export function BusinessMultiStepRegister() {
 
       await registerUser(userPayload).unwrap();
 
-      // Step 2: Attempt business record creation.
-      // This endpoint may require an active JWT session token.
       try {
         const businessPayload = {
           name: data.business.storeName,
@@ -91,7 +88,6 @@ export function BusinessMultiStepRegister() {
 
   return (
     <div className="space-y-6 text-foreground">
-      {/* User Account Registration */}
       {step === 1 && (
         <RegisterForm
           defaultValues={userData}
@@ -99,7 +95,6 @@ export function BusinessMultiStepRegister() {
         />
       )}
 
-      {/* Business Information Registration */}
       {step === 2 && (
         <BusinessRegisterForm
           userData={userData}
