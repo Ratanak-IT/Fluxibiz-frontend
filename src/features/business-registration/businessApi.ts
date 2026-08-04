@@ -10,7 +10,10 @@ export interface RegisterUserPayload {
   lastName: string;
   phoneNumber: string;
   gender: string;
-  role: string;
+  role: "BUSINESS" | "CUSTOMER";
+  businessName?: string;
+  businessAddress?: string;
+  businessCategoryId?: string;
 }
 
 export interface CreateBusinessPayload {
@@ -20,9 +23,17 @@ export interface CreateBusinessPayload {
   address: string;
 }
 
+export interface BusinessSubCategoryResponse {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export interface BusinessCategoryResponse {
   id: string;
   name: string;
+  slug: string;
+  subCategories: BusinessSubCategoryResponse[];
 }
 
 export const businessRegisterApi = createApi({
@@ -39,8 +50,8 @@ export const businessRegisterApi = createApi({
   }),
   endpoints: (builder) => ({
     registerUser: builder.mutation<unknown, RegisterUserPayload>({
-      query: (body) => ({
-        url: "/auth/register",
+      query: ({ role, ...body }) => ({
+        url: role === "BUSINESS" ? "/auth/register/business" : "/auth/register/customer",
         method: "POST",
         body,
       }),
@@ -55,7 +66,7 @@ export const businessRegisterApi = createApi({
     }),
 
     getBusinessCategories: builder.query<BusinessCategoryResponse[], void>({
-      query: () => "/admin/business-categories",
+      query: () => "/business-categories",
     }),
   }),
 });

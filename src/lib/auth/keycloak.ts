@@ -268,3 +268,26 @@ export function clearSessionCookies(res: NextResponse) {
     }
     return res;
 }
+
+
+export function buildAuthorizeUrl(params: {
+  redirectUri: string;
+  state: string;
+  codeChallenge: string;
+  idpHint?: "google" | "facebook";
+}) {
+  const url = new URL(KC_ENDPOINTS.authorize);
+  url.searchParams.set("client_id", CLIENT_ID);
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("scope", "openid profile email");
+  url.searchParams.set("redirect_uri", params.redirectUri);
+  url.searchParams.set("state", params.state);
+  url.searchParams.set("code_challenge", params.codeChallenge);
+  url.searchParams.set("code_challenge_method", "S256");
+
+  if (params.idpHint) {
+    url.searchParams.set("kc_idp_hint", params.idpHint);
+  }
+
+  return url.toString();
+}

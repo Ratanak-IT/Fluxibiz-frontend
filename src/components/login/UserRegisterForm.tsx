@@ -20,12 +20,14 @@ import {
 const SOCIAL_PROVIDERS = [
   {
     label: "Google",
+    idp: "google",
     icon: "/image/auth/google.svg",
     width: 30,
     height: 30,
   },
   {
     label: "Facebook",
+    idp: "facebook",
     icon: "/image/auth/facebook.svg",
     width: 35,
     height: 36,
@@ -246,7 +248,7 @@ export function UserRegisterForm() {
           <button
             key={provider.label}
             type="button"
-            onClick={() => login()}
+            onClick={() => login(undefined, provider.idp)}
             className={cn(
               "flex h-[50px] items-center justify-center gap-3",
               "rounded-[11px] border border-border",

@@ -28,7 +28,7 @@ export function useAuth() {
     const loginHref = `/api/auth/login?prompt=login&returnTo=${encodeURIComponent(defaultReturnTo)}`;
     const logoutHref = "/api/auth/logout?returnTo=%2Fstore";
 
-    const login = useCallback((targetPath?: string | unknown) => {
+    const login = useCallback((targetPath?: string | unknown, idp?: "google" | "facebook") => {
         let returnTo = typeof targetPath === "string" ? targetPath : undefined;
         if (!returnTo) {
             const currentPath = typeof window === "undefined" ? pathname : window.location.pathname;
@@ -37,7 +37,14 @@ export function useAuth() {
                 : currentPath + (typeof window === "undefined" ? "" : window.location.search);
         }
 
-        window.location.href = `/api/auth/login?prompt=login&returnTo=${encodeURIComponent(returnTo)}`;
+        const params = new URLSearchParams({ returnTo });
+        if (idp) {
+            params.set("idp", idp);
+        } else {
+            params.set("prompt", "login");
+        }
+
+        window.location.href = `/api/auth/login?${params.toString()}`;
     }, [pathname]);
 
     const logout = useCallback(() => {

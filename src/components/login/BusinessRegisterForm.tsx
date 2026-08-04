@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/useAuth";
+import { useGetBusinessCategoriesQuery } from "@/features/business-registration/businessApi";
 import { cn } from "@/lib/utils";
 import {
   businessRegisterSchema,
@@ -35,6 +36,8 @@ export function BusinessRegisterForm({
   isSubmitting = false,
 }: BusinessRegisterFormProps) {
   const { login, loginHref } = useAuth();
+  const { data: categories, isLoading: isLoadingCategories } =
+    useGetBusinessCategoriesQuery();
 
   const {
     control,
@@ -134,43 +137,24 @@ export function BusinessRegisterForm({
     disabled
     className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
   >
-    Select your business type
+    {isLoadingCategories ? "Loading business types..." : "Select your business type"}
   </option>
 
-  <option
-    value="retail"
-    className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
-  >
-    Retail
-  </option>
-
-  <option
-    value="restaurant"
-    className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
-  >
-    Restaurant
-  </option>
-
-  <option
-    value="service"
-    className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
-  >
-    Service
-  </option>
-
-  <option
-    value="cafe"
-    className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
-  >
-    Café &amp; Bakery
-  </option>
-
-  <option
-    value="other"
-    className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
-  >
-    Other
-  </option>
+  {categories?.map((parent) =>
+    parent.subCategories.length > 0 ? (
+      <optgroup key={parent.id} label={parent.name}>
+        {parent.subCategories.map((sub) => (
+          <option
+            key={sub.id}
+            value={sub.id}
+            className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
+          >
+            {sub.name}
+          </option>
+        ))}
+      </optgroup>
+    ) : null,
+  )}
 </select>
 
               <Image
