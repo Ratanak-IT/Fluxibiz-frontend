@@ -126,7 +126,7 @@ export function FeatureHero() {
 
                 sm:gap-12">
           {FEATURE_STATS.map((stat) => (
-            <div key={stat.label}>
+            <div key={stat.translationKey}>
               <dt
                 className="
                             font-mono
@@ -141,7 +141,7 @@ export function FeatureHero() {
 
               <dd
                 className=" mt-1 text-[13px] text-muted-foreground">
-                {stat.label}
+                {stat.translationKey}
               </dd>
             </div>
           ))}

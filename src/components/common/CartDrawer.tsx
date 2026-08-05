@@ -269,6 +269,7 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
     const [pendingQty, setPendingQty] = useState(line.quantity);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPendingQty(line.quantity);
     }, [line.quantity]);
 

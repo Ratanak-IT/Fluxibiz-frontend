@@ -17,6 +17,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { useTranslations } from "next-intl";
+
 import { StickyStackCard } from "./sticky-stack-card";
 
 interface DashboardRow {
@@ -44,159 +46,159 @@ interface ShowcaseCard {
   rows: DashboardRow[];
 }
 
-const SHOWCASE_CARDS: ShowcaseCard[] = [
-  {
-    label: "01 · Support All Business Types",
-    title: "One platform",
-    accent: "Every business",
-    description:
-      "Built to support businesses of all sizes and industries—from retail stores and restaurants to pharmacies, supermarkets, wholesalers, and service providers.",
-    points: [
-      "Supports retail, restaurants, cafés, pharmacies, and more",
-      "Products and services in one system",
-    ],
-    liveBadge: "LIVE · 12 BUSINESS TYPES",
-    statusBadge: "READY TO GROW",
-    orderTitle: "Retail Store",
-    orderDetail: "Inventory • POS",
-    orderState: "Popular",
-    orderIcon: Store,
-    rows: [
-      {
-        title: "Restaurant",
-        detail: "Dine-in • Kitchen",
-        icon: Store,
-        iconClassName: "bg-brand text-white",
-      },
-      {
-        title: "Pharmacy",
-        detail: "Medicine • Expiry",
-        icon: Store,
-        iconClassName: "bg-amber text-white",
-      },
-      {
-        title: "Wholesale",
-        detail: "Bulk Orders • Customer Pricing",
-        icon: Store,
-        iconClassName: "bg-[#1046c9] text-white",
-      },
-    ],
-  },
-  {
-    label: "02 · Connect Sell Everywhere",
-    title: "One business",
-    accent: "Every sales channel",
-    description:
-      "Sell in-store, online, and through social media while keeping inventory and orders synchronized.",
-    points: [
-      "Unified sales channels",
-      "Real-time order sync",
-      "Social commerce integration",
-    ],
-    liveBadge: "LIVE · OMNICHANNEL",
-    statusBadge: "CONNECTED",
-    orderTitle: "Physical Store",
-    orderDetail: "POS • Walk-in Sales",
-    orderState: "Open",
-    orderIcon: Store,
-    rows: [
-      {
-        title: "Website",
-        detail: "Orders • Inventory",
-        icon: Globe,
-        iconClassName: "bg-brand text-white",
-      },
-      {
-        title: "Facebook & Messenger",
-        detail: "Chats • Customer Orders",
-        icon: MessageCircle,
-        iconClassName: "bg-[#1046c9] text-white",
-      },
-      {
-        title: "Telegram",
-        detail: "Messages • Order Requests",
-        icon: Send,
-        iconClassName: "bg-[#229ED9] text-white",
-      },
-    ],
-  },
-  {
-    label: "03 · Automate Work Smarter",
-    title: "Less manual work",
-    accent: "More productivity",
-    description:
-      "Automate everyday tasks to save time and reduce errors.",
-    points: [
-      "Automatic inventory updates",
-      "Smart notifications and reminders",
-      "Auto-generated reports and invoices",
-    ],
-    liveBadge: "LIVE · AUTOMATION",
-    statusBadge: "RUNNING",
-    orderTitle: "Stock Sync",
-    orderDetail: "Completed",
-    orderState: "Success",
-    orderIcon: Box,
-    rows: [
-      {
-        title: "Daily Reports",
-        detail: "Generated",
-        icon: ReceiptText,
-        iconClassName: "bg-brand text-white",
-      },
-      {
-        title: "Smart Alerts",
-        detail: "10 Notifications",
-        icon: BellRing,
-        iconClassName: "bg-amber text-white",
-      },
-      {
-        title: "Auto Reordering",
-        detail: "Updated across every channel",
-        icon: RefreshCw,
-        iconClassName: "bg-[#1046c9] text-white",
-      },
-    ],
-  },
-  {
-    label: "04 · Manage Anytime, Anywhere",
-    title: "Your business",
-    accent: "Always with you",
-    description:
-      "Review sales, inventory, and business performance anytime from your phone or tablet—wherever you go.",
-    points: [
-      "Access your business from any device",
-      "Monitor operations in real time",
-      "Stay connected anytime, anywhere",
-    ],
-    liveBadge: "LIVE · MOBILE ACCESS",
-    statusBadge: "CONNECTED",
-    orderTitle: "Mobile Dashboard",
-    orderDetail: "iPhone • iPad • Tablet",
-    orderState: "Online",
-    orderIcon: Smartphone,
-    rows: [
-      {
-        title: "Sales Overview",
-        detail: "Check revenue anytime",
-        icon: BarChart3,
-        iconClassName: "bg-brand text-white",
-      },
-      {
-        title: "Inventory Status",
-        detail: "Monitor stock anywhere",
-        icon: Boxes,
-        iconClassName: "bg-amber text-white",
-      },
-      {
-        title: "Business Alerts",
-        detail: "Instant notifications",
-        icon: BellRing,
-        iconClassName: "bg-[#1046c9] text-white",
-      },
-    ],
-  },
-];
+function getShowcaseCards(
+  t: ReturnType<typeof useTranslations<"Feature.showcase">>,
+): ShowcaseCard[] {
+  return [
+    {
+      label: t("businessTypes.label"),
+      title: t("businessTypes.title"),
+      accent: t("businessTypes.accent"),
+      description: t("businessTypes.description"),
+      points: [
+        t("businessTypes.point1"),
+        t("businessTypes.point2"),
+      ],
+      liveBadge: t("businessTypes.liveBadge"),
+      statusBadge: t("businessTypes.statusBadge"),
+      orderTitle: t("businessTypes.mainTitle"),
+      orderDetail: t("businessTypes.mainDetail"),
+      orderState: t("businessTypes.mainState"),
+      orderIcon: Store,
+      rows: [
+        {
+          title: t("businessTypes.restaurantTitle"),
+          detail: t("businessTypes.restaurantDetail"),
+          icon: Store,
+          iconClassName: "bg-brand text-white",
+        },
+        {
+          title: t("businessTypes.pharmacyTitle"),
+          detail: t("businessTypes.pharmacyDetail"),
+          icon: Store,
+          iconClassName: "bg-amber text-white",
+        },
+        {
+          title: t("businessTypes.wholesaleTitle"),
+          detail: t("businessTypes.wholesaleDetail"),
+          icon: Store,
+          iconClassName: "bg-[#1046c9] text-white",
+        },
+      ],
+    },
+    {
+      label: t("salesChannels.label"),
+      title: t("salesChannels.title"),
+      accent: t("salesChannels.accent"),
+      description: t("salesChannels.description"),
+      points: [
+        t("salesChannels.point1"),
+        t("salesChannels.point2"),
+        t("salesChannels.point3"),
+      ],
+      liveBadge: t("salesChannels.liveBadge"),
+      statusBadge: t("salesChannels.statusBadge"),
+      orderTitle: t("salesChannels.mainTitle"),
+      orderDetail: t("salesChannels.mainDetail"),
+      orderState: t("salesChannels.mainState"),
+      orderIcon: Store,
+      rows: [
+        {
+          title: t("salesChannels.websiteTitle"),
+          detail: t("salesChannels.websiteDetail"),
+          icon: Globe,
+          iconClassName: "bg-brand text-white",
+        },
+        {
+          title: t("salesChannels.facebookTitle"),
+          detail: t("salesChannels.facebookDetail"),
+          icon: MessageCircle,
+          iconClassName: "bg-[#1046c9] text-white",
+        },
+        {
+          title: t("salesChannels.telegramTitle"),
+          detail: t("salesChannels.telegramDetail"),
+          icon: Send,
+          iconClassName: "bg-[#229ED9] text-white",
+        },
+      ],
+    },
+    {
+      label: t("automation.label"),
+      title: t("automation.title"),
+      accent: t("automation.accent"),
+      description: t("automation.description"),
+      points: [
+        t("automation.point1"),
+        t("automation.point2"),
+        t("automation.point3"),
+      ],
+      liveBadge: t("automation.liveBadge"),
+      statusBadge: t("automation.statusBadge"),
+      orderTitle: t("automation.mainTitle"),
+      orderDetail: t("automation.mainDetail"),
+      orderState: t("automation.mainState"),
+      orderIcon: Box,
+      rows: [
+        {
+          title: t("automation.reportTitle"),
+          detail: t("automation.reportDetail"),
+          icon: ReceiptText,
+          iconClassName: "bg-brand text-white",
+        },
+        {
+          title: t("automation.alertTitle"),
+          detail: t("automation.alertDetail"),
+          icon: BellRing,
+          iconClassName: "bg-amber text-white",
+        },
+        {
+          title: t("automation.reorderTitle"),
+          detail: t("automation.reorderDetail"),
+          icon: RefreshCw,
+          iconClassName: "bg-[#1046c9] text-white",
+        },
+      ],
+    },
+    {
+      label: t("mobile.label"),
+      title: t("mobile.title"),
+      accent: t("mobile.accent"),
+      description: t("mobile.description"),
+      points: [
+        t("mobile.point1"),
+        t("mobile.point2"),
+        t("mobile.point3"),
+      ],
+      liveBadge: t("mobile.liveBadge"),
+      statusBadge: t("mobile.statusBadge"),
+      orderTitle: t("mobile.mainTitle"),
+      orderDetail: t("mobile.mainDetail"),
+      orderState: t("mobile.mainState"),
+      orderIcon: Smartphone,
+      rows: [
+        {
+          title: t("mobile.salesTitle"),
+          detail: t("mobile.salesDetail"),
+          icon: BarChart3,
+          iconClassName: "bg-brand text-white",
+        },
+        {
+          title: t("mobile.inventoryTitle"),
+          detail: t("mobile.inventoryDetail"),
+          icon: Boxes,
+          iconClassName: "bg-amber text-white",
+        },
+        {
+          title: t("mobile.alertTitle"),
+          detail: t("mobile.alertDetail"),
+          icon: BellRing,
+          iconClassName: "bg-[#1046c9] text-white",
+        },
+      ],
+    },
+  ];
+}
 
 function DashboardCard({ card }: { card: ShowcaseCard }) {
   const OrderIcon = card.orderIcon;
@@ -413,6 +415,9 @@ function DashboardCard({ card }: { card: ShowcaseCard }) {
 }
 
 export function DashboardSyncShowcase() {
+  const t = useTranslations("Feature.showcase");
+  const showcaseCards = getShowcaseCards(t);
+
   return (
     <section
       aria-label="Dashboard and inventory sync showcase"
@@ -430,7 +435,7 @@ export function DashboardSyncShowcase() {
       "
     >
       <div className="relative mx-auto w-full max-w-7xl">
-        {SHOWCASE_CARDS.map((card, index) => (
+        {showcaseCards.map((card, index) => (
           <StickyStackCard
             key={`${card.label}-${index}`}
             index={index}

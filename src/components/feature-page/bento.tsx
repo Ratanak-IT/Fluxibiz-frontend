@@ -1,3 +1,7 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 import {
   BarChart3,
   Check,
@@ -35,16 +39,38 @@ const CARD_SURFACES: Record<Module["id"], string> = {
     "border-primary/25 bg-[linear-gradient(135deg,#006d1f_0%,#00932A_100%)] text-white",
 };
 
-function FeatureVisual({ id }: { id: Module["id"] }) {
+interface FeatureVisualLabels {
+  livePerformance: string;
+  updating: string;
+  pos: string;
+  orders: string;
+  reports: string;
+  online: string;
+  digitalMenu: string;
+  scanDescription: string;
+  newSale: string;
+  checkout: string;
+  wagyuBurger: string;
+  icedLatte: string;
+  freshSalad: string;
+}
+
+function FeatureVisual({
+  id,
+  labels,
+}: {
+  id: Module["id"];
+  labels: FeatureVisualLabels;
+}) {
   if (id === "dynamic") {
     return (
       <div className="relative mt-8 h-32 overflow-hidden rounded-2xl border border-primary/15 bg-white p-4 shadow-sm dark:border-white/15 dark:bg-white/5">
         <div className="flex items-center justify-between text-xs font-semibold text-text dark:text-white">
-          <span>Live performance</span>
+          <span>{labels.livePerformance}</span>
 
           <span className="flex items-center gap-1.5 text-primary">
             <span className="size-2 animate-pulse rounded-full bg-primary" />
-            Updating now
+            {labels.updating}
           </span>
         </div>
 
@@ -84,10 +110,10 @@ function FeatureVisual({ id }: { id: Module["id"] }) {
 
   if (id === "platform") {
     const platformItems = [
-      { label: "POS", icon: Utensils },
-      { label: "Orders", icon: PackageCheck },
-      { label: "Reports", icon: BarChart3 },
-      { label: "Online", icon: Smartphone },
+      { label: labels.pos, icon: Utensils },
+      { label: labels.orders, icon: PackageCheck },
+      { label: labels.reports, icon: BarChart3 },
+      { label: labels.online, icon: Smartphone },
     ];
 
     return (
@@ -115,11 +141,11 @@ function FeatureVisual({ id }: { id: Module["id"] }) {
         <div>
           <div className="flex items-center gap-2 text-sm font-bold text-text dark:text-white">
             <Utensils className="size-4 text-accent" />
-            Your digital menu
+            {labels.digitalMenu}
           </div>
 
           <p className="mt-1 text-xs leading-5 text-muted-foreground dark:text-white/70">
-            Scan, browse, and order—no app required.
+            {labels.scanDescription}
           </p>
         </div>
       </div>
@@ -129,15 +155,15 @@ function FeatureVisual({ id }: { id: Module["id"] }) {
   return (
     <div className="mt-8 overflow-hidden rounded-2xl border border-white/20 bg-white text-text shadow-2xl dark:bg-white/5 dark:text-white">
       <div className="flex items-center justify-between border-b border-description px-4 py-3 dark:border-white/15">
-        <span className="text-sm font-bold">New sale</span>
+        <span className="text-sm font-bold">{labels.newSale}</span>
 
         <span className="rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white">
-          Checkout
+          {labels.checkout}
         </span>
       </div>
 
       <div className="grid grid-cols-3 gap-2 p-3">
-        {["Wagyu burger", "Iced latte", "Fresh salad"].map(
+        {[labels.wagyuBurger, labels.icedLatte, labels.freshSalad].map(
           (product, index) => (
             <div
               key={product}
@@ -166,24 +192,94 @@ function FeatureVisual({ id }: { id: Module["id"] }) {
 }
 
 export function FeatureBento() {
+  const t = useTranslations("Feature.bento");
+
+  const visualLabels: FeatureVisualLabels = {
+    livePerformance: t("livePerformance"),
+    updating: t("updating"),
+    pos: t("pos"),
+    orders: t("orders"),
+    reports: t("reports"),
+    online: t("online"),
+    digitalMenu: t("digitalMenu"),
+    scanDescription: t("scanDescription"),
+    newSale: t("newSale"),
+    checkout: t("checkout"),
+    wagyuBurger: t("wagyuBurger"),
+    icedLatte: t("icedLatte"),
+    freshSalad: t("freshSalad"),
+  };
+
+  const translatedModules = {
+    dynamic: {
+      title: t("cards.dynamic.title"),
+      promise: t("cards.dynamic.promise"),
+      features: [
+        t("cards.dynamic.features.realtime"),
+        t("cards.dynamic.features.workflows"),
+        t("cards.dynamic.features.status"),
+        t("cards.dynamic.features.interactions"),
+      ],
+    },
+    responsive: {
+      title: t("cards.responsive.title"),
+      promise: t("cards.responsive.promise"),
+      features: [
+        t("cards.responsive.features.touch"),
+        t("cards.responsive.features.layout"),
+        t("cards.responsive.features.hardware"),
+        t("cards.responsive.features.anywhere"),
+      ],
+    },
+    platform: {
+      title: t("cards.platform.title"),
+      promise: t("cards.platform.promise"),
+      features: [
+        t("cards.platform.features.login"),
+        t("cards.platform.features.data"),
+        t("cards.platform.features.operations"),
+        t("cards.platform.features.manualWork"),
+      ],
+    },
+    miniCommerce: {
+      title: t("cards.miniCommerce.title"),
+      promise: t("cards.miniCommerce.promise"),
+      features: [
+        t("cards.miniCommerce.features.menu"),
+        t("cards.miniCommerce.features.download"),
+        t("cards.miniCommerce.features.ordering"),
+        t("cards.miniCommerce.features.updated"),
+      ],
+    },
+    modernPos: {
+      title: t("cards.modernPos.title"),
+      promise: t("cards.modernPos.promise"),
+      features: [
+        t("cards.modernPos.features.checkout"),
+        t("cards.modernPos.features.grid"),
+        t("cards.modernPos.features.summary"),
+        t("cards.modernPos.features.dashboard"),
+      ],
+    },
+  } as const;
+
   return (
     <section className="bg-background px-5 py-20 text-text md:px-8 md:py-28 dark:text-white">
       <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
-            Greater than a feature list
+            {t("eyebrow")}
           </p>
 
           <h2 className="mt-5 text-4xl font-bold tracking-[-0.04em] text-text md:text-6xl dark:text-white">
-            One powerful platform.
+            {t("headingLine1")}
             <span className="block text-primary mt-3">
-              Built for how you work.
+              {t("headingLine2")}
             </span>
           </h2>
 
           <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg dark:text-white/70">
-            A dynamic, device-ready commerce platform that connects the
-            counter, dashboard, and customer experience.
+            {t("description")}
           </p>
         </Reveal>
 
@@ -191,6 +287,7 @@ export function FeatureBento() {
           {MODULES.map((item, index) => {
             const Icon = item.icon;
             const isModernPos = item.id === "modern-pos";
+            const translatedItem = translatedModules[item.translationKey];
 
             return (
               <Reveal
@@ -238,7 +335,7 @@ export function FeatureBento() {
                   </div>
 
                   <h3 className="mt-7 text-2xl font-bold dark:text-white">
-                    {item.title}
+                    {translatedItem.title}
                   </h3>
 
                   <p
@@ -249,11 +346,11 @@ export function FeatureBento() {
                         : "text-muted-foreground dark:text-white/75",
                     )}
                   >
-                    {item.promise}
+                    {translatedItem.promise}
                   </p>
 
                   <div className="mt-5 flex flex-wrap gap-2">
-                    {item.features.slice(0, 3).map((feature) => (
+                    {translatedItem.features.slice(0, 3).map((feature) => (
                       <span
                         key={feature}
                         className={cn(
@@ -270,7 +367,7 @@ export function FeatureBento() {
                     ))}
                   </div>
 
-                  <FeatureVisual id={item.id} />
+                  <FeatureVisual id={item.id} labels={visualLabels} />
                 </GlassCard>
               </Reveal>
             );

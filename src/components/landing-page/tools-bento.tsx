@@ -1,4 +1,7 @@
+"use client";
+
 import type { CSSProperties, ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Check } from "lucide-react";
 
@@ -11,19 +14,6 @@ import {
 import { ScrollReveal } from "./scroll-reveal";
 
 const revenueBars = [45, 65, 85, 55, 95, 40, 70];
-
-const stock = [
-  { name: "Coffee beans", value: 72, color: "bg-brand" },
-  { name: "Rice 25kg", value: 45, color: "bg-brand" },
-  { name: "Cola cans", value: 12, color: "bg-rose", note: "low · reorder" },
-];
-
-const staff = [
-  { initials: "SC", name: "Sokha", role: "Till", online: true },
-  { initials: "VL", name: "Vichea", role: "Kitchen", online: true },
-  { initials: "SP", name: "Srey", role: "Floor", online: true },
-  { initials: "DK", name: "Dara", role: "Off shift", online: false },
-];
 
 function ToolCard({
     label,
@@ -60,27 +50,75 @@ function ToolCard({
 }
 
 export function ToolsBento() {
+  const t = useTranslations("Feature.tools");
+
+  const stock = [
+    {
+      name: t("inventory.coffee"),
+      value: 72,
+      color: "bg-brand",
+    },
+    {
+      name: t("inventory.rice"),
+      value: 45,
+      color: "bg-brand",
+    },
+    {
+      name: t("inventory.cola"),
+      value: 12,
+      color: "bg-rose",
+      note: t("inventory.lowReorder"),
+    },
+  ];
+
+  const staff = [
+    {
+      initials: "SC",
+      name: "Sokha",
+      role: t("employees.till"),
+      online: true,
+    },
+    {
+      initials: "VL",
+      name: "Vichea",
+      role: t("employees.kitchen"),
+      online: true,
+    },
+    {
+      initials: "SP",
+      name: "Srey",
+      role: t("employees.floor"),
+      online: true,
+    },
+    {
+      initials: "DK",
+      name: "Dara",
+      role: t("employees.offShift"),
+      online: false,
+    },
+  ];
+
   return (
     <Section className="dark: bg-background">
-    <Eyebrow>Everything in one place</Eyebrow>
+    <Eyebrow>{t("eyebrow")}</Eyebrow>
 
     <SectionHeading className="mt-3">
-        Four tools. One counter.
+        {t("headingLine1")}
         <br />
-        Your whole business, handled
+        {t("headingLine2")}
     </SectionHeading>
 
     <div className="mt-10 grid gap-5 lg:grid-cols-[1.45fr_1fr]">
         <ScrollReveal direction="up" delay={0} className="h-full lg:row-span-2">
             <ToolCard
-                label="POS · Orders"
-                title="A till your staff learn in one afternoon"
+                label={t("pos.label")}
+                title={t("pos.title")}
                 className="bg-card"
             >
                 <div className="relative mt-5 aspect-[1.55/1] overflow-hidden rounded-xl border border-border bg-card">
                     <Image
                         src={LANDING_IMAGES.tools.posScreen}
-                        alt="FluxiBiz point-of-sale screen"
+                        alt={t("pos.imageAlt")}
                         fill
                         sizes="(max-width: 1024px) 100vw, 58vw"
                         className="object-contain"
@@ -92,8 +130,8 @@ export function ToolsBento() {
 
         <ScrollReveal direction="right" delay={120} className="h-full">
             <ToolCard
-                label="Online commerce"
-                title="Your storefront, open around the clock"
+                label={t("online.label")}
+                title={t("online.title")}
                 className="border-brand bg-primary text-primary-foreground"
                 inverted
             >
@@ -101,7 +139,7 @@ export function ToolsBento() {
                     <div className="relative size-24 shrink-0 overflow-hidden rounded-xl bg-white sm:size-28">
                         <Image
                             src={LANDING_IMAGES.tools.product}
-                            alt="Running shoe available in the online store"
+                            alt={t("online.imageAlt")}
                             fill
                             sizes="112px"
                             className="object-contain p-2"
@@ -110,16 +148,16 @@ export function ToolsBento() {
 
                     <div className="min-w-0 text-sm">
                         <p className="font-semibold text-primary-foreground">
-                            Web orders sync to the same till
+                            {t("online.syncTitle")}
                         </p>
 
                         <p className="mt-1 text-xs leading-relaxed text-primary-foreground/70">
-                            Customers order online and it lands on your counter—no double stock.
+                            {t("online.description")}
                         </p>
 
                         <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs text-primary-foreground">
                             <Check className="size-3.5 animate-bounce" />
-                            checkout in 30s
+                            {t("online.checkout")}
                         </span>
                     </div>
                 </div>
@@ -130,12 +168,12 @@ export function ToolsBento() {
         <ScrollReveal direction="right" delay={220} className="h-full">
             <ToolCard
                 className="bg-card"
-                label="Social commerce"
-                title="Turn DMs into paid orders"
+                label={t("social.label")}
+                title={t("social.title")}
             >
                 <div className="mt-5 overflow-hidden rounded-xl border border-border">
                     <div className="flex justify-between bg-sidebar px-4 py-3 text-xs text-sidebar-foreground">
-                        <span>#2241 · Table 04</span>
+                        <span>{t("social.table")}</span>
 
                         <span className="flex items-center gap-1.5 text-secondary">
                             <span className="animate-pulse" />
@@ -145,18 +183,18 @@ export function ToolsBento() {
 
                     <ul className="space-y-3 px-4 py-4 text-sm">
                         <li className="flex justify-between">
-                            <span>2× Beef Lok Lak</span>
+                            <span>{t("social.beef")}</span>
                             <span className="text-secondary">
-                                no chili
+                                {t("social.noChili")}
                             </span>
                         </li>
 
-                        <li>1× Fish Amok</li>
+                        <li>{t("social.fish")}</li>
 
                         <li className="flex justify-between">
-                            <span>3× Iced Latte</span>
+                            <span>{t("social.latte")}</span>
                             <span className="text-secondary">
-                                less ice
+                                {t("social.lessIce")}
                             </span>
                         </li>
                     </ul>
@@ -171,8 +209,8 @@ export function ToolsBento() {
         <ScrollReveal direction="up" delay={0} className="h-full">
             <ToolCard
                 className="bg-card"
-                label="Inventory"
-                title="Stock that counts itself"
+                label={t("inventory.label")}
+                title={t("inventory.title")}
             >
                 <ul className="mt-5 space-y-4">
                     {stock.map((item) => (
@@ -215,8 +253,8 @@ export function ToolsBento() {
 
         <ScrollReveal direction="up" delay={120} className="h-full">
             <ToolCard
-                label="Reports · Analytics"
-                title="Know the day before you lock the door"
+                label={t("reports.label")}
+                title={t("reports.title")}
                 className="bg-card"
             >
                 <div className="mt-5 flex items-baseline justify-between">
@@ -229,14 +267,14 @@ export function ToolsBento() {
 
                     <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-brand">
                         <span className="size-1.5 rounded-full bg-brand animate-pulse" />
-                        live
+                        {t("reports.live")}
                     </span>
                 </div>
 
                 <div
                     className="mt-4 flex h-20 items-end gap-2"
                     role="img"
-                    aria-label="Revenue trend, last 7 days"
+                    aria-label={t("reports.trendLabel")}
                 >
                     {revenueBars.map((value, i) => (
                         <span
@@ -262,8 +300,8 @@ export function ToolsBento() {
         <ScrollReveal direction="up" delay={240} className="h-full">
             <ToolCard
                 className="bg-card"
-                label="Employees"
-                title="Shifts & roles"
+                label={t("employees.label")}
+                title={t("employees.title")}
             >
                 <ul className="mt-5 grid grid-cols-2 gap-3">
                     {staff.map((person) => (

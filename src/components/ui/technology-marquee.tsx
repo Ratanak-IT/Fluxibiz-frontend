@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 import { MARQUEE } from "@/components/feature-page/modules";
 import { Reveal } from "./reveal";
@@ -10,6 +11,7 @@ import { Reveal } from "./reveal";
 const SPEED = 60;
 
 export function TechnologyMarquee() {
+  const t = useTranslations("Feature.technology");
   const reduceMotion = useReducedMotion();
   const groupRef = useRef<HTMLDivElement | null>(null);
 
@@ -94,7 +96,7 @@ export function TechnologyMarquee() {
               sm:tracking-[0.2em]
             "
           >
-            Our Technology
+            {t("eyebrow")}
           </p>
 
           <h2
@@ -115,7 +117,7 @@ export function TechnologyMarquee() {
               dark:text-white
             "
           >
-            Technologies behind
+            {t("headingLine1")}
 
             <span
               className="
@@ -126,7 +128,7 @@ export function TechnologyMarquee() {
                 sm:mt-3
               "
             >
-              the FluxiBiz platform.
+              {t("headingLine2")}
             </span>
           </h2>
 
@@ -149,8 +151,7 @@ export function TechnologyMarquee() {
               dark:text-white/70
             "
           >
-            These are the modern technologies we use to build a secure,
-            scalable, and reliable business management platform.
+            {t("description")}
           </p>
         </Reveal>
       </div>
@@ -160,7 +161,6 @@ export function TechnologyMarquee() {
         className="
           border-y
           border-border
-       
           py-3
           [--logo-h:1.65rem]
 

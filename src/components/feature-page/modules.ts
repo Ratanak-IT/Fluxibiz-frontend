@@ -14,71 +14,64 @@ export type ModuleId =
   | "mini-commerce"
   | "modern-pos";
 
+export type ModuleTranslationKey =
+  | "dynamic"
+  | "responsive"
+  | "platform"
+  | "miniCommerce"
+  | "modernPos";
+
 export interface Module {
   id: ModuleId;
+  translationKey: ModuleTranslationKey;
   index: string;
-  eyebrow: string;
-  title: string;
-  promise: string;
   icon: LucideIcon;
-  features: string[];
+  featureKeys: readonly string[];
   mock: "dashboard" | "pos" | "reports" | "storefront" | "chat";
 }
 
 export const MODULES: Module[] = [
   {
     id: "dynamic",
+    translationKey: "dynamic",
     index: "01",
-    eyebrow: "Built to move",
-    title: "Dynamic by design",
-    promise: "Live data, instant updates, and workflows that keep pace with every order.",
     icon: Activity,
-    features: ["Real-time updates", "Smart workflows", "Instant status changes", "Fast interactions"],
+    featureKeys: ["realtime", "workflows", "status", "interactions"],
     mock: "reports",
   },
   {
     id: "responsive",
+    translationKey: "responsive",
     index: "02",
-    eyebrow: "Every screen",
-    title: "Tablet, iPad & phone",
-    promise: "A responsive workspace that feels native on every device your team already uses.",
     icon: MonitorSmartphone,
-    features: ["Touch optimized", "Responsive layout", "No special hardware", "Work from anywhere"],
+    featureKeys: ["touch", "layout", "hardware", "anywhere"],
     mock: "storefront",
   },
   {
     id: "platform",
+    translationKey: "platform",
     index: "03",
-    eyebrow: "One connected system",
-    title: "All-in-one platform",
-    promise: "Sales, products, customers, stock, and reports connected in one place.",
     icon: Workflow,
-    features: ["One secure login", "Shared live data", "Unified operations", "Less manual work"],
+    featureKeys: ["login", "data", "operations", "manualWork"],
     mock: "dashboard",
   },
   {
     id: "mini-commerce",
+    translationKey: "miniCommerce",
     index: "04",
-    eyebrow: "Scan. Browse. Order.",
-    title: "Mini commerce",
-    promise: "Customers scan a QR code to see your menu and start ordering immediately.",
     icon: QrCode,
-    features: ["QR digital menu", "No app download", "Mobile ordering", "Always up to date"],
+    featureKeys: ["menu", "download", "ordering", "updated"],
     mock: "chat",
   },
   {
     id: "modern-pos",
+    translationKey: "modernPos",
     index: "05",
-    eyebrow: "Simple at the counter",
-    title: "Clean, modern POS",
-    promise: "A focused dashboard that makes checkout faster and daily operations clearer.",
     icon: LayoutDashboard,
-    features: ["Fast checkout", "Clear product grid", "Live order summary", "Actionable dashboard"],
+    featureKeys: ["checkout", "grid", "summary", "dashboard"],
     mock: "pos",
   },
 ];
-
-;
 
 export interface Tech {
   name: string;
@@ -95,5 +88,9 @@ export const MARQUEE: Tech[] = [
   { name: "Docker", src: "/image/features/docker.png" },
   { name: "Traefik", src: "/image/features/traefik.png", scale: 1.6 },
   { name: "Redis", src: "/image/features/redis.png", scale: 1.35 },
-  { name: "GitHub Action", src: "/image/features/github-action.png", scale: 1.35 },
+  {
+    name: "GitHub Actions",
+    src: "/image/features/github-action.png",
+    scale: 1.35,
+  },
 ];

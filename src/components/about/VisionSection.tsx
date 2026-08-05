@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
+import { useTranslations } from "next-intl";
 
 interface ContentItem {
   title: string;
@@ -27,29 +28,6 @@ export interface OurVisionInfiniteLoopProps {
   dwellMs?: number;
   className?: string;
 }
-
-const DEFAULT_ITEMS: ContentItem[] = [
-  {
-    title: "Empower",
-    body: "Give every business the tools to succeed.",
-  },
-  {
-    title: "Simplify",
-    body: "Make business management effortless in one platform.",
-  },
-  {
-    title: "Connect",
-    body: "Unify POS, e-commerce, social commerce, and inventory.",
-  },
-  {
-    title: "Innovate",
-    body: "Drive smarter operations through automation and technology.",
-  },
-  {
-    title: "Grow Together",
-    body: "Help businesses scale with confidence.",
-  },
-];
 
 const SLOTS: SlotStyle[] = [
   {
@@ -157,29 +135,63 @@ const OV_BLOCK_INNER = (title: string, body: string) => `
 `;
 
 export default function VisionSection({
-  items = DEFAULT_ITEMS,
-  eyebrowLine1 = "Phnom Penh",
-  eyebrowLine2 = "Cambodia · 2026",
-  headline = ["Our", "Vision"],
-  watermark = "GRO",
+  items,
+  eyebrowLine1,
+  eyebrowLine2,
+  headline,
+  watermark,
   stepDurationMs = 1200,
   dwellMs = 2400,
   className = "",
 }: OurVisionInfiniteLoopProps) {
+  const t = useTranslations("About.vision");
   const trackRef = useRef<HTMLDivElement>(null);
+
+  const translatedItems = useMemo<ContentItem[]>(
+    () => [
+      {
+        title: t("items.empower.title"),
+        body: t("items.empower.description"),
+      },
+      {
+        title: t("items.simplify.title"),
+        body: t("items.simplify.description"),
+      },
+      {
+        title: t("items.connect.title"),
+        body: t("items.connect.description"),
+      },
+      {
+        title: t("items.innovate.title"),
+        body: t("items.innovate.description"),
+      },
+      {
+        title: t("items.growTogether.title"),
+        body: t("items.growTogether.description"),
+      },
+    ],
+    [t],
+  );
+
+  const displayedItems = items ?? translatedItems;
+  const displayedEyebrowLine1 = eyebrowLine1 ?? t("location");
+  const displayedEyebrowLine2 = eyebrowLine2 ?? t("date");
+  const displayedHeadline: [string, string] =
+    headline ?? [t("headlineFirst"), t("headlineSecond")];
+  const displayedWatermark = watermark ?? t("watermark");
 
   useEffect(() => {
     const track = trackRef.current;
 
-    if (!track || items.length === 0) {
+    if (!track || displayedItems.length === 0) {
       return;
     }
 
     const contentFor = (position: number): ContentItem => {
       const index =
-        ((position % items.length) + items.length) % items.length;
+        ((position % displayedItems.length) + displayedItems.length) % displayedItems.length;
 
-      return items[index];
+      return displayedItems[index];
     };
 
     const styleForSlot = (
@@ -322,7 +334,7 @@ export default function VisionSection({
 
       track.innerHTML = "";
     };
-  }, [items, stepDurationMs, dwellMs]);
+  }, [displayedItems, stepDurationMs, dwellMs]);
 
   return (
     <section
@@ -373,7 +385,7 @@ export default function VisionSection({
             md:animate-[ov-breathe_6s_ease-in-out_infinite]
           "
         >
-          {watermark}
+          {displayedWatermark}
         </div>
 
         {/* Background glow */}
@@ -423,11 +435,11 @@ export default function VisionSection({
             "
           />
 
-          {eyebrowLine1}
+          {displayedEyebrowLine1}
 
           <br />
 
-          &nbsp;&nbsp;{eyebrowLine2}
+          &nbsp;&nbsp;{displayedEyebrowLine2}
         </div>
 
         {/* Heading */}
@@ -448,11 +460,11 @@ export default function VisionSection({
             lg:text-[4.5vw]
           "
         >
-          {headline[0]}
+          {displayedHeadline[0]}
 
           <br />
 
-          {headline[1]}
+          {displayedHeadline[1]}
         </div>
 
         {/* Animated cards */}

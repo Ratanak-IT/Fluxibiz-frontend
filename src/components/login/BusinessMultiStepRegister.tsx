@@ -11,7 +11,6 @@ import {
 } from "@/lib/validations/authSchema";
 import {
   useRegisterUserMutation,
-  useCreateBusinessMutation,
 } from "@/features/business-registration/businessApi";
 
 export function BusinessMultiStepRegister() {
@@ -24,10 +23,7 @@ export function BusinessMultiStepRegister() {
   const [registerUser, { isLoading: isRegisteringUser }] =
     useRegisterUserMutation();
 
-  const [createBusiness, { isLoading: isCreatingBusiness }] =
-    useCreateBusinessMutation();
-
-  const isSubmitting = isRegisteringUser || isCreatingBusiness;
+  const isSubmitting = isRegisteringUser;
 
   const handleNextStep = (data: UserRegisterFormData) => {
     setUserData(data);
@@ -43,7 +39,6 @@ export function BusinessMultiStepRegister() {
     business: BusinessRegisterFormData;
   }) => {
     try {
-      // Step 1: Register user account on Keycloak / Backend
       const userPayload = {
         username: data.user.email,
         password: data.user.password,
@@ -53,24 +48,13 @@ export function BusinessMultiStepRegister() {
         lastName: data.user.lastName,
         phoneNumber: data.user.phone,
         gender: "UNSPECIFIED",
-        role: "BUSINESS",
+        role: "BUSINESS" as const,
+        businessName: data.business.storeName,
+        businessAddress: data.business.businessAddress,
+        businessCategoryId: data.business.businessType,
       };
 
       await registerUser(userPayload).unwrap();
-
-      // Step 2: Attempt business record creation.
-      // This endpoint may require an active JWT session token.
-      try {
-        const businessPayload = {
-          name: data.business.storeName,
-          email: data.business.businessEmail,
-          address: data.business.businessAddress,
-        };
-
-        await createBusiness(businessPayload).unwrap();
-      } catch (bizErr: unknown) {
-        console.warn("Store creation pending user session:", bizErr);
-      }
 
       toast.success("Account created successfully! Redirecting to dashboard...");
       setTimeout(() => {
@@ -91,7 +75,6 @@ export function BusinessMultiStepRegister() {
 
   return (
     <div className="space-y-6 text-foreground">
-      {/* User Account Registration */}
       {step === 1 && (
         <RegisterForm
           defaultValues={userData}
@@ -99,7 +82,6 @@ export function BusinessMultiStepRegister() {
         />
       )}
 
-      {/* Business Information Registration */}
       {step === 2 && (
         <BusinessRegisterForm
           userData={userData}

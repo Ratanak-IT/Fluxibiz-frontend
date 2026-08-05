@@ -1,11 +1,14 @@
+"use client";
+
 import { Play } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#006B26";
 const ACCENT = "#FEB90D";
 const INK = "#333333";
 const WHITE = "#FFFFFF";
 
-const SANS = "ui-sans-serif, system-ui, sans-serif";
+const SANS = "var(--font-body), ui-sans-serif, system-ui, sans-serif";
 
 /* Ring geometry — centre (170,190), outer r130, inner r88, gap at the top right.
    Built as one filled path so the ends cut flat and the arrow joins cleanly. */
@@ -14,8 +17,10 @@ const RING =
 const ARROW = "M157 43 L256 105 L164 121 Z";
 
 export function HeroSection() {
+  const t = useTranslations("Support.hero");
+
   return (
-    <section className="overflow-hidden bg-background px-6 py-20 lg:py-28">
+    <section className="overflow-hidden bg-background px-6 py-20 font-body lg:py-28">
       <div className="mx-auto grid max-w-[1200px] items-center gap-16 lg:grid-cols-[1fr_1.05fr] lg:gap-8">
         {/* ================= Left: text ================= */}
         <div className="relative pb-8 lg:pb-20">
@@ -40,23 +45,23 @@ export function HeroSection() {
               </svg>
             </span>
             <span className="rounded-full bg-[#F1F3F1] px-6 py-3 text-base font-medium text-[#333333] lg:text-lg">
-              Company website
+              {t("badge")}
             </span>
           </div>
 
           {/* Headline */}
-          <h1 className="mt-8 font-serif text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.25rem]">
+          <h1 className="mt-8 font-body text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.25rem]">
             <span
               className="hero-in block dark:text-gray-300"
 
             >
-              Welcome to our site
+              {t("headlineFirst")}
             </span>
             <span
-              className="hero-in relative mt-2 inline-block"
-              style={{ color: PRIMARY, animationDelay: "0.35s" }}
+              className="hero-in relative mt-2 inline-block text-primary"
+             
             >
-              live support
+              {t("headlineSecond")}
               <svg
                 viewBox="0 0 300 26"
                 fill="none"
@@ -90,36 +95,8 @@ export function HeroSection() {
             className="hero-in mt-14 max-w-lg text-base leading-relaxed text-[#717171] lg:text-lg"
             style={{ animationDelay: "0.45s" }}
           >
-            Setting up your first register, migrating from another system, or
-            stuck mid-shift with a queue at the counter — our team in Phnom Penh
-            picks up, in Khmer or English.
+            {t("description")}
           </p>
-
-          {/* Buttons */}
-          <div
-            className="hero-in mt-10 flex flex-wrap items-center gap-4"
-            style={{ animationDelay: "0.55s" }}
-          >
-            <a
-              href="#message"
-              className="rounded-full px-10 py-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ backgroundColor: PRIMARY }}
-            >
-              Get Started
-            </a>
-            <a
-              href="#faq"
-              className="flex items-center gap-3 dark:text-gray-300 rounded-full border border-[#E2E6E3] py-2 pl-2 pr-8 text-sm font-semibold transition-colors hover:border-[#C9D2CC]"
-            >
-              <span
-                className="flex h-11 w-11 items-center justify-center rounded-full"
-                style={{ backgroundColor: ACCENT }}
-              >
-                <Play className="h-4 w-4 fill-white text-white" />
-              </span>
-              Watch Video
-            </a>
-          </div>
 
           {/* Doodle arrow */}
           <svg
@@ -155,7 +132,7 @@ export function HeroSection() {
           <svg
             viewBox="0 0 660 360"
             fill="none"
-            aria-label="24 hour service, every day"
+            aria-label={t("badgeAria")}
             role="img"
             className="badge-float w-full drop-shadow-[0_20px_30px_rgba(0,0,0,0.13)]"
           >
@@ -244,7 +221,7 @@ export function HeroSection() {
               hr
             </text>
 
-            {/* ---------- SERVICE banner ---------- */}
+            {/* ---------- {t("service")} banner ---------- */}
             <g className="item-in" style={{ animationDelay: "0.74s" }}>
               <path
                 d="M330 158 H520 L552 191 L520 224 H330 Z"
@@ -263,11 +240,11 @@ export function HeroSection() {
                 fill={INK}
                 fontFamily={SANS}
               >
-                SERVICE
+                {t("service")}
               </text>
             </g>
 
-            {/* ---------- EVERYDAY ---------- */}
+            {/* ---------- {t("everyday")} ---------- */}
             <text
               className="item-in"
               style={{ animationDelay: "0.86s" }}
@@ -283,7 +260,7 @@ export function HeroSection() {
               paintOrder="stroke"
               fontFamily={SANS}
             >
-              EVERYDAY
+              {t("everyday")}
             </text>
           </svg>
         </div>

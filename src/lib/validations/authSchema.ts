@@ -6,28 +6,23 @@ export function validateEmailFormat(val?: string | null): string | true {
   if (!val || val.trim() === "") return "Email is required";
   const trimmed = val.trim();
 
-  // 1. Must not start with @
   if (trimmed.startsWith("@")) {
     return "Email must contain a username before @ (e.g. name@domain.com)";
   }
 
-  // 2. Must contain exactly one @ and valid local/domain parts
   const parts = trimmed.split("@");
   if (parts.length !== 2 || !parts[0] || !parts[1]) {
     return "Invalid email format (e.g. name@example.com)";
   }
 
-  // 3. Domain part must contain a dot '.' and a valid TLD extension
   if (!parts[1].includes(".") || parts[1].endsWith(".")) {
     return "Email domain must include an extension like .com or .kh (e.g. gmail.com)";
   }
 
-  // 4. Test strict RFC regex
   if (!STRICT_EMAIL_REGEX.test(trimmed)) {
     return "Invalid email format (e.g. name@example.com)";
   }
 
-  // 5. Catch common domain typos
   const domain = parts[1].toLowerCase();
   if (domain === "gmai.com" || domain === "gamil.com" || domain === "gmaill.com" || domain === "gmail.co") {
     return "Did you mean @gmail.com?";

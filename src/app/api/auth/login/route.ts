@@ -22,6 +22,9 @@ export async function GET(req: NextRequest) {
   const state = randomUrlSafe();
   const challenge = await pkceChallenge(verifier);
 
+  const idpParam = req.nextUrl.searchParams.get("idp");
+  const idp = idpParam === "google" || idpParam === "facebook" ? idpParam : null;
+
   const queryObj: Record<string, string> = {
     client_id: CLIENT_ID,
     response_type: "code",
@@ -32,7 +35,9 @@ export async function GET(req: NextRequest) {
     code_challenge_method: "S256",
   };
 
-  if (prompt) {
+  if (idp) {
+    queryObj.kc_idp_hint = idp;
+  } else if (prompt) {
     queryObj.prompt = prompt;
   }
 

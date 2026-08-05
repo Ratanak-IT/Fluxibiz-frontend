@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
 
 export interface PosCardType {
   id: number;
@@ -42,9 +43,11 @@ export default function MenuCard({
   return (
     <Card className="w-full pt-0">
       <CardContent className="px-0 rounded-full">
-        <img
+        <Image
           src={image}
           alt={name}
+          height={100}
+          width={100}
             className="aspect-square w-full rounded-5xl border border-white object-cover"
         />
       </CardContent>
