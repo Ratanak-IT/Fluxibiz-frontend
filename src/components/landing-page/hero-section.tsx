@@ -2,13 +2,14 @@
 
 import { useRef, type MouseEvent, type RefObject } from "react";
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Card } from "@/components/ui/card";
 
 const GLANCE_ROWS = [
-    { label: "Orders", value: "124", dot: "bg-brand" },
-    { label: "Stock synced", value: "86 SKUs", dot: "bg-brand" },
-    { label: "Revenue", value: "$2,410", dot: "bg-amber" },
+    { labelKey: "glance.orders", value: "124", dot: "bg-brand" },
+    { labelKey: "glance.stockSynced", value: "86 SKUs", dot: "bg-brand" },
+    { labelKey: "glance.revenue", value: "$2,410", dot: "bg-amber" },
 ] as const;
 
 const FLOAT_DOTS = [
@@ -126,12 +127,14 @@ function FloatingDots({
 
 /** Sparkline for the "Today, at a glance" card. Static by design — it's a preview, not live data. */
 function Sparkline() {
+    const t = useTranslations("LandingHero");
+
     return (
         <svg
             viewBox="0 0 220 60"
             className="h-14 w-full"
             role="img"
-            aria-label="Orders trend, last 7 days"
+            aria-label={t("glance.ordersTrend")}
         >
             <polyline
                 className="sparkline-draw"
@@ -147,6 +150,8 @@ function Sparkline() {
 }
 
 function GlanceCard() {
+    const t = useTranslations("LandingHero");
+
     return (
         <Card className="hero-float w-70 rotate-1 gap-0 rounded-2xl border-hairline p-5 shadow-[0_24px_60px_-24px_rgba(15,36,23,0.35)] sm:w-[430px]">
             <div className="mb-4 flex gap-1.5" aria-hidden>
@@ -159,22 +164,34 @@ function GlanceCard() {
             </div>
 
             <h3 className="font-display text-lg font-bold text-brand-ink">
-                Today, at a glance
+                {t("glance.title")}
             </h3>
             <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                FluxiBiz · all systems synced
+                {t("glance.systemsSynced")}
             </p>
 
             <div className="mt-5 space-y-3">
-                <Row {...GLANCE_ROWS[0]} />
+                <Row
+                    label={t(GLANCE_ROWS[0].labelKey)}
+                    value={GLANCE_ROWS[0].value}
+                    dot={GLANCE_ROWS[0].dot}
+                />
                 <Sparkline />
-                <Row {...GLANCE_ROWS[1]} />
-                <Row {...GLANCE_ROWS[2]} />
+                <Row
+                    label={t(GLANCE_ROWS[1].labelKey)}
+                    value={GLANCE_ROWS[1].value}
+                    dot={GLANCE_ROWS[1].dot}
+                />
+                <Row
+                    label={t(GLANCE_ROWS[2].labelKey)}
+                    value={GLANCE_ROWS[2].value}
+                    dot={GLANCE_ROWS[2].dot}
+                />
             </div>
 
             <div className="mt-5 flex items-baseline justify-between border-t border-brand-ink pt-4">
                 <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-brand-ink">
-                    Net today
+                    {t("glance.netToday")}
                 </span>
                 <span className="font-display text-2xl font-bold text-brand-ink">
                     $2,410
@@ -205,18 +222,20 @@ function Row({
 }
 
 function MonthCard() {
+    const t = useTranslations("LandingHero");
+
     return (
         <Card className="hero-float-slow absolute -bottom-2 -right-2 z-10 w-47.5 gap-0 rounded-xl border-hairline bg-background p-4 shadow-[0_20px_45px_-20px_rgba(15,36,23,0.4)]">
             <div className="flex items-center justify-between">
-                <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
-                    This month
+                <span className="font-body text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+                    {t("glance.thisMonth")}
                 </span>
                 <span className="flex items-center gap-1 text-[10px] text-brand">
                     <span
                         className="size-1.5 rounded-full bg-brand"
                         aria-hidden
                     />
-                    live
+                    {t("glance.live")}
                 </span>
             </div>
             <p className="mt-2 font-display text-xl font-bold text-brand-ink">
@@ -266,6 +285,7 @@ function HeroWave() {
 }
 
 export function HeroSection() {
+    const t = useTranslations("LandingHero");
     const dotsRef = useRef<HTMLDivElement>(null);
 
     function handleMouseMove(event: MouseEvent<HTMLElement>) {
@@ -301,18 +321,18 @@ export function HeroSection() {
                     </Badge> */}
 
                     <h1 className="mt-6 font-display text-[2.85rem] font-extrabold leading-[1.02] tracking-tight text-brand-ink md:text-[4rem]">
-                        Run your whole{" "}
+                        {t("title.runYourWhole")}{" "}
                         <span className="relative inline-block px-1">
                             <span
                                 className="absolute inset-x-0 bottom-1 top-1/2 -z-10 -rotate-2 rounded-sm bg-amber/70"
                                 aria-hidden
                             />
-                            Business
+                            {t("title.handled")}
                         </span>{" "}
-                        from{" "}
+                        {t("title.from")}{" "}
                         <span className="relative inline-block">
-                            <em className="font-serif italic text-brand">
-                                one screen
+                            <em className="font-display text-brand">
+                                {t("title.oneScreen")}
                             </em>
                             <svg
                                 viewBox="0 0 170 14"
@@ -332,7 +352,7 @@ export function HeroSection() {
                     </h1>
 
                     <p className="mt-6 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-                        Founded in Phnom Penh in 2026 by a group of IT enthusiasts, FluxiBiz brings everything a business needs to sell, manage and grow into one simple place.
+                        {t("description")}
                     </p>
 
                    
@@ -341,11 +361,11 @@ export function HeroSection() {
                 {/* ── Preview cluster ──────────────────────────────────── */}
                 <div className="relative mx-auto w-fit lg:mr-0">
                     <span className="hero-float-sm absolute -left-6 -top-6 z-10 -rotate-7 rounded-md bg-brand-deep px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-white shadow-lg ">
-                        +18% this week
+                        {t("glance.thisWeek")}
                     </span>
                     <GlanceCard />
                     <span className="hero-float-sm absolute -left-16 -rotate-3 bottom-16 hidden items-center gap-1 rounded-full bg-amber px-3 py-1.5 text-[11px] font-semibold text-brand-ink shadow-md sm:inline-flex">
-                        Synced <Check className="size-3" />
+                        {t("glance.synced")} <Check className="size-3" />
                     </span>
                     <MonthCard />
                 </div>

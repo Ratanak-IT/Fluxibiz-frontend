@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { House, Mail, Phone } from "lucide-react";
 import { FaTelegramPlane } from "react-icons/fa";
 import {
@@ -24,11 +27,11 @@ import istadDarkMode from "../../../public/image/footer/istad-darkmode.png";
 import mptcDarkMode from "../../../public/image/footer/mptc-darkmode.png";
 
 const usefulLinks = [
-  { label: "About Us", href: "/about" },
-  { label: "Contact Us", href: "/contact" },
-  { label: "Privacy & Policy", href: "/privacy-policy" },
-  { label: "Social Media", href: "/social-media" },
-];
+  { key: "aboutUs", href: "/about" },
+  { key: "contactUs", href: "/contact" },
+  { key: "privacyPolicy", href: "/" },
+  { key: "socialMedia", href: "/social-media" },
+] as const;
 
 const socialLinks = [
   {
@@ -94,6 +97,8 @@ const partners = [
 ];
 
 export default function Footer() {
+  const t = useTranslations("Footer");
+
   return (
     <footer
       className="
@@ -117,11 +122,11 @@ export default function Footer() {
           {/* Logo and description */}
           <section
             className="flex flex-col items-start text-left"
-            aria-label="About FluxiBiz"
+            aria-label={t("aboutFluxiBiz")}
           >
             <Link
               href="/store"
-              aria-label="FluxiBiz home"
+              aria-label={t("fluxiBizHome")}
               className="inline-flex h-[48px] items-center sm:h-[54px] md:h-[63px]"
             >
               <Image
@@ -139,17 +144,17 @@ export default function Footer() {
               />
             </Link>
 
-            <div className="mt-4 max-w-md space-y-1 text-sm leading-6 text-[#6b7280] sm:mt-5 sm:space-y-2 sm:text-[15px] sm:leading-7 md:max-w-[230px] md:text-sm md:leading-6 lg:max-w-md lg:text-[15px] lg:leading-7 dark:text-white">
-              <p>Powering Business Without Limits.</p>
+            <div className="mt-4 max-w-md space-y-1 text-sm leading-6 text-[#6b7280] sm:mt-5 sm:space-y-2 sm:text-[16px] sm:leading-7 md:max-w-[230px] md:text-sm md:leading-6 lg:max-w-md lg:text-[16px] lg:leading-7 dark:text-white">
+              <p>{t("poweringBusiness")}</p>
               <p>
-                Manage Better. Sell More.
+                {t("manageBetter")}
                 <br className="hidden md:block lg:hidden" />
-                Grow Faster.
+                {t("growFaster")}
               </p>
               <p>
-                Everything Your Business Needs,
+                {t("everythingNeeded")}
                 <br className="hidden md:block lg:hidden" />
-                All in One.
+                {t("allInOne")}
               </p>
             </div>
           </section>
@@ -173,15 +178,15 @@ export default function Footer() {
               md:dark:bg-transparent
             "
           >
-            <FooterTitle>Useful Links</FooterTitle>
+            <FooterTitle>{t("usefulLinks")}</FooterTitle>
 
             <nav
               className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 sm:flex sm:flex-wrap sm:gap-x-6 sm:gap-y-3 md:flex-col md:flex-nowrap md:items-start md:gap-4"
-              aria-label="Footer navigation"
+              aria-label={t("footerNavigation")}
             >
-              {usefulLinks.map(({ label, href }) => (
+              {usefulLinks.map(({ key, href }) => (
                 <Link
-                  key={label}
+                  key={key}
                   href={href}
                   className="
                     w-fit
@@ -197,7 +202,7 @@ export default function Footer() {
                     dark:text-white
                   "
                 >
-                  {label}
+                  {t(key)}
                 </Link>
               ))}
             </nav>
@@ -222,7 +227,7 @@ export default function Footer() {
               md:dark:bg-transparent
             "
           >
-            <FooterTitle>Contact Us</FooterTitle>
+            <FooterTitle>{t("contactUs")}</FooterTitle>
 
             <address className="mt-5 max-w-md space-y-4 text-sm not-italic leading-6 text-[#6b7280] sm:text-base dark:text-white">
               <div className="flex items-start gap-3 text-left">
@@ -233,9 +238,9 @@ export default function Footer() {
                 />
 
                 <p>
-                  #40, Street 273, Sangkat Boeung Kak Ti Mouy,
+                  {t("addressLine1")}
                   <br />
-                  Khan Toul Kork, Phnom Penh
+                  {t("addressLine2")}
                 </p>
               </div>
 
@@ -266,8 +271,8 @@ export default function Footer() {
 
         {/* Supported by */}
         <div className="mt-10 border-t border-[#e5e7eb] pt-8 sm:mt-12 sm:pt-9 md:mt-14 md:pt-10 dark:border-white/10">
-          <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6b7280] sm:mb-7 sm:text-xs md:mb-8 dark:text-white">
-            Organized and Sponsored by
+          <p className="mb-6 text-center text-[16px] font-body uppercase tracking-[0.18em] text-[#6b7280] sm:mb-7 sm:text-xs md:mb-8 dark:text-white">
+            {t("organizedAndSponsored")}
           </p>
 
           <div
@@ -330,7 +335,7 @@ export default function Footer() {
       <div className="bg-[#00932A] text-white">
         <div className="mx-auto flex min-h-10 w-full max-w-[1600px] flex-col items-center justify-between gap-3 px-4 py-5 sm:px-6 md:flex-row md:gap-6 md:px-8 md:py-4 lg:px-10">
           <p className="text-center text-xs leading-5 text-white/80 sm:text-sm md:text-left">
-            All Rights Reserved © Copyright 2026 ISTAD.
+            {t("copyright")}
           </p>
 
           <div className="grid grid-cols-6 items-center justify-center gap-0.5 sm:flex sm:gap-2">
