@@ -7,16 +7,14 @@ export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 
 export type AuthState = {
     user: SessionUser | null;
-    accessToken: string | null;
-    expiresAt: number | null;
     status: AuthStatus;
+    expiresAt: number | null;
 };
 
 const initialState: AuthState = {
     user: null,
-    accessToken: null,
-    expiresAt: null,
     status: "loading",
+    expiresAt: null,
 };
 
 const authSlice = createSlice({
@@ -24,11 +22,10 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         sessionLoaded(state, action: PayloadAction<SessionResponse>) {
-            const { authenticated, user, accessToken, expiresAt } = action.payload;
+            const { authenticated, user, expiresAt } = action.payload;
             state.user = authenticated ? user : null;
-            state.accessToken = authenticated ? accessToken : null;
-            state.expiresAt = authenticated ? expiresAt : null;
             state.status = authenticated ? "authenticated" : "unauthenticated";
+            state.expiresAt = authenticated && expiresAt ? expiresAt : null;
         },
 
         profileLoaded(state, action: PayloadAction<Partial<SessionUser>>) {
@@ -38,8 +35,6 @@ const authSlice = createSlice({
 
         signedOut(state) {
             state.user = null;
-            state.accessToken = null;
-            state.expiresAt = null;
             state.status = "unauthenticated";
         },
     },
@@ -52,7 +47,6 @@ type WithAuth = { auth: AuthState };
 
 export const selectAuth = (state: WithAuth) => state.auth;
 export const selectUser = (state: WithAuth) => state.auth.user;
-export const selectAccessToken = (state: WithAuth) => state.auth.accessToken;
 export const selectIsAuthenticated = (state: WithAuth) =>
     state.auth.status === "authenticated";
 export const selectAuthStatus = (state: WithAuth) => state.auth.status;

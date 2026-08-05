@@ -6,11 +6,12 @@ import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 
 const DEFAULT_STORE_IMAGE = "/image/card/defaultstore.png";
 
 const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
-  const { name, description, location, image, isOpen } = store;
+  const { name, description, location, address, googleMap, image, isOpen } = store;
   const [imgSrc, setImgSrc] = useState<string>(
     image && image.trim() ? image : DEFAULT_STORE_IMAGE
   );
@@ -18,6 +19,13 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
   useEffect(() => {
     setImgSrc(image && image.trim() ? image : DEFAULT_STORE_IMAGE);
   }, [image]);
+
+  const { data: storeDetail } = useGetPublicStoreQuery(store.slug || store.id, {
+    skip: !!address && !!googleMap,
+  });
+
+  const finalAddress = storeDetail?.address || address || location;
+  const finalGoogleMap = storeDetail?.googleMap || googleMap;
 
   return (
     <Card
@@ -98,7 +106,23 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
 
         <div className="flex items-center gap-1 text-sm text-muted-foreground">
           <MapPin className="h-4 w-4 shrink-0 text-primary" />
-          <span className="truncate">{location}</span>
+          {finalGoogleMap ? (
+            <span
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.open(finalGoogleMap, "_blank");
+              }}
+              className="truncate text-primary hover:underline cursor-pointer"
+              title={finalAddress || location}
+            >
+              {finalAddress || location}
+            </span>
+          ) : (
+            <span className="truncate" title={finalAddress || location}>
+              {finalAddress || location}
+            </span>
+          )}
         </div>
       </div>
     </Card>

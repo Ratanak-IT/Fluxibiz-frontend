@@ -111,7 +111,6 @@ function ScrollRow({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Horizontal scroll row of vertical store cards
 function StoreRow({ items }: { items: Store[] }) {
   return (
     <ScrollRow>

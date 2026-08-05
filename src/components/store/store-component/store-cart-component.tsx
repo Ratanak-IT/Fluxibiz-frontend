@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Clock, MapPin, Store as StoreIcon } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 
 export interface Store {
   id: string;
@@ -12,6 +13,8 @@ export interface Store {
   category: string;
   description: string;
   location: string;
+  address?: string | null;
+  googleMap?: string | null;
   hours?: string;
   openTime?: string | null;
   closeTime?: string | null;
@@ -30,6 +33,8 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     category,
     description,
     location,
+    address,
+    googleMap,
     hours,
     openTime,
     closeTime,
@@ -39,6 +44,12 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
   } = store;
 
   const [hasError, setHasError] = useState(false);
+  const { data: storeDetail } = useGetPublicStoreQuery(store.slug || store.id, {
+    skip: !!address && !!googleMap,
+  });
+
+   const finalAddress = address || storeDetail?.address || location;
+  const finalGoogleMap = googleMap || storeDetail?.googleMap;
 
   useEffect(() => {
     setHasError(false);
@@ -56,7 +67,6 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
       
     "
     >
-
       <div className="relative grow h-38 w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
         {image && !hasError ? (
           <Image
@@ -164,7 +174,23 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
                     "
             />
 
-            <span>{location}</span>
+            {finalGoogleMap ? (
+              <span
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.open(finalGoogleMap, "_blank");
+                }}
+                className="truncate text-primary hover:underline cursor-pointer"
+                title={finalAddress || location}
+              >
+                {finalAddress || location}
+              </span>
+            ) : (
+              <span className="truncate" title={finalAddress || location}>
+                {finalAddress || location}
+              </span>
+            )}
           </div>
 
           {displayHours && (

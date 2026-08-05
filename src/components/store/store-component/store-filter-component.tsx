@@ -19,10 +19,12 @@ export default function StoreFilterComponent({
 }: StoreFilterComponentProps) {
     const [showMore, setShowMore] = useState(false);
 
-    const { data: category = [], isLoading, isError } = useGetBusinessCategoryQuery();
+    const { data: category = [], isLoading, isError, refetch } = useGetBusinessCategoryQuery(undefined, {
+        pollingInterval: 10000,
+        refetchOnFocus: true,
+        refetchOnMountOrArgChange: true,
+    });
 
-    // The API returns parent categories with nested subCategories.
-    // We map top-level categories and sub-categories into a flat list of shop types.
     const allTypes = category.flatMap((cat) =>
         cat.subCategories && cat.subCategories.length > 0
             ? cat.subCategories
@@ -102,8 +104,14 @@ export default function StoreFilterComponent({
 
                 {isError && !isLoading && (
 
-                    <div className="text-sm text-destructive">
-                        Can not load store type
+                    <div className="text-sm text-destructive flex flex-col gap-2">
+                        <span>Can not load store type</span>
+                        <button 
+                            onClick={() => refetch()} 
+                            className="text-xs bg-primary/10 text-primary px-2 py-1 rounded w-fit hover:bg-primary/20"
+                        >
+                            Try Again
+                        </button>
                     </div>
 
                 )}

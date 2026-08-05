@@ -13,11 +13,6 @@ import {
 
 const baseQuery = fetchBaseQuery({
     baseUrl: "/api/v1",
-    prepareHeaders: (headers, { getState }) => {
-        const token = (getState() as { auth: AuthState }).auth.accessToken;
-        if (token) headers.set("Authorization", `Bearer ${token}`);
-        return headers;
-    },
 });
 
 export const checkoutApi = createApi({

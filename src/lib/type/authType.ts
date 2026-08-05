@@ -14,9 +14,7 @@ export type SessionUser = {
 export type SessionResponse = {
     authenticated: boolean;
     user: SessionUser | null;
-    accessToken: string | null;
-    /** Unix epoch in milliseconds. */
-    expiresAt: number | null;
+    expiresAt?: number | null;
 };
 
 export type UserProfileResponse = {

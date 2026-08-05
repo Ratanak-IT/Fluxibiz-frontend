@@ -8,11 +8,16 @@ import { MapPin, Clock, Trash2, Store } from "lucide-react";
 
 import { resolveMediaUrl, type StoreCart } from "@/lib/type/cartType";
 import { useRemoveCartStoreMutation } from "@/features/cart/cartApi";
+import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 
 export function StoreCardComponent({ store }: { store: StoreCart }) {
     const [removeStore, { isLoading: isRemoving }] = useRemoveCartStoreMutation();
+    const { data: storeDetail } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
 
     const logoUrl = resolveMediaUrl(store.logo);
+    
+    const finalAddress = storeDetail?.address || store.location;
+    const finalGoogleMap = storeDetail?.googleMap;
 
     return (
         <Card className="overflow-hidden p-0 dark:border-neutral-700 dark:bg-[#1b1b1b]">
@@ -49,10 +54,22 @@ export function StoreCardComponent({ store }: { store: StoreCart }) {
                     </CardHeader>
 
                     <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground dark:text-[#a7b4ad]">
-                        {store.location && (
+                        {finalAddress && (
                             <div className="flex items-center gap-1.5">
                                 <MapPin className="h-4 w-4 shrink-0 text-green-600 dark:text-[#21b94b]" />
-                                <span>{store.location}</span>
+                                {finalGoogleMap ? (
+                                    <a
+                                        href={finalGoogleMap}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="hover:underline text-green-600 dark:text-green-500"
+                                        title={finalAddress}
+                                    >
+                                        <span className="line-clamp-1">{finalAddress}</span>
+                                    </a>
+                                ) : (
+                                    <span className="line-clamp-1" title={finalAddress}>{finalAddress}</span>
+                                )}
                             </div>
                         )}
 

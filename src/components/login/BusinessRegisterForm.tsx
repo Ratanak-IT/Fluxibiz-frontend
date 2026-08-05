@@ -129,7 +129,7 @@ export function BusinessRegisterForm({
                   "dark:focus-visible:border-gray-400",
                   "dark:focus-visible:ring-gray-400/30",
                   errors.businessType &&
-                    "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30 dark:border-red-500",
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30 dark:border-red-500",
                 )}
               >
                 <option

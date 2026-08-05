@@ -40,14 +40,8 @@ export const businessRegisterApi = createApi({
   reducerPath: "businessRegisterApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "/api/v1",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as { auth: AuthState }).auth?.accessToken;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
   }),
+  tagTypes: ["Business", "BusinessCategory"],
   endpoints: (builder) => ({
     registerUser: builder.mutation<unknown, RegisterUserPayload>({
       query: ({ role, ...body }) => ({
@@ -55,6 +49,7 @@ export const businessRegisterApi = createApi({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["Business"],
     }),
 
     createBusiness: builder.mutation<unknown, CreateBusinessPayload>({
@@ -63,10 +58,12 @@ export const businessRegisterApi = createApi({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["Business"],
     }),
 
     getBusinessCategories: builder.query<BusinessCategoryResponse[], void>({
       query: () => "/business-categories",
+      providesTags: ["BusinessCategory"],
     }),
   }),
 });

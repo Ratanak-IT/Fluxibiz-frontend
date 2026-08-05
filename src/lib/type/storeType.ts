@@ -31,6 +31,8 @@ export interface PublicStore {
     thumbnail: string | null;
     about: string | null;
     cityOrProvince: string | null;
+    address: string | null;
+    googleMap: string | null;
     storefrontUrl: string | null;
     category: BusinessSubCategory | null;
     openTime?: string | null;
@@ -102,6 +104,8 @@ export interface Store {
     category: string;
     description: string;
     location: string;
+    address?: string | null;
+    googleMap?: string | null;
     image: string;
     hours?: string;
     openTime?: string | null;
@@ -176,6 +180,8 @@ export function toStoreCard(store: PublicStore): Store {
         category: store.category?.name ?? "",
         description: store.about ?? "",
         location: store.cityOrProvince ?? "",
+        address: store.address ?? store.cityOrProvince ?? "",
+        googleMap: store.googleMap,
         image: resolvedImage ?? "",
         hours: operatingHours ?? undefined,
         openTime: openTime ?? undefined,

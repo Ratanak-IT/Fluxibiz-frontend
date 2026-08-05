@@ -6,6 +6,8 @@ export interface StoreCardData {
   name: string
   description: string
   location: string
+  address?: string | null
+  googleMap?: string | null
   hours: string
   openTime?: string | null
   closeTime?: string | null

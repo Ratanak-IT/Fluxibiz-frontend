@@ -5,32 +5,11 @@ import type { UserProfileResponse } from "@/lib/type/authType";
 
 const rawBaseQuery = fetchBaseQuery({
     baseUrl: "/api/v1",
-    prepareHeaders: (headers, { getState }) => {
-        let token = (getState() as { auth: AuthState }).auth.accessToken;
-        if (!token && typeof document !== "undefined") {
-            const match = document.cookie.match(/(?:^|; )kc_at=([^;]*)/);
-            if (match && match[1]) {
-                try {
-                    token = decodeURIComponent(match[1].trim());
-                } catch {
-                    token = match[1].trim();
-                }
-            }
-        }
-        if (token) {
-            headers.set("Authorization", `Bearer ${token}`);
-        }
-        return headers;
-    },
 });
 
 const baseQuery: typeof rawBaseQuery = async (args, api, extraOptions) => {
     const state = api.getState() as { auth: AuthState };
-    const hasReduxToken = Boolean(state.auth.accessToken);
-    const hasCookieToken =
-        typeof document !== "undefined" &&
-        Boolean(document.cookie.match(/(?:^|; )kc_at=([^;]*)/));
-    const hasToken = hasReduxToken || hasCookieToken;
+    const hasToken = state.auth.status === "authenticated";
 
     const urlStr = typeof args === "string" ? args : args.url;
     const method = (typeof args === "object" ? args.method : "GET") || "GET";

@@ -73,7 +73,21 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
             <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground sm:gap-6 sm:text-sm">
               <div className="flex min-w-0 items-center gap-1.5">
                 <MapPin className="h-4 w-4 shrink-0 text-primary" />
-                <span className="truncate">{store.location}</span>
+                {store.googleMap ? (
+                  <a
+                    href={store.googleMap}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="truncate text-primary hover:underline"
+                    title={store.address || store.location}
+                  >
+                    {store.address || store.location}
+                  </a>
+                ) : (
+                  <span className="truncate" title={store.address || store.location}>
+                    {store.address || store.location}
+                  </span>
+                )}
               </div>
 
               <div className="flex shrink-0 items-center gap-1.5">

@@ -13,7 +13,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: session, refetch } = useGetSessionQuery();
 
-    const accessToken = useAppSelector((s) => s.auth.accessToken);
+    const isAuthenticated = useAppSelector((s) => s.auth.status === "authenticated");
     const expiresAt = useAppSelector((s) => s.auth.expiresAt);
 
     useEffect(() => {
@@ -29,6 +29,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         return () => clearTimeout(timer);
     }, [expiresAt, refetch]);
 
+
+
     useEffect(() => {
         const onFocus = () => refetch();
         window.addEventListener("focus", onFocus);
@@ -36,7 +38,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }, [refetch]);
 
     const { data: profile } = useGetMyProfileQuery(undefined, {
-        skip: !accessToken,
+        skip: !isAuthenticated,
     });
 
     useEffect(() => {

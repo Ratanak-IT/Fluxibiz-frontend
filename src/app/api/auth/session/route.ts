@@ -16,8 +16,6 @@ export const dynamic = "force-dynamic";
 const ANONYMOUS: SessionResponse = {
     authenticated: false,
     user: null,
-    accessToken: null,
-    expiresAt: null,
 };
 
 const SKEW_MS = 30_000;
@@ -33,8 +31,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json<SessionResponse>({
             authenticated: true,
             user: userFromAccessToken(accessToken),
-            accessToken,
-            expiresAt,
+            expiresAt: expiresAt,
         });
     }
 
@@ -48,7 +45,6 @@ export async function GET(request: NextRequest) {
         const response = NextResponse.json<SessionResponse>({
             authenticated: true,
             user: userFromAccessToken(tokens.access_token),
-            accessToken: tokens.access_token,
             expiresAt: tokenExpiresAt(tokens.access_token),
         });
 
