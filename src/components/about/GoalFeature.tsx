@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   motion,
   useInView,
@@ -17,15 +18,62 @@ import { FeatureMark, MarkId } from './MarkForGoalFeature';
 /*  data                                                                       */
 /* -------------------------------------------------------------------------- */
 
-type Feature = { n: string; title: string; desc: string; mark: MarkId };
+type Feature = {
+  n: string;
+  titleKey:
+    | 'items.simple.title'
+    | 'items.local.title'
+    | 'items.connected.title'
+    | 'items.fair.title'
+    | 'items.better.title'
+    | 'items.longRun.title';
+  descKey:
+    | 'items.simple.description'
+    | 'items.local.description'
+    | 'items.connected.description'
+    | 'items.fair.description'
+    | 'items.better.description'
+    | 'items.longRun.description';
+  mark: MarkId;
+};
 
 const FEATURES: Feature[] = [
-  { n: '', mark: 'simple',    title: 'Simple by default',     desc: 'Powerful, yet easy from day one.' },
-  { n: '', mark: 'local',     title: 'Made for Cambodia',     desc: 'Built for how business works here.' },
-  { n: '', mark: 'connected', title: 'One connected system',  desc: 'Everything in one place, in sync.' },
-  { n: '', mark: 'fair',      title: 'Fair and affordable',   desc: 'Serious tools without the big price.' },
-  { n: '', mark: 'better',    title: 'Better every week',     desc: 'Always improving, shaped by users.' },
-  { n: '', mark: 'longrun',   title: 'Here for the long run', desc: 'A local team, in it for the long haul.' },
+  {
+    n: '',
+    mark: 'simple',
+    titleKey: 'items.simple.title',
+    descKey: 'items.simple.description',
+  },
+  {
+    n: '',
+    mark: 'local',
+    titleKey: 'items.local.title',
+    descKey: 'items.local.description',
+  },
+  {
+    n: '',
+    mark: 'connected',
+    titleKey: 'items.connected.title',
+    descKey: 'items.connected.description',
+  },
+  {
+    n: '',
+    mark: 'fair',
+    titleKey: 'items.fair.title',
+    descKey: 'items.fair.description',
+  },
+  {
+    n: '',
+    mark: 'better',
+    titleKey: 'items.better.title',
+    descKey: 'items.better.description',
+  },
+  {
+    n: '',
+    mark: 'longrun',
+    titleKey: 'items.longRun.title',
+    descKey: 'items.longRun.description',
+  },
 ];
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -59,18 +107,7 @@ function useSplit(text: string): SplitWord[] {
   }, [text]);
 }
 
-/**
- * Two stacked character layers inside a clip.
- * Layer A rises in on scroll, then slides out when the row goes active;
- * layer B (brand colour) takes its place from below. Pure CSS transforms —
- * no motion component per character, so 6 rows stay cheap on low-end phones.
- *
- * Each character translates by a percentage of ITS OWN height, which only lines
- * up while the text sits on a single line. As soon as the title wraps — narrow
- * screens, long titles — line two would slide into line one's slot and you'd see
- * both copies at once. So the component measures itself and falls back to a
- * plain block fade whenever it wraps. No breakpoint to keep in sync.
- */
+
 function CharSwap({
   text,
   revealed,
@@ -172,7 +209,7 @@ function CharSwap({
   );
 }
 
-/** Word-by-word mask reveal for the heading. Inherits hidden/show from its motion parent. */
+
 function MaskedWords({
   text,
   delay = 0,
@@ -208,13 +245,10 @@ function MaskedWords({
 }
 
 
-
-/* -------------------------------------------------------------------------- */
-/*  row                                                                        */
-/* -------------------------------------------------------------------------- */
-
 function FeatureRow({
   feature,
+  title,
+  description,
   index,
   isActive,
   reduced,
@@ -222,6 +256,8 @@ function FeatureRow({
   onCentered,
 }: {
   feature: Feature;
+  title: string;
+  description: string;
   index: number;
   isActive: boolean;
   reduced: boolean;
@@ -262,7 +298,7 @@ function FeatureRow({
       <div className="relative z-10 grid grid-cols-[auto_auto_1fr_auto] items-center gap-[clamp(0.9rem,2.4vw,2.2rem)] px-[clamp(0.75rem,2vw,1.5rem)] py-[clamp(1.5rem,3.2vw,2.35rem)]">
         {/* index — digits roll over one at a time */}
         <span
-          className="text-[0.82rem] font-semibold tabular-nums tracking-[0.16em] text-[color-mix(in_srgb,var(--ah-ink)_32%,var(--background))] dark:text-[color-mix(in_srgb,var(--ah-ink)_40%,var(--background))]"
+          className="text-[0.82rem] font-body tabular-nums tracking-[0.16em] text-[color-mix(in_srgb,var(--ah-ink)_32%,var(--background))] dark:text-[color-mix(in_srgb,var(--ah-ink)_40%,var(--background))]"
         >
           <CharSwap
             text={feature.n}
@@ -299,9 +335,9 @@ function FeatureRow({
           className="flex flex-wrap items-baseline justify-between gap-[clamp(0.5rem,3vw,2.5rem)] transition-transform duration-[550ms] ease-hero motion-reduce:transition-none max-[720px]:flex-col max-[720px]:items-start max-[720px]:gap-[0.35rem]"
           style={{ transform: isActive && !reduced ? 'translateX(10px)' : 'translateX(0)' }}
         >
-          <h3 className="m-0 text-[clamp(1.45rem,3.4vw,2.35rem)] font-extrabold leading-[1.12] tracking-[-0.025em] text-ink">
+          <h3 className="m-0 font-body text-[clamp(1.45rem,3.4vw,2.35rem)] font-extrabold leading-[1.12] tracking-[-0.025em] text-ink">
             <CharSwap
-              text={feature.title}
+              text={title}
               revealed={revealed}
               active={isActive}
               reduced={reduced}
@@ -323,7 +359,7 @@ function FeatureRow({
               transitionDelay: `${rowDelay + 180}ms`,
             }}
           >
-            {feature.desc}
+            {description}
           </p>
         </div>
 
@@ -347,6 +383,7 @@ function FeatureRow({
 /* -------------------------------------------------------------------------- */
 
 export default function GoalFeature() {
+  const t = useTranslations('About.goal');
   const sectionRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -387,7 +424,7 @@ export default function GoalFeature() {
   return (
     <section
       ref={sectionRef}
-      className="wc-scope relative overflow-hidden text-ink font-googlesans py-[clamp(4.5rem,9vw,8rem)] antialiased"
+      className="wc-scope relative overflow-hidden font-body text-ink py-[clamp(4.5rem,9vw,8rem)] antialiased [&_*]:font-body"
     >
       {/* ambient backdrop */}
       <div
@@ -422,15 +459,15 @@ export default function GoalFeature() {
               }}
               className="text-[0.74rem] font-bold uppercase tracking-[0.22em] text-brand"
             >
-              Why FluxiBiz
+              {t('eyebrow')}
             </motion.span>
           </div>
 
-          <h2 className="m-0 max-w-[18ch] text-[clamp(2.1rem,5.4vw,3.9rem)] font-extrabold leading-[1.06] tracking-[-0.03em]">
-            <MaskedWords text="The principles behind" reduced={reduced} delay={0.15} />
+          <h2 className="m-0 max-w-[18ch] font-body text-[clamp(2.1rem,5.4vw,3.9rem)] font-extrabold leading-[1.06] tracking-[-0.03em]">
+            <MaskedWords text={t('headingLine1')} reduced={reduced} delay={0.15} />
             <br />
             <span className="animate-sheen bg-clip-text bg-[length:220%_100%] text-transparent bg-[linear-gradient(100deg,var(--ah-brand-strong)_0%,var(--ah-brand)_40%,var(--ah-brand-light)_65%,var(--ah-brand)_100%)] motion-reduce:animate-none">
-              <MaskedWords text="everything we build." reduced={reduced} delay={0.32} />
+              <MaskedWords text={t('headingLine2')} reduced={reduced} delay={0.32} />
             </span>
           </h2>
         </motion.header>
@@ -470,8 +507,10 @@ export default function GoalFeature() {
           <ul className="relative m-0 list-none p-0" onPointerLeave={() => setHovered(null)}>
             {FEATURES.map((f, i) => (
               <FeatureRow
-                key={f.title}
+                key={f.mark}
                 feature={f}
+                title={t(f.titleKey)}
+                description={t(f.descKey)}
                 index={i}
                 isActive={activeIndex === i}
                 reduced={reduced}

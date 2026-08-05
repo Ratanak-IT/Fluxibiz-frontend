@@ -10,6 +10,7 @@ import {
   safeReturnTo,
   setSessionCookies,
   TRANSIENT_COOKIE,
+  userFromAccessToken,
 } from "@/lib/auth/keycloak";
 
 export const dynamic = "force-dynamic";
@@ -45,7 +46,24 @@ export async function GET(req: NextRequest) {
       verifier
     );
 
-    const targetUrl = new URL(returnTo, origin);
+    const user = userFromAccessToken(tokens.access_token);
+    const roles = user?.roles || [];
+
+    const superAdminRedirect = process.env.SUPER_ADMIN_REDIRECT_URL || "https://administrator.fluxibiz.store";
+    const businessRedirect = process.env.BUSINESS_REDIRECT_URL || "https://business.fluxbiz.store";
+    const globleUserRedirect = process.env.GLOBLE_USER_REDIRECT_URL || "https://www.fluxibiz.store";
+
+    let targetUrl: URL;
+    if (roles.includes("SUPER_ADMIN")) {
+      targetUrl = new URL(superAdminRedirect);
+    } else if (roles.includes("BUSINESS")) {
+      targetUrl = new URL(businessRedirect);
+    } else if (roles.includes("GLOBLE_USER")) {
+      targetUrl = new URL(globleUserRedirect);
+    } else {
+      targetUrl = new URL(returnTo, origin);
+    }
+
     const res = NextResponse.redirect(targetUrl);
     setSessionCookies(res, tokens);
 

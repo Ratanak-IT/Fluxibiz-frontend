@@ -4,17 +4,14 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
-  ChevronDown,
   LogOut,
   Menu,
   Receipt,
   Settings,
   UserRound,
 } from "lucide-react";
-
-import englishFlag from "../../../public/image/flags/english.png";
-import khmerFlag from "../../../public/image/flags/khmer.png";
 
 // Light-mode logo
 import fluxibizLogo from "../../../public/image/footer/fluxiBix-logo(2).png";
@@ -24,16 +21,20 @@ import fluxibizDarkMode from "../../../public/image/footer/fluxibiz-logo-darkmod
 
 import ThemeToggle from "@/components/common/ThemeToggle";
 import CartDrawer from "@/components/common/CartDrawer";
+import LanguageSwitcherButtonComponent from "@/components/common/LanguageSwitcherButtonComponent";
+
 import { Button } from "@/components/ui/button";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
+
 import type { SessionUser } from "@/lib/type/authType";
 import { useAuth } from "@/features/auth/useAuth";
 import { useGetMyProfileQuery } from "@/features/user/userApi";
 import { resolveMediaUrl } from "@/lib/type/cartType";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +44,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import {
   Sheet,
   SheetContent,
@@ -62,23 +64,28 @@ type NavigationItem = {
   href: string;
 };
 
-const navigationItems: NavigationItem[] = [
-  {
-    label: "Feature",
-    href: "/feature",
-  },
-  {
-    label: "Support",
-    href: "/support",
-  },
-  {
-    label: "About us",
-    href: "/about",
-  },
-];
+function isRouteActive(
+  pathname: string,
+  href: string,
+) {
+  return (
+    pathname === href ||
+    pathname.startsWith(`${href}/`)
+  );
+}
 
-function isRouteActive(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(`${href}/`);
+function getInitials(name: string) {
+  const normalizedName = name.trim();
+
+  if (!normalizedName) {
+    return "U";
+  }
+
+  return normalizedName
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
 }
 
 export default function NavbarAfterLoginComponent({
@@ -86,20 +93,43 @@ export default function NavbarAfterLoginComponent({
   cartCount: _cartCount = 0,
   onLogout,
 }: NavbarAfterLoginComponentProps) {
+  const t = useTranslations("Navbar");
   const pathname = usePathname();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const [mobileNavOpen, setMobileNavOpen] =
+    useState(false);
 
   const { isAuthenticated } = useAuth();
 
-  const { data: profile } = useGetMyProfileQuery(undefined, {
-    skip: !isAuthenticated,
-  });
+  const { data: profile } =
+    useGetMyProfileQuery(undefined, {
+      skip: !isAuthenticated,
+    });
 
-  const resolvedProfilePic = resolveMediaUrl(profile?.profilePicture);
+  const navigationItems: NavigationItem[] = [
+    {
+      label: t("feature"),
+      href: "/feature",
+    },
+    {
+      label: t("support"),
+      href: "/support",
+    },
+    {
+      label: t("aboutUs"),
+      href: "/about",
+    },
+  ];
+
+  const resolvedProfilePic = resolveMediaUrl(
+    profile?.profilePicture,
+  );
 
   const avatarSrc = profile
     ? resolvedProfilePic || undefined
-    : resolveMediaUrl(user.image) || user.image || undefined;
+    : resolveMediaUrl(user.image) ||
+      user.image ||
+      undefined;
 
   return (
     <header
@@ -138,7 +168,7 @@ export default function NavbarAfterLoginComponent({
         {/* Logo */}
         <Link
           href="/store"
-          aria-label="Go to FluxiBiz store"
+          aria-label={t("goToStore")}
           className="inline-flex shrink-0 items-center"
         >
           <Image
@@ -180,16 +210,21 @@ export default function NavbarAfterLoginComponent({
         {/* Desktop navigation */}
         <nav
           className="hidden items-center gap-8 lg:flex"
-          aria-label="Main navigation"
+          aria-label={t("mainNavigation")}
         >
           {navigationItems.map((item) => {
-            const active = isRouteActive(pathname, item.href);
+            const active = isRouteActive(
+              pathname,
+              item.href,
+            );
 
             return (
               <Link
-                key={item.label}
+                key={item.href}
                 href={item.href}
-                aria-current={active ? "page" : undefined}
+                aria-current={
+                  active ? "page" : undefined
+                }
                 className={`
                   relative
                   py-2
@@ -203,6 +238,7 @@ export default function NavbarAfterLoginComponent({
                       : `
                           text-[#6b7280]
                           hover:text-primary
+
                           dark:text-white
                           dark:hover:text-primary
                         `
@@ -233,7 +269,9 @@ export default function NavbarAfterLoginComponent({
         <div className="hidden items-center gap-4 lg:flex">
           <ThemeToggle />
 
-          <LanguageDropdown />
+          <LanguageSwitcherButtonComponent
+            variant="after-login"
+          />
 
           <StyledCartDrawer />
 
@@ -266,6 +304,7 @@ export default function NavbarAfterLoginComponent({
                     p-0
                     text-[#111827]
                     shadow-none
+
                     hover:!bg-transparent
                     hover:text-primary
                     focus-visible:!bg-transparent
@@ -280,7 +319,9 @@ export default function NavbarAfterLoginComponent({
                     dark:focus-visible:!bg-transparent
                     dark:active:!bg-transparent
                   "
-                  aria-label="Open navigation menu"
+                  aria-label={t(
+                    "openNavigationMenu",
+                  )}
                 />
               }
             >
@@ -319,15 +360,16 @@ export default function NavbarAfterLoginComponent({
                 dark:[color-scheme:dark]
               "
             >
-              {/* Equal spacing from logo to the last menu item */}
               <div className="flex w-full flex-col gap-3 py-4">
                 {/* Mobile logo */}
                 <SheetHeader className="w-full shrink-0 p-0 text-left">
                   <SheetTitle className="w-full p-0 text-left">
                     <Link
                       href="/store"
-                      onClick={() => setMobileNavOpen(false)}
-                      aria-label="Go to FluxiBiz store"
+                      onClick={() =>
+                        setMobileNavOpen(false)
+                      }
+                      aria-label={t("goToStore")}
                       className="
                         flex
                         h-11
@@ -375,7 +417,7 @@ export default function NavbarAfterLoginComponent({
                   </SheetTitle>
                 </SheetHeader>
 
-                {/* Theme icon inside sidebar */}
+                {/* Theme */}
                 <div
                   className="
                     flex
@@ -451,14 +493,23 @@ export default function NavbarAfterLoginComponent({
 
                 {/* Mobile navigation */}
                 {navigationItems.map((item) => {
-                  const active = isRouteActive(pathname, item.href);
+                  const active = isRouteActive(
+                    pathname,
+                    item.href,
+                  );
 
                   return (
                     <Link
-                      key={item.label}
+                      key={item.href}
                       href={item.href}
-                      onClick={() => setMobileNavOpen(false)}
-                      aria-current={active ? "page" : undefined}
+                      onClick={() =>
+                        setMobileNavOpen(false)
+                      }
+                      aria-current={
+                        active
+                          ? "page"
+                          : undefined
+                      }
                       className={`
                         flex
                         h-11
@@ -497,13 +548,18 @@ export default function NavbarAfterLoginComponent({
 
                 {/* Language */}
                 <div className="h-11 w-full">
-                  <LanguageDropdown mobile />
+                  <LanguageSwitcherButtonComponent
+                    mobile
+                    variant="after-login"
+                  />
                 </div>
 
                 {/* View profile */}
                 <Link
                   href="/user-profile"
-                  onClick={() => setMobileNavOpen(false)}
+                  onClick={() =>
+                    setMobileNavOpen(false)
+                  }
                   className="
                     flex
                     h-11
@@ -516,6 +572,7 @@ export default function NavbarAfterLoginComponent({
                     font-bold
                     text-[#374151]
                     transition-colors
+
                     hover:bg-[#f3f4f6]
                     hover:text-primary
 
@@ -525,13 +582,15 @@ export default function NavbarAfterLoginComponent({
                   "
                 >
                   <UserRound className="size-5 shrink-0" />
-                  View profile
+                  {t("account.viewProfile")}
                 </Link>
 
                 {/* Payment history */}
                 <Link
                   href="/payment-history"
-                  onClick={() => setMobileNavOpen(false)}
+                  onClick={() =>
+                    setMobileNavOpen(false)
+                  }
                   className="
                     flex
                     h-11
@@ -544,6 +603,7 @@ export default function NavbarAfterLoginComponent({
                     font-bold
                     text-[#374151]
                     transition-colors
+
                     hover:bg-[#f3f4f6]
                     hover:text-primary
 
@@ -553,13 +613,15 @@ export default function NavbarAfterLoginComponent({
                   "
                 >
                   <Receipt className="size-5 shrink-0" />
-                  Payment history
+                  {t("account.paymentHistory")}
                 </Link>
 
                 {/* Settings */}
                 <Link
                   href="/settings"
-                  onClick={() => setMobileNavOpen(false)}
+                  onClick={() =>
+                    setMobileNavOpen(false)
+                  }
                   className="
                     flex
                     h-11
@@ -572,6 +634,7 @@ export default function NavbarAfterLoginComponent({
                     font-bold
                     text-[#374151]
                     transition-colors
+
                     hover:bg-[#f3f4f6]
                     hover:text-primary
 
@@ -581,10 +644,10 @@ export default function NavbarAfterLoginComponent({
                   "
                 >
                   <Settings className="size-5 shrink-0" />
-                  Settings
+                  {t("account.settings")}
                 </Link>
 
-                {/* Log out */}
+                {/* Logout */}
                 <button
                   type="button"
                   onClick={() => {
@@ -608,7 +671,7 @@ export default function NavbarAfterLoginComponent({
                   "
                 >
                   <LogOut className="size-5 shrink-0" />
-                  Log out
+                  {t("account.logout")}
                 </button>
               </div>
             </SheetContent>
@@ -677,6 +740,8 @@ function UserDropdown({
   avatarSrc?: string;
   onLogout?: () => void;
 }) {
+  const t = useTranslations("Navbar");
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -691,6 +756,7 @@ function UserDropdown({
               !bg-transparent
               p-1
               shadow-none
+
               hover:!bg-transparent
               focus-visible:!bg-transparent
               active:!bg-transparent
@@ -702,7 +768,9 @@ function UserDropdown({
               dark:active:!bg-transparent
               dark:aria-expanded:!bg-transparent
             "
-            aria-label="Open user menu"
+            aria-label={t(
+              "account.openUserMenu",
+            )}
           />
         }
       >
@@ -765,39 +833,53 @@ function UserDropdown({
 
         <DropdownMenuGroup>
           <DropdownMenuItem
-            render={<Link href="/user-profile" />}
+            render={
+              <Link href="/user-profile" />
+            }
             className="
               cursor-pointer
               gap-2
               text-[#1f2937]
+
               focus:bg-[#f3f4f6]
-              focus:text-[#1f2937]
+              focus:text-primary
+              data-[highlighted]:bg-[#f3f4f6]
+              data-[highlighted]:text-primary
 
               dark:text-white
               dark:focus:bg-white/5
               dark:focus:text-primary
+              dark:data-[highlighted]:bg-white/5
+              dark:data-[highlighted]:text-primary
             "
           >
             <UserRound className="size-[17px]" />
-            View profile
+            {t("account.viewProfile")}
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            render={<Link href="/payment-history" />}
+            render={
+              <Link href="/payment-history" />
+            }
             className="
               cursor-pointer
               gap-2
               text-[#1f2937]
+
               focus:bg-[#f3f4f6]
-              focus:text-[#1f2937]
+              focus:text-primary
+              data-[highlighted]:bg-[#f3f4f6]
+              data-[highlighted]:text-primary
 
               dark:text-white
               dark:focus:bg-white/5
               dark:focus:text-primary
+              dark:data-[highlighted]:bg-white/5
+              dark:data-[highlighted]:text-primary
             "
           >
             <Receipt className="size-[17px]" />
-            Payment history
+            {t("account.paymentHistory")}
           </DropdownMenuItem>
 
           <DropdownMenuItem
@@ -806,16 +888,21 @@ function UserDropdown({
               cursor-pointer
               gap-2
               text-[#1f2937]
+
               focus:bg-[#f3f4f6]
-              focus:text-[#1f2937]
+              focus:text-primary
+              data-[highlighted]:bg-[#f3f4f6]
+              data-[highlighted]:text-primary
 
               dark:text-white
               dark:focus:bg-white/5
               dark:focus:text-primary
+              dark:data-[highlighted]:bg-white/5
+              dark:data-[highlighted]:text-primary
             "
           >
             <Settings className="size-[17px]" />
-            Settings
+            {t("account.settings")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -827,189 +914,17 @@ function UserDropdown({
             cursor-pointer
             gap-2
             text-destructive
+
             focus:bg-destructive/10
             focus:text-destructive
+            data-[highlighted]:bg-destructive/10
+            data-[highlighted]:text-destructive
           "
         >
           <LogOut className="size-[17px]" />
-          Log out
+          {t("account.logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
-
-function LanguageDropdown({
-  mobile = false,
-}: {
-  mobile?: boolean;
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button
-            type="button"
-            variant="ghost"
-            className={
-              mobile
-                ? `
-                    group
-                    h-11
-                    w-full
-                    justify-start
-                    gap-3
-                    !bg-transparent
-                    px-3
-                    text-base
-                    font-semibold
-                    text-[#374151]
-                    shadow-none
-                    hover:!bg-transparent
-                    hover:text-primary
-                    focus-visible:!bg-transparent
-                    active:!bg-transparent
-                    aria-expanded:!bg-transparent
-                    aria-expanded:text-primary
-
-                    dark:!bg-transparent
-                    dark:text-white
-                    dark:hover:!bg-transparent
-                    dark:hover:text-primary
-                    dark:focus-visible:!bg-transparent
-                    dark:active:!bg-transparent
-                    dark:aria-expanded:!bg-transparent
-                    dark:aria-expanded:text-primary
-                  `
-                : `
-                    group
-                    h-10
-                    gap-2
-                    rounded-full
-                    !bg-transparent
-                    px-3
-                    text-sm
-                    font-semibold
-                    text-[#4b5563]
-                    shadow-none
-                    hover:!bg-transparent
-                    hover:text-secondary
-                    focus-visible:!bg-transparent
-                    active:!bg-transparent
-                    aria-expanded:!bg-transparent
-                    aria-expanded:text-secondary
-
-                    dark:!bg-transparent
-                    dark:text-white
-                    dark:hover:!bg-transparent
-                    dark:hover:text-secondary
-                    dark:focus-visible:!bg-transparent
-                    dark:active:!bg-transparent
-                    dark:aria-expanded:!bg-transparent
-                    dark:aria-expanded:text-secondary
-                  `
-            }
-          />
-        }
-      >
-        <Image
-          src={englishFlag}
-          alt="English"
-          width={40}
-          height={28}
-          className="h-5 w-8 object-cover"
-        />
-
-        {mobile && <span>English</span>}
-
-        <ChevronDown
-          className="
-            size-4
-            stroke-current
-            transition-colors
-            duration-200
-            group-hover:stroke-secondary
-          "
-        />
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent
-        align={mobile ? "start" : "end"}
-        className="
-          border-[#e5e7eb]
-          bg-white
-          p-2
-          text-[#1f2937]
-          [color-scheme:light]
-
-          dark:border-white/10
-          dark:bg-background
-          dark:text-white
-          dark:[color-scheme:dark]
-        "
-      >
-        <DropdownMenuItem
-          className="
-            gap-3
-            py-2
-            text-sm
-            font-medium
-            text-[#1f2937]
-            focus:bg-[#f3f4f6]
-            focus:text-primary
-
-            dark:text-white
-            dark:focus:bg-white/5
-            dark:focus:text-primary
-          "
-        >
-          <Image
-            src={englishFlag}
-            alt="English"
-            width={32}
-            height={24}
-            className="h-5 w-8 object-cover"
-          />
-
-          English
-        </DropdownMenuItem>
-
-        <DropdownMenuItem
-          className="
-            gap-3
-            py-2
-            text-sm
-            font-medium
-            text-[#1f2937]
-            focus:bg-[#f3f4f6]
-            focus:text-primary
-
-            dark:text-white
-            dark:focus:bg-white/5
-            dark:focus:text-primary
-          "
-        >
-          <Image
-            src={khmerFlag}
-            alt="Khmer"
-            width={32}
-            height={24}
-            className="h-5 w-8 object-cover"
-          />
-
-          Khmer
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .map((word) => word.charAt(0))
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 }

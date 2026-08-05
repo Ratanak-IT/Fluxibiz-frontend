@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin(
+  "./src/i18n/request.ts",
+);
 
 const securityHeaders = [
   {
@@ -27,13 +32,15 @@ const securityHeaders = [
   },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+    value:
+      "camera=(), microphone=(), geolocation=(), interest-cohort=()",
   },
 ];
 
 const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
+
   async headers() {
     return [
       {
@@ -42,6 +49,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
   async redirects() {
     return [
       {
@@ -51,6 +59,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 86400,
@@ -65,6 +74,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
   experimental: {
     optimizePackageImports: [
       "lucide-react",
@@ -74,7 +84,8 @@ const nextConfig: NextConfig = {
       "embla-carousel-react",
     ],
   },
+
   reactCompiler: true,
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

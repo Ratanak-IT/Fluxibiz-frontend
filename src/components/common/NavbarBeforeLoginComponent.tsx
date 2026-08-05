@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, type MouseEvent } from "react";
+import {
+  useState,
+  type MouseEvent,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { ChevronDown, Menu } from "lucide-react";
-
-import englishFlag from "../../../public/image/flags/english.png";
-import khmerFlag from "../../../public/image/flags/khmer.png";
 
 // Light-mode logo
 import fluxibizLogo from "../../../public/image/footer/fluxiBix-logo(2).png";
@@ -17,13 +18,16 @@ import fluxibizDarkMode from "../../../public/image/footer/fluxibiz-logo-darkmod
 
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/common/ThemeToggle";
+import LanguageSwitcherButtonComponent from "@/components/common/LanguageSwitcherButtonComponent";
 import { useAuth } from "@/features/auth/useAuth";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import {
   Sheet,
   SheetContent,
@@ -41,29 +45,20 @@ type NavigationItem = {
   }[];
 };
 
-const navigationItems: NavigationItem[] = [
-  {
-    label: "Feature",
-    href: "/feature",
-  },
-  {
-    label: "Support",
-    href: "/support",
-  },
-  {
-    label: "About us",
-    href: "/about",
-  },
-];
-
 interface NavbarBeforeLoginProps {
   pending?: boolean;
   isLoggingIn?: boolean;
   onLogin?: () => Promise<void> | void;
 }
 
-function isRouteActive(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(`${href}/`);
+function isRouteActive(
+  pathname: string,
+  href: string,
+) {
+  return (
+    pathname === href ||
+    pathname.startsWith(`${href}/`)
+  );
 }
 
 export default function NavbarBeforeLoginComponent({
@@ -71,11 +66,31 @@ export default function NavbarBeforeLoginComponent({
   isLoggingIn = false,
   onLogin,
 }: NavbarBeforeLoginProps) {
+  const t = useTranslations("Navbar");
+
   const pathname = usePathname();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const [mobileNavOpen, setMobileNavOpen] =
+    useState(false);
+
   const { loginHref, login } = useAuth();
 
-  const handleLogin = (event: MouseEvent) => {
+  const navigationItems: NavigationItem[] = [
+    {
+      label: t("feature"),
+      href: "/feature",
+    },
+    {
+      label: t("support"),
+      href: "/support",
+    },
+    {
+      label: t("aboutUs"),
+      href: "/about",
+    },
+  ];
+
+  function handleLogin(event: MouseEvent) {
     event.preventDefault();
 
     if (onLogin) {
@@ -84,7 +99,7 @@ export default function NavbarBeforeLoginComponent({
     }
 
     login();
-  };
+  }
 
   return (
     <header
@@ -123,7 +138,7 @@ export default function NavbarBeforeLoginComponent({
         {/* Main logo */}
         <Link
           href="/store"
-          aria-label="Go to FluxiBiz store"
+          aria-label={t("goToStore")}
           className="inline-flex shrink-0 items-center"
         >
           <Image
@@ -165,20 +180,28 @@ export default function NavbarBeforeLoginComponent({
         {/* Desktop navigation */}
         <nav
           className="hidden items-center gap-8 lg:flex"
-          aria-label="Main navigation"
+          aria-label={t("mainNavigation")}
         >
           {navigationItems.map((item) => {
-            const active = isRouteActive(pathname, item.href);
+            const active = isRouteActive(
+              pathname,
+              item.href,
+            );
 
             if (item.children?.length) {
-              const childActive = item.children.some((child) =>
-                isRouteActive(pathname, child.href),
-              );
+              const childActive =
+                item.children.some((child) =>
+                  isRouteActive(
+                    pathname,
+                    child.href,
+                  ),
+                );
 
-              const menuActive = active || childActive;
+              const menuActive =
+                active || childActive;
 
               return (
-                <DropdownMenu key={item.label}>
+                <DropdownMenu key={item.href}>
                   <DropdownMenuTrigger
                     className={`
                       relative
@@ -197,6 +220,7 @@ export default function NavbarBeforeLoginComponent({
                           : `
                               text-[#6b7280]
                               hover:text-primary
+
                               dark:text-white
                               dark:hover:text-primary
                             `
@@ -239,27 +263,39 @@ export default function NavbarBeforeLoginComponent({
                     "
                   >
                     {item.children.map((child) => {
-                      const childActive = isRouteActive(
-                        pathname,
-                        child.href,
-                      );
+                      const childIsActive =
+                        isRouteActive(
+                          pathname,
+                          child.href,
+                        );
 
                       return (
                         <DropdownMenuItem
-                          key={child.label}
-                          render={<Link href={child.href} />}
+                          key={child.href}
+                          render={
+                            <Link
+                              href={child.href}
+                            />
+                          }
                           className={`
+                            cursor-pointer
                             py-2
                             text-sm
                             font-medium
+
                             focus:bg-primary/10
-                            focus:text-primary
+                            focus:!text-primary
+
+                            data-[highlighted]:bg-primary/10
+                            data-[highlighted]:!text-primary
 
                             dark:focus:bg-primary/10
-                            dark:focus:text-primary
+                            dark:focus:!text-primary
+                            dark:data-[highlighted]:bg-primary/10
+                            dark:data-[highlighted]:!text-primary
 
                             ${
-                              childActive
+                              childIsActive
                                 ? "bg-primary/10 text-primary"
                                 : "text-[#4b5563] dark:text-white"
                             }
@@ -276,9 +312,11 @@ export default function NavbarBeforeLoginComponent({
 
             return (
               <Link
-                key={item.label}
+                key={item.href}
                 href={item.href}
-                aria-current={active ? "page" : undefined}
+                aria-current={
+                  active ? "page" : undefined
+                }
                 className={`
                   relative
                   py-2
@@ -292,6 +330,7 @@ export default function NavbarBeforeLoginComponent({
                       : `
                           text-[#6b7280]
                           hover:text-primary
+
                           dark:text-white
                           dark:hover:text-primary
                         `
@@ -335,7 +374,7 @@ export default function NavbarBeforeLoginComponent({
         >
           <ThemeToggle />
 
-          <LanguageDropdown />
+          <LanguageSwitcherButtonComponent variant="before-login" />
 
           <Link
             href="/register/business"
@@ -350,14 +389,16 @@ export default function NavbarBeforeLoginComponent({
               dark:hover:text-secondary
             "
           >
-            Business
+            {t("business")}
           </Link>
 
           <Button
             nativeButton={false}
             render={<a href={loginHref} />}
             onClick={handleLogin}
-            disabled={pending || isLoggingIn}
+            disabled={
+              pending || isLoggingIn
+            }
             className="
               h-9
               rounded-full
@@ -377,12 +418,16 @@ export default function NavbarBeforeLoginComponent({
               dark:hover:bg-[#007d24]
             "
           >
-            {isLoggingIn ? "Logging in..." : "Login"}
+            {isLoggingIn
+              ? t("loggingIn")
+              : t("login")}
           </Button>
 
           <Button
             nativeButton={false}
-            render={<Link href="/register" />}
+            render={
+              <Link href="/register" />
+            }
             variant="outline"
             className="
               h-9
@@ -395,6 +440,7 @@ export default function NavbarBeforeLoginComponent({
               font-bold
               text-primary
               shadow-none
+
               hover:!bg-transparent
               hover:text-primary
               focus-visible:!bg-transparent
@@ -409,7 +455,7 @@ export default function NavbarBeforeLoginComponent({
               dark:active:!bg-transparent
             "
           >
-            Register
+            {t("register")}
           </Button>
         </div>
 
@@ -432,6 +478,7 @@ export default function NavbarBeforeLoginComponent({
                   p-0
                   text-[#111827]
                   shadow-none
+
                   hover:!bg-transparent
                   hover:text-primary
                   focus-visible:!bg-transparent
@@ -446,474 +493,370 @@ export default function NavbarBeforeLoginComponent({
                   dark:focus-visible:!bg-transparent
                   dark:active:!bg-transparent
                 "
-                aria-label="Open navigation menu"
+                aria-label={t(
+                  "openNavigationMenu",
+                )}
               />
             }
           >
             <Menu className="size-5 sm:size-6" />
           </SheetTrigger>
 
-         <SheetContent
-  side="right"
-  className="
-    flex
-    w-[62vw]
-    min-w-[235px]
-    max-w-[255px]
-    flex-col
-    gap-0
-    overflow-y-auto
-    border-[#e5e7eb]
-    bg-white
-    px-3
-    text-[#111827]
-    [color-scheme:light]
-
-    min-[390px]:w-[60vw]
-    min-[390px]:max-w-[265px]
-
-    sm:w-[340px]
-    sm:max-w-[340px]
-    sm:px-6
-
-    md:w-[370px]
-    md:max-w-[370px]
-
-    dark:border-white/10
-    dark:bg-background
-    dark:text-white
-    dark:[color-scheme:dark]
-  "
->
-  {/* One consistent vertical gap for all sidebar elements */}
-  <div className="flex w-full flex-col gap-3 py-4">
-    {/* Logo */}
-    <SheetHeader className="w-full shrink-0 p-0 text-left">
-      <SheetTitle className="w-full p-0 text-left">
-        <Link
-          href="/store"
-          onClick={() => setMobileNavOpen(false)}
-          aria-label="Go to FluxiBiz store"
-          className="
-            flex
-            h-11
-            w-full
-            items-center
-            justify-start
-            px-3
-          "
-        >
-          <span
+          <SheetContent
+            side="right"
             className="
-              relative
-              block
-              h-10
-              w-30
-              shrink-0
+              flex
+              w-[62vw]
+              min-w-[235px]
+              max-w-[255px]
+              flex-col
+              gap-0
+              overflow-y-auto
+              border-[#e5e7eb]
+              bg-white
+              px-3
+              text-[#111827]
+              [color-scheme:light]
+
+              min-[390px]:w-[60vw]
+              min-[390px]:max-w-[265px]
+
+              sm:w-[340px]
+              sm:max-w-[340px]
+              sm:px-6
+
+              md:w-[370px]
+              md:max-w-[370px]
+
+              dark:border-white/10
+              dark:bg-background
+              dark:text-white
+              dark:[color-scheme:dark]
             "
           >
-            <Image
-              src={fluxibizLogo}
-              alt="FluxiBiz"
-              fill
-              sizes="120px"
-              className="
-                object-contain
-                object-left
-                dark:hidden
-              "
-            />
+            <div className="flex w-full flex-col gap-3 py-4">
+              {/* Logo */}
+              <SheetHeader className="w-full shrink-0 p-0 text-left">
+                <SheetTitle className="w-full p-0 text-left">
+                  <Link
+                    href="/store"
+                    onClick={() =>
+                      setMobileNavOpen(false)
+                    }
+                    aria-label={t(
+                      "goToStore",
+                    )}
+                    className="
+                      flex
+                      h-11
+                      w-full
+                      items-center
+                      justify-start
+                      px-3
+                    "
+                  >
+                    <span
+                      className="
+                        relative
+                        block
+                        h-10
+                        w-30
+                        shrink-0
+                      "
+                    >
+                      <Image
+                        src={fluxibizLogo}
+                        alt="FluxiBiz"
+                        fill
+                        sizes="120px"
+                        className="
+                          object-contain
+                          object-left
+                          dark:hidden
+                        "
+                      />
 
-            <Image
-              src={fluxibizDarkMode}
-              alt="FluxiBiz"
-              fill
-              sizes="120px"
-              className="
-                hidden
-                object-contain
-                object-left
-                dark:block
-              "
-            />
-          </span>
-        </Link>
-      </SheetTitle>
-    </SheetHeader>
+                      <Image
+                        src={fluxibizDarkMode}
+                        alt="FluxiBiz"
+                        fill
+                        sizes="120px"
+                        className="
+                          hidden
+                          object-contain
+                          object-left
+                          dark:block
+                        "
+                      />
+                    </span>
+                  </Link>
+                </SheetTitle>
+              </SheetHeader>
 
-    {/* Theme */}
-    <div
-      className="
-        flex
-        h-11
-        shrink-0
-        items-center
-        justify-start
-        px-3
-      "
-    >
-      <div className="grid size-10 shrink-0 place-items-center">
-        <ThemeToggle mobile />
-      </div>
-    </div>
+              {/* Theme */}
+              <div
+                className="
+                  flex
+                  h-11
+                  shrink-0
+                  items-center
+                  justify-start
+                  px-3
+                "
+              >
+                <div className="grid size-10 shrink-0 place-items-center">
+                  <ThemeToggle mobile />
+                </div>
+              </div>
 
-    {/* Navigation */}
-    {navigationItems.map((item) => {
-      const active = isRouteActive(pathname, item.href);
-
-      return (
-        <div key={item.label} className="w-full">
-          <Link
-            href={item.href}
-            onClick={() => setMobileNavOpen(false)}
-            aria-current={active ? "page" : undefined}
-            className={`
-              flex
-              h-11
-              w-full
-              items-center
-              rounded-lg
-              border-l-4
-              px-3
-              text-base
-              font-bold
-              transition-colors
-
-              ${
-                active
-                  ? "border-primary bg-primary/10 text-primary"
-                  : `
-                      border-transparent
-                      text-[#374151]
-                      hover:bg-[#f3f4f6]
-                      hover:text-primary
-
-                      dark:text-white
-                      dark:hover:bg-white/5
-                      dark:hover:text-primary
-                    `
-              }
-            `}
-          >
-            {item.label}
-          </Link>
-
-          {item.children?.length ? (
-            <div
-              className="
-                mt-3
-                flex
-                flex-col
-                gap-3
-                border-l-2
-                border-[#e5e7eb]
-                pl-4
-                dark:border-white/10
-              "
-            >
-              {item.children.map((child) => {
-                const childActive = isRouteActive(
-                  pathname,
-                  child.href,
-                );
+              {/* Navigation */}
+              {navigationItems.map((item) => {
+                const active =
+                  isRouteActive(
+                    pathname,
+                    item.href,
+                  );
 
                 return (
-                  <Link
-                    key={child.label}
-                    href={child.href}
-                    onClick={() => setMobileNavOpen(false)}
-                    aria-current={
-                      childActive ? "page" : undefined
-                    }
-                    className={`
-                      flex
-                      h-10
-                      items-center
-                      rounded-lg
-                      px-3
-                      text-sm
-                      font-medium
-                      transition-colors
-
-                      ${
-                        childActive
-                          ? "bg-primary/10 text-primary"
-                          : `
-                              text-[#6b7280]
-                              hover:bg-[#f3f4f6]
-                              hover:text-primary
-
-                              dark:text-white
-                              dark:hover:bg-white/5
-                              dark:hover:text-primary
-                            `
-                      }
-                    `}
+                  <div
+                    key={item.href}
+                    className="w-full"
                   >
-                    {child.label}
-                  </Link>
+                    <Link
+                      href={item.href}
+                      onClick={() =>
+                        setMobileNavOpen(false)
+                      }
+                      aria-current={
+                        active
+                          ? "page"
+                          : undefined
+                      }
+                      className={`
+                        flex
+                        h-11
+                        w-full
+                        items-center
+                        rounded-lg
+                        border-l-4
+                        px-3
+                        text-base
+                        font-bold
+                        transition-colors
+
+                        ${
+                          active
+                            ? "border-primary bg-primary/10 text-primary"
+                            : `
+                                border-transparent
+                                text-[#374151]
+                                hover:bg-[#f3f4f6]
+                                hover:text-primary
+
+                                dark:text-white
+                                dark:hover:bg-white/5
+                                dark:hover:text-primary
+                              `
+                        }
+                      `}
+                    >
+                      {item.label}
+                    </Link>
+
+                    {item.children?.length ? (
+                      <div
+                        className="
+                          mt-3
+                          flex
+                          flex-col
+                          gap-3
+                          border-l-2
+                          border-[#e5e7eb]
+                          pl-4
+
+                          dark:border-white/10
+                        "
+                      >
+                        {item.children.map(
+                          (child) => {
+                            const childActive =
+                              isRouteActive(
+                                pathname,
+                                child.href,
+                              );
+
+                            return (
+                              <Link
+                                key={
+                                  child.href
+                                }
+                                href={
+                                  child.href
+                                }
+                                onClick={() =>
+                                  setMobileNavOpen(
+                                    false,
+                                  )
+                                }
+                                aria-current={
+                                  childActive
+                                    ? "page"
+                                    : undefined
+                                }
+                                className={`
+                                  flex
+                                  h-10
+                                  items-center
+                                  rounded-lg
+                                  px-3
+                                  text-sm
+                                  font-medium
+                                  transition-colors
+
+                                  ${
+                                    childActive
+                                      ? "bg-primary/10 text-primary"
+                                      : `
+                                          text-[#6b7280]
+                                          hover:bg-[#f3f4f6]
+                                          hover:text-primary
+
+                                          dark:text-white
+                                          dark:hover:bg-white/5
+                                          dark:hover:text-primary
+                                        `
+                                  }
+                                `}
+                              >
+                                {
+                                  child.label
+                                }
+                              </Link>
+                            );
+                          },
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
                 );
               })}
+
+              {/* Divider */}
+              <div className="h-px w-full shrink-0 bg-[#e5e7eb] dark:bg-white/10" />
+
+              {/* Language */}
+              <div className="h-11 w-full">
+                <LanguageSwitcherButtonComponent
+                  mobile
+                  variant="before-login"
+                />
+              </div>
+
+              {/* Business */}
+              <Link
+                href="/register/business"
+                onClick={() =>
+                  setMobileNavOpen(false)
+                }
+                className="
+                  flex
+                  h-11
+                  w-full
+                  items-center
+                  rounded-lg
+                  px-3
+                  text-base
+                  font-bold
+                  text-[#374151]
+                  transition-colors
+
+                  hover:bg-[#f3f4f6]
+                  hover:text-primary
+
+                  dark:text-white
+                  dark:hover:bg-white/5
+                  dark:hover:text-primary
+                "
+              >
+                {t("business")}
+              </Link>
+
+              {/* Login */}
+              <Button
+                nativeButton={false}
+                render={<a href={loginHref} />}
+                onClick={(event) => {
+                  setMobileNavOpen(false);
+                  handleLogin(event);
+                }}
+                disabled={
+                  pending || isLoggingIn
+                }
+                className="
+                  h-11
+                  w-full
+                  shrink-0
+                  rounded-full
+                  bg-primary
+                  text-base
+                  font-bold
+                  text-white
+                  shadow-none
+                  hover:bg-[#007d24]
+
+                  dark:bg-primary
+                  dark:text-white
+                  dark:hover:bg-[#007d24]
+                "
+              >
+                {isLoggingIn
+                  ? t("loggingIn")
+                  : t("login")}
+              </Button>
+
+              {/* Register */}
+              <Button
+                nativeButton={false}
+                render={
+                  <Link href="/register" />
+                }
+                onClick={() =>
+                  setMobileNavOpen(false)
+                }
+                variant="outline"
+                className="
+                  h-11
+                  w-full
+                  shrink-0
+                  rounded-full
+                  border-2
+                  border-primary
+                  !bg-transparent
+                  text-base
+                  font-bold
+                  text-primary
+                  shadow-none
+
+                  hover:!bg-transparent
+                  hover:text-primary
+                  focus-visible:!bg-transparent
+                  active:!bg-transparent
+
+                  dark:border-primary
+                  dark:!bg-transparent
+                  dark:text-primary
+                  dark:hover:!bg-transparent
+                  dark:hover:text-primary
+                  dark:focus-visible:!bg-transparent
+                  dark:active:!bg-transparent
+                "
+              >
+                {t("register")}
+              </Button>
             </div>
-          ) : null}
-        </div>
-      );
-    })}
-
-    {/* Divider */}
-    <div className="h-px w-full shrink-0 bg-[#e5e7eb] dark:bg-white/10" />
-
-    {/* Language */}
-    <div className="h-11 w-full">
-      <LanguageDropdown mobile />
-    </div>
-
-    {/* Business */}
-    <Link
-      href="/register/business"
-      onClick={() => setMobileNavOpen(false)}
-      className="
-        flex
-        h-11
-        w-full
-        items-center
-        rounded-lg
-        px-3
-        text-base
-        font-bold
-        text-[#374151]
-        transition-colors
-        hover:bg-[#f3f4f6]
-        hover:text-primary
-
-        dark:text-white
-        dark:hover:bg-white/5
-        dark:hover:text-primary
-      "
-    >
-      Business
-    </Link>
-
-    {/* Login */}
-    <Button
-      nativeButton={false}
-      render={<a href={loginHref} />}
-      onClick={(event) => {
-        setMobileNavOpen(false);
-        handleLogin(event);
-      }}
-      disabled={pending || isLoggingIn}
-      className="
-        h-11
-        w-full
-        shrink-0
-        rounded-full
-        bg-primary
-        text-base
-        font-bold
-        text-white
-        shadow-none
-        hover:bg-[#007d24]
-
-        dark:bg-primary
-        dark:text-white
-        dark:hover:bg-[#007d24]
-      "
-    >
-      {isLoggingIn ? "Logging in..." : "Login"}
-    </Button>
-
-    {/* Register */}
-    <Button
-      nativeButton={false}
-      render={<Link href="/register" />}
-      onClick={() => setMobileNavOpen(false)}
-      variant="outline"
-      className="
-        h-11
-        w-full
-        shrink-0
-        rounded-full
-        border-2
-        border-primary
-        !bg-transparent
-        text-base
-        font-bold
-        text-primary
-        shadow-none
-        hover:!bg-transparent
-        hover:text-primary
-        focus-visible:!bg-transparent
-        active:!bg-transparent
-
-        dark:border-primary
-        dark:!bg-transparent
-        dark:text-primary
-        dark:hover:!bg-transparent
-        dark:hover:text-primary
-        dark:focus-visible:!bg-transparent
-        dark:active:!bg-transparent
-      "
-    >
-      Register
-    </Button>
-  </div>
-</SheetContent>
+          </SheetContent>
         </Sheet>
       </div>
     </header>
-  );
-}
-
-function LanguageDropdown({
-  mobile = false,
-}: {
-  mobile?: boolean;
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button
-            type="button"
-            variant="ghost"
-            className={
-              mobile
-                ? `
-                    w-full
-                    justify-start
-                    gap-3
-                    !bg-transparent
-                    text-base
-                    font-semibold
-                    text-[#374151]
-                    shadow-none
-                    hover:!bg-transparent
-                    hover:text-primary
-                    focus-visible:!bg-transparent
-                    active:!bg-transparent
-                    aria-expanded:!bg-transparent
-                    aria-expanded:text-primary
-
-                    dark:!bg-transparent
-                    dark:text-white
-                    dark:hover:!bg-transparent
-                    dark:hover:text-primary
-                    dark:focus-visible:!bg-transparent
-                    dark:active:!bg-transparent
-                    dark:aria-expanded:!bg-transparent
-                    dark:aria-expanded:text-primary
-                  `
-                : `
-                    h-10
-                    gap-2
-                    rounded-full
-                    !bg-transparent
-                    px-3
-                    text-sm
-                    font-semibold
-                    text-[#374151]
-                    shadow-none
-                    hover:!bg-transparent
-                    hover:text-primary
-                    focus-visible:!bg-transparent
-                    active:!bg-transparent
-                    aria-expanded:!bg-transparent
-                    aria-expanded:text-primary
-
-                    dark:!bg-transparent
-                    dark:text-white
-                    dark:hover:!bg-transparent
-                    dark:hover:text-primary
-                    dark:focus-visible:!bg-transparent
-                    dark:active:!bg-transparent
-                    dark:aria-expanded:!bg-transparent
-                    dark:aria-expanded:text-primary
-                  `
-            }
-          />
-        }
-      >
-        <Image
-          src={englishFlag}
-          alt="English"
-          width={40}
-          height={28}
-          className="h-5 w-8 object-cover"
-        />
-
-        {mobile && <span>English</span>}
-
-        <ChevronDown size={16} />
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent
-        align={mobile ? "start" : "end"}
-        className="
-          border-[#e5e7eb]
-          bg-white
-          p-2
-          text-[#111827]
-          [color-scheme:light]
-
-          dark:border-white/10
-          dark:bg-background
-          dark:text-white
-          dark:[color-scheme:dark]
-        "
-      >
-        <DropdownMenuItem
-          className="
-            gap-3
-            py-2
-            text-sm
-            font-medium
-            text-[#374151]
-            focus:bg-primary/10
-            focus:text-primary
-
-            dark:text-white
-            dark:focus:bg-primary/10
-            dark:focus:text-primary
-          "
-        >
-          <Image
-            src={englishFlag}
-            alt="English"
-            width={32}
-            height={24}
-            className="h-5 w-8 object-cover"
-          />
-
-          English
-        </DropdownMenuItem>
-
-        <DropdownMenuItem
-          className="
-            gap-3
-            py-2
-            text-sm
-            font-medium
-            text-[#374151]
-            focus:bg-primary/10
-            focus:text-primary
-
-            dark:text-white
-            dark:focus:bg-primary/10
-            dark:focus:text-primary
-          "
-        >
-          <Image
-            src={khmerFlag}
-            alt="Khmer"
-            width={32}
-            height={24}
-            className="h-5 w-8 object-cover"
-          />
-
-          Khmer
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
