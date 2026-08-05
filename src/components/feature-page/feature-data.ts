@@ -8,13 +8,25 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+export type FeatureModuleKey =
+  | "business"
+  | "inventory"
+  | "sales"
+  | "reports"
+  | "onlineShopping"
+  | "socialCommerce";
+
+export type FeatureStatKey =
+  | "businesses"
+  | "countries"
+  | "uptime";
+
 export interface FeatureModule {
   index: string;
-  title: string;
+  translationKey: FeatureModuleKey;
+  featureKeys: readonly string[];
   image: string;
-  alt: string;
   icon: LucideIcon;
-  features: string[];
   imageSide: "left" | "right";
   imageClassName?: string;
 }
@@ -22,77 +34,98 @@ export interface FeatureModule {
 export const FEATURE_MODULES: FeatureModule[] = [
   {
     index: "01",
-    title: "Business Management",
+    translationKey: "business",
+    featureKeys: [
+      "summary",
+      "reports",
+      "channels",
+      "notifications",
+      "settings",
+      "people",
+    ],
     image: "/image/features/business.png",
-    alt: "FluxiBiz business management dashboard",
     icon: LayoutDashboard,
-    features: ["Summary information", "Clear reports and analytics", "Shop-channel management", "Alert Notifications", "Centralized business settings", "Customer and staff management"],
     imageSide: "left",
   },
   {
     index: "02",
-    title: "Inventory Management",
-    image: "/image/features/inventory-management.png",
-    alt: "FluxiBiz inventory management screen",
-    icon: Boxes,
-    features: [
-      "Count stock",
-      "Create stock",
-      "Create service",
-      "Stock alerts",
-      "Create Category",
-      "Create Product",
+    translationKey: "inventory",
+    featureKeys: [
+      "countStock",
+      "createStock",
+      "createService",
+      "stockAlerts",
+      "createCategory",
+      "createProduct",
     ],
+    image: "/image/features/inventory-management.png",
+    icon: Boxes,
     imageSide: "right",
   },
   {
     index: "03",
-    title: "Sale Management",
+    translationKey: "sales",
+    featureKeys: [
+      "pos",
+      "orders",
+      "payments",
+      "customers",
+      "discounts",
+      "barcode",
+    ],
     image: "/image/features/sale-management.png",
-    alt: "FluxiBiz sale management screen",
     icon: Package,
-    features: [ "Point of Sale", "Sale orders", "Payment Management", "Create Customer", "Discounts & Promotions", "Barcode Scanning"],
     imageSide: "left",
   },
   {
     index: "04",
-    title: "Report Analytics",
+    translationKey: "reports",
+    featureKeys: [
+      "graphicReports",
+      "dateFilters",
+      "salesAnalytics",
+      "exportReports",
+    ],
     image: "/image/features/dashboard-showcase.png",
-    alt: "FluxiBiz report analytics dashboard",
     icon: Laptop,
-    features: ["Graphic reports", "Custom Date Filters", "Sales Analytics", "Export Reports"],
     imageSide: "right",
   },
   {
     index: "05",
-    title: "Online Shopping",
-    image: "/image/features/online-shopping.png",
-    alt: "FluxiBiz online shopping storefront",
-    icon: BarChart3,
-    features: [
-      "Product Catalog",
-      "Secure Checkout",
-      "Shopping Cart",
-      "Order History",
-      "Smart Search",
-      "Multiple Payment Methods",
+    translationKey: "onlineShopping",
+    featureKeys: [
+      "catalog",
+      "checkout",
+      "cart",
+      "history",
+      "search",
+      "payments",
     ],
+    image: "/image/features/online-shopping.png",
+    icon: BarChart3,
     imageSide: "left",
   },
   {
     index: "06",
-    title: "Social Commerce",
+    translationKey: "socialCommerce",
+    featureKeys: [
+      "messenger",
+      "telegram",
+      "chat",
+      "payments",
+    ],
     image: "/image/features/social.png",
-    alt: "FluxiBiz social commerce chat order",
     icon: Users,
-    features: ["Messenger Orders", "Telegram Orders", "Customer Chat Management", "Payment Integration"],
     imageSide: "right",
     imageClassName: "object-contain p-3 sm:p-5",
   },
 ];
 
 export const FEATURE_STATS = [
-  { value: "12,000+", label: "Businesses running FluxiBiz" },
-  { value: "30+", label: "Countries served" },
-  { value: "99.9%", label: "Uptime, every month" },
-] as const;
+  { value: "12,000+", translationKey: "businesses" },
+  { value: "30+", translationKey: "countries" },
+  { value: "99.9%", translationKey: "uptime" },
+] as const satisfies readonly {
+  value: string;
+  translationKey: FeatureStatKey;
+}[];

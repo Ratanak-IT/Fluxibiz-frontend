@@ -97,6 +97,10 @@ function useCoarsePointer() {
 
 type SplitWord = { chars: { ch: string; i: number }[] };
 
+function isKhmerText(text: string) {
+  return /[\u1780-\u17FF]/.test(text);
+}
+
 /** Splits text into words → characters, keeping one running index for stagger. */
 function useSplit(text: string): SplitWord[] {
   return useMemo(() => {
@@ -130,6 +134,7 @@ function CharSwap({
   swapClassName?: string;
 }) {
   const words = useSplit(text);
+  const khmer = isKhmerText(text);
   const layerRef = useRef<HTMLSpanElement>(null);
   const [wrapped, setWrapped] = useState(false);
 
@@ -162,11 +167,11 @@ function CharSwap({
 
   const renderLayer = (transform: string) =>
     words.map((word, wi) => (
-      <span key={wi} data-word className="inline-block whitespace-nowrap">
+      <span key={wi} data-word className="inline-block whitespace-nowrap font-googlesans">
         {word.chars.map(({ ch, i }) => (
           <span
             key={i}
-            className="inline-block ease-hero"
+            className="inline-block font-googlesans ease-hero"
             style={{
               transform,
               willChange: plain ? undefined : 'transform',
@@ -178,13 +183,31 @@ function CharSwap({
             {ch}
           </span>
         ))}
-        {wi < words.length - 1 && <span className="inline-block w-[0.3em]" />}
+        {wi < words.length - 1 && <span className="inline-block w-[0.3em] font-googlesans" />}
       </span>
     ));
 
+  if (khmer) {
+    return (
+      <span
+        className={`relative block overflow-hidden pb-[0.14em] font-googlesans transition-[opacity,transform,color] duration-700 ease-hero motion-reduce:transition-none ${className} ${
+          active ? swapClassName : ''
+        }`}
+        style={{
+          fontFamily: 'var(--font-body)',
+          opacity: revealed ? 1 : 0,
+          transform: revealed || reduced ? 'translateY(0)' : 'translateY(14px)',
+          transitionDelay: `${baseDelay}ms`,
+        }}
+      >
+        {text}
+      </span>
+    );
+  }
+
   return (
     <span
-      className={`relative block overflow-hidden pb-[0.14em] transition-[opacity,transform,color] duration-700 ease-hero motion-reduce:transition-none ${className} ${
+      className={`relative block overflow-hidden pb-[0.14em] font-googlesans transition-[opacity,transform,color] duration-700 ease-hero motion-reduce:transition-none ${className} ${
         plain && active ? swapClassName : ''
       }`}
       style={
@@ -197,11 +220,11 @@ function CharSwap({
           : undefined
       }
     >
-      <span ref={layerRef} className="block">
+      <span ref={layerRef} className="block font-googlesans">
         {renderLayer(layerA)}
       </span>
       {!plain && (
-        <span aria-hidden className={`absolute inset-0 block ${swapClassName}`}>
+        <span aria-hidden className={`absolute inset-0 block font-googlesans ${swapClassName}`}>
           {renderLayer(layerB)}
         </span>
       )}
@@ -222,11 +245,11 @@ function MaskedWords({
   className?: string;
 }) {
   return (
-    <span className={`inline-flex flex-wrap ${className}`}>
+    <span className={`inline-flex flex-wrap font-googlesans ${className}`}>
       {text.split(' ').map((word, i) => (
-        <span key={`${word}-${i}`} className="inline-flex overflow-hidden pb-[0.09em] pr-[0.26em]">
+        <span key={`${word}-${i}`} className="inline-flex overflow-hidden pb-[0.09em] pr-[0.26em] font-googlesans">
           <motion.span
-            className="inline-block will-change-transform"
+            className="inline-block font-googlesans will-change-transform"
             variants={{
               hidden: { y: reduced ? 0 : '112%', opacity: reduced ? 0 : 1 },
               show: {
@@ -335,7 +358,10 @@ function FeatureRow({
           className="flex flex-wrap items-baseline justify-between gap-[clamp(0.5rem,3vw,2.5rem)] transition-transform duration-[550ms] ease-hero motion-reduce:transition-none max-[720px]:flex-col max-[720px]:items-start max-[720px]:gap-[0.35rem]"
           style={{ transform: isActive && !reduced ? 'translateX(10px)' : 'translateX(0)' }}
         >
-          <h3 className="m-0 font-body text-[clamp(1.45rem,3.4vw,2.35rem)] font-extrabold leading-[1.12] tracking-[-0.025em] text-ink">
+          <h3
+            className="m-0 font-googlesans text-[clamp(1.45rem,3.4vw,2.35rem)] font-extrabold leading-[1.12] tracking-[-0.025em] text-ink"
+            style={{ fontFamily: 'var(--font-body)' }}
+          >
             <CharSwap
               text={title}
               revealed={revealed}
@@ -424,7 +450,7 @@ export default function GoalFeature() {
   return (
     <section
       ref={sectionRef}
-      className="wc-scope relative overflow-hidden font-body text-ink py-[clamp(4.5rem,9vw,8rem)] antialiased [&_*]:font-body"
+      className="wc-scope relative overflow-hidden text-ink py-[clamp(4.5rem,9vw,8rem)] antialiased"
     >
       {/* ambient backdrop */}
       <div
@@ -457,13 +483,16 @@ export default function GoalFeature() {
                 hidden: { opacity: 0, y: reduced ? 0 : 12 },
                 show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE, delay: 0.1 } },
               }}
-              className="text-[0.74rem] font-bold uppercase tracking-[0.22em] text-brand"
+              className="font-googlesans text-[0.74rem] font-bold uppercase tracking-[0.22em] text-brand"
             >
               {t('eyebrow')}
             </motion.span>
           </div>
 
-          <h2 className="m-0 max-w-[18ch] font-body text-[clamp(2.1rem,5.4vw,3.9rem)] font-extrabold leading-[1.06] tracking-[-0.03em]">
+          <h2
+            className="m-0 max-w-[18ch] font-googlesans text-[clamp(2.1rem,5.4vw,3.9rem)] font-extrabold leading-[1.06] tracking-[-0.03em]"
+            style={{ fontFamily: 'var(--font-body)' }}
+          >
             <MaskedWords text={t('headingLine1')} reduced={reduced} delay={0.15} />
             <br />
             <span className="animate-sheen bg-clip-text bg-[length:220%_100%] text-transparent bg-[linear-gradient(100deg,var(--ah-brand-strong)_0%,var(--ah-brand)_40%,var(--ah-brand-light)_65%,var(--ah-brand)_100%)] motion-reduce:animate-none">

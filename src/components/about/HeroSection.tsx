@@ -1,7 +1,7 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowRightIcon } from "lucide-react";
 
 export interface AboutHeroSectionProps {
@@ -29,6 +29,7 @@ function useCountUp(
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setValue(target);
       return;
     }
@@ -60,15 +61,28 @@ function useCountUp(
 }
 
 export default function HeroSection({
-  eyebrow = "Explore FluxiBiz’s powerful features",
-  headlineHighlight = "One Platform",
-  headlineSuffix = "To Run Your Whole Business",
-  description =
-    "The all-in-one system built to help small businesses take orders, track stock, and grow revenue — without the complexity",
-  primaryCta = "Start for free",
-  secondaryCta = "Contact us",
+  eyebrow,
+  headlineHighlight,
+  headlineSuffix,
+  description,
+  primaryCta,
+  secondaryCta,
   className = "",
 }: AboutHeroSectionProps) {
+  const t = useTranslations("Feature.hero");
+
+  const displayedEyebrow = eyebrow ?? t("eyebrow");
+  const displayedHeadlineHighlight =
+    headlineHighlight ?? t("headlineHighlight");
+  const displayedHeadlineSuffix =
+    headlineSuffix ?? t("headlineSuffix");
+  const displayedDescription =
+    description ?? t("description");
+  const displayedPrimaryCta =
+    primaryCta ?? t("primaryCta");
+  const displayedSecondaryCta =
+    secondaryCta ?? t("secondaryCta");
+
   const revenue = useCountUp(12480, 1600);
   const salesPct = useCountUp(24, 1400);
 
@@ -110,24 +124,24 @@ export default function HeroSection({
       >
         {/* Left content */}
         <div className="relative z-[2] max-w-[640px] flex-[1_1_380px]">
-          {eyebrow && (
+          {displayedEyebrow && (
             <div className="animate-fade-up mb-[0.9rem] text-[0.78rem] font-bold uppercase tracking-[0.08em] text-brand opacity-0 ">
-              {eyebrow}
+              {displayedEyebrow}
             </div>
           )}
 
           <h1 className="animate-fade-up-1 m-0 mb-[1.1rem] flex translate-y-4 flex-col text-[clamp(2.6rem,6vw,4.4rem)] font-extrabold leading-[1.08] tracking-[-0.02em] opacity-0">
             <span className="animate-sheen bg-[linear-gradient(100deg,var(--ah-brand-strong)_0%,var(--ah-brand)_38%,var(--ah-brand-light)_62%,var(--ah-brand)_100%)] bg-[length:220%_100%] bg-clip-text text-transparent">
-              {headlineHighlight}
+              {displayedHeadlineHighlight}
             </span>
 
             <span className="text-ink transition-colors dark:text-secondary">
-              {headlineSuffix}
+              {displayedHeadlineSuffix}
             </span>
           </h1>
 
           <p className="animate-fade-up-2 m-0 mb-[1.9rem] max-w-[46ch] translate-y-[14px] text-[clamp(1.1rem,1.7vw,1.35rem)] leading-[1.65] text-muted-foreground opacity-0 dark:text-white/80">
-            {description}
+            {displayedDescription}
           </p>
 
           <div className="animate-fade-up-3 mb-[1.7rem] flex translate-y-[14px] flex-wrap gap-3 opacity-0">
@@ -139,14 +153,14 @@ export default function HeroSection({
                 <ArrowRightIcon size={16} strokeWidth={2.5} />
               </span>
 
-              {primaryCta}
+              {displayedPrimaryCta}
             </button>
 
             <button
               type="button"
               className="ease-hero border-line text-ink inline-flex cursor-pointer items-center gap-[0.55rem] rounded-full border bg-surface px-6 py-[0.85rem] text-[0.95rem] font-semibold transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_22px_-10px_var(--ah-shadow-md)] dark:border-white/15 dark:bg-white/10 dark:text-white"
             >
-              {secondaryCta}
+              {displayedSecondaryCta}
             </button>
           </div>
 

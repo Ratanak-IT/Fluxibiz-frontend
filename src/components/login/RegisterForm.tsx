@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,11 +36,11 @@ export function RegisterField({
   const id = providedId ?? generatedId;
 
   return (
-    <div className="grid gap-1 font-sans">
+    <div className="grid gap-1 font-body">
       <label
         htmlFor={id}
         className={cn(
-          "grid font-sans",
+          "grid font-body",
           density === "figma" ? "gap-[10px]" : "gap-2.5",
         )}
       >
@@ -63,8 +64,6 @@ export function RegisterField({
             "placeholder:text-[#636b74]",
             "transition-colors",
             "focus-visible:ring-2",
-
-            // Dark mode
             "dark:border-gray-400",
             "dark:bg-background",
             "dark:text-white",
@@ -72,14 +71,11 @@ export function RegisterField({
             "dark:placeholder:text-white",
             "dark:focus-visible:border-gray-400",
             "dark:focus-visible:ring-gray-400/30",
-
             density === "figma"
               ? "h-[47px] rounded-[12px] px-5 py-2.5 text-base"
               : "h-11 rounded-[11px] px-[18px] py-2 text-[15px]",
-
             error &&
               "border-red-500 focus-visible:border-red-500 focus-visible:ring-2 focus-visible:ring-red-500/30 dark:border-red-500 dark:focus-visible:border-red-500 dark:focus-visible:ring-red-500/30",
-
             className,
           )}
           {...props}
@@ -98,6 +94,7 @@ export function RegisterField({
 type PasswordFieldProps = Omit<RegisterFieldProps, "type">;
 
 export function PasswordField(props: PasswordFieldProps) {
+  const t = useTranslations("Register.fields");
   const [isVisible, setIsVisible] = useState(false);
   const isFigma = props.density === "figma";
 
@@ -111,21 +108,19 @@ export function PasswordField(props: PasswordFieldProps) {
 
       <button
         type="button"
-        aria-label={isVisible ? "Hide password" : "Show password"}
+        aria-label={
+          isVisible ? t("hidePassword") : t("showPassword")
+        }
         aria-pressed={isVisible}
         onClick={() => setIsVisible((visible) => !visible)}
         className={cn(
           "absolute bottom-0 right-0 grid place-items-center",
           "text-[#030712] transition-colors hover:text-primary",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-
-          // White password icon in dark mode
           "dark:text-white dark:hover:text-primary",
-
           isFigma
             ? "size-[47px] rounded-r-[12px]"
             : "size-11 rounded-r-[11px]",
-
           props.error && "bottom-5",
         )}
       >
@@ -148,6 +143,8 @@ export function RegisterForm({
   defaultValues,
   onNext,
 }: RegisterFormProps) {
+  const fieldsT = useTranslations("Register.fields");
+  const formT = useTranslations("Register.form");
   const { login, loginHref } = useAuth();
 
   const {
@@ -156,7 +153,6 @@ export function RegisterForm({
     formState: { errors },
   } = useForm<UserRegisterFormData>({
     resolver: zodResolver(userRegisterSchema),
-
     defaultValues: {
       firstName: defaultValues?.firstName ?? "",
       lastName: defaultValues?.lastName ?? "",
@@ -168,14 +164,12 @@ export function RegisterForm({
   });
 
   const onSubmit = (data: UserRegisterFormData) => {
-    if (onNext) {
-      onNext(data);
-    }
+    onNext?.(data);
   };
 
   return (
     <form
-      className="grid gap-3.5 font-sans text-foreground dark:text-white"
+      className="grid gap-3.5 font-body text-foreground dark:text-white"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="grid gap-5 sm:grid-cols-2 sm:gap-[19px]">
@@ -185,10 +179,10 @@ export function RegisterForm({
           render={({ field }) => (
             <RegisterField
               {...field}
-              label="First name"
+              label={fieldsT("firstName")}
               density="figma"
               autoComplete="given-name"
-              placeholder="Enter your first name"
+              placeholder={fieldsT("firstNamePlaceholder")}
               error={errors.firstName?.message}
             />
           )}
@@ -200,10 +194,10 @@ export function RegisterForm({
           render={({ field }) => (
             <RegisterField
               {...field}
-              label="Last name"
+              label={fieldsT("lastName")}
               density="figma"
               autoComplete="family-name"
-              placeholder="Enter your last name"
+              placeholder={fieldsT("lastNamePlaceholder")}
               error={errors.lastName?.message}
             />
           )}
@@ -216,12 +210,12 @@ export function RegisterForm({
         render={({ field }) => (
           <RegisterField
             {...field}
-            label="Phone Number"
+            label={fieldsT("phoneNumber")}
             density="figma"
             type="tel"
             inputMode="tel"
             autoComplete="tel"
-            placeholder="Your Phone Number"
+            placeholder={fieldsT("phonePlaceholder")}
             error={errors.phone?.message}
           />
         )}
@@ -233,11 +227,11 @@ export function RegisterForm({
         render={({ field }) => (
           <RegisterField
             {...field}
-            label="Email"
+            label={fieldsT("email")}
             density="figma"
             type="email"
             autoComplete="email"
-            placeholder="example@gmail.com"
+            placeholder={fieldsT("emailPlaceholder")}
             error={errors.email?.message}
           />
         )}
@@ -249,7 +243,7 @@ export function RegisterForm({
         render={({ field }) => (
           <PasswordField
             {...field}
-            label="Password"
+            label={fieldsT("password")}
             density="figma"
             autoComplete="new-password"
             placeholder="••••••••••••"
@@ -264,7 +258,7 @@ export function RegisterForm({
         render={({ field }) => (
           <PasswordField
             {...field}
-            label="Confirm password"
+            label={fieldsT("confirmPassword")}
             density="figma"
             autoComplete="new-password"
             placeholder="••••••••••••"
@@ -281,11 +275,11 @@ export function RegisterForm({
           "dark:text-white",
         )}
       >
-        Continue
+        {formT("continue")}
       </Button>
 
       <p className="mt-1 text-center text-[17px] leading-5 text-[#6b776f] dark:text-white">
-        Already have an account?{" "}
+        {formT("alreadyHaveAccount")}{" "}
         <a
           href={loginHref}
           onClick={(event) => {
@@ -296,12 +290,10 @@ export function RegisterForm({
             "cursor-pointer font-bold text-blue-600 hover:underline",
             "focus-visible:rounded-sm focus-visible:outline-none",
             "focus-visible:ring-2 focus-visible:ring-ring",
-
-            // Keep Login blue
             "dark:text-blue-400",
           )}
         >
-          Log in
+          {formT("login")}
         </a>
       </p>
     </form>

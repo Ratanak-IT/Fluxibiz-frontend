@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Mail, MapPin, Phone, Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,30 +18,33 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ContactFormValues, contactSchema } from "@/lib/about/contact-schema";
 
-const contactDetails = [
-  {
-    icon: MapPin,
-    label: "Visit Us",
-    value: "#40, Street 273, Sangkat Boeung Kak Ti Mouy, Khan Toul Kork, Phnom Penh",
-  },
-  {
-    icon: Mail,
-    label: "Email Us",
-    value: "ipos.stad@gmail.com",
-  },
-  {
-    icon: Phone,
-    label: "Call Us",
-    value: "+855 15 33 88 26",
-  },
-  {
-    icon: Send,
-    label: "Telegram",
-    value: "@ipos_team",
-  },
-];
-
 export function ContactSection() {
+  const t = useTranslations("Support.contact");
+
+  const contactDetails = [
+    {
+      icon: MapPin,
+      label: t("details.visit"),
+      value:
+        "#40, Street 273, Sangkat Boeung Kak Ti Mouy, Khan Toul Kork, Phnom Penh",
+    },
+    {
+      icon: Mail,
+      label: t("details.email"),
+      value: "ipos.stad@gmail.com",
+    },
+    {
+      icon: Phone,
+      label: t("details.call"),
+      value: "+855 15 33 88 26",
+    },
+    {
+      icon: Send,
+      label: t("details.telegram"),
+      value: "@ipos_team",
+    },
+  ];
+
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     mode: "onTouched",
@@ -57,27 +61,26 @@ export function ContactSection() {
   } = form;
 
   async function onSubmit(values: ContactFormValues) {
-    // TODO: wire up to your API (e.g. an RTK Query mutation)
+    // TODO: wire up to your API (for example, an RTK Query mutation).
     console.log(values);
     form.reset();
   }
 
   return (
-<section className="bg-background dark:bg-background py-20 font-body">
-  <div className="mx-auto grid max-w-[1900px] gap-10 px-[5.5%] lg:grid-cols-2 lg:gap-12">
+    <section className="bg-background py-20 font-body dark:bg-background">
+      <div className="mx-auto grid max-w-[1900px] gap-10 px-[5.5%] lg:grid-cols-2 lg:gap-12">
         {/* Left: heading + contact details */}
         <div>
           <p className="font-body text-xs font-semibold uppercase tracking-widest text-primary dark:text-green-400">
-            Contact Us
+            {t("eyebrow")}
           </p>
 
-          <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-primary sm:text-4xl dark:text-green-400">
-            Get In Touch
+          <h2 className="mt-3 font-body text-3xl font-bold tracking-tight text-primary sm:text-4xl dark:text-green-400">
+            {t("title")}
           </h2>
 
-          <p className="font-body mt-3 max-w-md text-sm text-neutral-600 sm:text-base dark:text-gray-300">
-            Questions about iPOS, a demo, or joining the team — we answer the
-            same day.
+          <p className="mt-3 max-w-md font-body text-sm text-neutral-600 sm:text-base dark:text-gray-300">
+            {t("description")}
           </p>
 
           <div className="mt-8 space-y-4">
@@ -106,8 +109,8 @@ export function ContactSection() {
 
         {/* Right: form card */}
         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs sm:p-8 dark:border-neutral-800 dark:bg-card">
-          <h3 className="font-display text-lg font-semibold text-neutral-900 dark:text-white">
-            Send us a message
+          <h3 className="font-body text-lg font-semibold text-neutral-900 dark:text-white">
+            {t("form.title")}
           </h3>
 
           <Form {...form}>
@@ -122,15 +125,17 @@ export function ContactSection() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-neutral-700 dark:text-gray-300">
-                        Your name
+                        {t("form.nameLabel")}
                       </FormLabel>
+
                       <FormControl>
                         <Input
-                          placeholder="Your name..."
+                          placeholder={t("form.namePlaceholder")}
                           className="h-10 dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
                           {...field}
                         />
                       </FormControl>
+
                       <FormMessage />
                     </FormItem>
                   )}
@@ -142,16 +147,18 @@ export function ContactSection() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-neutral-700 dark:text-gray-300">
-                        Email
+                        {t("form.emailLabel")}
                       </FormLabel>
+
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder="Email..."
+                          placeholder={t("form.emailPlaceholder")}
                           className="h-10 dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
                           {...field}
                         />
                       </FormControl>
+
                       <FormMessage />
                     </FormItem>
                   )}
@@ -164,15 +171,17 @@ export function ContactSection() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-neutral-700 dark:text-gray-300">
-                      Subject
+                      {t("form.subjectLabel")}
                     </FormLabel>
+
                     <FormControl>
                       <Input
-                        placeholder="Subject..."
+                        placeholder={t("form.subjectPlaceholder")}
                         className="h-10 dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
                         {...field}
                       />
                     </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}
@@ -184,16 +193,18 @@ export function ContactSection() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-neutral-700 dark:text-gray-300">
-                      Message
+                      {t("form.messageLabel")}
                     </FormLabel>
+
                     <FormControl>
                       <Textarea
                         rows={5}
-                        placeholder="Message..."
+                        placeholder={t("form.messagePlaceholder")}
                         className="resize-none dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
                         {...field}
                       />
                     </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}
@@ -204,7 +215,7 @@ export function ContactSection() {
                 disabled={isSubmitting}
                 className="rounded-full bg-primary px-6 text-white hover:bg-green-700 dark:bg-primary dark:text-white dark:hover:bg-green-600"
               >
-                Send message
+                {t("form.submit")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </form>

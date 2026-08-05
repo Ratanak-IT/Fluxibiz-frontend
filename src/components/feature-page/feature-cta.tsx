@@ -1,8 +1,8 @@
-
 "use client";
 
 import type { ComponentType, PointerEvent } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   ArrowRight,
   BarChart3,
@@ -132,6 +132,7 @@ function FloatingCard({
 }
 
 export function FeatureCta() {
+  const t = useTranslations("Feature.cta");
   const reduceMotion = useReducedMotion();
 
   const rawPointerX = useMotionValue(0);
@@ -249,7 +250,7 @@ export function FeatureCta() {
         className="left-[5%] top-[17%]"
         depth={22}
         icon={BarChart3}
-        label="Today’s sales"
+        label={t("todaySales")}
         value="$12,450 · +12.5%"
         pointerX={pointerX}
         pointerY={pointerY}
@@ -260,8 +261,8 @@ export function FeatureCta() {
         className="right-[4%] top-[20%]"
         depth={-18}
         icon={ReceiptText}
-        label="Orders"
-        value="342 completed"
+        label={t("orders")}
+        value={t("ordersValue")}
         pointerX={pointerX}
         pointerY={pointerY}
         delay={0.25}
@@ -271,8 +272,8 @@ export function FeatureCta() {
         className="bottom-[15%] left-[8%]"
         depth={-14}
         icon={PackageCheck}
-        label="Inventory"
-        value="All locations synced"
+        label={t("inventory")}
+        value={t("inventoryValue")}
         pointerX={pointerX}
         pointerY={pointerY}
         delay={0.35}
@@ -282,8 +283,8 @@ export function FeatureCta() {
         className="bottom-[12%] right-[7%]"
         depth={19}
         icon={Store}
-        label="Online store"
-        value="Open and selling"
+        label={t("onlineStore")}
+        value={t("onlineStoreValue")}
         pointerX={pointerX}
         pointerY={pointerY}
         delay={0.45}
@@ -327,7 +328,7 @@ export function FeatureCta() {
           )}
         >
           <Sparkles className="size-3.5" />
-          Your next chapter starts here
+          {t("eyebrow")}
         </motion.div>
 
         <motion.h2
@@ -360,7 +361,7 @@ export function FeatureCta() {
             "text-text ",
           )}
         >
-          Run your business
+          {t("headingLine1")}
 
           <motion.span
             initial={
@@ -383,7 +384,7 @@ export function FeatureCta() {
             }}
             className="mx-auto block text-[#FEB90D]"
           >
-            with total clarity.
+            {t("headingLine2")}
           </motion.span>
         </motion.h2>
 
@@ -424,7 +425,7 @@ export function FeatureCta() {
               "hover:scale-[1.03] hover:bg-primary",
             )}
           >
-            Start your free trial
+            {t("primaryCta")}
             <ArrowRight className="size-4" />
           </Button>
 
@@ -446,7 +447,7 @@ export function FeatureCta() {
               "dark:hover:text-primary",
             )}
           >
-            Talk to our team
+            {t("secondaryCta")}
           </Button>
         </motion.div>
       </div>

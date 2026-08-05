@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/useAuth";
@@ -35,7 +36,9 @@ export function BusinessRegisterForm({
   onSubmitFinal,
   isSubmitting = false,
 }: BusinessRegisterFormProps) {
+  const t = useTranslations("Register.business");
   const { login, loginHref } = useAuth();
+
   const { data: categories, isLoading: isLoadingCategories } =
     useGetBusinessCategoriesQuery();
 
@@ -45,7 +48,6 @@ export function BusinessRegisterForm({
     formState: { errors },
   } = useForm<BusinessRegisterFormData>({
     resolver: zodResolver(businessRegisterSchema),
-
     defaultValues: {
       storeName: "",
       businessType: "",
@@ -68,7 +70,7 @@ export function BusinessRegisterForm({
 
   return (
     <form
-      className="grid gap-4 font-sans text-foreground"
+      className="grid gap-4 font-body text-foreground"
       onSubmit={handleSubmit(onSubmit)}
     >
       {onBack && (
@@ -85,7 +87,7 @@ export function BusinessRegisterForm({
           )}
         >
           <ArrowLeft className="size-4" />
-          Back to User Account
+          {t("backToUserAccount")}
         </button>
       )}
 
@@ -95,8 +97,8 @@ export function BusinessRegisterForm({
         render={({ field }) => (
           <RegisterField
             {...field}
-            label="Store name"
-            placeholder="Your Store name"
+            label={t("storeNameLabel")}
+            placeholder={t("storeNamePlaceholder")}
             error={errors.storeName?.message}
           />
         )}
@@ -108,54 +110,54 @@ export function BusinessRegisterForm({
         render={({ field }) => (
           <label className="grid gap-1.5">
             <span className="text-[15px] font-semibold leading-none text-[#636b74] dark:text-white">
-              Business type{" "}
+              {t("businessTypeLabel")}{" "}
               <span className="text-[#d14341] dark:text-red-400">*</span>
             </span>
 
             <span className="relative">
               <select
-  {...field}
-  className={cn(
-    "h-11 w-full appearance-none rounded-[11px]",
-    "border border-input bg-white px-[18px] pr-12",
-    "text-[15px] text-[#636b74]",
-    "outline-none transition-colors",
-    "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50",
+                {...field}
+                className={cn(
+                  "h-11 w-full appearance-none rounded-[11px]",
+                  "border border-input bg-white px-[18px] pr-12",
+                  "text-[15px] text-[#636b74]",
+                  "outline-none transition-colors",
+                  "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50",
+                  "dark:border-gray-400",
+                  "dark:bg-background",
+                  "dark:text-white",
+                  "dark:focus-visible:border-gray-400",
+                  "dark:focus-visible:ring-gray-400/30",
+                  errors.businessType &&
+                    "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30 dark:border-red-500",
+                )}
+              >
+                <option
+                  value=""
+                  disabled
+                  className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
+                >
+                  {isLoadingCategories
+                    ? t("loadingBusinessTypes")
+                    : t("selectBusinessType")}
+                </option>
 
-    "dark:border-gray-400",
-    "dark:bg-background",
-    "dark:text-white",
-    "dark:focus-visible:border-gray-400",
-    "dark:focus-visible:ring-gray-400/30",
-
-    errors.businessType &&
-      "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30 dark:border-red-500",
-  )}
->
-  <option
-    value=""
-    disabled
-    className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
-  >
-    {isLoadingCategories ? "Loading business types..." : "Select your business type"}
-  </option>
-
-  {categories?.map((parent) =>
-    parent.subCategories.length > 0 ? (
-      <optgroup key={parent.id} label={parent.name}>
-        {parent.subCategories.map((sub) => (
-          <option
-            key={sub.id}
-            value={sub.id}
-            className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
-          >
-            {sub.name}
-          </option>
-        ))}
-      </optgroup>
-    ) : null,
-  )}
-</select>
+                {categories?.map((parent) =>
+                  parent.subCategories.length > 0 ? (
+                    <optgroup key={parent.id} label={parent.name}>
+                      {parent.subCategories.map((sub) => (
+                        <option
+                          key={sub.id}
+                          value={sub.id}
+                          className="bg-white text-[#636b74] dark:bg-[#2d302f] dark:text-white"
+                        >
+                          {sub.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ) : null,
+                )}
+              </select>
 
               <Image
                 src="/image/auth/select-chevron.svg"
@@ -185,10 +187,10 @@ export function BusinessRegisterForm({
         render={({ field }) => (
           <RegisterField
             {...field}
-            label="Business Email"
+            label={t("businessEmailLabel")}
             type="email"
             autoComplete="email"
-            placeholder="Fill in your business email"
+            placeholder={t("businessEmailPlaceholder")}
             error={errors.businessEmail?.message}
           />
         )}
@@ -200,9 +202,9 @@ export function BusinessRegisterForm({
         render={({ field }) => (
           <RegisterField
             {...field}
-            label="Business address"
+            label={t("businessAddressLabel")}
             autoComplete="street-address"
-            placeholder="No. 21C, Street 612, Phnom Penh"
+            placeholder={t("businessAddressPlaceholder")}
             error={errors.businessAddress?.message}
           />
         )}
@@ -220,15 +222,15 @@ export function BusinessRegisterForm({
         {isSubmitting ? (
           <span className="flex items-center justify-center gap-2">
             <Loader2 className="size-5 animate-spin" />
-            Registering Business...
+            {t("registeringBusiness")}
           </span>
         ) : (
-          "Register Business"
+          t("registerBusiness")
         )}
       </Button>
 
       <p className="text-center text-[17px] leading-6 text-[#6b776f] dark:text-white">
-        Already have an account?{" "}
+        {t("alreadyHaveAccount")}{" "}
         <a
           href={loginHref}
           onClick={(event) => {
@@ -242,7 +244,7 @@ export function BusinessRegisterForm({
             "dark:text-blue-400",
           )}
         >
-          Log in
+          {t("login")}
         </a>
       </p>
     </form>

@@ -2,6 +2,7 @@
 
 import { useRef, useState, type PointerEvent } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import {
   AnimatePresence,
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils";
 const ease = [0.16, 1, 0.3, 1] as const;
 
 export function FeatureModules() {
+  const t = useTranslations("Feature.modules");
   const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -47,6 +49,14 @@ export function FeatureModules() {
   });
 
   const activeModule = FEATURE_MODULES[activeIndex];
+  const moduleKey = activeModule.translationKey;
+
+  const activeModuleTitle = t(`items.${moduleKey}.title`);
+  const activeModuleAlt = t(`items.${moduleKey}.alt`);
+  const activeModuleFeatures = activeModule.featureKeys.map((featureKey) =>
+    t(`items.${moduleKey}.features.${featureKey}`),
+  );
+
   const Icon = activeModule.icon;
   const imageFirst = activeIndex % 2 === 1;
   const isPhone = activeModule.index === "06";
@@ -70,7 +80,7 @@ export function FeatureModules() {
   return (
     <section
       ref={sectionRef}
-      aria-label="FluxiBiz platform modules"
+      aria-label={t("ariaLabel")}
       style={{ height: `${FEATURE_MODULES.length * 105}svh` }}
       className="relative dark:bg-background"
     >
@@ -178,7 +188,7 @@ export function FeatureModules() {
                         <Icon className="size-5" />
                       </span>
                       <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary ">
-                        {activeModule.index} · Module
+                        {activeModule.index} · {t("module")}
                       </span>
                     </motion.div>
 
@@ -193,7 +203,7 @@ export function FeatureModules() {
                       }}
                       className="mt-7 text-4xl font-extrabold leading-[1.02] tracking-[-0.05em] text-secondary sm:text-5xl "
                     >
-                      {activeModule.title}
+                      {activeModuleTitle}
                     </motion.h3>
 
                     <motion.p
@@ -207,9 +217,9 @@ export function FeatureModules() {
                       }}
                       className="mt-5 max-w-xl text-base leading-7 text-muted-foreground "
                     >
-                      One connected workspace built to make{" "}
-                      {activeModule.title.toLowerCase()} clear, fast, and
-                      effortless for your team.
+                      {t("descriptionPrefix")}{" "}
+                      {activeModuleTitle}{" "}
+                      {t("descriptionSuffix")}
                     </motion.p>
 
                     <motion.ul
@@ -224,7 +234,7 @@ export function FeatureModules() {
                       }}
                       className="mt-7 grid grid-cols-2 gap-x-4 gap-y-2.5 sm:gap-x-7 sm:gap-y-3"
                     >
-                      {activeModule.features.map((feature) => (
+                      {activeModuleFeatures.map((feature) => (
                         <motion.li
                           key={feature}
                           variants={{
@@ -289,7 +299,7 @@ export function FeatureModules() {
                       >
                         <Image
                           src={activeModule.image}
-                          alt={activeModule.alt}
+                          alt={activeModuleAlt}
                           fill
                           priority={activeIndex === 0}
                           sizes="(max-width: 640px) 92vw, (max-width: 1024px) 85vw, 58vw"
