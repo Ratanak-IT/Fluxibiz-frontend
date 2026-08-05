@@ -165,10 +165,33 @@
         }
       }
     },
-    "team": {
-      "mentors": "Our Mentors",
-      "members": "Our Team"
-    }
+"team": {
+  "mentors": "Our Mentors",
+  "members": "Our Team",
+
+  "people": {
+    "chanChhaya": "Chan Chhaya",
+    "srorngSokcheat": "Srorng Sokcheat",
+    "liepSokkeang": "Liep Sokkeang",
+    "sreyChanchhay": "Srey ChanChhay",
+    "pechPhakley": "Pech Phakley",
+    "dornDana": "Dorn Dana",
+    "maiyLeangngim": "Maiy Leangngim",
+    "leangLyjing": "Leang Lyjing",
+    "khornSokkhim": "Khorn Sokkhim",
+    "thaiRatanak": "Thai Ratanak",
+    "rayyaYuma": "Rayya Yuma"
+  },
+
+  "roles": {
+    "seniorItInstructor": "Senior IT Instructor",
+    "itInstructor": "IT Instructor",
+    "mentor": "Mentor",
+    "fullstack": "Fullstack",
+    "teamLeader": "Team Leader",
+    "member": "Member"
+  }
+}
   },
   "Feature": {
     "metadata": {

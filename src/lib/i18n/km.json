@@ -165,10 +165,35 @@
         }
       }
     },
-    "team": {
-      "mentors": "គ្រូបង្វឹករបស់យើង",
-      "members": "ក្រុមការងាររបស់យើង"
-    }
+
+"team": {
+  "mentors": "គ្រូបង្វឹករបស់យើង",
+  "members": "ក្រុមការងាររបស់យើង",
+
+  "people": {
+    "chanChhaya": "ចាន់ ឆៃយ៉ា",
+  "srorngSokcheat": "ស្រ៊ង សុខជាតិ",
+  "liepSokkeang": "លៀប សុខគាង",
+  "sreyChanchhay": "ស្រី ច័ន្ទឆាយ",
+  "pechPhakley": "បុិច ផាកឡី",
+  "dornDana": "ឌន ដាណា",
+  "maiyLeangngim": "ម៉ៃ លាងងីម",
+  "leangLyjing": "លាង លីជីង",
+  "khornSokkhim": "ខន សុខឃីម",
+  "thaiRatanak": "ថៃ រតនៈ",
+  "rayyaYuma": "រ៉ាយ៉ា យូម៉ា"
+  },
+
+  "roles": {
+   "seniorItInstructor": "Senior IT Instructor",
+    "itInstructor": "IT Instructor",
+    "mentor": "Mentor",
+    "fullstack": "Fullstack",
+    "teamLeader": "Team Leader",
+    "member": "Member"
+  }
+}
+
   },
   "Feature": {
     "metadata": {

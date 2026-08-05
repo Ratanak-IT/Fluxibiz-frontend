@@ -9,10 +9,7 @@ export default function MentorsSection() {
   const t = useTranslations("About.team");
 
   return (
-    // py-20 → vertical padding (top/bottom). Change here.
-    <section className="py-20">
-      {/* px-[5.5%] → horizontal padding (left/right). Change here.
-          max-w-[1900px] + mx-auto → caps width and centers on the page. */}
+    <section className="py-20 font-body">
       <div className="mx-auto max-w-[1900px] px-[5.5%]">
         {/* Our Mentors */}
         <div className="mb-4 text-center">
@@ -22,13 +19,19 @@ export default function MentorsSection() {
         </div>
 
         <div className="mx-auto mt-12 grid max-w-4xl grid-cols-1 justify-items-center gap-6 sm:grid-cols-2">
-          {mentors.map((mentor, index) => (
-            <div key={index} className="w-full max-w-sm">
+          {mentors.map((mentor) => (
+            <div
+              key={mentor.nameKey}
+              className="w-full max-w-sm"
+            >
               <TeamCard
                 image={mentor.avatar}
-                name={mentor.name}
-                position={mentor.title}
-                tag={mentor.tag}
+                name={t(`people.${mentor.nameKey}`)}
+                position={t(`roles.${mentor.titleKey}`)}
+                tag={t(`roles.${mentor.tagKey}`)}
+                github={mentor.github}
+                telegram={mentor.telegram}
+                linkedin={mentor.linkedin}
               />
             </div>
           ))}
@@ -42,13 +45,16 @@ export default function MentorsSection() {
         </div>
 
         <div className="mx-auto mt-12 grid max-w-7xl grid-cols-1 justify-items-center gap-18 sm:grid-cols-2 lg:grid-cols-3">
-          {team.map((member, index) => (
-            <div key={index} className="w-full max-w-md">
+          {team.map((member) => (
+            <div
+              key={member.nameKey}
+              className="w-full max-w-md"
+            >
               <TeamCard
                 image={member.avatar}
-                name={member.name}
-                position={member.role}
-                tag={t("fullStack")}
+                name={t(`people.${member.nameKey}`)}
+                position={t(`roles.${member.roleKey}`)}
+                tag={t(`roles.${member.levelKey}`)}
                 github={member.github}
                 telegram={member.telegram}
                 linkedin={member.linkedin}

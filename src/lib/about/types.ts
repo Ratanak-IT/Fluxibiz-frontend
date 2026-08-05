@@ -1,17 +1,19 @@
-// lib/about/types.ts
-export interface TeamMember {
-  name: string;
-  role: "Frontend" | "Fullstack" | "Backend";
-  level: "Team Leader" | "Member";
+export interface Mentor {
+  nameKey: string;
+  titleKey: string;
   avatar: string;
+  tagKey: string;
   github: string;
   telegram: string;
   linkedin: string;
 }
 
-export interface Mentor {
-  name: string;
-  title: string;
+export interface TeamMember {
+  nameKey: string;
+  roleKey: string;
+  levelKey: string;
   avatar: string;
-  tag: string;
+  github: string;
+  telegram: string;
+  linkedin: string;
 }
