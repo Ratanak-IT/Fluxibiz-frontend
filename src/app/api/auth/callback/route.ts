@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     const roles = user?.roles || [];
 
     const superAdminRedirect = process.env.SUPER_ADMIN_REDIRECT_URL || "https://administrator.fluxibiz.store";
-    const businessRedirect = process.env.BUSINESS_REDIRECT_URL || "https://business.fluxbiz.store";
+    const businessRedirect = process.env.BUSINESS_REDIRECT_URL || "https://bo-dashboard-ite-basic-lyart.vercel.app";
     const globleUserRedirect = process.env.GLOBLE_USER_REDIRECT_URL || "https://www.fluxibiz.store";
 
     let targetUrl: URL;
