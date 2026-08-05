@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 import registerIllustration from "../../../public/image/auth/register-illustration.png";
 import { cn } from "@/lib/utils";
@@ -17,13 +20,14 @@ export function RegistrationShell({
   contentClassName,
   variant = "compact",
 }: RegistrationShellProps) {
+  const t = useTranslations("Register.shell");
   const isFigma = variant === "figma";
 
   return (
     <section
       className={cn(
         "registration-page fixed inset-0 z-50 overflow-y-auto",
-        "bg-white transition-colors",
+        "bg-white font-body transition-colors",
         "dark:bg-background",
       )}
     >
@@ -45,13 +49,11 @@ export function RegistrationShell({
             "dark:border-border",
             "dark:bg-background",
             "dark:shadow-[4px_4px_18px_4px_rgba(0,0,0,0.45)]",
-
             isFigma
               ? "max-w-[1240px] gap-6 rounded-[16px] p-4 sm:gap-8 sm:rounded-[20px] sm:p-6 lg:min-h-[650px] lg:grid-cols-[minmax(0,620px)_minmax(360px,513px)] lg:gap-20 lg:rounded-[25px] lg:p-5"
               : "max-w-[1120px] gap-6 rounded-[16px] p-4 sm:gap-8 sm:rounded-[20px] sm:p-5 lg:min-h-[700px] lg:grid-cols-[minmax(0,540px)_minmax(340px,460px)] lg:gap-16 lg:rounded-[22px] lg:p-[18px]",
           )}
         >
-          {/* Registration form */}
           <div
             className={cn(
               "mx-auto w-full text-foreground",
@@ -61,19 +63,18 @@ export function RegistrationShell({
           >
             <h1
               className={cn(
-                "text-center font-bold text-primary",
+                "text-center font-body font-bold text-primary",
                 isFigma
                   ? "mb-2 text-xl tracking-[-0.6px] sm:mb-3 sm:text-2xl md:text-[30px]"
                   : "mb-4 text-lg tracking-[-0.54px] sm:mb-6 sm:text-xl md:text-[27px]",
               )}
             >
-              Create Your Account
+              {t("title")}
             </h1>
 
             {children}
           </div>
 
-          {/* Illustration and Back to website button */}
           <div className="mx-auto hidden w-full flex-col lg:flex">
             <div
               className={cn(
@@ -83,22 +84,19 @@ export function RegistrationShell({
             >
               <Link
                 href="/store"
-                aria-label="Back to website"
+                aria-label={t("backAria")}
                 className={cn(
                   "inline-flex h-11 items-center justify-center gap-2",
                   "rounded-full border-2 border-secondary bg-transparent px-5",
                   "text-sm font-semibold text-secondary",
                   "transition-all duration-200",
-
                   "hover:-translate-y-0.5",
                   "hover:bg-secondary/10",
                   "hover:shadow-sm",
-
                   "focus-visible:outline-none",
                   "focus-visible:ring-2",
                   "focus-visible:ring-secondary/50",
                   "focus-visible:ring-offset-2",
-
                   "dark:border-secondary",
                   "dark:bg-transparent",
                   "dark:text-secondary",
@@ -106,12 +104,8 @@ export function RegistrationShell({
                   "dark:focus-visible:ring-offset-background",
                 )}
               >
-                <span>Back to website</span>
-
-                <ArrowRight
-                  className="size-4"
-                  aria-hidden="true"
-                />
+                <span>{t("backToWebsite")}</span>
+                <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
             </div>
 
@@ -126,7 +120,7 @@ export function RegistrationShell({
             >
               <Image
                 src={registerIllustration}
-                alt="Account security illustration"
+                alt={t("illustrationAlt")}
                 width={645}
                 height={645}
                 priority
@@ -136,39 +130,30 @@ export function RegistrationShell({
             </div>
           </div>
 
-          {/* Mobile and tablet Back to website button */}
-          {/* Mobile and tablet Back to website button */}
-<div className="flex justify-center lg:hidden">
-  <Link
-    href="/"
-    aria-label="Back to website"
-    className={cn(
-      "inline-flex h-11 items-center justify-center gap-2",
-      "rounded-full bg-transparent px-5",
-      "text-sm font-semibold text-secondary",
-      "transition-all duration-200",
-
-      "hover:bg-secondary/10",
-
-      "focus-visible:outline-none",
-      "focus-visible:ring-2",
-      "focus-visible:ring-secondary/50",
-      "focus-visible:ring-offset-2",
-
-      "dark:bg-transparent",
-      "dark:text-secondary",
-      "dark:hover:bg-secondary/10",
-      "dark:focus-visible:ring-offset-background",
-    )}
-  >
-    <span>Back to website</span>
-
-    <ArrowRight
-      className="size-4"
-      aria-hidden="true"
-    />
-  </Link>
-</div>
+          <div className="flex justify-center lg:hidden">
+            <Link
+              href="/"
+              aria-label={t("backAria")}
+              className={cn(
+                "inline-flex h-11 items-center justify-center gap-2",
+                "rounded-full bg-transparent px-5",
+                "text-sm font-semibold text-secondary",
+                "transition-all duration-200",
+                "hover:bg-secondary/10",
+                "focus-visible:outline-none",
+                "focus-visible:ring-2",
+                "focus-visible:ring-secondary/50",
+                "focus-visible:ring-offset-2",
+                "dark:bg-transparent",
+                "dark:text-secondary",
+                "dark:hover:bg-secondary/10",
+                "dark:focus-visible:ring-offset-background",
+              )}
+            >
+              <span>{t("backToWebsite")}</span>
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </div>
     </section>

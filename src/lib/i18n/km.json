@@ -573,6 +573,73 @@
   "businessAddressPlaceholder": "ផ្ទះលេខ 21C ផ្លូវ 612 រាជធានីភ្នំពេញ",
   "registerBusiness": "ចុះឈ្មោះអាជីវកម្ម",
   "registeringBusiness": "កំពុងចុះឈ្មោះអាជីវកម្ម..."
+},
+"Register": {
+  "shell": {
+    "title": "បង្កើតគណនីរបស់អ្នក",
+    "backToWebsite": "ត្រឡប់ទៅគេហទំព័រ",
+    "backAria": "ត្រឡប់ទៅគេហទំព័រ",
+    "illustrationAlt": "រូបភាពបង្ហាញអំពីសុវត្ថិភាពគណនី"
+  },
+
+  "fields": {
+    "firstName": "ឈ្មោះ",
+    "firstNamePlaceholder": "បញ្ចូលឈ្មោះរបស់អ្នក",
+    "lastName": "នាមត្រកូល",
+    "lastNamePlaceholder": "បញ្ចូលនាមត្រកូលរបស់អ្នក",
+    "phoneNumber": "លេខទូរស័ព្ទ",
+    "phonePlaceholder": "បញ្ចូលលេខទូរស័ព្ទរបស់អ្នក",
+    "email": "អ៊ីមែល",
+    "emailPlaceholder": "បញ្ចូលអ៊ីមែលរបស់អ្នក",
+    "password": "ពាក្យសម្ងាត់",
+    "confirmPassword": "បញ្ជាក់ពាក្យសម្ងាត់",
+    "showPassword": "បង្ហាញពាក្យសម្ងាត់",
+    "hidePassword": "លាក់ពាក្យសម្ងាត់"
+  },
+
+  "form": {
+    "continue": "បន្ត",
+    "alreadyHaveAccount": "មានគណនីរួចហើយ?",
+    "login": "ចូលគណនី"
+  },
+
+  "business": {
+    "backToUserAccount": "ត្រឡប់ទៅគណនីអ្នកប្រើប្រាស់",
+    "storeNameLabel": "ឈ្មោះហាង",
+    "storeNamePlaceholder": "បញ្ចូលឈ្មោះហាងរបស់អ្នក",
+    "businessTypeLabel": "ប្រភេទអាជីវកម្ម",
+    "loadingBusinessTypes": "កំពុងផ្ទុកប្រភេទអាជីវកម្ម...",
+    "selectBusinessType": "ជ្រើសរើសប្រភេទអាជីវកម្មរបស់អ្នក",
+    "businessEmailLabel": "អ៊ីមែលអាជីវកម្ម",
+    "businessEmailPlaceholder": "បញ្ចូលអ៊ីមែលអាជីវកម្មរបស់អ្នក",
+    "businessAddressLabel": "អាសយដ្ឋានអាជីវកម្ម",
+    "businessAddressPlaceholder": "បញ្ចូលអាសយដ្ឋានអាជីវកម្មរបស់អ្នក",
+    "registerBusiness": "ចុះឈ្មោះអាជីវកម្ម",
+    "registeringBusiness": "កំពុងចុះឈ្មោះអាជីវកម្ម...",
+    "alreadyHaveAccount": "មានគណនីរួចហើយ?",
+    "login": "ចូលគណនី"
+  },
+
+  "multiStep": {
+    "businessDetailsInfo": "សូមបញ្ចូលព័ត៌មានអាជីវកម្មរបស់អ្នក ដើម្បីបញ្ចប់ការចុះឈ្មោះ។",
+    "accountCreated": "បានបង្កើតគណនីដោយជោគជ័យ! កំពុងបញ្ជូនទៅផ្ទាំងគ្រប់គ្រង...",
+    "registrationFailed": "ការចុះឈ្មោះបានបរាជ័យ។ សូមពិនិត្យព័ត៌មានរបស់អ្នក ហើយព្យាយាមម្តងទៀត។"
+  },
+
+  "user": {
+    "firstNamePlaceholder": "បញ្ចូលនាមត្រកូលរបស់អ្នក",
+    "lastNamePlaceholder": "បញ្ចូលឈ្មោះរបស់អ្នក",
+    "phonePlaceholder": "បញ្ចូលលេខទូរស័ព្ទរបស់អ្នក",
+    "emailPlaceholder": "បញ្ចូលអ៊ីមែលរបស់អ្នក",
+    "acceptTerms": "ខ្ញុំយល់ព្រមទទួលយកលក្ខខណ្ឌនៃការប្រើប្រាស់",
+    "register": "ចុះឈ្មោះ",
+    "registering": "កំពុងចុះឈ្មោះ...",
+    "orLoginWith": "ឬចូលគណនីដោយ",
+    "alreadyHaveAccount": "មានគណនីរួចហើយ?",
+    "login": "ចូលគណនី",
+    "registrationSuccess": "បានចុះឈ្មោះគណនីដោយជោគជ័យ! កំពុងបញ្ជូនទៅទំព័រចូលគណនី...",
+    "registrationFailed": "ការចុះឈ្មោះបានបរាជ័យ។ សូមពិនិត្យព័ត៌មានរបស់អ្នក ហើយព្យាយាមម្តងទៀត។"
+  }
 }
 
 }

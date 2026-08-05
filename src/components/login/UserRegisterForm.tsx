@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,6 +36,8 @@ const SOCIAL_PROVIDERS = [
 ] as const;
 
 export function UserRegisterForm() {
+  const fieldsT = useTranslations("Register.fields");
+  const userT = useTranslations("Register.user");
   const { login, loginHref } = useAuth();
 
   const [registerUser, { isLoading: isRegistering }] =
@@ -67,26 +70,32 @@ export function UserRegisterForm() {
         lastName: data.lastName,
         phoneNumber: data.phone,
         gender: "UNSPECIFIED",
-         role: "CUSTOMER" as const,
+        role: "CUSTOMER" as const,
       };
 
       await registerUser(userPayload).unwrap();
 
-      toast.success(
-        "Account registered successfully! Redirecting to login...",
-      );
+      toast.success(userT("registrationSuccess"));
 
       setTimeout(() => {
         login();
       }, 1200);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to register customer account:", err);
 
+      const apiError = err as {
+        data?: {
+          message?: string;
+          error?: string;
+          detail?: string;
+        };
+      };
+
       const errorMsg =
-        err?.data?.message ||
-        err?.data?.error ||
-        err?.data?.detail ||
-        "Registration failed. Please check your information and try again.";
+        apiError?.data?.message ||
+        apiError?.data?.error ||
+        apiError?.data?.detail ||
+        userT("registrationFailed");
 
       toast.error(errorMsg);
     }
@@ -94,7 +103,7 @@ export function UserRegisterForm() {
 
   return (
     <form
-      className="grid gap-3.5 font-sans text-foreground dark:text-white"
+      className="grid gap-3.5 font-body text-foreground dark:text-white"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
@@ -104,9 +113,9 @@ export function UserRegisterForm() {
           render={({ field }) => (
             <RegisterField
               {...field}
-              label="First Name"
+              label={fieldsT("firstName")}
               autoComplete="given-name"
-              placeholder="sokkhim"
+              placeholder={userT("firstNamePlaceholder")}
               error={errors.firstName?.message}
             />
           )}
@@ -118,9 +127,9 @@ export function UserRegisterForm() {
           render={({ field }) => (
             <RegisterField
               {...field}
-              label="Last Name"
+              label={fieldsT("lastName")}
               autoComplete="family-name"
-              placeholder="khorn"
+              placeholder={userT("lastNamePlaceholder")}
               error={errors.lastName?.message}
             />
           )}
@@ -133,11 +142,11 @@ export function UserRegisterForm() {
         render={({ field }) => (
           <RegisterField
             {...field}
-            label="Phone number"
+            label={fieldsT("phoneNumber")}
             type="tel"
             inputMode="tel"
             autoComplete="tel"
-            placeholder="0976775439"
+            placeholder={userT("phonePlaceholder")}
             error={errors.phone?.message}
           />
         )}
@@ -149,10 +158,10 @@ export function UserRegisterForm() {
         render={({ field }) => (
           <RegisterField
             {...field}
-            label="Email"
+            label={fieldsT("email")}
             type="email"
             autoComplete="email"
-            placeholder="sokkhim@gmail.com"
+            placeholder={userT("emailPlaceholder")}
             error={errors.email?.message}
           />
         )}
@@ -165,7 +174,7 @@ export function UserRegisterForm() {
           render={({ field }) => (
             <PasswordField
               {...field}
-              label="Password"
+              label={fieldsT("password")}
               autoComplete="new-password"
               placeholder="••••••••••"
               error={errors.password?.message}
@@ -179,7 +188,7 @@ export function UserRegisterForm() {
           render={({ field }) => (
             <PasswordField
               {...field}
-              label="Confirm password"
+              label={fieldsT("confirmPassword")}
               autoComplete="new-password"
               placeholder="••••••••••"
               error={errors.confirmPassword?.message}
@@ -208,7 +217,7 @@ export function UserRegisterForm() {
           )}
         />
 
-        <span>I accept the Terms &amp; Conditions</span>
+        <span>{userT("acceptTerms")}</span>
       </label>
 
       <Button
@@ -223,21 +232,18 @@ export function UserRegisterForm() {
         {isRegistering ? (
           <span className="flex items-center justify-center gap-2">
             <Loader2 className="size-5 animate-spin" />
-            Registering...
+            {userT("registering")}
           </span>
         ) : (
-          "Register"
+          userT("register")
         )}
       </Button>
 
-      <div
-        className="flex items-center gap-4"
-        aria-hidden="true"
-      >
+      <div className="flex items-center gap-4" aria-hidden="true">
         <span className="h-px flex-1 bg-[#313131]/25 dark:bg-white/30" />
 
         <span className="text-base font-medium text-[#313131]/50 dark:text-white">
-          Or login with
+          {userT("orLoginWith")}
         </span>
 
         <span className="h-px flex-1 bg-[#313131]/25 dark:bg-white/30" />
@@ -255,7 +261,6 @@ export function UserRegisterForm() {
               "bg-white text-sm font-medium text-[#636b74]",
               "transition-colors hover:bg-muted",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-
               "dark:border-gray-400",
               "dark:bg-background",
               "dark:text-white",
@@ -280,7 +285,7 @@ export function UserRegisterForm() {
       </div>
 
       <p className="text-center text-base text-[#636b74] dark:text-white">
-        Already have account?{" "}
+        {userT("alreadyHaveAccount")}{" "}
         <a
           href={loginHref}
           onClick={(event) => {
@@ -293,7 +298,7 @@ export function UserRegisterForm() {
             "dark:text-blue-400",
           )}
         >
-          Log in
+          {userT("login")}
         </a>
       </p>
     </form>

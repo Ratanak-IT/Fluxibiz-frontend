@@ -573,6 +573,73 @@
   "businessAddressPlaceholder": "No. 21C, Street 612, Phnom Penh",
   "registerBusiness": "Register Business",
   "registeringBusiness": "Registering Business..."
+},
+"Register": {
+  "shell": {
+    "title": "Create Your Account",
+    "backToWebsite": "Back to website",
+    "backAria": "Back to website",
+    "illustrationAlt": "Account security illustration"
+  },
+
+  "fields": {
+    "firstName": "First name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last name",
+    "lastNamePlaceholder": "Enter your last name",
+    "phoneNumber": "Phone number",
+    "phonePlaceholder": "Enter your phone number",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+
+  "form": {
+    "continue": "Continue",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in"
+  },
+
+  "business": {
+    "backToUserAccount": "Back to User Account",
+    "storeNameLabel": "Store name",
+    "storeNamePlaceholder": "Enter your store name",
+    "businessTypeLabel": "Business type",
+    "loadingBusinessTypes": "Loading business types...",
+    "selectBusinessType": "Select your business type",
+    "businessEmailLabel": "Business email",
+    "businessEmailPlaceholder": "Enter your business email",
+    "businessAddressLabel": "Business address",
+    "businessAddressPlaceholder": "Enter your business address",
+    "registerBusiness": "Register Business",
+    "registeringBusiness": "Registering Business...",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in"
+  },
+
+  "multiStep": {
+    "businessDetailsInfo": "Please enter your business details to complete registration.",
+    "accountCreated": "Account created successfully! Redirecting to dashboard...",
+    "registrationFailed": "Registration failed. Please check your information and try again."
+  },
+
+  "user": {
+    "firstNamePlaceholder": "Enter your first name",
+    "lastNamePlaceholder": "Enter your last name",
+    "phonePlaceholder": "Enter your phone number",
+    "emailPlaceholder": "example@gmail.com",
+    "acceptTerms": "I accept the Terms & Conditions",
+    "register": "Register",
+    "registering": "Registering...",
+    "orLoginWith": "Or login with",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in",
+    "registrationSuccess": "Account registered successfully! Redirecting to login...",
+    "registrationFailed": "Registration failed. Please check your information and try again."
+  }
 }
 
 }

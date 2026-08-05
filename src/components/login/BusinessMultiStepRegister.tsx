@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { RegisterForm } from "./RegisterForm";
 import { BusinessRegisterForm } from "./BusinessRegisterForm";
@@ -9,13 +10,12 @@ import {
   type UserRegisterFormData,
   type BusinessRegisterFormData,
 } from "@/lib/validations/authSchema";
-import {
-  useRegisterUserMutation,
-} from "@/features/business-registration/businessApi";
+import { useRegisterUserMutation } from "@/features/business-registration/businessApi";
 
 export function BusinessMultiStepRegister() {
-  const [step, setStep] = useState<1 | 2>(1);
+  const t = useTranslations("Register.multiStep");
 
+  const [step, setStep] = useState<1 | 2>(1);
   const [userData, setUserData] = useState<
     UserRegisterFormData | undefined
   >();
@@ -29,9 +29,7 @@ export function BusinessMultiStepRegister() {
     setUserData(data);
     setStep(2);
 
-    toast.info(
-      "Please enter your business details to complete registration.",
-    );
+    toast.info(t("businessDetailsInfo"));
   };
 
   const handleFinalSubmit = async (data: {
@@ -56,25 +54,35 @@ export function BusinessMultiStepRegister() {
 
       await registerUser(userPayload).unwrap();
 
-      toast.success("Account created successfully! Redirecting to dashboard...");
+      toast.success(t("accountCreated"));
+
       setTimeout(() => {
-        window.location.href = "https://bo-dashboard-ite-basic-lyart.vercel.app";
+        window.location.href =
+          "https://bo-dashboard-ite-basic-lyart.vercel.app";
       }, 1500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("API Error during user registration:", err);
 
+      const apiError = err as {
+        data?: {
+          message?: string;
+          error?: string;
+          detail?: string;
+        };
+      };
+
       const errorMsg =
-        err?.data?.message ||
-        err?.data?.error ||
-        err?.data?.detail ||
-        "Registration failed. Please check your information and try again.";
+        apiError?.data?.message ||
+        apiError?.data?.error ||
+        apiError?.data?.detail ||
+        t("registrationFailed");
 
       toast.error(errorMsg);
     }
   };
 
   return (
-    <div className="space-y-6 text-foreground">
+    <div className="space-y-6 font-body text-foreground">
       {step === 1 && (
         <RegisterForm
           defaultValues={userData}
