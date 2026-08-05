@@ -20,8 +20,8 @@ export function HeroSection() {
   const t = useTranslations("Support.hero");
 
   return (
-    <section className="overflow-hidden bg-background px-6 py-20 font-body lg:py-28">
-      <div className="mx-auto grid max-w-[1200px] items-center gap-16 lg:grid-cols-[1fr_1.05fr] lg:gap-8">
+    <section className="overflow-hidden bg-background py-12 font-body lg:py-16">
+      <div className="mx-auto grid w-full max-w-[1500px] items-center gap-12 px-8 sm:px-12 lg:grid-cols-[0.9fr_1.3fr] lg:gap-10 lg:px-20 xl:px-24 2xl:px-28">
         {/* ================= Left: text ================= */}
         <div className="relative pb-8 lg:pb-20">
           {/* Badge row */}
@@ -30,8 +30,8 @@ export function HeroSection() {
             style={{ animationDelay: "0.05s" }}
           >
             <span
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: INK }}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary"
+              
             >
               <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                 <path
@@ -92,7 +92,7 @@ export function HeroSection() {
 
           {/* Paragraph */}
           <p
-            className="hero-in mt-14 max-w-lg text-base leading-relaxed text-[#717171] lg:text-lg"
+            className="hero-in mt-14 max-w-lg text-base leading-relaxed text-[#717171] lg:text-lg dark:text-white"
             style={{ animationDelay: "0.45s" }}
           >
             {t("description")}
@@ -128,7 +128,7 @@ export function HeroSection() {
         </div>
 
         {/* ================= Right: 24hr service badge ================= */}
-        <div className="relative mx-auto w-full max-w-[560px]">
+        <div className="relative mx-auto w-full max-w-[720px]">
           <svg
             viewBox="0 0 660 360"
             fill="none"

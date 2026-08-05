@@ -533,6 +533,68 @@
       "everyday": "EVERYDAY",
       "badgeAria": "24 hour service, every day"
     },
+    "migration": {
+  "eyebrow": "Reliability guaranteed",
+  "titleFirst": "Seamless migration,",
+  "titleAccent": "zero data loss",
+  "description": "Switching to FluxiBiz is effortless. Every byte of your data is moved, validated, and ready to use in minutes.",
+
+  "cards": {
+    "legacy": {
+      "eyebrow": "Legacy business migration",
+      "title": "Move traditional businesses into FluxiBiz",
+      "body": "FluxiBiz provides a dedicated migration solution for businesses that still rely on legacy software, spreadsheets, manual records, or disconnected traditional systems.",
+      "points": {
+        "import": "Import data from existing business systems",
+        "prepare": "Prepare legacy records for the FluxiBiz platform",
+        "reduce": "Reduce manual migration work and business disruption"
+      }
+    },
+
+    "nifi": {
+      "eyebrow": "Data pipeline technology",
+      "title": "Powered by Apache NiFi",
+      "body": "Apache NiFi builds and manages data pipelines from many source systems to multiple targets. It is designed for flexible, general-purpose data movement, transformation, and routing.",
+      "points": {
+        "connect": "Connect many data sources and destinations",
+        "control": "Control data flow visually",
+        "transform": "Transform and route data before migration"
+      }
+    },
+
+    "debezium": {
+      "eyebrow": "Real-time database migration",
+      "title": "Real-time change capture with Debezium",
+      "body": "Debezium focuses on Change Data Capture (CDC). It watches database changes and streams updates in real time, helping FluxiBiz keep migrated information synchronized while systems are still running.",
+      "points": {
+        "capture": "Capture inserts, updates, and deletes",
+        "synchronize": "Synchronize database changes in real time",
+        "downtime": "Reduce downtime during migration"
+      }
+    },
+
+    "modern": {
+      "eyebrow": "Modern commerce transformation",
+      "title": "Bring your business into the modern era",
+      "body": "We believe FluxiBiz can handle the complete flow of a business and help traditional operations move confidently into a connected, modern commercial platform.",
+      "points": {
+        "workflow": "One connected business workflow",
+        "transition": "Safer transition from legacy operations",
+        "foundation": "A stronger foundation for modern commerce"
+      }
+    }
+  },
+
+  "flow": {
+    "legacyDatabase": "Legacy DB",
+    "excelCsv": "Excel / CSV",
+    "oldPos": "Old POS",
+    "technology": "NiFi + Debezium",
+    "technologyDescription": "Transform, validate, and synchronize",
+    "platform": "FluxiBiz Platform",
+    "platformDescription": "Modern connected commerce"
+  }
+},
     "contact": {
       "eyebrow": "Contact Us",
       "title": "Get In Touch",
