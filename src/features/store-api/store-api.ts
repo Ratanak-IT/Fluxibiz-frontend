@@ -100,7 +100,7 @@ export const storeCateApi = createApi({
     tagTypes: ["BusinessCategory", "PublicStore"],
     endpoints: (builder) => ({
         getBusinessCategory: builder.query<BusinessCategory[], void>({
-            query: () => "/public/business-categories",
+            query: () => "/business-categories",
             providesTags: ["BusinessCategory"],
         }),
 

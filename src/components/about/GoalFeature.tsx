@@ -495,7 +495,7 @@ export default function GoalFeature() {
           >
             <MaskedWords text={t('headingLine1')} reduced={reduced} delay={0.15} />
             <br />
-            <span className="animate-sheen bg-clip-text bg-[length:220%_100%] text-transparent bg-[linear-gradient(100deg,var(--ah-brand-strong)_0%,var(--ah-brand)_40%,var(--ah-brand-light)_65%,var(--ah-brand)_100%)] motion-reduce:animate-none">
+            <span className=" animate-sheen bg-clip-text bg-[length:220%_120%] text-transparent bg-[linear-gradient(100deg,var(--ah-brand-strong)_0%,var(--ah-brand)_40%,var(--ah-brand-light)_65%,var(--ah-brand)_100%)] motion-reduce:animate-none">
               <MaskedWords text={t('headingLine2')} reduced={reduced} delay={0.32} />
             </span>
           </h2>

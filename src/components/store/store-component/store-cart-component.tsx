@@ -61,13 +61,20 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
   return (
     <div
       className="
-        group relative mx-auto mt-3 
-        w-65 cursor-pointer p-2
-        overflow-hidden  rounded-lg duration-100 hover:duration-100 hover:shadow-sm  hover:scale-98 ease-out transition-transform
-      
-    "
+        group relative
+        shrink-0
+        snap-start
+        cursor-pointer
+        w-[45vw] sm:w-[260px]
+        p-2
+        overflow-hidden rounded-lg
+        duration-100 hover:duration-100 hover:shadow-sm hover:scale-98
+        ease-out transition-transform
+
+        sm:mx-auto sm:mt-3
+      "
     >
-      <div className="relative grow h-38 w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
+      <div className="relative grow aspect-square sm:aspect-video w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
         {image && !hasError ? (
           <Image
             src={image}
@@ -75,25 +82,24 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
             fill
             alt={`${name} cover`}
             onError={() => setHasError(true)}
-            sizes="(max-width: 768px) 50vw, 272px"
+            sizes="(max-width: 768px) 46vw, 272px"
             className="object-cover"
           />
         ) : (
           <StoreIcon className="h-12 w-12 text-muted-foreground" />
         )}
 
-
         {discountLabel && (
           <div
             className="
-              absolute top-2 left-2 
-              z-10 flex flex-col 
-              h-12 w-12 
-              items-center justify-center 
-              text-center leading-none 
+              absolute top-2 left-2
+              z-10 flex flex-col
+              h-12 w-12
+              items-center justify-center
+              text-center leading-none
               rounded-full
               text-foreground
-              border-2 border-dashed 
+              border-2 border-dashed
               border-input
               bg-accent shadow-xs p-0.5
             "
@@ -119,61 +125,33 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
           </div>
         )}
 
-
         <div
           className={`
-                absolute top-2 right-2 
-                z-10 rounded-full 
-                px-3 py-1 
-
-                text-xs font-semibold
-                text-primary-foreground
-
-                ${isOpen ? "bg-primary" : "bg-muted"}
-            `}
+            absolute top-2 right-2
+            z-10 rounded-full
+            px-3 py-1
+            text-xs font-semibold
+            text-primary-foreground
+            ${isOpen ? "bg-primary" : "bg-muted"}
+          `}
         >
           {isOpen ? "Open" : "Closed"}
         </div>
       </div>
 
-
       <CardContent className="space-y-1 p-1">
-        <h3
-          className="
-                text-lg font-semibold 
-                leading-tight 
-                text-foreground
-            "
-        >
+        <h3 className="text-lg font-semibold leading-tight text-foreground">
           {name}
         </h3>
 
-        <p
-          className="
-                line-clamp-1 
-                text-sm 
-                text-muted-foreground
-            "
-        >
+        <p className="line-clamp-1 text-sm text-muted-foreground">
           {description}
         </p>
 
         <div className="space-y-1">
-          <div
-            className="
-                    flex items-center gap-2 
-                    text-sm 
-                    text-muted-foreground
-                "
-          >
-            <MapPin
-              className="
-                        h-4 w-4 
-                        shrink-0 
-                        text-primary
-                    "
-            />
-
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4 shrink-0 text-primary" />
+            
             {finalGoogleMap ? (
               <span
                 onClick={(e) => {
@@ -194,20 +172,8 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
           </div>
 
           {displayHours && (
-            <div
-              className="
-                      flex items-center gap-2 
-                      text-sm 
-                      text-muted-foreground
-                  "
-            >
-              <Clock
-                className="
-                          h-4 w-4 
-                          shrink-0 
-                          text-primary
-                      "
-              />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4 shrink-0 text-primary" />
               <span>{displayHours}</span>
             </div>
           )}
