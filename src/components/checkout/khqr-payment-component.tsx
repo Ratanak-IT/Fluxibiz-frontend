@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -52,6 +54,7 @@ export default function KhqrPaymentComponent({
     onRegenerate: () => void;
     regenerating: boolean;
 }) {
+  const t = useTranslations("Checkout");
     const [phase, setPhase] = useState<Phase>("waiting");
     const [remaining, setRemaining] = useState(() => secondsLeft(session.expiresAt));
     const [notice, setNotice] = useState<string | null>(null);
@@ -64,6 +67,7 @@ export default function KhqrPaymentComponent({
     const { orderId, expiresAt } = session;
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPhase("waiting");
         setNotice(null);
         setRemaining(secondsLeft(expiresAt));
@@ -91,26 +95,26 @@ export default function KhqrPaymentComponent({
 
             if (status.paid) {
                 setPhase("paid");
-                toast.success("Payment confirmed by Bakong!");
+                toast.success(t("paymentConfirmedToast"));
                 onPaid();
                 return;
             }
 
             if (status.qrStatus === "EXPIRED") {
                 setPhase("expired");
-                toast.error("KHQR code has expired.");
+                toast.error(t("qrExpiredToast"));
                 return;
             }
 
             if (status.qrStatus === "CANCELLED" || status.orderStatus === "CANCELLED") {
                 setPhase("cancelled");
-                toast.info("Order cancelled");
+                toast.info(t("orderCancelledToast"));
                 return;
             }
         } catch (error) {
         
             setNotice(
-                checkoutErrorMessage(error, "Still checking with Bakong…"),
+                checkoutErrorMessage(error, t("stillChecking")),
             );
         } finally {
             inFlight.current = false;
@@ -130,7 +134,7 @@ export default function KhqrPaymentComponent({
             setPhase("cancelled");
             onCancelled();
         } catch (error) {
-            setNotice(checkoutErrorMessage(error, "Could not cancel this order."));
+            setNotice(checkoutErrorMessage(error, t("couldNotCancel")));
         }
     };
 
@@ -147,8 +151,7 @@ export default function KhqrPaymentComponent({
                 </h2>
 
                 <p className="mt-2 text-sm text-neutral-600 dark:text-muted-foreground">
-                    Bakong confirmed {formatMoney(session.total, session.currency)} to{" "}
-                    {session.storeName}.
+                    {t("paymentConfirmed", { amount: formatMoney(session.total, session.currency), storeName: session.storeName })}
                 </p>
 
                 <p className="mt-1 font-mono text-xs text-neutral-500 dark:text-muted-foreground">
@@ -181,7 +184,7 @@ export default function KhqrPaymentComponent({
                 </h2>
 
                 <p className="mt-2 text-sm text-neutral-600 dark:text-muted-foreground">
-                    Your items are still in the cart. You can pay another shop now.
+                    {t("cancelledDescription")}
                 </p>
             </div>
         );
@@ -201,7 +204,7 @@ export default function KhqrPaymentComponent({
                     </h2>
 
                     <p className="text-sm text-neutral-500 dark:text-muted-foreground">
-                        Any Bakong or KHQR-enabled banking app
+                        {t("bankingAppDescription")}
                     </p>
                 </div>
 
@@ -216,7 +219,7 @@ export default function KhqrPaymentComponent({
                     {session.qrImage ? (
                         <Image
                             src={session.qrImage}
-                            alt={`KHQR code for ${formatMoney(session.total, session.currency)} to ${session.storeName}`}
+                            alt={t("qrAlt", { amount: formatMoney(session.total, session.currency), storeName: session.storeName })}
                             width={240}
                             height={240}
                             unoptimized
@@ -242,7 +245,7 @@ export default function KhqrPaymentComponent({
                 </p>
 
                 <p className="mt-1 text-sm text-neutral-600 dark:text-muted-foreground">
-                    to {session.storeName}
+                    {t("payTo", { storeName: session.storeName })}
                 </p>
             </div>
 
@@ -283,7 +286,7 @@ export default function KhqrPaymentComponent({
                             onClick={poll}
                             className="h-12 w-full rounded-full text-base font-semibold"
                         >
-                            I already paid — check again
+                            {t("alreadyPaidCheck")}
                         </Button>
 
                         <Button
@@ -296,7 +299,7 @@ export default function KhqrPaymentComponent({
                             ) : (
                                 <RefreshCw className="h-4 w-4" />
                             )}
-                            Generate a new QR
+                            {t("generateNewQr")}
                         </Button>
                     </>
                 ) : (
@@ -305,7 +308,7 @@ export default function KhqrPaymentComponent({
                         onClick={poll}
                         className="h-12 w-full rounded-full text-base font-semibold"
                     >
-                        I have paid — check now
+                        {t("paidCheckNow")}
                     </Button>
                 )}
 
@@ -316,13 +319,13 @@ export default function KhqrPaymentComponent({
                     className="h-10 w-full rounded-full text-sm text-neutral-500 hover:text-destructive"
                 >
                     <X className="h-4 w-4" />
-                    Cancel this order
+                    {t("cancelOrder")}
                 </Button>
             </div>
 
             <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-500 dark:text-muted-foreground">
                 <ShieldCheck className="h-3.5 w-3.5" />
-                Paid directly to {session.storeName} through Bakong
+                Paid directly {t("payTo", { storeName: session.storeName })} through Bakong
             </p>
         </div>
     );

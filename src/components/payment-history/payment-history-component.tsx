@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
+
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,6 +24,8 @@ import { formatMoney, resolveMediaUrl } from "@/lib/type/cartType";
 import type { OrderStatus, StorefrontOrder } from "@/lib/type/checkoutType";
 
 export default function PaymentHistoryComponent() {
+  const t = useTranslations("PaymentHistory");
+  const locale = useLocale();
   const { data: orders = [], isLoading, isError, refetch } = useGetOrderHistoryQuery();
 
   const [activeTab, setActiveTab] = useState<"ALL" | OrderStatus>("ALL");
@@ -67,17 +71,17 @@ export default function PaymentHistoryComponent() {
           <div>
             <h1 className="flex items-center gap-2.5 text-2xl font-black text-neutral-900 sm:text-3xl dark:text-foreground">
               <Receipt className="h-7 w-7 text-[#00932A]" />
-              Payment History
+              {t("title")}
             </h1>
             <p className="mt-1 text-sm text-neutral-500 dark:text-muted-foreground">
-              View your receipts and past transactions across all stores
+              {t("description")}
             </p>
           </div>
 
           <Link href="/store">
             <Button className="gap-2 rounded-full bg-[#00932A] font-bold text-white shadow-sm hover:bg-[#007d24]">
               <ShoppingBag className="h-4 w-4" />
-              Explore Stores
+              {t("exploreStores")}
             </Button>
           </Link>
         </div>
@@ -95,7 +99,7 @@ export default function PaymentHistoryComponent() {
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
               }`}
             >
-              All ({orders.length})
+              {t("all")} ({orders.length})
             </button>
 
             <button
@@ -108,7 +112,7 @@ export default function PaymentHistoryComponent() {
               }`}
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
-              Paid ({paidCount})
+              {t("paid")} ({paidCount})
             </button>
 
             <button
@@ -121,7 +125,7 @@ export default function PaymentHistoryComponent() {
               }`}
             >
               <Clock className="h-3.5 w-3.5" />
-              Pending ({pendingCount})
+              {t("pending")} ({pendingCount})
             </button>
 
             <button
@@ -134,7 +138,7 @@ export default function PaymentHistoryComponent() {
               }`}
             >
               <XCircle className="h-3.5 w-3.5" />
-              Cancelled ({cancelledCount})
+              {t("cancelled")} ({cancelledCount})
             </button>
           </div>
 
@@ -145,7 +149,7 @@ export default function PaymentHistoryComponent() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search store or invoice..."
+              placeholder={t("searchPlaceholder")}
               className="h-10 rounded-full border-gray-200 bg-white pl-9 text-xs focus-visible:ring-[#00932A] dark:border-border dark:bg-card"
             />
           </div>
@@ -159,18 +163,18 @@ export default function PaymentHistoryComponent() {
             </div>
 
             <h3 className="mt-4 text-lg font-bold text-neutral-900 dark:text-foreground">
-              No Payment Transactions Found
+              {t("emptyTitle")}
             </h3>
 
             <p className="mt-1 text-sm text-neutral-500 dark:text-muted-foreground">
               {searchQuery
-                ? "No receipts match your search terms."
-                : "You haven't made any transactions yet."}
+                ? t("noSearchResults")
+                : t("noTransactions")}
             </p>
 
             <Link href="/store" className="mt-6 inline-block">
               <Button className="rounded-full bg-[#00932A] px-6 text-xs font-bold text-white hover:bg-[#007d24]">
-                Start Shopping Now
+                {t("startShopping")}
               </Button>
             </Link>
           </div>
@@ -187,17 +191,19 @@ export default function PaymentHistoryComponent() {
 }
 
 function OrderCard({ order }: { order: StorefrontOrder }) {
+  const t = useTranslations("PaymentHistory");
+  const locale = useLocale();
   const storeLogo = resolveMediaUrl(order.storeLogo);
 
   const formattedDate = order.createdDate
-    ? new Date(order.createdDate).toLocaleDateString("en-US", {
+    ? new Date(order.createdDate).toLocaleDateString(locale, {
         year: "numeric",
         month: "short",
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
       })
-    : "N/A";
+    : t("notAvailable");
 
   const isPaid = order.status === "PAID";
   const isPending = order.status === "PENDING";
@@ -236,21 +242,21 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
                 {isPaid && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                     <CheckCircle2 className="h-3 w-3" />
-                    Paid
+                    {t("paid")}
                   </span>
                 )}
 
                 {isPending && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
                     <Clock className="h-3 w-3" />
-                    Pending
+                    {t("pending")}
                   </span>
                 )}
 
                 {isCancelled && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-[11px] font-bold text-red-800 dark:bg-red-950/60 dark:text-red-300">
                     <XCircle className="h-3 w-3" />
-                    Cancelled
+                    {t("cancelled")}
                   </span>
                 )}
               </div>
@@ -262,7 +268,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
               {/* Items summary */}
               <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-neutral-600 dark:text-muted-foreground">
                 <span className="font-semibold text-neutral-900 dark:text-foreground">
-                  {order.itemCount} {order.itemCount === 1 ? "item" : "items"}:
+                  {t("itemCount", { count: order.itemCount })}:
                 </span>
                 <span className="truncate max-w-xs sm:max-w-md">
                   {order.items.map((i) => i.itemName).join(", ")}
@@ -274,7 +280,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
           {/* Amount & Receipt Action Button */}
           <div className="flex items-center justify-between border-t border-neutral-100 pt-3 sm:border-t-0 sm:pt-0 sm:flex-col sm:items-end">
             <div className="text-right">
-              <span className="text-xs text-neutral-400">Total</span>
+              <span className="text-xs text-neutral-400">{t("total")}</span>
               <p className="text-xl font-black text-[#00932A]">
                 {formatMoney(order.total, order.currency)}
               </p>
@@ -287,7 +293,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
                     size="sm"
                     className="h-8 rounded-full bg-amber-500 text-xs font-bold text-white hover:bg-amber-600"
                   >
-                    Finish Payment
+                    {t("finishPayment")}
                   </Button>
                 </Link>
               )}
@@ -299,7 +305,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
                   className="h-8 gap-1.5 rounded-full border-gray-200 text-xs font-semibold hover:border-[#00932A] hover:text-[#00932A]"
                 >
                   <Receipt className="h-3.5 w-3.5" />
-                  View Receipt
+                  {t("viewReceipt")}
                   <ArrowUpRight className="h-3 w-3" />
                 </Button>
               </Link>

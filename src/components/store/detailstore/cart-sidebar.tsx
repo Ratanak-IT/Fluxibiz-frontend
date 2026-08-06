@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ImageOff, Loader2, LogIn, Minus, Plus, X } from "lucide-react";
@@ -28,6 +29,7 @@ interface CartSidebarProps {
 }
 
 export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
+  const t = useTranslations("Cart");
   const { isAuthenticated, status: authStatus, login } = useAuth();
 
   const { data: cart, isLoading, isFetching } = useGetCartQuery(undefined, {
@@ -52,11 +54,11 @@ export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
       <CardContent className="space-y-4 p-0">
         <div className="flex items-center justify-between">
           <p className="text-base font-bold text-neutral-900 dark:text-neutral-50">
-            Your Order
+            {t("yourOrder")}
           </p>
           {itemCount > 0 && (
             <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-              {itemCount} {itemCount === 1 ? "item" : "items"}
+              {t("itemCount", { count: itemCount })}
             </span>
           )}
         </div>
@@ -64,28 +66,28 @@ export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
         {loading ? (
           <div className="flex flex-col items-center gap-2 py-10 text-center">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-            <p className="text-xs text-muted-foreground">Loading your cart...</p>
+            <p className="text-xs text-muted-foreground">{t("loadingCart")}</p>
           </div>
         ) : !isAuthenticated ? (
           <div className="flex flex-col items-center py-8 text-center">
             <p className="text-lg font-bold text-neutral-900 dark:text-neutral-50">
-              Hungry?
+              {t("hungry")}
             </p>
             <p className="mt-2 max-w-55 text-sm text-neutral-500 dark:text-neutral-400">
-              Sign in to start adding items to your cart!
+              {t("signInPrompt")}
             </p>
             <Button onClick={login} className="mt-4 rounded-full" size="sm">
               <LogIn className="mr-1.5 h-4 w-4" />
-              Sign in
+              {t("signIn")}
             </Button>
           </div>
         ) : lines.length === 0 ? (
           <div className="flex flex-col items-center py-8 text-center">
             <p className="text-lg font-bold text-neutral-900 dark:text-neutral-50">
-              Hungry?
+              {t("hungry")}
             </p>
             <p className="mt-2 max-w-55 text-sm text-neutral-500 dark:text-neutral-400">
-              You haven&apos;t added anything to your cart!
+              {t("emptySidebar")}
             </p>
           </div>
         ) : (
@@ -105,7 +107,7 @@ export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
         {/* Summary + checkout */}
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-neutral-500 dark:text-neutral-400">Total</span>
+            <span className="text-neutral-500 dark:text-neutral-400">{t("total")}</span>
             <span className="font-semibold text-neutral-900 dark:text-neutral-50">
               {formatMoney(subtotal, currency)}
             </span>
@@ -113,7 +115,7 @@ export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
 
           {otherShops > 0 && (
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              {otherShops} other {otherShops === 1 ? "shop" : "shops"} in your cart
+              {t("otherShopsInCart", { count: otherShops })}
             </p>
           )}
 
@@ -121,7 +123,7 @@ export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
             href={slug ? `/cart?shop=${encodeURIComponent(slug)}` : "/cart"}
             className="inline-block text-sm font-medium text-primary hover:underline"
           >
-            See Summary
+            {t("seeSummary")}
           </Link>
 
           {canCheckout ? (
@@ -129,7 +131,7 @@ export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
               href={`/store/${slug}/checkout`}
               className="flex h-9 w-full items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              Review Payment
+              {t("reviewPayment")}
             </Link>
           ) : (
             <Button
@@ -137,7 +139,7 @@ export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
               variant="secondary"
               disabled
             >
-              Review Payment
+              {t("reviewPayment")}
             </Button>
           )}
         </div>
@@ -153,35 +155,31 @@ function CartSidebarLine({
   line: CartLine;
   currency: string;
 }) {
+  const t = useTranslations("Cart");
+  const rootT = useTranslations();
   const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
-
-  const [pendingQty, setPendingQty] = useState(line.quantity);
-
-  useEffect(() => {
-    setPendingQty(line.quantity);
-  }, [line.quantity]);
 
   const busy = isUpdating || isRemoving;
   const imageUrl = resolveMediaUrl(line.imageUrl);
 
   const decrease = () => {
-    if (pendingQty <= 1) {
-      removeItem(line.cartItemId).unwrap().then(() => toast.info(`Removed ${line.name} from cart`));
+    if (line.quantity <= 1) {
+      removeItem(line.cartItemId).unwrap().then(() =>
+        toast.info(rootT("Store.messages.removedFromCart", { name: line.name })),
+      );
     } else {
-      const nextQty = pendingQty - 1;
-      setPendingQty(nextQty);
+      const nextQty = line.quantity - 1;
       updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
     }
   };
 
   const increase = () => {
-    const nextQty = pendingQty + 1;
-    setPendingQty(nextQty);
+    const nextQty = line.quantity + 1;
     updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
   };
 
-  const currentSubtotal = line.unitPrice * pendingQty;
+  const currentSubtotal = line.unitPrice * line.quantity;
 
   return (
     <div className="flex items-center gap-3 rounded-xl bg-neutral-50 p-2 dark:bg-muted/40">
@@ -217,20 +215,20 @@ function CartSidebarLine({
           <button
             type="button"
             onClick={decrease}
-            aria-label={`Decrease ${line.name}`}
+            aria-label={t("decreaseQuantity")}
             className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-card"
           >
             <Minus className="h-3 w-3" />
           </button>
 
           <span className="w-4 text-center text-xs font-semibold tabular-nums">
-            {pendingQty}
+            {line.quantity}
           </span>
 
           <button
             type="button"
             onClick={increase}
-            aria-label={`Increase ${line.name}`}
+            aria-label={t("increaseQuantity")}
             className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-primary transition-colors hover:bg-primary/10"
           >
             <Plus className="h-3 w-3" />
@@ -244,9 +242,13 @@ function CartSidebarLine({
 
       <button
         type="button"
-        onClick={() => removeItem(line.cartItemId).unwrap().then(() => toast.info(`Removed ${line.name} from cart`))}
+        onClick={() =>
+          removeItem(line.cartItemId).unwrap().then(() =>
+            toast.info(rootT("Store.messages.removedFromCart", { name: line.name })),
+          )
+        }
         disabled={busy}
-        aria-label={`Remove ${line.name}`}
+        aria-label={t("removeItem", { name: line.name })}
         className="shrink-0 self-start text-neutral-400 transition-colors hover:text-red-500 disabled:opacity-40"
       >
         <X className="h-4 w-4" />

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,8 +20,15 @@ interface FilterDropdownProps {
 }
 
 function FilterDropdown({ label, value, options, onSelect }: FilterDropdownProps) {
+  const t = useTranslations("Store.filters");
   const isSelected = value && value !== "All" && value !== "All Prices" && value !== "Default";
-  const displayLabel = isSelected ? value : label;
+  const optionLabel = (option: string) => ({
+    "All": t("all"), "All Prices": t("allPrices"), "Default": t("default"),
+    "Under $2": t("underTwo"), "$2 - $5": t("twoToFive"), "$5 - $10": t("fiveToTen"),
+    "Over $10": t("overTen"), "Price: Low to High": t("priceLowHigh"),
+    "Price: High to Low": t("priceHighLow"), "Name: A to Z": t("nameAZ")
+  } as Record<string, string>)[option] ?? option;
+  const displayLabel = isSelected ? optionLabel(value) : label;
 
   return (
     <DropdownMenu>
@@ -38,7 +47,7 @@ function FilterDropdown({ label, value, options, onSelect }: FilterDropdownProps
           const active = option === value;
           return (
             <DropdownMenuItem
-              key={option}
+              key={optionLabel(option)}
               onClick={() => onSelect(option)}
               className={`cursor-pointer text-xs sm:text-sm ${
                 active
@@ -46,7 +55,7 @@ function FilterDropdown({ label, value, options, onSelect }: FilterDropdownProps
                   : "focus:bg-neutral-100 focus:text-neutral-900 dark:focus:bg-neutral-800 dark:focus:text-neutral-100"
               }`}
             >
-              {option}
+              {optionLabel(option)}
             </DropdownMenuItem>
           );
         })}
@@ -80,6 +89,7 @@ export default function SearchFilterBar({
   onSortByChange,
   onReset,
 }: SearchFilterBarProps) {
+  const t = useTranslations("Store.filters");
   const hasActiveFilters =
     searchQuery.trim() !== "" ||
     selectedCategory !== "All" ||
@@ -95,14 +105,14 @@ export default function SearchFilterBar({
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search drinks, food, or category..."
+          placeholder={t("searchPlaceholder")}
           className="h-11 w-full rounded-full border-0 bg-white pl-11 pr-8 text-sm shadow-sm placeholder:text-neutral-400 dark:bg-neutral-900"
         />
         {searchQuery && (
           <button
             type="button"
             onClick={() => onSearchChange("")}
-            aria-label="Clear search"
+            aria-label={t("clearSearch")}
             className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-xs text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
           >
             ✕
@@ -114,7 +124,7 @@ export default function SearchFilterBar({
       <div className="flex w-full sm:w-auto items-center gap-2 sm:gap-3 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
         {/* Category */}
         <FilterDropdown
-          label="Category"
+          label={t("category")}
           value={selectedCategory}
           options={categories}
           onSelect={onCategoryChange}
@@ -122,7 +132,7 @@ export default function SearchFilterBar({
 
         {/* Price Range */}
         <FilterDropdown
-          label="Price Range"
+          label={t("priceRange")}
           value={selectedPriceRange}
           options={["All Prices", "Under $2", "$2 - $5", "$5 - $10", "Over $10"]}
           onSelect={onPriceRangeChange}
@@ -130,7 +140,7 @@ export default function SearchFilterBar({
 
         {/* Sort By */}
         <FilterDropdown
-          label="Sort By"
+          label={t("sortBy")}
           value={sortBy}
           options={[
             "Default",
@@ -149,7 +159,7 @@ export default function SearchFilterBar({
             onClick={onReset}
             className="h-11 shrink-0 rounded-full bg-red-50 px-4 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100 sm:px-5 sm:text-sm dark:bg-red-950/40 dark:text-red-400"
           >
-            Reset Filters
+            {t("resetFilters")}
           </Button>
         ) : (
           <Button
@@ -158,7 +168,7 @@ export default function SearchFilterBar({
             className="h-11 shrink-0 rounded-full bg-white px-4 sm:px-5 font-medium text-neutral-800 shadow-sm hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200"
           >
             <ListFilter className="mr-1.5 h-4 w-4" />
-            Filter
+            {t("filter")}
           </Button>
         )}
       </div>

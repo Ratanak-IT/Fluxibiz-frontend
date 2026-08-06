@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Store } from "lucide-react";
@@ -11,6 +13,7 @@ import EmptyCartComponent from "./empty-cart-component";
 import CartSkeletonComponent from "./cart-skeleton-component";
 
 export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
+  const t = useTranslations("Cart");
     const searchParams = useSearchParams();
     const slug = shopSlug ?? searchParams.get("shop");
 
@@ -65,7 +68,7 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
                 <Store className="mx-auto h-8 w-8 text-neutral-300 dark:text-muted-foreground" />
 
                 <p className="mt-3 text-base font-medium text-neutral-700 dark:text-card-foreground">
-                    No items from this shop
+                    {t("noItemsFromShop")}
                 </p>
 
                 {cart.storeCount > 0 && (
@@ -73,7 +76,7 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
                         href="/cart"
                         className="mt-4 inline-block text-sm font-medium text-green-600 hover:underline"
                     >
-                        See your other shops ({cart.storeCount})
+                        {t("seeOtherShops")} ({cart.storeCount})
                     </Link>
                 )}
             </div>

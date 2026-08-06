@@ -165,35 +165,31 @@
         }
       }
     },
-
-"team": {
-  "mentors": "គ្រូបង្វឹករបស់យើង",
-  "members": "ក្រុមការងាររបស់យើង",
-
-  "people": {
-    "chanChhaya": "ចាន់ ឆៃយ៉ា",
-  "srorngSokcheat": "ស្រ៊ង សុខជាតិ",
-  "liepSokkeang": "លៀប សុខគាង",
-  "sreyChanchhay": "ស្រី ច័ន្ទឆាយ",
-  "pechPhakley": "បុិច ផាកឡី",
-  "dornDana": "ឌន ដាណា",
-  "maiyLeangngim": "ម៉ៃ លាងងីម",
-  "leangLyjing": "លាង លីជីង",
-  "khornSokkhim": "ខន សុខឃីម",
-  "thaiRatanak": "ថៃ រតនៈ",
-  "rayyaYuma": "រ៉ាយ៉ា យូម៉ា"
-  },
-
-  "roles": {
-   "seniorItInstructor": "Senior IT Instructor",
-    "itInstructor": "IT Instructor",
-    "mentor": "Mentor",
-    "fullstack": "Fullstack",
-    "teamLeader": "Team Leader",
-    "member": "Member"
-  }
-}
-
+    "team": {
+      "mentors": "គ្រូបង្វឹករបស់យើង",
+      "members": "ក្រុមការងាររបស់យើង",
+      "people": {
+        "chanChhaya": "ចាន់ ឆៃយ៉ា",
+        "srorngSokcheat": "ស្រ៊ង សុខជាតិ",
+        "liepSokkeang": "លៀប សុខគាង",
+        "sreyChanchhay": "ស្រី ច័ន្ទឆាយ",
+        "pechPhakley": "បុិច ផាកឡី",
+        "dornDana": "ឌន ដាណា",
+        "maiyLeangngim": "ម៉ៃ លាងងីម",
+        "leangLyjing": "លាង លីជីង",
+        "khornSokkhim": "ខន សុខឃីម",
+        "thaiRatanak": "ថៃ រតនៈ",
+        "rayyaYuma": "រ៉ាយ៉ា យូម៉ា"
+      },
+      "roles": {
+        "seniorItInstructor": "Senior IT Instructor",
+        "itInstructor": "IT Instructor",
+        "mentor": "Mentor",
+        "fullstack": "Fullstack",
+        "teamLeader": "Team Leader",
+        "member": "Member"
+      }
+    }
   },
   "Feature": {
     "metadata": {
@@ -533,20 +529,20 @@
       "headingLine2": "គេហទំព័រ FluxiBiz",
       "description": "ទាំងនេះគឺជាបច្ចេកវិទ្យាទំនើបដែលយើងប្រើដើម្បីបង្កើតប្រព័ន្ធគ្រប់គ្រងអាជីវកម្មដែលមានសុវត្ថិភាព អាចពង្រីកបាន និងអាចជឿទុកចិត្តបាន"
     },
-   "cta": {
-  "todaySales": "ការលក់ថ្ងៃនេះ",
-  "orders": "ការបញ្ជាទិញ",
-  "ordersValue": "បានបញ្ចប់ ៣៤២",
-  "inventory": "ស្តុកទំនិញ",
-  "inventoryValue": "ទីតាំងទាំងអស់បានធ្វើសមកាលកម្ម",
-  "onlineStore": "ហាងអនឡាញ",
-  "onlineStoreValue": "កំពុងបើក និងលក់",
-  "eyebrow": "ជំហានថ្មីរបស់អ្នកចាប់ផ្តើមនៅទីនេះ",
-  "headingLine1": "គ្រប់គ្រងអាជីវកម្មរបស់អ្នក",
-  "headingLine2": "ដោយភាពច្បាស់លាស់ពេញលេញ",
-  "primaryCta": "ចាប់ផ្តើមសាកល្បងឥតគិតថ្លៃ",
-  "secondaryCta": "ពិភាក្សាជាមួយក្រុមរបស់យើង"
-}
+    "cta": {
+      "todaySales": "ការលក់ថ្ងៃនេះ",
+      "orders": "ការបញ្ជាទិញ",
+      "ordersValue": "បានបញ្ចប់ ៣៤២",
+      "inventory": "ស្តុកទំនិញ",
+      "inventoryValue": "ទីតាំងទាំងអស់បានធ្វើសមកាលកម្ម",
+      "onlineStore": "ហាងអនឡាញ",
+      "onlineStoreValue": "កំពុងបើក និងលក់",
+      "eyebrow": "ជំហានថ្មីរបស់អ្នកចាប់ផ្តើមនៅទីនេះ",
+      "headingLine1": "គ្រប់គ្រងអាជីវកម្មរបស់អ្នក",
+      "headingLine2": "ដោយភាពច្បាស់លាស់ពេញលេញ",
+      "primaryCta": "ចាប់ផ្តើមសាកល្បងឥតគិតថ្លៃ",
+      "secondaryCta": "ពិភាក្សាជាមួយក្រុមរបស់យើង"
+    }
   },
   "Support": {
     "hero": {
@@ -559,67 +555,62 @@
       "badgeAria": "សេវាកម្ម ២៤ ម៉ោង រៀងរាល់ថ្ងៃ"
     },
     "migration": {
-  "eyebrow": "ធានានូវភាពជឿជាក់",
-  "titleFirst": "ផ្ទេរទិន្នន័យដោយរលូន",
-  "titleAccent": "ដោយមិនបាត់បង់ទិន្នន័យ",
-  "description": "ការផ្លាស់ប្តូរមកប្រើ FluxiBiz គឺមានភាពងាយស្រួល។ រាល់ទិន្នន័យរបស់អ្នកត្រូវបានផ្ទេរ ផ្ទៀងផ្ទាត់ និងត្រៀមរួចរាល់សម្រាប់ប្រើប្រាស់ក្នុងរយៈពេលខ្លី",
-
-  "cards": {
-    "legacy": {
-      "eyebrow": "ការផ្ទេរអាជីវកម្មចាស់",
-      "title": "ផ្លាស់ប្តូរអាជីវកម្មបែបប្រពៃណីមកកាន់ FluxiBiz",
-      "body": "FluxiBiz ផ្តល់នូវដំណោះស្រាយផ្ទេរទិន្នន័យពិសេស សម្រាប់អាជីវកម្មដែលនៅតែប្រើកម្មវិធីចាស់ តារាងទិន្នន័យ កំណត់ត្រាដោយដៃ ឬប្រព័ន្ធបែបប្រពៃណីដែលមិនទាន់តភ្ជាប់គ្នា។",
-      "points": {
-        "import": "នាំចូលទិន្នន័យពីប្រព័ន្ធអាជីវកម្មដែលមានស្រាប់",
-        "prepare": "រៀបចំទិន្នន័យចាស់សម្រាប់វេទិកា FluxiBiz",
-        "reduce": "កាត់បន្ថយការងារដោយដៃ និងការរំខានដល់ប្រតិបត្តិការអាជីវកម្ម"
+      "eyebrow": "ធានានូវភាពជឿជាក់",
+      "titleFirst": "ផ្ទេរទិន្នន័យដោយរលូន",
+      "titleAccent": "ដោយមិនបាត់បង់ទិន្នន័យ",
+      "description": "ការផ្លាស់ប្តូរមកប្រើ FluxiBiz គឺមានភាពងាយស្រួល។ រាល់ទិន្នន័យរបស់អ្នកត្រូវបានផ្ទេរ ផ្ទៀងផ្ទាត់ និងត្រៀមរួចរាល់សម្រាប់ប្រើប្រាស់ក្នុងរយៈពេលខ្លី",
+      "cards": {
+        "legacy": {
+          "eyebrow": "ការផ្ទេរអាជីវកម្មចាស់",
+          "title": "ផ្លាស់ប្តូរអាជីវកម្មបែបប្រពៃណីមកកាន់ FluxiBiz",
+          "body": "FluxiBiz ផ្តល់នូវដំណោះស្រាយផ្ទេរទិន្នន័យពិសេស សម្រាប់អាជីវកម្មដែលនៅតែប្រើកម្មវិធីចាស់ តារាងទិន្នន័យ កំណត់ត្រាដោយដៃ ឬប្រព័ន្ធបែបប្រពៃណីដែលមិនទាន់តភ្ជាប់គ្នា។",
+          "points": {
+            "import": "នាំចូលទិន្នន័យពីប្រព័ន្ធអាជីវកម្មដែលមានស្រាប់",
+            "prepare": "រៀបចំទិន្នន័យចាស់សម្រាប់វេទិកា FluxiBiz",
+            "reduce": "កាត់បន្ថយការងារដោយដៃ និងការរំខានដល់ប្រតិបត្តិការអាជីវកម្ម"
+          }
+        },
+        "nifi": {
+          "eyebrow": "បច្ចេកវិទ្យាការបញ្ជូនទិន្នន័យ",
+          "title": "ដំណើរការដោយ Apache NiFi",
+          "body": "Apache NiFi ត្រូវបានប្រើសម្រាប់បង្កើត និងគ្រប់គ្រងការបញ្ជូនទិន្នន័យពីប្រភពជាច្រើនទៅកាន់គោលដៅជាច្រើន វាសមស្របសម្រាប់ការផ្ទេរ បម្លែង និងបញ្ជូនទិន្នន័យទូទៅដោយភាពបត់បែន",
+          "points": {
+            "connect": "តភ្ជាប់ប្រភព និងគោលដៅទិន្នន័យជាច្រើន",
+            "control": "គ្រប់គ្រងលំហូរទិន្នន័យតាមរយៈផ្ទាំងមើលឃើញ",
+            "transform": "បម្លែង និងបញ្ជូនទិន្នន័យមុនពេលផ្ទេរ"
+          }
+        },
+        "debezium": {
+          "eyebrow": "ការផ្ទេរមូលដ្ឋានទិន្នន័យពេលជាក់ស្តែង",
+          "title": "ចាប់យកការផ្លាស់ប្តូរពេលជាក់ស្តែងជាមួយ Debezium",
+          "body": "Debezium ផ្តោតលើបច្ចេកវិទ្យា Change Data Capture (CDC)វាតាមដានការផ្លាស់ប្តូរក្នុងមូលដ្ឋានទិន្នន័យ និងបញ្ជូនបច្ចុប្បន្នភាពតាមពេលជាក់ស្តែង ដើម្បីជួយឱ្យ FluxiBiz រក្សាទិន្នន័យដែលបានផ្ទេរឱ្យស្របគ្នា ខណៈពេលដែលប្រព័ន្ធចាស់នៅតែដំណើរការ",
+          "points": {
+            "capture": "ចាប់យកការបញ្ចូល ការកែប្រែ និងការលុបទិន្នន័យ",
+            "synchronize": "ធ្វើសមកាលកម្មការផ្លាស់ប្តូរទិន្នន័យតាមពេលជាក់ស្តែង",
+            "downtime": "កាត់បន្ថយពេលវេលាផ្អាកប្រព័ន្ធក្នុងអំឡុងពេលផ្ទេរ"
+          }
+        },
+        "modern": {
+          "eyebrow": "ការផ្លាស់ប្តូរទៅអាជីវកម្មទំនើប",
+          "title": "នាំអាជីវកម្មរបស់អ្នកចូលទៅក្នុងសម័យទំនើប",
+          "body": "យើងជឿជាក់ថា FluxiBiz អាចគ្រប់គ្រងលំហូរអាជីវកម្មទាំងមូល និងជួយឱ្យប្រតិបត្តិការបែបប្រពៃណីផ្លាស់ប្តូរទៅកាន់វេទិកាអាជីវកម្មទំនើបដែលមានទំនាក់ទំនងគ្នាក្នុងប្រព័ន្ធតែមួយ។",
+          "points": {
+            "workflow": "លំហូរការងារអាជីវកម្មដែលតភ្ជាប់គ្នាតែមួយ",
+            "transition": "ការផ្លាស់ប្តូរពីប្រព័ន្ធចាស់ដោយសុវត្ថិភាពជាងមុន",
+            "foundation": "មូលដ្ឋានដ៏រឹងមាំសម្រាប់ពាណិជ្ជកម្មទំនើប"
+          }
+        }
+      },
+      "flow": {
+        "legacyDatabase": "មូលដ្ឋានទិន្នន័យចាស់",
+        "excelCsv": "Excel / CSV",
+        "oldPos": "ប្រព័ន្ធ POS ចាស់",
+        "technology": "NiFi + Debezium",
+        "technologyDescription": "បម្លែង ផ្ទៀងផ្ទាត់ និងធ្វើសមកាលកម្ម",
+        "platform": "វេទិកា FluxiBiz",
+        "platformDescription": "ប្រព័ន្ធទំនើបដែលតភ្ជាប់គ្នា"
       }
     },
-
-    "nifi": {
-      "eyebrow": "បច្ចេកវិទ្យាការបញ្ជូនទិន្នន័យ",
-      "title": "ដំណើរការដោយ Apache NiFi",
-      "body": "Apache NiFi ត្រូវបានប្រើសម្រាប់បង្កើត និងគ្រប់គ្រងការបញ្ជូនទិន្នន័យពីប្រភពជាច្រើនទៅកាន់គោលដៅជាច្រើន វាសមស្របសម្រាប់ការផ្ទេរ បម្លែង និងបញ្ជូនទិន្នន័យទូទៅដោយភាពបត់បែន",
-      "points": {
-        "connect": "តភ្ជាប់ប្រភព និងគោលដៅទិន្នន័យជាច្រើន",
-        "control": "គ្រប់គ្រងលំហូរទិន្នន័យតាមរយៈផ្ទាំងមើលឃើញ",
-        "transform": "បម្លែង និងបញ្ជូនទិន្នន័យមុនពេលផ្ទេរ"
-      }
-    },
-
-    "debezium": {
-      "eyebrow": "ការផ្ទេរមូលដ្ឋានទិន្នន័យពេលជាក់ស្តែង",
-      "title": "ចាប់យកការផ្លាស់ប្តូរពេលជាក់ស្តែងជាមួយ Debezium",
-      "body": "Debezium ផ្តោតលើបច្ចេកវិទ្យា Change Data Capture (CDC)វាតាមដានការផ្លាស់ប្តូរក្នុងមូលដ្ឋានទិន្នន័យ និងបញ្ជូនបច្ចុប្បន្នភាពតាមពេលជាក់ស្តែង ដើម្បីជួយឱ្យ FluxiBiz រក្សាទិន្នន័យដែលបានផ្ទេរឱ្យស្របគ្នា ខណៈពេលដែលប្រព័ន្ធចាស់នៅតែដំណើរការ",
-      "points": {
-        "capture": "ចាប់យកការបញ្ចូល ការកែប្រែ និងការលុបទិន្នន័យ",
-        "synchronize": "ធ្វើសមកាលកម្មការផ្លាស់ប្តូរទិន្នន័យតាមពេលជាក់ស្តែង",
-        "downtime": "កាត់បន្ថយពេលវេលាផ្អាកប្រព័ន្ធក្នុងអំឡុងពេលផ្ទេរ"
-      }
-    },
-
-    "modern": {
-      "eyebrow": "ការផ្លាស់ប្តូរទៅអាជីវកម្មទំនើប",
-      "title": "នាំអាជីវកម្មរបស់អ្នកចូលទៅក្នុងសម័យទំនើប",
-      "body": "យើងជឿជាក់ថា FluxiBiz អាចគ្រប់គ្រងលំហូរអាជីវកម្មទាំងមូល និងជួយឱ្យប្រតិបត្តិការបែបប្រពៃណីផ្លាស់ប្តូរទៅកាន់វេទិកាអាជីវកម្មទំនើបដែលមានទំនាក់ទំនងគ្នាក្នុងប្រព័ន្ធតែមួយ។",
-      "points": {
-        "workflow": "លំហូរការងារអាជីវកម្មដែលតភ្ជាប់គ្នាតែមួយ",
-        "transition": "ការផ្លាស់ប្តូរពីប្រព័ន្ធចាស់ដោយសុវត្ថិភាពជាងមុន",
-        "foundation": "មូលដ្ឋានដ៏រឹងមាំសម្រាប់ពាណិជ្ជកម្មទំនើប"
-      }
-    }
-  },
-
-  "flow": {
-    "legacyDatabase": "មូលដ្ឋានទិន្នន័យចាស់",
-    "excelCsv": "Excel / CSV",
-    "oldPos": "ប្រព័ន្ធ POS ចាស់",
-    "technology": "NiFi + Debezium",
-    "technologyDescription": "បម្លែង ផ្ទៀងផ្ទាត់ និងធ្វើសមកាលកម្ម",
-    "platform": "វេទិកា FluxiBiz",
-    "platformDescription": "ប្រព័ន្ធទំនើបដែលតភ្ជាប់គ្នា"
-  }
-},
     "contact": {
       "eyebrow": "ទាក់ទងយើង",
       "title": "ទាក់ទងមកយើង",
@@ -645,52 +636,9 @@
     }
   },
   "business": {
-  "continue": "បន្ត",
-  "alreadyHaveAccount": "មានគណនីរួចហើយ?",
-  "login": "ចូលគណនី",
-  "backToUserAccount": "ត្រឡប់ទៅគណនីអ្នកប្រើប្រាស់",
-  "storeNameLabel": "ឈ្មោះហាង",
-  "storeNamePlaceholder": "បញ្ចូលឈ្មោះហាងរបស់អ្នក",
-  "businessTypeLabel": "ប្រភេទអាជីវកម្ម",
-  "loadingBusinessTypes": "កំពុងផ្ទុកប្រភេទអាជីវកម្ម...",
-  "selectBusinessType": "ជ្រើសរើសប្រភេទអាជីវកម្មរបស់អ្នក",
-  "businessEmailLabel": "អ៊ីមែលអាជីវកម្ម",
-  "businessEmailPlaceholder": "បញ្ចូលអ៊ីមែលអាជីវកម្មរបស់អ្នក",
-  "businessAddressLabel": "អាសយដ្ឋានអាជីវកម្ម",
-  "businessAddressPlaceholder": "ផ្ទះលេខ 21C ផ្លូវ 612 រាជធានីភ្នំពេញ",
-  "registerBusiness": "ចុះឈ្មោះអាជីវកម្ម",
-  "registeringBusiness": "កំពុងចុះឈ្មោះអាជីវកម្ម..."
-},
-"Register": {
-  "shell": {
-    "title": "បង្កើតគណនីរបស់អ្នក",
-    "backToWebsite": "ត្រឡប់ទៅគេហទំព័រ",
-    "backAria": "ត្រឡប់ទៅគេហទំព័រ",
-    "illustrationAlt": "រូបភាពបង្ហាញអំពីសុវត្ថិភាពគណនី"
-  },
-
-  "fields": {
-    "firstName": "ឈ្មោះ",
-    "firstNamePlaceholder": "បញ្ចូលឈ្មោះរបស់អ្នក",
-    "lastName": "នាមត្រកូល",
-    "lastNamePlaceholder": "បញ្ចូលនាមត្រកូលរបស់អ្នក",
-    "phoneNumber": "លេខទូរស័ព្ទ",
-    "phonePlaceholder": "បញ្ចូលលេខទូរស័ព្ទរបស់អ្នក",
-    "email": "អ៊ីមែល",
-    "emailPlaceholder": "បញ្ចូលអ៊ីមែលរបស់អ្នក",
-    "password": "ពាក្យសម្ងាត់",
-    "confirmPassword": "បញ្ជាក់ពាក្យសម្ងាត់",
-    "showPassword": "បង្ហាញពាក្យសម្ងាត់",
-    "hidePassword": "លាក់ពាក្យសម្ងាត់"
-  },
-
-  "form": {
     "continue": "បន្ត",
     "alreadyHaveAccount": "មានគណនីរួចហើយ?",
-    "login": "ចូលគណនី"
-  },
-
-  "business": {
+    "login": "ចូលគណនី",
     "backToUserAccount": "ត្រឡប់ទៅគណនីអ្នកប្រើប្រាស់",
     "storeNameLabel": "ឈ្មោះហាង",
     "storeNamePlaceholder": "បញ្ចូលឈ្មោះហាងរបស់អ្នក",
@@ -700,33 +648,319 @@
     "businessEmailLabel": "អ៊ីមែលអាជីវកម្ម",
     "businessEmailPlaceholder": "បញ្ចូលអ៊ីមែលអាជីវកម្មរបស់អ្នក",
     "businessAddressLabel": "អាសយដ្ឋានអាជីវកម្ម",
-    "businessAddressPlaceholder": "បញ្ចូលអាសយដ្ឋានអាជីវកម្មរបស់អ្នក",
+    "businessAddressPlaceholder": "ផ្ទះលេខ 21C ផ្លូវ 612 រាជធានីភ្នំពេញ",
     "registerBusiness": "ចុះឈ្មោះអាជីវកម្ម",
-    "registeringBusiness": "កំពុងចុះឈ្មោះអាជីវកម្ម...",
-    "alreadyHaveAccount": "មានគណនីរួចហើយ?",
-    "login": "ចូលគណនី"
+    "registeringBusiness": "កំពុងចុះឈ្មោះអាជីវកម្ម..."
   },
-
-  "multiStep": {
-    "businessDetailsInfo": "សូមបញ្ចូលព័ត៌មានអាជីវកម្មរបស់អ្នក ដើម្បីបញ្ចប់ការចុះឈ្មោះ",
-    "accountCreated": "បានបង្កើតគណនីដោយជោគជ័យ! កំពុងបញ្ជូនទៅផ្ទាំងគ្រប់គ្រង...",
-    "registrationFailed": "ការចុះឈ្មោះបានបរាជ័យ​ សូមពិនិត្យព័ត៌មានរបស់អ្នក ហើយព្យាយាមម្តងទៀត"
+  "Register": {
+    "shell": {
+      "title": "បង្កើតគណនីរបស់អ្នក",
+      "backToWebsite": "ត្រឡប់ទៅគេហទំព័រ",
+      "backAria": "ត្រឡប់ទៅគេហទំព័រ",
+      "illustrationAlt": "រូបភាពបង្ហាញអំពីសុវត្ថិភាពគណនី"
+    },
+    "fields": {
+      "firstName": "ឈ្មោះ",
+      "firstNamePlaceholder": "បញ្ចូលឈ្មោះរបស់អ្នក",
+      "lastName": "នាមត្រកូល",
+      "lastNamePlaceholder": "បញ្ចូលនាមត្រកូលរបស់អ្នក",
+      "phoneNumber": "លេខទូរស័ព្ទ",
+      "phonePlaceholder": "បញ្ចូលលេខទូរស័ព្ទរបស់អ្នក",
+      "email": "អ៊ីមែល",
+      "emailPlaceholder": "បញ្ចូលអ៊ីមែលរបស់អ្នក",
+      "password": "ពាក្យសម្ងាត់",
+      "confirmPassword": "បញ្ជាក់ពាក្យសម្ងាត់",
+      "showPassword": "បង្ហាញពាក្យសម្ងាត់",
+      "hidePassword": "លាក់ពាក្យសម្ងាត់"
+    },
+    "form": {
+      "continue": "បន្ត",
+      "alreadyHaveAccount": "មានគណនីរួចហើយ?",
+      "login": "ចូលគណនី"
+    },
+    "business": {
+      "backToUserAccount": "ត្រឡប់ទៅគណនីអ្នកប្រើប្រាស់",
+      "storeNameLabel": "ឈ្មោះហាង",
+      "storeNamePlaceholder": "បញ្ចូលឈ្មោះហាងរបស់អ្នក",
+      "businessTypeLabel": "ប្រភេទអាជីវកម្ម",
+      "loadingBusinessTypes": "កំពុងផ្ទុកប្រភេទអាជីវកម្ម...",
+      "selectBusinessType": "ជ្រើសរើសប្រភេទអាជីវកម្មរបស់អ្នក",
+      "businessEmailLabel": "អ៊ីមែលអាជីវកម្ម",
+      "businessEmailPlaceholder": "បញ្ចូលអ៊ីមែលអាជីវកម្មរបស់អ្នក",
+      "businessAddressLabel": "អាសយដ្ឋានអាជីវកម្ម",
+      "businessAddressPlaceholder": "បញ្ចូលអាសយដ្ឋានអាជីវកម្មរបស់អ្នក",
+      "registerBusiness": "ចុះឈ្មោះអាជីវកម្ម",
+      "registeringBusiness": "កំពុងចុះឈ្មោះអាជីវកម្ម...",
+      "alreadyHaveAccount": "មានគណនីរួចហើយ?",
+      "login": "ចូលគណនី"
+    },
+    "multiStep": {
+      "businessDetailsInfo": "សូមបញ្ចូលព័ត៌មានអាជីវកម្មរបស់អ្នក ដើម្បីបញ្ចប់ការចុះឈ្មោះ",
+      "accountCreated": "បានបង្កើតគណនីដោយជោគជ័យ! កំពុងបញ្ជូនទៅផ្ទាំងគ្រប់គ្រង...",
+      "registrationFailed": "ការចុះឈ្មោះបានបរាជ័យ​ សូមពិនិត្យព័ត៌មានរបស់អ្នក ហើយព្យាយាមម្តងទៀត"
+    },
+    "user": {
+      "firstNamePlaceholder": "បញ្ចូលនាមត្រកូលរបស់អ្នក",
+      "lastNamePlaceholder": "បញ្ចូលឈ្មោះរបស់អ្នក",
+      "phonePlaceholder": "បញ្ចូលលេខទូរស័ព្ទរបស់អ្នក",
+      "emailPlaceholder": "បញ្ចូលអ៊ីមែលរបស់អ្នក",
+      "acceptTerms": "ខ្ញុំយល់ព្រមទទួលយកលក្ខខណ្ឌនៃការប្រើប្រាស់",
+      "register": "ចុះឈ្មោះ",
+      "registering": "កំពុងចុះឈ្មោះ...",
+      "orLoginWith": "ឬចូលគណនីដោយ",
+      "alreadyHaveAccount": "មានគណនីរួចហើយ?",
+      "login": "ចូលគណនី",
+      "registrationSuccess": "បានចុះឈ្មោះគណនីដោយជោគជ័យ! កំពុងបញ្ជូនទៅទំព័រចូលគណនី...",
+      "registrationFailed": "ការចុះឈ្មោះបានបរាជ័យ។ សូមពិនិត្យព័ត៌មានរបស់អ្នក ហើយព្យាយាមម្តងទៀត"
+    }
   },
-
-  "user": {
-    "firstNamePlaceholder": "បញ្ចូលនាមត្រកូលរបស់អ្នក",
-    "lastNamePlaceholder": "បញ្ចូលឈ្មោះរបស់អ្នក",
-    "phonePlaceholder": "បញ្ចូលលេខទូរស័ព្ទរបស់អ្នក",
-    "emailPlaceholder": "បញ្ចូលអ៊ីមែលរបស់អ្នក",
-    "acceptTerms": "ខ្ញុំយល់ព្រមទទួលយកលក្ខខណ្ឌនៃការប្រើប្រាស់",
-    "register": "ចុះឈ្មោះ",
-    "registering": "កំពុងចុះឈ្មោះ...",
-    "orLoginWith": "ឬចូលគណនីដោយ",
-    "alreadyHaveAccount": "មានគណនីរួចហើយ?",
-    "login": "ចូលគណនី",
-    "registrationSuccess": "បានចុះឈ្មោះគណនីដោយជោគជ័យ! កំពុងបញ្ជូនទៅទំព័រចូលគណនី...",
-    "registrationFailed": "ការចុះឈ្មោះបានបរាជ័យ។ សូមពិនិត្យព័ត៌មានរបស់អ្នក ហើយព្យាយាមម្តងទៀត"
+  "Store": {
+    "common": {
+      "store": "ហាង",
+      "stores": "ហាង",
+      "product": "ផលិតផល",
+      "promotion": "ប្រូម៉ូសិន",
+      "promotions": "ប្រូម៉ូសិន",
+      "recommend": "ណែនាំ",
+      "open": "បើក",
+      "closed": "បិទ",
+      "openAllDay": "បើក ២៤ ម៉ោង",
+      "noInformation": "មិនមានព័ត៌មាន",
+      "noLocation": "មិនមានទីតាំង",
+      "viewAll": "មើលទាំងអស់",
+      "backToStore": "ត្រឡប់ទៅហាង",
+      "menu": "មុខម្ហូប",
+      "storeLogo": "រូបសញ្ញាហាង",
+      "productImage": "រូបភាពផលិតផល"
+    },
+    "listing": {
+      "noStoresFound": "រកមិនឃើញហាង",
+      "noStoresDescription": "មិនមានហាងដែលត្រូវនឹងតម្រងដែលបានជ្រើសរើសទេ។ សូមសាកល្បងជ្រើសប្រភេទផ្សេង។",
+      "scrollLeft": "រំកិលទៅឆ្វេង",
+      "scrollRight": "រំកិលទៅស្តាំ"
+    },
+    "filters": {
+      "title": "តម្រង",
+      "filter": "តម្រង",
+      "shopTypes": "ប្រភេទហាង",
+      "browseByCategory": "ស្វែងរកតាមប្រភេទ",
+      "loading": "កំពុងដំណើរការ...",
+      "cannotLoadTypes": "មិនអាចទាញយកប្រភេទហាងបាន",
+      "showMore": "បង្ហាញបន្ថែម",
+      "showLess": "បង្ហាញតិច",
+      "searchPlaceholder": "ស្វែងរកភេសជ្ជៈ អាហារ ឬប្រភេទ...",
+      "searchStores": "ស្វែងរកហាង",
+      "openFilters": "បើកតម្រងហាង",
+      "closeFilters": "បិទតម្រងហាង",
+      "clearSearch": "សម្អាតការស្វែងរក",
+      "category": "ប្រភេទ",
+      "priceRange": "ចន្លោះតម្លៃ",
+      "sortBy": "តម្រៀបតាម",
+      "resetFilters": "កំណត់តម្រងឡើងវិញ",
+      "all": "ទាំងអស់",
+      "allPrices": "គ្រប់តម្លៃ",
+      "default": "លំនាំដើម",
+      "underTwo": "ក្រោម $2",
+      "twoToFive": "$2 - $5",
+      "fiveToTen": "$5 - $10",
+      "overTen": "លើស $10",
+      "priceLowHigh": "តម្លៃ៖ ទាបទៅខ្ពស់",
+      "priceHighLow": "តម្លៃ៖ ខ្ពស់ទៅទាប",
+      "nameAZ": "ឈ្មោះ៖ A ដល់ Z"
+    },
+    "detail": {
+      "storeLoadError": "រកមិនឃើញហាង ឬមិនអាចទាញយកព័ត៌មានបាន។",
+      "noItemsFound": "រកមិនឃើញផលិតផលដែលត្រូវនឹងតម្រង",
+      "noItemsDescription": "សូមសាកល្បងកែពាក្យស្វែងរក ប្រភេទ ឬចន្លោះតម្លៃ។",
+      "noMenuItems": "មិនទាន់មានផលិតផល",
+      "noMenuItemsDescription": "ហាងនេះមិនទាន់បានបង្ហោះផលិតផលទេ។ សូមត្រឡប់មកពិនិត្យម្តងទៀត។",
+      "youMayAlsoLike": "អ្នកប្រហែលជាចូលចិត្ត",
+      "productOverview": "ព័ត៌មានទូទៅអំពីផលិតផល",
+      "itemNotFound": "រកមិនឃើញផលិតផល",
+      "itemNotFoundDescription": "មិនអាចរកឃើញផលិតផលដែលបានស្នើនៅក្នុងហាងនេះទេ។",
+      "optionsVariants": "ជម្រើស / ប្រភេទ៖",
+      "option": "ជម្រើស",
+      "quantity": "បរិមាណ៖",
+      "addedToCart": "បានបន្ថែមទៅកន្ត្រក",
+      "adding": "កំពុងបន្ថែម...",
+      "addToCart": "បន្ថែមទៅកន្ត្រក",
+      "addToCartAria": "បន្ថែម {name} ទៅកន្ត្រក",
+      "decreaseQuantity": "បន្ថយបរិមាណ",
+      "increaseQuantity": "បង្កើនបរិមាណ",
+      "decreaseItem": "បន្ថយ {name}",
+      "increaseItem": "បង្កើន {name}",
+      "removeItem": "ដក {name} ចេញ",
+      "thumbnailAlt": "រូបភាពតូចទី {number} របស់ {name}",
+      "noImageAvailable": "មិនមានរូបភាព",
+      "newArrival": "ផលិតផលថ្មី",
+      "variantOptions": "ជម្រើសផលិតផល",
+      "descriptionDetails": "ការពិពណ៌នា និងព័ត៌មានលម្អិត",
+      "category": "ប្រភេទ",
+      "unit": "ឯកតា",
+      "code": "កូដ",
+      "sku": "SKU",
+      "close": "បិទ",
+      "product": "ផលិតផល",
+      "optionNumber": "ជម្រើសទី {number}",
+      "notAvailableForOrdering": "ផលិតផលនេះមិនទាន់អាចបញ្ជាទិញបានទេ។"
+    },
+    "carousel": {
+      "viewSlide": "មើល {title}",
+      "goToSlide": "ទៅស្លាយទី {number}",
+      "mountainTitle": "ថ្ងៃរះលើភ្នំ",
+      "mountainCategory": "ធម្មជាតិ",
+      "oceanTitle": "រលកសមុទ្រ",
+      "oceanCategory": "ទេសភាពសមុទ្រ",
+      "forestTitle": "ផ្លូវក្នុងព្រៃ",
+      "forestCategory": "ព្រៃឈើ"
+    },
+    "errors": {
+      "itemUnavailable": "មិនមានព័ត៌មានផលិតផលសម្រាប់កន្ត្រក។",
+      "signInRequired": "សូមចូលគណនីដើម្បីបន្ថែមផលិតផលទៅកន្ត្រក។",
+      "addToCartFailed": "មិនអាចបន្ថែមទៅកន្ត្រកបានទេ។ សូមព្យាយាមម្តងទៀត។",
+      "somethingWentWrong": "មានបញ្ហាកើតឡើង។ សូមព្យាយាមម្តងទៀត។"
+    },
+    "messages": {
+      "addedToCart": "បានបន្ថែម {quantity} × {name} ទៅកន្ត្រក",
+      "removedFromCart": "បានដក {name} ចេញពីកន្ត្រក"
+    }
+  },
+  "Cart": {
+    "title": "កន្ត្រករបស់អ្នក",
+    "yourOrder": "ការបញ្ជាទិញរបស់អ្នក",
+    "continueShopping": "បន្តទិញទំនិញ",
+    "loadingCart": "កំពុងទាញយកកន្ត្រក...",
+    "couldNotLoad": "មិនអាចទាញយកកន្ត្រកបាន",
+    "emptyTitle": "កន្ត្រករបស់អ្នកទទេ",
+    "emptyDescription": "បន្ថែមផលិតផលពីហាងណាមួយ។ ផលិតផលនឹងត្រូវបានដាក់ជាក្រុមតាមហាង ហើយអ្នកទូទាត់ម្តងមួយហាង។",
+    "browseShops": "ស្វែងរកហាង",
+    "noItemsFromShop": "មិនមានផលិតផលពីហាងនេះ",
+    "seeOtherShops": "មើលហាងផ្សេងទៀត",
+    "payingStore": "កំពុងទូទាត់ឱ្យ {storeName}",
+    "otherShops": "មានហាងផ្សេងទៀត {count} នៅក្នុងកន្ត្រករបស់អ្នក",
+    "multipleShops": "មាន {count} ហាង · ទូទាត់ម្តងមួយហាង",
+    "cartForStore": "កន្ត្រកសម្រាប់ {storeName}",
+    "itemCount": "{count} មុខ",
+    "subtotal": "សរុបបណ្ដោះអាសន្ន",
+    "discount": "បញ្ចុះតម្លៃ",
+    "total": "សរុប",
+    "shopClosed": "ហាងបានបិទ",
+    "payingFirst": "កំពុងទូទាត់ឱ្យ {storeName} ជាមុន",
+    "finishPayment": "បញ្ចប់ការទូទាត់",
+    "checkout": "ទូទាត់",
+    "removeItem": "ដក {name} ចេញ",
+    "decreaseQuantity": "បន្ថយបរិមាណ",
+    "increaseQuantity": "បង្កើនបរិមាណ",
+    "shopCount": "{count} ហាង",
+    "seeSummary": "មើលសេចក្ដីសង្ខេប",
+    "reviewPayment": "ពិនិត្យការទូទាត់",
+    "signInTitle": "ឃ្លានមែនទេ?",
+    "signInDescription": "ចូលគណនីដើម្បីបន្ថែមផលិតផល និងគ្រប់គ្រងកន្ត្រក។",
+    "loading": "កំពុងដំណើរការ...",
+    "itemsLabel": "ផលិតផល",
+    "hungry": "ឃ្លានមែនទេ?",
+    "signInPrompt": "ចូលគណនីដើម្បីចាប់ផ្តើមបន្ថែមផលិតផលទៅកន្ត្រក!",
+    "signIn": "ចូលគណនី",
+    "emptySidebar": "អ្នកមិនទាន់បានបន្ថែមអ្វីទៅកន្ត្រកទេ!",
+    "otherShopsInCart": "មានហាងផ្សេងទៀត {count} នៅក្នុងកន្ត្រករបស់អ្នក"
+  },
+  "Checkout": {
+    "title": "ការទូទាត់",
+    "nothingToCheckout": "មិនមានអ្វីសម្រាប់ទូទាត់",
+    "backToCart": "ត្រឡប់ទៅកន្ត្រក",
+    "total": "សរុប",
+    "payment": "ការទូទាត់",
+    "createPayment": "បង្កើតការទូទាត់",
+    "creatingPayment": "កំពុងបង្កើតការទូទាត់...",
+    "shopClosed": "ហាងបានបិទ",
+    "paymentReceived": "បានទទួលការទូទាត់",
+    "paymentConfirmed": "Bakong បានបញ្ជាក់ការទូទាត់ចំនួន {amount} ទៅ {storeName}។",
+    "paymentConfirmedToast": "Bakong បានបញ្ជាក់ការទូទាត់!",
+    "viewReceipt": "មើលវិក្កយបត្រអេឡិចត្រូនិក",
+    "paymentHistory": "ប្រវត្តិការទូទាត់",
+    "orderCancelled": "បានបោះបង់ការបញ្ជាទិញ",
+    "orderCancelledToast": "បានបោះបង់ការបញ្ជាទិញ",
+    "cancelledDescription": "ផលិតផលរបស់អ្នកនៅតែមានក្នុងកន្ត្រក។ ឥឡូវនេះអ្នកអាចទូទាត់ឱ្យហាងផ្សេងបាន។",
+    "scanToPay": "ស្កេនដើម្បីទូទាត់",
+    "bankingAppDescription": "ប្រើកម្មវិធីធនាគារដែលគាំទ្រ Bakong ឬ KHQR",
+    "qrAlt": "កូដ KHQR សម្រាប់ទូទាត់ {amount} ទៅ {storeName}",
+    "noQr": "មិនមាន QR",
+    "qrExpired": "QR បានផុតកំណត់",
+    "qrExpiredToast": "កូដ KHQR បានផុតកំណត់។",
+    "payTo": "ទៅ {storeName}",
+    "waitingForBakong": "កំពុងរង់ចាំ Bakong",
+    "alreadyPaidCheck": "ខ្ញុំបានទូទាត់រួចហើយ — ពិនិត្យម្តងទៀត",
+    "generateNewQr": "បង្កើត QR ថ្មី",
+    "paidCheckNow": "ខ្ញុំបានទូទាត់រួច — ពិនិត្យឥឡូវនេះ",
+    "cancelOrder": "បោះបង់ការបញ្ជាទិញនេះ",
+    "paidThroughBakong": "បានទូទាត់ដោយផ្ទាល់ទៅ {storeName} តាមរយៈ Bakong",
+    "stillChecking": "កំពុងពិនិត្យជាមួយ Bakong…",
+    "couldNotCancel": "មិនអាចបោះបង់ការបញ្ជាទិញនេះបានទេ។",
+    "couldNotStart": "មិនអាចចាប់ផ្តើមការទូទាត់បានទេ។ សូមព្យាយាមម្តងទៀត។",
+    "couldNotCancelOther": "មិនអាចបោះបង់ការបញ្ជាទិញផ្សេងបានទេ។ សូមព្យាយាមម្តងទៀត។",
+    "blockedByStore": "អ្នកមានការទូទាត់កំពុងរង់ចាំនៅ {storeName}។",
+    "cancelOtherOrder": "បោះបង់ការបញ្ជាទិញផ្សេង",
+    "goToPayment": "ទៅការទូទាត់",
+    "status": {
+      "pending": "កំពុងរង់ចាំ",
+      "paid": "បានទូទាត់",
+      "failed": "បរាជ័យ",
+      "cancelled": "បានបោះបង់",
+      "expired": "ផុតកំណត់"
+    },
+    "noItemsFromShop": "កន្ត្រករបស់អ្នកមិនមានផលិតផលពីហាងនេះទេ។",
+    "thisShop": "ហាងនេះ",
+    "paymentOpenAt": "អ្នកមានការទូទាត់កំពុងបើកនៅ {storeName}",
+    "paymentOpenDescription": "អ្នកអាចទូទាត់ម្តងមួយហាង ហើយហាងនីមួយៗទទួល KHQR ផ្ទាល់ខ្លួន។ សូមបញ្ចប់ ឬបោះបង់ការទូទាត់នោះ ដើម្បីទូទាត់ឱ្យ {storeName}។",
+    "goToStore": "ទៅ {storeName}",
+    "cancelThatOrder": "បោះបង់ការបញ្ជាទិញនោះ",
+    "payWithBakong": "ទូទាត់ {amount} ជាមួយ Bakong"
+  },
+  "PaymentHistory": {
+    "title": "ប្រវត្តិការទូទាត់",
+    "description": "មើលវិក្កយបត្រ និងប្រតិបត្តិការកន្លងមករបស់អ្នកពីគ្រប់ហាង",
+    "exploreStores": "ស្វែងរកហាង",
+    "all": "ទាំងអស់",
+    "paid": "បានទូទាត់",
+    "pending": "កំពុងរង់ចាំ",
+    "cancelled": "បានបោះបង់",
+    "searchPlaceholder": "ស្វែងរកហាង ឬលេខវិក្កយបត្រ...",
+    "emptyTitle": "រកមិនឃើញប្រតិបត្តិការទូទាត់",
+    "noSearchResults": "មិនមានវិក្កយបត្រដែលត្រូវនឹងការស្វែងរករបស់អ្នកទេ។",
+    "noTransactions": "អ្នកមិនទាន់មានប្រតិបត្តិការនៅឡើយទេ។",
+    "startShopping": "ចាប់ផ្តើមទិញទំនិញ",
+    "itemCount": "{count} មុខ",
+    "total": "សរុប",
+    "finishPayment": "បញ្ចប់ការទូទាត់",
+    "viewReceipt": "មើលវិក្កយបត្រ",
+    "notAvailable": "មិនមាន"
+  },
+  "Receipt": {
+    "loading": "កំពុងទាញយកព័ត៌មានវិក្កយបត្រ...",
+    "notFound": "រកមិនឃើញវិក្កយបត្រ",
+    "notFoundDescription": "មិនអាចទាញយកព័ត៌មានវិក្កយបត្រនេះបានទេ។ សូមពិនិត្យប្រវត្តិការបញ្ជាទិញរបស់អ្នក។",
+    "viewPaymentHistory": "មើលប្រវត្តិការទូទាត់",
+    "returnToStore": "ត្រឡប់ទៅហាង",
+    "backToPaymentHistory": "ត្រឡប់ទៅប្រវត្តិការទូទាត់",
+    "printReceipt": "បោះពុម្ពវិក្កយបត្រ",
+    "phone": "ទូរស័ព្ទ៖ {phone}",
+    "paymentSuccessful": "ការទូទាត់បានជោគជ័យ",
+    "paymentPending": "ការទូទាត់កំពុងរង់ចាំ",
+    "orderCancelled": "ការបញ្ជាទិញត្រូវបានបោះបង់",
+    "invoiceNumber": "លេខវិក្កយបត្រ",
+    "dateTime": "កាលបរិច្ឆេទ និងពេលវេលា",
+    "paymentMethod": "វិធីទូទាត់",
+    "customer": "អតិថិជន",
+    "defaultPaymentMethod": "Bakong KHQR",
+    "valuedCustomer": "អតិថិជនជាទីគោរព",
+    "purchasedItems": "ផលិតផលដែលបានទិញ",
+    "subtotal": "សរុបបណ្ដោះអាសន្ន",
+    "discount": "បញ្ចុះតម្លៃ",
+    "totalPaid": "សរុបបានទូទាត់",
+    "verified": "វិក្កយបត្រឌីជីថលផ្លូវការដែលបានផ្ទៀងផ្ទាត់ដោយ FluxiBiz",
+    "thankYou": "សូមអរគុណដែលបានទិញទំនិញពី {storeName}!",
+    "backToStore": "ត្រឡប់ទៅ {storeName}",
+    "viewAllPayments": "មើលការទូទាត់ទាំងអស់",
+    "notAvailable": "មិនមាន"
   }
-}
-
 }
