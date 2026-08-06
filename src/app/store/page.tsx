@@ -1,12 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useRef, useState, useEffect } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, Store as StoreIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, Store as StoreIcon } from "lucide-react";
 import BannerCarousel from "@/components/store/store-component/banner-carousel";
 import StoreCardHorizontal from "@/components/store/store-component/store-card-horizontal";
 import StoreFilterComponent from "@/components/store/store-component/store-filter-component";
 import {
-  Store,
   StoreCardComponent,
 } from "@/components/store/store-component/store-cart-component";
 import Link from "next/link";
@@ -14,7 +15,7 @@ import {
   useGetPublicStoresQuery,
   useGetRecommendedStoresQuery,
 } from "@/features/store-api/store-api";
-import { PublicStore, toStoreCard } from "@/lib/type/storeType";
+import { PublicStore, toStoreCard, type Store } from "@/lib/type/storeType";
 import { RecommendedRowSkeleton, StoreRowSkeleton } from "@/components/common/Skeletons";
 
 function SectionHeader({ title }: { title: string }) {
@@ -26,6 +27,7 @@ function SectionHeader({ title }: { title: string }) {
 }
 
 function ScrollRow({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("Store.listing");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -76,7 +78,7 @@ function ScrollRow({ children }: { children: React.ReactNode }) {
         <button
           type="button"
           onClick={() => scroll("left")}
-          aria-label="Scroll left"
+          aria-label={t("scrollLeft")}
           className="
             absolute left-1 top-1/2 z-20 -translate-y-1/2
             flex h-10 w-10 items-center justify-center
@@ -94,7 +96,7 @@ function ScrollRow({ children }: { children: React.ReactNode }) {
         <button
           type="button"
           onClick={() => scroll("right")}
-          aria-label="Scroll right"
+          aria-label={t("scrollRight")}
           className="
             absolute right-1 top-1/2 z-20 -translate-y-1/2
             flex h-10 w-10 items-center justify-center
@@ -128,6 +130,7 @@ function StoreRow({ items }: { items: Store[] }) {
 }
 
 function RecommendedSection() {
+  const t = useTranslations("Store.common");
   const { data: recData, isLoading: isLoadingRec } = useGetRecommendedStoresQuery({ size: 10 });
   const { data: publicData, isLoading: isLoadingPublic } = useGetPublicStoresQuery({ size: 10 });
 
@@ -140,7 +143,7 @@ function RecommendedSection() {
   if (isLoading && storesToDisplay.length === 0) {
     return (
       <section className="space-y-3">
-        <SectionHeader title="Recommend" />
+        <SectionHeader title={t("recommend")} />
         <RecommendedRowSkeleton count={4} />
       </section>
     );
@@ -152,7 +155,7 @@ function RecommendedSection() {
 
   return (
     <section className="space-y-3">
-      <SectionHeader title="Recommend" />
+      <SectionHeader title={t("recommend")} />
       <ScrollRow>
         {storesToDisplay.map((store) => (
           <Link
@@ -169,6 +172,7 @@ function RecommendedSection() {
 }
 
 function StoresByCategorySection({ selectedCategoryIds }: { selectedCategoryIds?: string[] }) {
+  const t = useTranslations("Store");
   const { data, isLoading } = useGetPublicStoresQuery({
     size: 100,
     categoryIds: selectedCategoryIds && selectedCategoryIds.length > 0 ? selectedCategoryIds : undefined,
@@ -178,7 +182,7 @@ function StoresByCategorySection({ selectedCategoryIds }: { selectedCategoryIds?
   if (isLoading) {
     return (
       <section className="space-y-3">
-        <SectionHeader title="Stores" />
+        <SectionHeader title={t("common.stores")} />
         <StoreRowSkeleton count={4} />
       </section>
     );
@@ -188,9 +192,9 @@ function StoresByCategorySection({ selectedCategoryIds }: { selectedCategoryIds?
     return (
       <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
         <StoreIcon className="h-10 w-10 text-muted-foreground/40" />
-        <p className="text-base font-semibold text-foreground">No stores found</p>
+        <p className="text-base font-semibold text-foreground">{t("listing.noStoresFound")}</p>
         <p className="text-sm text-muted-foreground">
-          No stores match your selected filter. Try selecting different categories.
+          {t("listing.noStoresDescription")}
         </p>
       </div>
     );
@@ -198,7 +202,7 @@ function StoresByCategorySection({ selectedCategoryIds }: { selectedCategoryIds?
 
   // Group public stores by their category name
   const grouped = publicStores.reduce<Record<string, PublicStore[]>>((acc, store) => {
-    const categoryName = store.category?.name?.trim() || "Stores";
+    const categoryName = store.category?.name?.trim() || t("common.stores");
     if (!acc[categoryName]) {
       acc[categoryName] = [];
     }
@@ -221,6 +225,7 @@ function StoresByCategorySection({ selectedCategoryIds }: { selectedCategoryIds?
 }
 
 function PromotionsSection() {
+  const t = useTranslations("Store.common");
   const { data, isLoading } = useGetPublicStoresQuery({ size: 50 });
   const promoStores = (data?.content ?? [])
     .map(toStoreCard)
@@ -229,7 +234,7 @@ function PromotionsSection() {
   if (isLoading) {
     return (
       <section className="space-y-3">
-        <SectionHeader title="Promotions" />
+        <SectionHeader title={t("promotions")} />
         <StoreRowSkeleton count={4} />
       </section>
     );
@@ -241,7 +246,7 @@ function PromotionsSection() {
 
   return (
     <section className="space-y-3">
-      <SectionHeader title="Promotions" />
+      <SectionHeader title={t("promotions")} />
       <StoreRow items={promoStores} />
     </section>
   );

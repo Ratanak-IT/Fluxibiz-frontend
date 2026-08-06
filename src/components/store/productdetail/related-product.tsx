@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
@@ -12,10 +13,11 @@ interface RelatedProductsProps {
 }
 
 export default function RelatedProducts({
-  title = "You May Also Like",
+  title,
   items,
   viewAllHref = "#",
 }: RelatedProductsProps) {
+  const t = useTranslations("Store");
   return (
     <section className="mx-auto my-10 max-w-7xl px-4">
      

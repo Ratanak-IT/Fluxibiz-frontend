@@ -9,24 +9,39 @@ import { Carousel, CarouselNext, CarouselPrevious } from '@/components/ui/carous
 
 const Images = [
   {
+    image: '/carousel/banner2.png',
+    title: '',
+    category: ''
+  },
+  {
+    image: '/carousel/banner7.png',
+    title: '',
+    category: ''
+  },
+  {
+    image: '/carousel/banner3.png',
+    title: '',
+    category: ''
+  },
+  {
+    image: '/carousel/banner8.png',
+    title: '',
+    category: ''
+  },
+  {
+    image: '/carousel/banner6.png',
+    title: '',
+    category: ''
+  },
+   {
     image: '/carousel/banner1.jpg',
-    title: 'Mountain Sunrise',
-    category: 'Nature'
-  },
-  {
-    image: '/carousel/banner2.jpg',
-    title: 'Ocean Waves',
-    category: 'Seascape'
-  },
-  {
-    image: '/carousel/banner3.jpg',
-    title: 'Forest Path',
-    category: 'Woodland'
+    title: '',
+    category: ''
   }
 ]
 
 const THETA = 10 // rotateY per step (deg) – flat "peeking" look, not a tight cylinder
-const AUTO_PLAY_MS = 2000 // how long each slide stays active before advancing
+const AUTO_PLAY_MS = 1500 // how long each slide stays active before advancing
 const SIDE_HEIGHT_BOOST_RATIO = 0.14 // scales with card height instead of a fixed 60px
 
 const SPRING = { type: 'spring' as const, stiffness: 280, damping: 26, mass: 0.85 }

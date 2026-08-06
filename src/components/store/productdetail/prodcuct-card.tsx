@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 // product-card.tsx
 import {
   Card,
@@ -17,6 +18,10 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ item }: ProductCardProps) {
+  function t(arg0: string, arg1: { name: string; }): string | undefined {
+    throw new Error("Function not implemented.");
+  }
+
   return (
 <Card
   className="
@@ -107,7 +112,7 @@ export function ProductCard({ item }: ProductCardProps) {
           hover:scale-105 
           hover:bg-background
           sm:h-8 sm:w-8
-        " aria-label={`Add ${item.name} to cart`}>
+        " aria-label={t("addToCartAria", { name: item.name })}>
         <Plus
           className=" text-primary
             h-3.5 w-3.5 

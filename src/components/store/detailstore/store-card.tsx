@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Card } from "../../ui/card";
 import { Clock, ImageOff, MapPin } from "lucide-react";
@@ -9,6 +10,7 @@ interface StoreCardComponentProps {
 }
 
 export default function StoreCard({ store }: StoreCardComponentProps) {
+  const t = useTranslations("Store.common");
   if (!store) {
     return (
       <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
@@ -36,7 +38,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
             {imageUrl ? (
               <Image
                 src={imageUrl}
-                alt={store.name || "Store logo"}
+                alt={store.name || t("storeLogo")}
                 fill
                 unoptimized
                 className="h-full w-full rounded-xl object-cover"
@@ -96,7 +98,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                 <span>
                   {store.openTime && store.closeTime
                     ? `${store.openTime} – ${store.closeTime}`
-                    : store.hours || "Open 24/7"}
+                    : store.hours || t("openAllDay")}
                 </span>
               </div>
             </div>

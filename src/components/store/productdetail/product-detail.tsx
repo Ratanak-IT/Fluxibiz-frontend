@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -38,6 +40,7 @@ export default function ProductDetail({
   storeName,
   isLoading = false,
 }: ProductDetailProps) {
+  const t = useTranslations("Store");
   const { isAuthenticated, login } = useAuth();
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
 
@@ -79,6 +82,7 @@ export default function ProductDetail({
 
   useEffect(() => {
     if (variants.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedVariant(variants[0]);
     } else {
       setSelectedVariant(null);
@@ -109,22 +113,22 @@ export default function ProductDetail({
     return (
       <div className="mx-auto my-16 max-w-xl px-4 text-center">
         <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
-          Item Not Found
+          {t("detail.itemNotFound")}
         </h2>
         <p className="mt-2 text-sm text-neutral-500">
-          The requested product could not be found in this store.
+          {t("detail.itemNotFoundDescription")}
         </p>
         <Link href={storeSlug ? `/store/${storeSlug}` : "/store"}>
           <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#00932A] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#007d24]">
             <ChevronLeft className="h-4 w-4" />
-            Back to Store
+            {t("common.backToStore")}
           </button>
         </Link>
       </div>
     );
   }
 
-  const name = item.name || "Product";
+  const name = item.name || t("detail.product");
   const categoryName = item.itemGroup?.name || null;
   const description = item.description || "";
 
@@ -140,19 +144,19 @@ export default function ProductDetail({
 
   async function handleAddToCart() {
     if (!item?.businessId || !item?.id) {
-      toast.error("Item information unavailable for cart.");
+      toast.error(t("errors.itemUnavailable"));
       return;
     }
 
     if (!isAuthenticated) {
-      toast.error("Please sign in to add items to your cart.");
+      toast.error(t("errors.signInRequired"));
       login();
       return;
     }
 
     setAddError(null);
     setJustAdded(true);
-    toast.success(`Added ${quantity} × ${name} to cart`);
+    toast.success(t("messages.addedToCart", { quantity, name }));
     setTimeout(() => setJustAdded(false), 2000);
 
     try {
@@ -165,13 +169,13 @@ export default function ProductDetail({
           name,
           price: unitPrice,
           imageUrl: currentMainImage,
-          storeName: storeName ?? item.businessName ?? "Store",
+          storeName: storeName ?? item.businessName ?? t("common.store"),
         },
       }).unwrap();
     } catch (err: any) {
       console.error("Failed to add to cart", err);
       setJustAdded(false);
-      const msg = err?.data?.message || err?.data?.error || "Could not add to cart. Please try again.";
+      const msg = err?.data?.message || err?.data?.error || t("errors.addToCartFailed");
       setAddError(msg);
       toast.error(msg);
     }
@@ -184,7 +188,7 @@ export default function ProductDetail({
         <Link href={storeSlug ? `/store/${storeSlug}` : "/store"}>
           <button className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground">
             <ChevronLeft className="h-4 w-4" />
-            {storeName ? `Store / ${storeName}` : "Store"} / {name}
+            {storeName ? `${t("common.store")} / ${storeName}` : t("common.store")} / {name}
           </button>
         </Link>
       </div>
@@ -206,7 +210,7 @@ export default function ProductDetail({
                 >
                   <Image
                     src={src}
-                    alt={`${name} thumbnail ${i + 1}`}
+                    alt={t("detail.thumbnailAlt", { name, number: i + 1 })}
                     width={64}
                     height={64}
                     unoptimized
@@ -270,7 +274,7 @@ export default function ProductDetail({
               <div className="flex flex-wrap gap-2">
                 {variants.map((v) => {
                   const isSel = selectedVariant?.id === v.id;
-                  const vName = v.variantName || v.name || v.title || "Option";
+                  const vName = v.variantName || v.name || v.title || t("detail.option");
                   return (
                     <button
                       key={v.id}
@@ -350,7 +354,7 @@ export default function ProductDetail({
 
           {/* Quantity Selector */}
           <div className="flex items-center gap-4 pt-2">
-            <span className="text-sm font-semibold text-muted-foreground">Quantity:</span>
+            <span className="text-sm font-semibold text-muted-foreground">{t("detail.quantity")}</span>
             <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-neutral-50 px-3 py-1 dark:border-neutral-800 dark:bg-neutral-900">
               <button
                 type="button"
@@ -383,14 +387,14 @@ export default function ProductDetail({
             {justAdded ? (
               <>
                 <Check className="h-5 w-5" />
-                Added to Cart
+                {t("detail.addedToCart")}
               </>
             ) : (
               <>
                 <ShoppingBag className="h-5 w-5" />
                 {isAdding
-                  ? "Adding..."
-                  : `Add to Cart · ${formatPrice(unitPrice * quantity)}`}
+                  ? t("detail.adding")
+                  : `${t("detail.addToCart")} · ${formatPrice(unitPrice * quantity)}`}
               </>
             )}
           </button>

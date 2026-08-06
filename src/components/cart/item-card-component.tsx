@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+
 import Image from "next/image";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -119,21 +120,15 @@ function Stepper({
     busy: boolean;
     onChange: (args: { cartItemId: string; quantity: number }) => void;
 }) {
-    const [pendingQty, setPendingQty] = useState(line.quantity);
-
-    useEffect(() => {
-        setPendingQty(line.quantity);
-    }, [line.quantity]);
+    const t = useTranslations("Cart");
 
     const handleDecrease = () => {
-        const nextQty = Math.max(1, pendingQty - 1);
-        setPendingQty(nextQty);
+        const nextQty = Math.max(1, line.quantity - 1);
         onChange({ cartItemId: line.cartItemId, quantity: nextQty });
     };
 
     const handleIncrease = () => {
-        const nextQty = pendingQty + 1;
-        setPendingQty(nextQty);
+        const nextQty = line.quantity + 1;
         onChange({ cartItemId: line.cartItemId, quantity: nextQty });
     };
 
@@ -144,14 +139,15 @@ function Stepper({
                 variant="outline"
                 size="icon"
                 onClick={handleDecrease}
+                disabled={busy}
                 className="h-6 w-6 text-yellow-400 dark:border-border dark:bg-card dark:text-secondary"
-                aria-label="Decrease quantity"
+                aria-label={t("decreaseQuantity")}
             >
                 <Minus className="h-3.5 w-3.5" />
             </Button>
 
             <span className="text-md w-4 text-center font-medium dark:text-card-foreground">
-                {pendingQty}
+                {line.quantity}
             </span>
 
             <Button
@@ -159,8 +155,9 @@ function Stepper({
                 variant="outline"
                 size="icon"
                 onClick={handleIncrease}
+                disabled={busy}
                 className="h-6 w-6 text-green-600 dark:border-border dark:bg-card dark:text-primary"
-                aria-label="Increase quantity"
+                aria-label={t("increaseQuantity")}
             >
                 <Plus className="h-3.5 w-3.5" />
             </Button>
@@ -177,6 +174,8 @@ function RemoveButton({
     busy: boolean;
     onRemove: () => void;
 }) {
+    const t = useTranslations("Cart");
+
     return (
         <Button
             type="button"
@@ -185,7 +184,7 @@ function RemoveButton({
             disabled={busy}
             onClick={onRemove}
             className="text-red-500 hover:text-red-200 disabled:opacity-40 dark:text-destructive dark:hover:bg-destructive/10 dark:hover:text-destructive"
-            aria-label={`Remove ${line.name}`}
+            aria-label={t("removeItem", { name: line.name })}
         >
             <X className="h-6 w-6 stroke-3" />
         </Button>

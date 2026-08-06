@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,9 +13,6 @@ import {
   X,
   ImageOff,
   LogIn,
-  Truck,
-  ShieldCheck,
-  RotateCcw,
 } from "lucide-react";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -48,6 +47,7 @@ export default function ProductQuickViewModal({
   open,
   onOpenChange,
 }: ProductQuickViewModalProps) {
+  const t = useTranslations();
   const product: StorefrontItemResponse | undefined = rawItem ?? item?.rawItem;
 
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
@@ -61,7 +61,7 @@ export default function ProductQuickViewModal({
   const [needsLogin, setNeedsLogin] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  const name = product?.name ?? item?.name ?? "Product";
+  const name = product?.name ?? item?.name ?? t("detail.product");
   const description = product?.description ?? item?.description ?? "";
 
   const allImages = useMemo(() => {
@@ -91,34 +91,37 @@ export default function ProductQuickViewModal({
         ? parseFloat(item.price)
         : 0;
 
-  const variants: ItemVariant[] = product?.variants ?? [];
+  const variants = useMemo<ItemVariant[]>(() => product?.variants ?? [], [product]);
 
-  const attributes: Record<string, unknown> =
-    product?.attributes && typeof product.attributes === "object"
-      ? product.attributes
-      : {};
+  const attributes = useMemo<Record<string, unknown>>(
+    () =>
+      product?.attributes && typeof product.attributes === "object"
+        ? product.attributes
+        : {},
+    [product],
+  );
 
   useEffect(() => {
     if (!open) return;
 
-    setQuantity(1);
-    setJustAdded(false);
-    setAddError(null);
-    setNeedsLogin(false);
-    setActiveImageIndex(0);
-    setSelectedVariant(variants.length > 0 ? variants[0] : null);
-
-    const initialAttrs: Record<string, string> = {};
-    Object.entries(attributes).forEach(([key, val]) => {
-      if (Array.isArray(val) && val.length > 0) {
-        initialAttrs[key] = String(val[0]);
-      } else if (typeof val === "string" || typeof val === "number") {
-        initialAttrs[key] = String(val);
-      }
-    });
-    setSelectedAttributes(initialAttrs);
-
     const rafId = requestAnimationFrame(() => {
+      setQuantity(1);
+      setJustAdded(false);
+      setAddError(null);
+      setNeedsLogin(false);
+      setActiveImageIndex(0);
+      setSelectedVariant(variants[0] ?? null);
+
+      const initialAttrs: Record<string, string> = {};
+      Object.entries(attributes).forEach(([key, val]) => {
+        if (Array.isArray(val) && val.length > 0) {
+          initialAttrs[key] = String(val[0]);
+        } else if (typeof val === "string" || typeof val === "number") {
+          initialAttrs[key] = String(val);
+        }
+      });
+      setSelectedAttributes(initialAttrs);
+
       const modalEl = document.querySelector('[data-slot="dialog-content"]');
       if (modalEl) {
         modalEl.scrollTop = 0;
@@ -126,7 +129,7 @@ export default function ProductQuickViewModal({
     });
 
     return () => cancelAnimationFrame(rafId);
-  }, [open, product?.id]);
+  }, [attributes, open, product?.id, variants]);
 
   const unitPrice =
     selectedVariant?.price !== undefined && selectedVariant?.price !== null
@@ -137,11 +140,8 @@ export default function ProductQuickViewModal({
     setAddError(null);
     setNeedsLogin(false);
 
-    const targetBusinessId = product?.businessId || (rawItem as any)?.businessId || (rawItem as any)?.rawItem?.businessId;
-    const targetItemId = product?.id || (rawItem as any)?.id || (rawItem as any)?.rawItem?.id;
-
     if (!targetBusinessId || !targetItemId) {
-      setAddError("This product is not available for ordering yet.");
+      setAddError(t("detail.notAvailableForOrdering"));
       return;
     }
 
@@ -160,26 +160,26 @@ export default function ProductQuickViewModal({
           name,
           price: unitPrice,
           imageUrl: mainImage,
-          storeName: product?.businessName ?? "Store",
+          storeName: product?.businessName ?? t("common.store"),
         },
       }).unwrap();
 
-      toast.success(`Added ${quantity} × ${name} to cart`);
+      toast.success(t("Store.messages.addedToCart", { quantity, name }));
       onOpenChange(false);
     } catch (err) {
       if (isUnauthorized(err)) {
         setNeedsLogin(true);
-        toast.error("Please sign in to add items to your cart.");
+        toast.error(t("errors.signInRequired"));
         return;
       }
-      const errMsg = apiErrorMessage(err, "Could not add to cart. Please try again.");
+      const errMsg = apiErrorMessage(err, t("errors.addToCartFailed"));
       setAddError(errMsg);
       toast.error(errMsg);
     }
   }
 
-  const targetBusinessId = product?.businessId || (rawItem as any)?.businessId || (rawItem as any)?.rawItem?.businessId;
-  const targetItemId = product?.id || (rawItem as any)?.id || (rawItem as any)?.rawItem?.id;
+  const targetBusinessId = product?.businessId ?? rawItem?.businessId;
+  const targetItemId = product?.id ?? rawItem?.id;
   const canOrder = Boolean(targetBusinessId && targetItemId);
   const disabled = isAdding || authStatus === "loading" || !canOrder;
 
@@ -191,7 +191,7 @@ export default function ProductQuickViewModal({
         <button
           autoFocus
           onClick={() => onOpenChange(false)}
-          aria-label="Close"
+          aria-label={t("detail.close")}
           className="absolute right-4 top-4 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-muted/80 text-foreground transition-colors hover:bg-muted dark:bg-black/60 dark:text-neutral-200"
         >
           <X className="h-4 w-4" />
@@ -214,7 +214,7 @@ export default function ProductQuickViewModal({
                   >
                     <Image
                       src={img}
-                      alt={`${name} thumbnail ${idx + 1}`}
+                      alt={t("detail.thumbnailAlt", { name, number: idx + 1 })}
                       fill
                       unoptimized
                       className="object-cover"
@@ -237,7 +237,7 @@ export default function ProductQuickViewModal({
               ) : (
                 <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-muted-foreground">
                   <ImageOff className="h-10 w-10 text-muted-foreground/50" />
-                  <span className="text-xs">No image available</span>
+                  <span className="text-xs">{t("detail.noImageAvailable")}</span>
                 </div>
               )}
             </div>
@@ -250,7 +250,7 @@ export default function ProductQuickViewModal({
               {/* Category / Badge */}
               <div className="flex items-center gap-2">
                 <span className="rounded-md bg-[#00932A]/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-[#00932A]">
-                  {product?.itemGroup?.name ?? item?.category ?? "NEW ARRIVAL"}
+                  {product?.itemGroup?.name ?? item?.category ?? t("detail.newArrival")}
                 </span>
               </div>
 
@@ -282,7 +282,7 @@ export default function ProductQuickViewModal({
               {variants.length > 0 && (
                 <div className="space-y-1.5 pt-1">
                   <p className="text-xs font-semibold text-foreground">
-                    Variant Options:
+                    {t("detail.variantOptions")}:
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {variants.map((v) => {
@@ -292,7 +292,7 @@ export default function ProductQuickViewModal({
                         v.name ||
                         v.variant_name ||
                         v.title ||
-                        `Option ${v.id}`;
+                        t("detail.optionNumber", { number: v.id });
 
                       return (
                         <button
@@ -361,29 +361,29 @@ export default function ProductQuickViewModal({
 
               {/* Item Specifications & Details */}
               <div className="mt-4 border-t border-border/50 pt-3">
-                <h3 className="mb-1.5 text-xs font-bold text-foreground">Description & Details</h3>
+                <h3 className="mb-1.5 text-xs font-bold text-foreground">{t("detail.descriptionDetails")}</h3>
                 <div className="grid grid-cols-2 gap-2 rounded-xl bg-muted/30 p-2.5 text-[11px] text-muted-foreground sm:grid-cols-3">
                   {item?.category && (
                     <div>
-                      <span className="font-medium text-foreground">Category: </span>
+                      <span className="font-medium text-foreground">{t("detail.category")}: </span>
                       {item.category}
                     </div>
                   )}
                   {product?.unit?.name && (
                     <div>
-                      <span className="font-medium text-foreground">Unit: </span>
+                      <span className="font-medium text-foreground">{t("detail.unit")}: </span>
                       {product.unit.name} ({product.unit.symbol})
                     </div>
                   )}
                   {product?.code && (
                     <div>
-                      <span className="font-medium text-foreground">Code: </span>
+                      <span className="font-medium text-foreground">{t("detail.code")}: </span>
                       {product.code}
                     </div>
                   )}
                   {product?.sku && (
                     <div>
-                      <span className="font-medium text-foreground">SKU: </span>
+                      <span className="font-medium text-foreground">{t("detail.sku")}: </span>
                       {product.sku}
                     </div>
                   )}
@@ -398,7 +398,7 @@ export default function ProductQuickViewModal({
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={quantity <= 1}
-                    aria-label="Decrease quantity"
+                    aria-label={t("detail.decreaseQuantity")}
                     className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors hover:bg-[#00932A]/10 hover:text-[#00932A] disabled:opacity-30"
                   >
                     <Minus className="h-3.5 w-3.5" />
@@ -408,7 +408,7 @@ export default function ProductQuickViewModal({
                   </span>
                   <button
                     onClick={() => setQuantity((q) => q + 1)}
-                    aria-label="Increase quantity"
+                    aria-label={t("detail.increaseQuantity")}
                     className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors hover:bg-[#00932A]/10 hover:text-[#00932A]"
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -430,7 +430,7 @@ export default function ProductQuickViewModal({
                         className="flex items-center gap-2 font-bold"
                       >
                         <Check className="h-4 w-4" />
-                        Added to Cart
+                        {t("detail.addedToCart")}
                       </motion.span>
                     ) : (
                       <motion.span
@@ -442,8 +442,8 @@ export default function ProductQuickViewModal({
                       >
                         <ShoppingBag className="h-4 w-4" />
                         {isAdding
-                          ? "Adding..."
-                          : `Add to Cart · ${formatPrice(unitPrice * quantity)}`}
+                          ? t("detail.adding")
+                          : `${t("detail.addToCart")} · ${formatPrice(unitPrice * quantity)}`}
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -453,14 +453,14 @@ export default function ProductQuickViewModal({
               {needsLogin && (
                 <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/50 px-3 py-1.5">
                   <p className="text-xs text-muted-foreground">
-                    Sign in to save this to your cart.
+                    {t("Cart.signInPrompt")}
                   </p>
                   <button
                     onClick={login}
                     className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#00932A] px-3 py-1 text-xs font-medium text-white hover:bg-[#007a22]"
                   >
                     <LogIn className="h-3.5 w-3.5" />
-                    Sign in
+                    {t("Cart.signIn")}
                   </button>
                 </div>
               )}
