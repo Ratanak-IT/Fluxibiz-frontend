@@ -11,6 +11,7 @@ import { userApi } from '../features/user/userApi';
 import { cartApi } from '@/features/cart/cartApi';
 import { checkoutApi } from '@/features/checkout/checkoutApi';
 import { businessRegisterApi } from '@/features/business-registration/businessApi';
+import { menuApi } from '@/lib/store/detailstore/detailstore';
 
 export const makeStore = () => {
   return configureStore({
@@ -25,6 +26,7 @@ export const makeStore = () => {
       [sessionApi.reducerPath]: sessionApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
       [businessRegisterApi.reducerPath]: businessRegisterApi.reducer,
+      [menuApi.reducerPath]: menuApi.reducer,
     },
     middleware: (getDefaultMiddleware) => 
       getDefaultMiddleware().concat(
@@ -36,7 +38,8 @@ export const makeStore = () => {
         productApi.middleware,
         sessionApi.middleware,
         userApi.middleware,
-        businessRegisterApi.middleware
+        businessRegisterApi.middleware,
+        menuApi.middleware
       )
   }) 
 }

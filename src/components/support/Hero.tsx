@@ -10,8 +10,6 @@ const WHITE = "#FFFFFF";
 
 const SANS = "var(--font-body), ui-sans-serif, system-ui, sans-serif";
 
-/* Ring geometry — centre (170,190), outer r130, inner r88, gap at the top right.
-   Built as one filled path so the ends cut flat and the arrow joins cleanly. */
 const RING =
   "M158.7 60.5 A130 130 0 1 0 292.2 145.5 L252.7 159.9 A88 88 0 1 1 162.3 102.3 Z";
 const ARROW = "M157 43 L256 105 L164 121 Z";
@@ -22,7 +20,6 @@ export function HeroSection() {
   return (
     <section className="overflow-hidden bg-background py-12 font-body lg:py-16">
       <div className="mx-auto grid w-full max-w-[1500px] items-center gap-12 px-8 sm:px-12 lg:grid-cols-[0.9fr_1.3fr] lg:gap-10 lg:px-20 xl:px-24 2xl:px-28">
-        {/* ================= Left: text ================= */}
         <div className="relative pb-8 lg:pb-20">
           {/* Badge row */}
           <div
@@ -50,7 +47,7 @@ export function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1 className="mt-8 font-body text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.25rem]">
+          <h1 className="mt-8 text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.25rem]">
             <span
               className="hero-in block dark:text-gray-300"
 
@@ -98,6 +95,13 @@ export function HeroSection() {
             {t("description")}
           </p>
 
+          {/* Buttons */}
+          <div
+            className="hero-in mt-10 flex flex-wrap items-center gap-4"
+            style={{ animationDelay: "0.55s" }}
+          >
+            
+          </div>
           {/* Doodle arrow */}
           <svg
             viewBox="0 0 120 90"

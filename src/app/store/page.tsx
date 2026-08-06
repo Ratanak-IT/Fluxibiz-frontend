@@ -251,29 +251,27 @@ export default function HomePage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   return (
-    <div className="mx-auto max-w-362.5 space-y-10 px-4 py-6">
-      <BannerCarousel />
+    <div className="mx-auto max-w-362.5 space-y-6 px-4 pt-2 pb-6 sm:space-y-10 sm:pt-6 sm:py-6">
+  <BannerCarousel />
 
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
-        <aside className="w-full shrink-0 lg:sticky lg:top-6 lg:w-55 lg:self-start">
-          <div className="flex max-h-[calc(100vh-8rem)] flex-col overflow-hidden rounded-lg p-4">
-            <div className="flex-1 overflow-y-auto pr-1">
-              <StoreFilterComponent
-                selected={selectedCategories}
-                onSelectedChange={setSelectedCategories}
-              />
-            </div>
-          </div>
-        </aside>
-
-        <div className="min-w-0 flex-1 space-y-10">
-          <RecommendedSection />
-
-          <PromotionsSection />
-
-          <StoresByCategorySection selectedCategoryIds={selectedCategories} />
+  <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
+    <aside className="w-full shrink-0 lg:sticky lg:top-6 lg:w-55 lg:self-start">
+      <div className="flex max-h-[calc(100vh-8rem)] flex-col overflow-hidden rounded-lg p-4">
+        <div className="flex-1 overflow-y-auto pr-1">
+          <StoreFilterComponent
+            selected={selectedCategories}
+            onSelectedChange={setSelectedCategories}
+          />
         </div>
       </div>
+    </aside>
+
+    <div className="min-w-0 flex-1 space-y-10">
+      <RecommendedSection />
+      <PromotionsSection />
+      <StoresByCategorySection selectedCategoryIds={selectedCategories} />
     </div>
+  </div>
+</div>
   );
 }

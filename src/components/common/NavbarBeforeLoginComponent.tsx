@@ -133,8 +133,7 @@ export default function NavbarBeforeLoginComponent({
           sm:px-6
           md:px-8
           lg:px-10
-        "
-      >
+        ">
         {/* Main logo */}
         <Link
           href="/store"
