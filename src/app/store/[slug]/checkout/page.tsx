@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, Loader2, Store, TriangleAlert } from "lucide-react";
@@ -23,6 +25,7 @@ export default function CheckoutPage({
 }: {
     params: Promise<{ slug: string }>;
 }) {
+  const t = useTranslations("Checkout");
     const { slug } = use(params);
 
     const { data: cart, isLoading: cartLoading } = useGetCartQuery();
@@ -56,6 +59,7 @@ export default function CheckoutPage({
             !session &&
             cancelledOrderId !== pending.orderId
         ) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSession(pending);
         }
     }, [pending, pendingIsThisStore, session, cancelledOrderId]);
@@ -72,7 +76,7 @@ export default function CheckoutPage({
             setSession(created);
         } catch (err) {
             setError(
-                checkoutErrorMessage(err, "Could not start the payment. Try again."),
+                checkoutErrorMessage(err, t("couldNotStart")),
             );
         }
     };
@@ -86,7 +90,7 @@ export default function CheckoutPage({
             await refetchActive();
         } catch (err) {
             setError(
-                checkoutErrorMessage(err, "Could not cancel the other order."),
+                checkoutErrorMessage(err, t("couldNotCancelOther")),
             );
         }
     };
@@ -103,10 +107,10 @@ export default function CheckoutPage({
     if (!store && !paid && !session) {
         return (
             <div className="mx-auto max-w-2xl px-6 py-16 text-center">
-                <p className="text-lg font-medium">Nothing to check out</p>
+                <p className="text-lg font-medium">{t("nothingToCheckout")}</p>
 
                 <p className="mt-2 text-sm text-muted-foreground">
-                    Your cart has no items from this shop.
+                    {t("noItemsFromShop")}
                 </p>
 
                 <Link
@@ -114,13 +118,13 @@ export default function CheckoutPage({
                     className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
                 >
                     <ChevronLeft className="h-4 w-4" />
-                    Back to cart
+                    {t("backToCart")}
                 </Link>
             </div>
         );
     }
 
-    const storeName = store?.name ?? session?.storeName ?? "this shop";
+    const storeName = store?.name ?? session?.storeName ?? t("thisShop");
     const currency = store?.currency ?? session?.currency ?? "USD";
 
     return (
@@ -130,10 +134,10 @@ export default function CheckoutPage({
                 className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
             >
                 <ChevronLeft className="h-4 w-4" />
-                Back to cart
+                {t("backToCart")}
             </Link>
 
-            <h1 className="text-3xl font-bold text-green-600">Checkout</h1>
+            <h1 className="text-3xl font-bold text-green-600">{t("title")}</h1>
 
             <p className="mt-1 text-sm text-muted-foreground">{storeName}</p>
 
@@ -144,13 +148,11 @@ export default function CheckoutPage({
 
                         <div className="flex-1">
                             <p className="font-semibold text-amber-900 dark:text-amber-200">
-                                You have a payment open at {blockedBy.storeName}
+                                {t("paymentOpenAt", { storeName: blockedBy.storeName })}
                             </p>
 
                             <p className="mt-1 text-sm text-amber-800 dark:text-amber-300/90">
-                                You can pay one shop at a time — each shop receives its
-                                own KHQR. Finish that payment or cancel it to pay{" "}
-                                {storeName}.
+                                {t("paymentOpenDescription", { storeName })}
                             </p>
 
                             <div className="mt-4 flex flex-wrap gap-2">
@@ -160,7 +162,7 @@ export default function CheckoutPage({
                                         className="rounded-full bg-amber-600 text-white hover:bg-amber-700"
                                     >
                                         <Store className="h-4 w-4" />
-                                        Go to {blockedBy.storeName}
+                                        {t("goToStore", { storeName: blockedBy.storeName })}
                                     </Button>
                                 </Link>
 
@@ -174,7 +176,7 @@ export default function CheckoutPage({
                                     {cancelling && (
                                         <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
                                     )}
-                                    Cancel that order
+                                    {t("cancelThatOrder")}
                                 </Button>
                             </div>
                         </div>
@@ -203,7 +205,7 @@ export default function CheckoutPage({
 
                     <div className="mt-5 flex items-center justify-between border-t border-neutral-200 pt-5 dark:border-border">
                         <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
-                            Total
+                            {t("total")}
                         </span>
 
                         <span className="text-2xl font-bold text-green-600 dark:text-primary">
@@ -230,8 +232,8 @@ export default function CheckoutPage({
                         <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
                     )}
                     {store?.open === false
-                        ? "Shop is closed"
-                        : `Pay ${formatMoney(store?.subtotal ?? 0, currency)} with Bakong`}
+                        ? t("shopClosed")
+                        : t("payWithBakong", { amount: formatMoney(store?.subtotal ?? 0, currency) })}
                 </Button>
             )}
 
@@ -266,7 +268,7 @@ export default function CheckoutPage({
 
                     <Link href="/cart" className="flex-1">
                         <Button className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white hover:bg-green-700 dark:bg-primary dark:text-primary-foreground">
-                            Back to cart
+                            {t("backToCart")}
                         </Button>
                     </Link>
                 </div>

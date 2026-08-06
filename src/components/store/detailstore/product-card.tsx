@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardHeader,
@@ -22,6 +24,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
   const router = useRouter();
   const params = useParams();
   const storeSlug = (params?.slug as string) || "";
+  const t = useTranslations();
 
   const imageUrl = item.image?.trim() ? item.image : null;
 
@@ -65,7 +68,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
             {imageUrl ? (
               <Image
                 src={imageUrl}
-                alt={item.name || "Product image"}
+                alt={item.name || t("common.productImage")}
                 fill
                 unoptimized
                 sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, 112px"
@@ -83,7 +86,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 size="icon"
                 variant="secondary"
                 className="h-6 w-6 rounded-full bg-card text-primary shadow-md hover:bg-card sm:h-7 sm:w-7 dark:bg-text dark:text-primary"
-                aria-label={`Add ${item.name} to cart`}
+                aria-label={t("detail.addToCartAria", { name: item.name })}
                 onClick={(e) => {
                   e.stopPropagation();
                   setQuickViewOpen(true);

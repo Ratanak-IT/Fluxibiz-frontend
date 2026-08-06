@@ -247,7 +247,7 @@ export interface StorefrontItemResponse {
     barcode: string | null;
     price: number;
     itemType: string;
-    attributes: Record<string, any> | null;
+    attributes: Record<string, unknown> | null;
     variants: ItemVariant[];
     lowStockDefault: number | null;
     status: string;

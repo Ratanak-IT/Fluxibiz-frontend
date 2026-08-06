@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { use } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -51,6 +53,10 @@ export default function DetailProductPage({
     .filter((i) => i.id !== rawItem?.id)
     .slice(0, 6);
 
+  function t(arg0: string): import("react").ReactNode {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="dark:bg-background">
       <ProductDetail
@@ -74,7 +80,7 @@ export default function DetailProductPage({
               href={`/store/${storeSlug}`}
               className="flex items-center gap-1 text-sm font-semibold text-[#00932A] transition-colors hover:text-[#007d24]"
             >
-              View All
+              {t("viewAll")}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

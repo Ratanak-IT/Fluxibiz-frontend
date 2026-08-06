@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -17,12 +18,13 @@ interface DescriptionCardProps {
 }
 
 export default function DescriptionCard({
-  title = "Product Overview",
+  title,
   description,
   features,
   imageSrc,
-  imageAlt = "Product Overview",
+  imageAlt,
 }: DescriptionCardProps) {
+  const t = useTranslations("Store.detail");
   if (!description && (!features || features.length === 0)) {
     return null;
   }
@@ -33,7 +35,7 @@ export default function DescriptionCard({
         <div className="flex min-h-0 flex-col justify-center p-6 sm:p-8 lg:p-10">
           <CardHeader className="p-0">
             <CardTitle className="text-xl font-bold text-[#00932A]">
-              {title}
+              {title ?? t("productOverview")}
             </CardTitle>
             <span className="mt-2 block h-1 w-10 rounded-full bg-[#00932A]/30" />
             {description && (
@@ -61,7 +63,7 @@ export default function DescriptionCard({
           <div className="relative min-h-64 w-full shrink-0 overflow-hidden bg-muted md:min-h-0">
             <Image
               src={imageSrc}
-              alt={imageAlt}
+              alt={imageAlt ?? t("productOverview")}
               height={368}
               width={658}
               unoptimized

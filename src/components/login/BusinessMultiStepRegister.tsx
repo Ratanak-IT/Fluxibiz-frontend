@@ -68,14 +68,21 @@ export function BusinessMultiStepRegister() {
           message?: string;
           error?: string;
           detail?: string;
+          errorDetail?: Array<{ field: string; message: string }>;
         };
       };
 
-      const errorMsg =
-        apiError?.data?.message ||
-        apiError?.data?.error ||
-        apiError?.data?.detail ||
-        t("registrationFailed");
+      let errorMsg = t("registrationFailed");
+
+      if (apiError?.data?.errorDetail && apiError.data.errorDetail.length > 0) {
+        errorMsg = apiError.data.errorDetail.map(e => e.message).join(", ");
+      } else if (apiError?.data?.message) {
+        errorMsg = apiError.data.message;
+      } else if (apiError?.data?.error) {
+        errorMsg = apiError.data.error;
+      } else if (apiError?.data?.detail) {
+        errorMsg = apiError.data.detail;
+      }
 
       toast.error(errorMsg);
     }

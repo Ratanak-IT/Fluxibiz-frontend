@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +10,7 @@ import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
 import { formatMoney, type StoreCart } from "@/lib/type/cartType";
 
 export default function OrderSummaryComponent({ store }: { store: StoreCart }) {
+  const t = useTranslations("Cart");
     const discount = 0;
     const total = Math.max(0, store.subtotal - discount);
 
@@ -21,7 +24,7 @@ export default function OrderSummaryComponent({ store }: { store: StoreCart }) {
         <Card className="w-full bg-gray-100 p-4 lg:w-100 dark:bg-card">
             <CardHeader className="mb-5 p-0">
                 <CardTitle className="text-xl font-bold tracking-tight text-neutral-900 dark:text-card-foreground">
-                    Order Summary
+                    {t("yourOrder")}
                 </CardTitle>
 
                 <p className="text-sm text-neutral-500 dark:text-muted-foreground">
@@ -31,21 +34,21 @@ export default function OrderSummaryComponent({ store }: { store: StoreCart }) {
 
             <CardContent className="space-y-4 p-0 text-sm text-neutral-600 dark:text-muted-foreground">
                 <div className="flex items-center justify-between">
-                    <span>item</span>
+                    <span>{t("itemsLabel")}</span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
                         {store.itemCount}
                     </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <span>Subtotal</span>
+                    <span>{t("subtotal")}</span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
                         {formatMoney(store.subtotal, store.currency)}
                     </span>
                 </div>
 
                 <div className="flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-border">
-                    <span>Discount</span>
+                    <span>{t("discount")}</span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
                         {formatMoney(discount, store.currency)}
                     </span>
@@ -75,12 +78,12 @@ export default function OrderSummaryComponent({ store }: { store: StoreCart }) {
                         disabled
                         className="h-12 w-full rounded-full bg-neutral-300 text-base font-semibold text-neutral-500"
                     >
-                        Paying {pendingElsewhere.storeName} first
+                        {t("payingFirst", { storeName: pendingElsewhere.storeName })}
                     </Button>
                 ) : (
                     <Link href={`/store/${store.slug}/checkout`} className="w-full">
                         <Button className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white transition-colors hover:bg-green-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90">
-                            {pendingHere ? "Finish payment" : "Checkout"}
+                            {pendingHere ? t("finishPayment") : t("checkout")}
                         </Button>
                     </Link>
                 )}

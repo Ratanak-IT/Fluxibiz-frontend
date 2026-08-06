@@ -1,286 +1,372 @@
 "use client";
+
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import {
+  ChevronDown,
+  Loader2,
+  Search,
+  SlidersHorizontal,
+} from "lucide-react";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGetBusinessCategoryQuery } from "@/features/store-api/store-api";
-// import { ChevronDown, Loader2, Search } from "lucide-react";
-import { useState } from "react";
-
-import { Search, Loader2, ChevronDown, SlidersHorizontal } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface StoreFilterComponentProps {
   selected?: string[];
   onSelectedChange?: (selected: string[]) => void;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
 }
 
-const VisitCount = 10;
+const VISIBLE_COUNT = 10;
 
 export default function StoreFilterComponent({
   selected = [],
   onSelectedChange,
+  searchValue,
+  onSearchChange,
 }: StoreFilterComponentProps) {
+  const t = useTranslations("Store.filters");
   const [showMore, setShowMore] = useState(false);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [localSearchValue, setLocalSearchValue] = useState("");
 
-  const { data: category = [], isLoading, isError, refetch } = useGetBusinessCategoryQuery(undefined, {
-    pollingInterval: 10000,
-    refetchOnFocus: true,
-    refetchOnMountOrArgChange: true,
-  });
+  const {
+    data: category = [],
+    isLoading,
+    isError,
+  } = useGetBusinessCategoryQuery();
 
-  // The API returns parent categories with nested subCategories.
-  // We map top-level categories and sub-categories into a flat list of shop types.
-  const allTypes = category.flatMap((cat) =>
-    cat.subCategories && cat.subCategories.length > 0
-      ? cat.subCategories
-      : [{ id: cat.id, name: cat.name, slug: cat.slug }]
-  );
+  const currentSearchValue = searchValue ?? localSearchValue;
 
-  const visitTypes = allTypes.slice(0, VisitCount);
-  const extraTypes = allTypes.slice(VisitCount);
+  const handleSearchChange = (value: string) => {
+    if (onSearchChange) {
+      onSearchChange(value);
+      return;
+    }
 
-  const toggle = (id: string) => {
-    const next = selected.includes(id)
-      ? selected.filter((s) => s !== id)
-      : [...selected, id];
-    onSelectedChange?.(next);
+    setLocalSearchValue(value);
   };
 
-  const [filterOpen, setFilterOpen] = useState(false);
+  const allTypes = category.flatMap((categoryItem) =>
+    categoryItem.subCategories &&
+    categoryItem.subCategories.length > 0
+      ? categoryItem.subCategories
+      : [
+          {
+            id: categoryItem.id,
+            name: categoryItem.name,
+            slug: categoryItem.slug,
+          },
+        ],
+  );
+
+  const visibleTypes = allTypes.slice(0, VISIBLE_COUNT);
+  const extraTypes = allTypes.slice(VISIBLE_COUNT);
+
+  const toggle = (id: string) => {
+    const nextSelected = selected.includes(id)
+      ? selected.filter((selectedId) => selectedId !== id)
+      : [...selected, id];
+
+    onSelectedChange?.(nextSelected);
+  };
+
+  const renderCategoryFilters = () => (
+    <div>
+      <h4 className="mb-3 text-lg font-medium text-foreground">
+        {t("shopTypes")}
+      </h4>
+
+      {/* Loading */}
+      {isLoading && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="size-4 animate-spin" />
+          <span>{t("loading")}</span>
+        </div>
+      )}
+
+      {/* Error */}
+      {isError && !isLoading && (
+        <div className="text-sm text-destructive">
+          {t("cannotLoadTypes")}
+        </div>
+      )}
+
+      {/* Category list */}
+      {!isLoading && !isError && (
+        <>
+          <div className="space-y-2.5">
+            {visibleTypes.map((categoryType) => {
+              const checkboxId = `store-category-${categoryType.id}`;
+
+              return (
+                <div
+                  key={categoryType.id}
+                  className="flex items-center gap-2"
+                >
+                  <Checkbox
+                    id={checkboxId}
+                    checked={selected.includes(categoryType.id)}
+                    onCheckedChange={() => toggle(categoryType.id)}
+                  />
+
+                  <Label
+                    htmlFor={checkboxId}
+                    className="
+                      cursor-pointer
+                      text-sm
+                      font-medium
+                      text-foreground
+                    "
+                  >
+                    {categoryType.name}
+                  </Label>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Extra categories */}
+          {extraTypes.length > 0 && (
+            <Collapsible
+              open={showMore}
+              onOpenChange={setShowMore}
+            >
+              <CollapsibleContent className="space-y-2.5 pt-3">
+                {extraTypes.map((categoryType) => {
+                  const checkboxId = `store-extra-category-${categoryType.id}`;
+
+                  return (
+                    <div
+                      key={categoryType.id}
+                      className="flex items-center gap-2"
+                    >
+                      <Checkbox
+                        id={checkboxId}
+                        checked={selected.includes(categoryType.id)}
+                        onCheckedChange={() =>
+                          toggle(categoryType.id)
+                        }
+                      />
+
+                      <Label
+                        htmlFor={checkboxId}
+                        className="
+                          cursor-pointer
+                          text-sm
+                          font-medium
+                          text-foreground
+                        "
+                      >
+                        {categoryType.name}
+                      </Label>
+                    </div>
+                  );
+                })}
+              </CollapsibleContent>
+
+              <CollapsibleTrigger
+                className="
+                  mt-3
+                  flex
+                  items-center
+                  gap-1
+                  text-sm
+                  font-medium
+                  text-primary
+                  hover:underline
+                "
+              >
+                {showMore ? t("showLess") : t("showMore")}
+
+                <ChevronDown
+                  className={`
+                    size-4
+                    transition-transform
+                    duration-200
+                    ${showMore ? "rotate-180" : ""}
+                  `}
+                />
+              </CollapsibleTrigger>
+            </Collapsible>
+          )}
+        </>
+      )}
+    </div>
+  );
 
   return (
-    <div
-      className="
-    w-full space-y-4
-    sm:space-y-5
-    lg:sticky lg:top-4 lg:max-w-xs lg:space-y-6 lg:self-start
-  ">
-
-      <div className="flex items-center gap-2 lg:hidden">
-        <button
-          type="button"
-          className="
-        flex h-10 flex-1 min-w-0 items-center gap-3
-        rounded-full bg-card px-4 shadow-sm
-        transition-colors hover:bg-primary/10
-      "
+    <div className="w-full">
+      {/* ================= MOBILE / TABLET ================= */}
+      <div className="xl:hidden">
+        <Collapsible
+          open={mobileFilterOpen}
+          onOpenChange={setMobileFilterOpen}
+          className="w-full"
         >
-          <Search className="h-4 w-4 shrink-0" />
-          <span className="truncate text-sm">Search...</span>
-        </button>
+  <div className="flex w-full min-w-0 items-center gap-2">
+  {/* Search input */}
+  <div className="group relative min-w-0 flex-1">
+    <Search
+      aria-hidden="true"
+      strokeWidth={1.8}
+      className="
+        pointer-events-none
+        absolute
+        left-4
+        top-1/2
+        z-10
+        size-[18px]
+        -translate-y-1/2
+        text-neutral-400
+        transition-colors
+        duration-200
+        group-hover:text-primary
+        group-focus-within:text-primary
+      "
+    />
 
-        <Popover open={filterOpen} onOpenChange={setFilterOpen}>
-          <PopoverTrigger
+    <Input
+      type="text"
+      value={currentSearchValue}
+      onChange={(event) =>
+        handleSearchChange(event.target.value)
+      }
+      placeholder={t("searchPlaceholder")}
+      className="
+        h-11
+        min-w-0
+        w-full
+        rounded-full
+        border-0
+        bg-white
+        pl-11
+        pr-4
+        text-sm
+        shadow-sm
+        outline-none
+        placeholder:truncate
+        placeholder:text-neutral-400
+        hover:shadow-md
+        focus-visible:border-0
+        focus-visible:ring-1
+        focus-visible:ring-primary/20
+        dark:bg-neutral-900
+      "
+    />
+  </div>
+
+  {/* Filter button */}
+  <CollapsibleTrigger
+    type="button"
+    aria-label={
+      mobileFilterOpen
+        ? t("closeFilters")
+        : t("openFilters")
+    }
+    className={`
+      flex
+      size-11
+      shrink-0
+      items-center
+      justify-center
+      rounded-full
+      border-0
+      bg-white
+      shadow-sm
+      outline-none
+      transition-all
+      duration-200
+      hover:bg-white
+      hover:text-primary
+      hover:shadow-md
+      focus-visible:ring-1
+      focus-visible:ring-primary/20
+      dark:bg-neutral-900
+      dark:hover:bg-neutral-900
+      ${
+        mobileFilterOpen
+          ? "text-primary"
+          : "text-neutral-500"
+      }
+    `}
+  >
+    <SlidersHorizontal
+      strokeWidth={1.9}
+      className="size-[18px]"
+    />
+  </CollapsibleTrigger>
+</div>
+
+          {/* Mobile/tablet filter dropdown */}
+          <CollapsibleContent
             className="
-          flex h-10 shrink-0 items-center gap-2
-          rounded-full border border-border bg-card px-4
-          shadow-sm transition-colors hover:bg-primary/10
-          data-[state=open]:border-primary data-[state=open]:bg-primary/10
-        "
+              mt-3
+              overflow-hidden
+              rounded-2xl
+              border
+              border-border
+              bg-card
+              p-4
+              shadow-none
+            "
           >
-            <SlidersHorizontal className="h-4 w-4" />
-            <span className="text-sm font-medium">
-              Filters{selected.length > 0 ? ` (${selected.length})` : ""}
-            </span>
-            <ChevronDown
-              className={`h-4 w-4 transition-transform ${filterOpen ? "rotate-180" : ""}`}
-            />
-          </PopoverTrigger>
+            <div className="mb-4">
+              <h2 className="text-xl font-bold text-foreground">
+                {t("title")}
+              </h2>
 
-          <PopoverContent align="end" className="w-72 p-4">
-            <p className="mb-3 text-sm font-medium text-muted-foreground">
-              Shop types
-            </p>
+              <p className="text-sm text-muted-foreground">
+                {t("browseByCategory")}
+              </p>
+            </div>
 
-            {isLoading && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Loading...
-              </div>
-            )}
-
-            {isError && !isLoading && (
-              <div className="text-sm text-destructive flex flex-col gap-2">
-                <span>Can not load store type</span>
-                <button
-                  onClick={() => refetch()}
-                  className="text-xs bg-primary/10 text-primary px-2 py-1 rounded w-fit hover:bg-primary/20"
-                >
-                  Try Again
-                </button>
-              </div>
-            )}
-
-            {!isLoading && !isError && (
-              <div className="flex max-h-72 flex-col gap-2 overflow-y-auto">
-                {visitTypes.map((cateType) => (
-                  <div
-                    key={cateType.id}
-                    className="
-                  flex items-center gap-2 rounded-xl border border-border
-                  bg-background px-3 py-1.5 transition-colors
-                  has-[button[data-state=checked]]:border-primary
-                  has-[button[data-state=checked]]:bg-primary/10
-                "
-                  >
-                    <Checkbox
-                      id={`m-${cateType.id}`}
-                      checked={selected.includes(cateType.id)}
-                      onCheckedChange={() => toggle(cateType.id)}
-                    />
-                    <Label
-                      htmlFor={`m-${cateType.id}`}
-                      className="cursor-pointer text-sm font-medium text-foreground"
-                    >
-                      {cateType.name}
-                    </Label>
-                  </div>
-                ))}
-
-                {extraTypes.map((cateType) => (
-                  <div
-                    key={cateType.id}
-                    className="
-                  flex items-center gap-2 rounded-xl border border-border
-                  bg-background px-3 py-1.5 transition-colors
-                  has-[button[data-state=checked]]:border-primary
-                  has-[button[data-state=checked]]:bg-primary/10
-                "
-                  >
-                    <Checkbox
-                      id={`m-${cateType.id}`}
-                      checked={selected.includes(cateType.id)}
-                      onCheckedChange={() => toggle(cateType.id)}
-                    />
-                    <Label
-                      htmlFor={`m-${cateType.id}`}
-                      className="cursor-pointer text-sm font-medium text-foreground"
-                    >
-                      {cateType.name}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            )}
-          </PopoverContent>
-        </Popover>
+            {renderCategoryFilters()}
+          </CollapsibleContent>
+        </Collapsible>
       </div>
 
-      {/* ---------- DESKTOP: original sidebar layout, unchanged ---------- */}
-      <div className="hidden lg:block lg:space-y-6">
+      {/* ================= DESKTOP ================= */}
+      <div className="hidden w-full space-y-3 xl:block">
         <button
           type="button"
+          aria-label={t("searchStores")}
           className="
-        flex h-9 w-9 items-center justify-center
-        rounded-full bg-card shadow-sm
-        transition-colors hover:bg-primary/10
-      "
+            flex
+            h-8
+            w-8
+            items-center
+            justify-center
+            rounded-full
+            bg-card
+            shadow-sm
+            transition-colors
+            hover:bg-accent
+          "
         >
-          <Search className="h-4 w-4" />
+          <Search className="size-4" />
         </button>
 
         <div className="space-y-0.5">
-          <h2 className="text-2xl font-bold text-foreground">Filters</h2>
-          <p className="text-sm text-muted-foreground">Browse by Category</p>
+          <h2 className="text-xl font-bold text-foreground">
+            {t("title")}
+          </h2>
+
+          <p className="text-sm text-muted-foreground">
+            {t("browseByCategory")}
+          </p>
         </div>
 
-        <div className="p-5 shadow-sm">
-          <h4 className="mb-3 text-lg font-medium text-foreground">
-            Shop types
-          </h4>
-
-          {isLoading && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Loading...
-            </div>
-          )}
-
-          {isError && !isLoading && (
-            <div className="text-sm text-destructive flex flex-col gap-2">
-              <span>Can not load store type</span>
-              <button
-                onClick={() => refetch()}
-                className="text-xs bg-primary/10 text-primary px-2 py-1 rounded w-fit hover:bg-primary/20"
-              >
-                Try Again
-              </button>
-            </div>
-          )}
-
-          {!isLoading && !isError && (
-            <>
-              <div className="flex flex-col gap-y-2.5">
-                {visitTypes.map((cateType) => (
-                  <div
-                    key={cateType.id}
-                    className="
-                  flex w-full items-center gap-2
-                  rounded-xl border border-border bg-background
-                  px-3 py-1.5 transition-colors
-                  has-[button[data-state=checked]]:border-primary
-                  has-[button[data-state=checked]]:bg-primary/10
-                "
-                  >
-                    <Checkbox
-                      id={String(cateType.id)}
-                      checked={selected.includes(cateType.id)}
-                      onCheckedChange={() => toggle(cateType.id)}
-                    />
-                    <Label
-                      htmlFor={String(cateType.id)}
-                      className="cursor-pointer whitespace-normal text-sm font-medium text-foreground"
-                    >
-                      {cateType.name}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-
-              {extraTypes.length > 0 && (
-                <Collapsible open={showMore} onOpenChange={setShowMore}>
-                  <CollapsibleContent className="mt-3 flex flex-col gap-y-2.5">
-                    {extraTypes.map((cateType) => (
-                      <div
-                        key={cateType.id}
-                        className="
-                      flex w-full items-center gap-2
-                      rounded-xl border border-border bg-background
-                      px-3 py-1.5 transition-colors
-                      has-[button[data-state=checked]]:border-primary
-                      has-[button[data-state=checked]]:bg-primary/10
-                    "
-                      >
-                        <Checkbox
-                          id={String(cateType.id)}
-                          checked={selected.includes(cateType.id)}
-                          onCheckedChange={() => toggle(cateType.id)}
-                        />
-                        <Label
-                          htmlFor={String(cateType.id)}
-                          className="cursor-pointer whitespace-normal text-sm font-medium text-foreground"
-                        >
-                          {cateType.name}
-                        </Label>
-                      </div>
-                    ))}
-                  </CollapsibleContent>
-
-                  <CollapsibleTrigger className="mt-3 flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-                    {showMore ? "Show less" : "Show more"}
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${showMore ? "rotate-180" : ""}`}
-                    />
-                  </CollapsibleTrigger>
-                </Collapsible>
-              )}
-            </>
-          )}
-        </div>
+        {renderCategoryFilters()}
       </div>
     </div>
   );

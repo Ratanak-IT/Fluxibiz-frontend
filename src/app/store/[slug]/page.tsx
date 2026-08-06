@@ -1,12 +1,14 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { use, useState, useMemo } from "react";
 import SearchFilterBar from "@/components/store/detailstore/button";
 
 import CartSidebar from "@/components/store/detailstore/cart-sidebar";
 import StoreCard from "@/components/store/detailstore/store-card";
 import { MenuItemData } from "@/lib/store/detailstore/detailstore";
-import { ChevronLeft, ShoppingCart, UtensilsCrossed } from "lucide-react";
+import { ChevronLeft, UtensilsCrossed } from "lucide-react";
 import Link from "next/link";
 import { StorePageSkeleton } from "@/components/common/Skeletons";
 import {
@@ -19,7 +21,10 @@ import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import ProductList from "@/components/store/detailstore/product-list";
 
-function toMenuItem(item: StorefrontItemResponse): MenuItemData {
+function toMenuItem(
+  item: StorefrontItemResponse,
+  fallbackCategory: string,
+): MenuItemData {
   return {
     id: item.id,
     name: item.name,
@@ -28,7 +33,7 @@ function toMenuItem(item: StorefrontItemResponse): MenuItemData {
         ? Number(item.price).toFixed(2)
         : "0.00",
     description: item.description ?? "",
-    category: item.itemGroup?.name ?? "Menu",
+    category: item.itemGroup?.name ?? fallbackCategory,
     image: primaryItemImage(item) ?? "",
     rawItem: item,
   };
@@ -39,6 +44,7 @@ export default function StoreDetail({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const t = useTranslations("Store");
   const { slug } = use(params);
   const {
     data: storeDetail,
@@ -84,7 +90,7 @@ export default function StoreDetail({
     // Category filter
     if (selectedCategory !== "All") {
       result = result.filter((item) => {
-        const catName = item.itemGroup?.name?.trim() || "Menu";
+        const catName = item.itemGroup?.name?.trim() || t("common.menu");
         return catName.toLowerCase() === selectedCategory.toLowerCase();
       });
     }
@@ -119,7 +125,7 @@ export default function StoreDetail({
     }
 
     return sorted;
-  }, [storeItems, searchQuery, selectedCategory, selectedPriceRange, sortBy]);
+  }, [storeItems, searchQuery, selectedCategory, selectedPriceRange, sortBy, t]);
 
   const handleResetFilters = () => {
     setSearchQuery("");
@@ -138,16 +144,16 @@ export default function StoreDetail({
     storeDetail?.hours ??
     (storeDetail?.openTime && storeDetail?.closeTime
       ? `${storeDetail.openTime} - ${storeDetail.closeTime}`
-      : "Open 24/7");
+      : t("common.openAllDay"));
 
   const storeData: StoreCardData | undefined = storeDetail
     ? {
         id: storeDetail.id,
         name: storeDetail.name ?? storeDetail.displayName ?? "",
-        category: storeDetail.category?.name ?? "Store",
+        category: storeDetail.category?.name ?? t("common.store"),
         description: storeDetail.about ?? "",
-        location: storeDetail.cityOrProvince ?? "Phnom Penh",
-        address: storeDetail.address ?? storeDetail.cityOrProvince ?? "Phnom Penh",
+        location: storeDetail.cityOrProvince ?? t("common.noLocation"),
+        address: storeDetail.address ?? storeDetail.cityOrProvince ?? t("common.noLocation"),
         googleMap: storeDetail.googleMap,
         hours: operatingHours,
         openTime: storeDetail.openTime ?? undefined,
@@ -162,9 +168,9 @@ export default function StoreDetail({
 
   const groupedItems = filteredItems.reduce<Record<string, MenuItemData[]>>(
     (acc, item) => {
-      const groupName = item.itemGroup?.name?.trim() || "Menu";
+      const groupName = item.itemGroup?.name?.trim() || t("common.menu");
       if (!acc[groupName]) acc[groupName] = [];
-      acc[groupName].push(toMenuItem(item));
+      acc[groupName].push(toMenuItem(item, t("common.menu")));
       return acc;
     },
     {},
@@ -181,7 +187,7 @@ export default function StoreDetail({
           className="flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-50"
         >
           <ChevronLeft className="h-4 w-4" />
-          Store
+          {t("common.store")}
         </Link>
 
         {/* <Link
@@ -197,7 +203,7 @@ export default function StoreDetail({
         <StorePageSkeleton />
       ) : isStoreError ? (
         <div className="flex h-40 items-center justify-center text-sm text-destructive">
-          Store not found or failed to load details.
+          {t("detail.storeLoadError")}
         </div>
       ) : (
         <>
@@ -227,27 +233,26 @@ export default function StoreDetail({
                 <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
                   <UtensilsCrossed className="h-8 w-8 text-neutral-400" />
                   <p className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
-                    No items found matching your filters
+                    {t("detail.noItemsFound")}
                   </p>
                   <p className="max-w-xs text-sm text-muted-foreground">
-                    Try adjusting your search keyword, category, or price range.
+                    {t("detail.noItemsDescription")}
                   </p>
                   <button
                     onClick={handleResetFilters}
                     className="mt-2 rounded-full bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90"
                   >
-                    Reset Filters
+                    {t("filters.resetFilters")}
                   </button>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-3 px-6 py-20 text-center">
                   <UtensilsCrossed className="h-8 w-8 text-neutral-300" />
                   <p className="text-base font-medium text-neutral-700 dark:text-neutral-200">
-                    No menu items yet
+                    {t("detail.noMenuItems")}
                   </p>
                   <p className="max-w-xs text-sm text-muted-foreground">
-                    This shop hasn&apos;t published any products. Please check back
-                    later.
+                    {t("detail.noMenuItemsDescription")}
                   </p>
                 </div>
               )}
