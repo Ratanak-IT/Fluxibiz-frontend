@@ -1,4 +1,5 @@
 import PaymentHistoryComponent from "@/components/payment-history/payment-history-component";
+import StoreNavbar from "@/components/store/store-component/navbar";
 
 export const metadata = {
   title: "Payment History - FluxiBiz",
@@ -6,5 +7,10 @@ export const metadata = {
 };
 
 export default function PaymentHistoryPage() {
-  return <PaymentHistoryComponent />;
+  return (
+    <div className="relative min-h-screen pb-24 lg:pb-0">
+      <PaymentHistoryComponent />
+      <StoreNavbar />
+    </div>
+  );
 }

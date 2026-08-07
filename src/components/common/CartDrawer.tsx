@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -40,7 +40,23 @@ import {
     type StoreCart,
 } from "@/lib/type/cartType";
 
-export default function CartDrawer() {
+type CartDrawerProps = {
+    children?: ReactNode;
+    triggerClassName?: string;
+    buttonClassName?: string;
+    iconClassName?: string;
+    iconSize?: number;
+    iconTrigger?: boolean;
+};
+
+export default function CartDrawer({
+    children,
+    triggerClassName,
+    buttonClassName,
+    iconClassName,
+    iconSize = 25,
+    iconTrigger = false,
+}: CartDrawerProps) {
     const [open, setOpen] = useState(false);
     const { isAuthenticated } = useAuth();
 
@@ -50,22 +66,24 @@ export default function CartDrawer() {
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger
-                render={
+            <SheetTrigger asChild className={triggerClassName}>
+                {children ? (
+                    children
+                ) : (
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="relative rounded-full"
+                        className={`relative rounded-full ${buttonClassName ?? ""}`}
                         aria-label={`Shopping cart with ${totalItems} items`}
-                    />
-                }
-            >
-                <ShoppingCart size={25} />
+                    >
+                        <ShoppingCart size={iconSize} className={iconClassName} />
 
-                {totalItems > 0 && (
-                    <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
-                        {totalItems > 99 ? "99+" : totalItems}
-                    </span>
+                        {totalItems > 0 && (
+                            <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+                                {totalItems > 99 ? "99+" : totalItems}
+                            </span>
+                        )}
+                    </Button>
                 )}
             </SheetTrigger>
 
@@ -144,7 +162,6 @@ function StoreSection({
                             className="h-full w-full object-cover"
                         />
                     ) : (
-
                         <div className="flex h-full w-full items-center justify-center">
                             <Store className="h-5 w-5 text-neutral-400" />
                         </div>
@@ -220,7 +237,6 @@ function StoreCheckoutButton({
     const pendingHere = pending?.storeSlug === store.slug;
     const blockedByOther = pending && !pendingHere;
 
-    // Khmer needs a taller line box or its subscripts get clipped.
     const shell =
         "mt-3 flex h-11 w-full items-center justify-center rounded-xl border text-sm font-semibold leading-[1.9]";
 
@@ -269,7 +285,6 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
     const [pendingQty, setPendingQty] = useState(line.quantity);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPendingQty(line.quantity);
     }, [line.quantity]);
 
