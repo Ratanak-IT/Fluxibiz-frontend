@@ -55,7 +55,7 @@ export default function CartDrawer({
     buttonClassName,
     iconClassName,
     iconSize = 25,
-    iconTrigger = false,
+
 }: CartDrawerProps) {
     const [open, setOpen] = useState(false);
     const { isAuthenticated } = useAuth();
@@ -66,7 +66,7 @@ export default function CartDrawer({
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild className={triggerClassName}>
+            <SheetTrigger className={triggerClassName}>
                 {children ? (
                     children
                 ) : (
@@ -285,6 +285,7 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
     const [pendingQty, setPendingQty] = useState(line.quantity);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPendingQty(line.quantity);
     }, [line.quantity]);
 
