@@ -244,10 +244,7 @@ export default function Footer() {
                 </p>
               </div>
 
-              <ContactLink
-                href="tel:+85515338826"
-                label="+855 15 33 88 26"
-              >
+              <ContactLink href="tel:+85515338826" label="+855 15 33 88 26">
                 <Phone
                   aria-hidden="true"
                   className="size-5 sm:size-6"
@@ -271,64 +268,52 @@ export default function Footer() {
 
         {/* Supported by */}
         <div className="mt-10 border-t border-[#e5e7eb] pt-8 sm:mt-12 sm:pt-9 md:mt-14 md:pt-10 dark:border-white/10">
-          <p className="mb-6 text-center text-[16px] font-body uppercase tracking-[0.18em] text-[#6b7280] sm:mb-7 sm:text-xs md:mb-8 dark:text-white">
-            {t("organizedAndSponsored")}
-          </p>
+  <p className="mb-6 text-center text-[16px] font-body uppercase tracking-[0.18em] text-[#6b7280] sm:mb-7 sm:text-xs md:mb-8 dark:text-white">
+    {t("organizedAndSponsored")}
+  </p>
 
-          <div
-            className="
-              mx-auto
-              grid
-              w-[300px]
-              grid-cols-1
-              items-center
-              gap-y-7
-              sm:w-fit
-              sm:grid-cols-[150px_320px]
-              sm:gap-x-5
-              sm:gap-y-8
-              md:w-full
-              md:max-w-[620px]
-              md:grid-cols-[105px_230px_110px]
-              md:justify-center
-              md:gap-x-8
-              md:gap-y-0
-              lg:w-full
-              lg:max-w-7xl
-              lg:grid-cols-3
-              lg:gap-0
-            "
-          >
-            {partners.map((partner, index) => (
-              <div
-                key={partner.alt}
-                className={`
-                  w-full
-                  justify-self-start
-                  ${
-                    index === 2
-                      ? "sm:col-span-2 sm:justify-self-center md:col-span-1 md:justify-self-start lg:justify-self-start"
-                      : ""
-                  }
-                  ${index === 0 ? "md:translate-x-0 lg:translate-x-0" : ""}
-                  ${partner.className}
-                `}
-              >
-                <Image
-                  src={partner.lightSrc}
-                  alt={partner.alt}
-                  className={`block h-auto w-full object-contain object-left dark:hidden ${partner.imageClassName}`}
-                />
-
-                <Image
-                  src={partner.darkSrc}
-                  alt={partner.alt}
-                  className={`hidden h-auto w-full object-contain object-left dark:block ${partner.imageClassName}`}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+  <div
+    className="
+      mx-auto
+      flex
+      w-[220px]
+      flex-col
+      items-start
+      gap-y-7
+      sm:w-full
+      sm:max-w-7xl
+      sm:flex-row
+      sm:flex-wrap
+      sm:items-center
+      sm:justify-center
+      sm:gap-x-10
+      sm:gap-y-8
+      md:gap-x-12
+      lg:gap-x-16
+    ">
+    {partners.map((partner) => (
+      <div
+        key={partner.alt}
+        className={`flex h-16 w-full items-center justify-start sm:w-auto sm:justify-center ${partner.className}`}
+      >
+        <Image
+          src={partner.lightSrc}
+          alt={partner.alt}
+          width={200}
+          height={64}
+          className={`block !h-full !w-auto max-w-full object-contain object-left dark:hidden ${partner.imageClassName}`}
+        />
+        <Image
+          src={partner.darkSrc}
+          alt={partner.alt}
+          width={200}
+          height={64}
+          className={`hidden !h-full !w-auto max-w-full object-contain object-left dark:block ${partner.imageClassName}`}
+        />
+      </div>
+    ))}
+  </div>
+</div>
       </div>
 
       {/* Copyright bar */}
@@ -360,10 +345,7 @@ export default function Footer() {
                   sm:size-10
                 "
               >
-                <Icon
-                  aria-hidden="true"
-                  className="size-[17px]"
-                />
+                <Icon aria-hidden="true" className="size-[17px]" />
               </Link>
             ))}
           </div>
@@ -417,9 +399,7 @@ function ContactLink({
         dark:text-white
       "
     >
-      <span className="shrink-0 text-[#00932A]">
-        {children}
-      </span>
+      <span className="shrink-0 text-[#00932A]">{children}</span>
 
       <span className="break-all">{label}</span>
     </a>
