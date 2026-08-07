@@ -962,5 +962,88 @@
     "backToStore": "ត្រឡប់ទៅ {storeName}",
     "viewAllPayments": "មើលការទូទាត់ទាំងអស់",
     "notAvailable": "មិនមាន"
+  },
+  "Store": {
+    "common": {
+      "stores": "ហាងទាំងអស់",
+      "promotions": "ប្រូម៉ូសិន",
+      "recommend": "ពេញនិយមប្រចាំថ្ងៃ",
+      "open": "កំពុងបើក",
+      "closed": "បានបិទ",
+      "menu": "ម៉ឺនុយ",
+      "openAllDay": "បើកពេញមួយថ្ងៃ",
+      "store": "ហាង",
+      "noLocation": "មិនមានទីតាំង",
+      "storeLogo": "រូបសញ្ញាហាង",
+      "noInformation": "គ្មានព័ត៌មាន",
+      "backToStore": "ត្រឡប់ទៅហាងវិញ",
+      "productImage": "រូបភាពផលិតផល"
+    },
+    "detail": {
+      "add": "បន្ថែមទៅកន្ត្រក",
+      "adding": "កំពុងបន្ថែម...",
+      "storeLoadError": "មិនអាចបង្ហាញហាងនេះបានទេ",
+      "noItemsFound": "រកមិនឃើញទំនិញទេ",
+      "noItemsDescription": "មិនមានទំនិញដែលត្រូវគ្នានឹងការស្វែងរករបស់អ្នកទេ។",
+      "noMenuItems": "មិនមានទំនិញទេ",
+      "noMenuItemsDescription": "ហាងនេះមិនទាន់មានទំនិញលក់នៅឡើយទេ។",
+      "addToCartAria": "បន្ថែម {name} ទៅកន្ត្រក",
+      "productOverview": "ទិដ្ឋភាពទូទៅនៃផលិតផល",
+      "itemNotFound": "រកមិនឃើញទំនិញទេ",
+      "itemNotFoundDescription": "ទំនិញដែលអ្នកកំពុងស្វែងរក មិនមាននៅក្នុងប្រព័ន្ធទេ។"
+    },
+    "listing": {
+      "noStoresFound": "រកមិនឃើញហាងទេ",
+      "noStoresDescription": "មិនមានហាងនៅក្នុងប្រព័ន្ធនៅឡើយទេ។"
+    },
+    "filters": {
+      "resetFilters": "កំណត់តម្រងឡើងវិញ",
+      "shopTypes": "ប្រភេទហាង",
+      "loading": "កំពុងដំណើរការ...",
+      "cannotLoadTypes": "មិនអាចទាញយកប្រភេទហាងបានទេ",
+      "showLess": "បង្ហាញតិច",
+      "showMore": "បង្ហាញបន្ថែម",
+      "searchPlaceholder": "ស្វែងរកហាង...",
+      "closeFilters": "បិទតម្រង",
+      "openFilters": "បើកតម្រង",
+      "title": "តម្រង",
+      "browseByCategory": "រុករកតាមប្រភេទ",
+      "searchStores": "ស្វែងរកហាង"
+    },
+    "errors": {
+      "itemUnavailable": "ទំនិញមិនមានលក់ទេ"
+    },
+    "scrollLeft": "អូសទៅឆ្វេង",
+    "scrollRight": "អូសទៅស្តាំ",
+    "viewAll": "មើលទាំងអស់",
+    "title": "កន្ត្រកទំនិញ",
+    "continueShopping": "បន្តទិញទំនិញ",
+    "couldNotStart": "មិនអាចចាប់ផ្តើមការទូទាត់បានទេ",
+    "couldNotCancelOther": "មិនអាចបោះបង់ការបញ្ជាទិញផ្សេងបានទេ",
+    "nothingToCheckout": "មិនមានទំនិញសម្រាប់ទូទាត់ទេ",
+    "noItemsFromShop": "មិនមានទំនិញពីហាងនេះទេ",
+    "backToCart": "ត្រឡប់ទៅកន្ត្រកវិញ",
+    "thisShop": "ហាងនេះ",
+    "paymentOpenAt": "ការទូទាត់ត្រូវបានបើកនៅ {storeName}",
+    "paymentOpenDescription": "ការទូទាត់ត្រូវបានបើក",
+    "goToStore": "ទៅកាន់ {storeName}",
+    "cancelThatOrder": "បោះបង់ការបញ្ជាទិញ",
+    "total": "សរុប",
+    "shopClosed": "ហាងត្រូវបានបិទ",
+    "payWithBakong": "បង់ជាមួយបាគង ({amount})"
+  },
+  "Cart": {
+    "addedToCart": "បន្ថែមទៅកន្ត្រកជោគជ័យ",
+    "failedToAdd": "មិនអាចបន្ថែមទៅកន្ត្រកបានទេ",
+    "yourOrder": "ការបញ្ជាទិញរបស់អ្នក",
+    "itemCount": "{count} ទំនិញ",
+    "loadingCart": "កំពុងដំណើរការកន្ត្រក...",
+    "hungry": "ឃ្លានមែនទេ?",
+    "signInPrompt": "ចូលគណនីដើម្បីមើលកន្ត្រករបស់អ្នក",
+    "signIn": "ចូលគណនី",
+    "emptySidebar": "កន្ត្រករបស់អ្នកទទេ",
+    "otherShopsInCart": "មានពីហាងផ្សេងចំនួន {count}",
+    "seeSummary": "មើលសង្ខេប",
+    "reviewPayment": "បន្តការទូទាត់"
   }
 }
