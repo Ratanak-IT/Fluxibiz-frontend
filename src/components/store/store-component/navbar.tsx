@@ -33,7 +33,7 @@ export default function Navbar() {
                 <CartDrawer key={item.label}>
                   <button type="button" className={`${baseItemStyles} w-full group-hover:text-secondary`}>
                     <Icon className="w-5 h-5 stroke-  transition-all group-hover:stroke-secondary" />
-                    <span className="text-[11px] mt-1 tracking-tight text-center truncate w-full transition-colors hover:text-secondary">
+                    <span className="text-[11px] mt-1 tracking-tight text-center truncate w-full transition-colors group-hover:text-secondary">
                       {item.label}
                     </span>
                   </button>
