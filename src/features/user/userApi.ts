@@ -53,16 +53,37 @@ export const userApi = createApi({
             UserProfileResponse,
             UpdateUserProfileArgs
         >({
-            query: (args) => {
-                const formData = new FormData();
+            queryFn: async (args, api, extraOptions) => {
+                // Step 1: Upload profile picture if a file was provided
+                if (args.file) {
+                    const formData = new FormData();
+                    formData.append("file", args.file);
+
+                    const uploadResult = await baseQuery(
+                        {
+                            url: "/user-profiles/me/picture",
+                            method: "POST",
+                            body: formData,
+                        },
+                        api,
+                        extraOptions
+                    );
+
+                    if (uploadResult.error) {
+                        return { error: uploadResult.error };
+                    }
+                }
+
+                // Step 2: Update profile text fields via JSON
+                const jsonBody: Record<string, string | undefined> = {};
                 if (args.firstName !== undefined && args.firstName !== null && args.firstName.trim() !== "") {
-                    formData.append("firstName", args.firstName.trim());
+                    jsonBody.firstName = args.firstName.trim();
                 }
                 if (args.lastName !== undefined && args.lastName !== null && args.lastName.trim() !== "") {
-                    formData.append("lastName", args.lastName.trim());
+                    jsonBody.lastName = args.lastName.trim();
                 }
                 if (args.phoneNumber !== undefined && args.phoneNumber !== null && args.phoneNumber.trim() !== "") {
-                    formData.append("phoneNumber", args.phoneNumber.trim());
+                    jsonBody.phoneNumber = args.phoneNumber.trim();
                 }
                 if (
                     args.gender &&
@@ -70,20 +91,28 @@ export const userApi = createApi({
                         args.gender.toUpperCase()
                     )
                 ) {
-                    formData.append("gender", args.gender.toUpperCase());
+                    jsonBody.gender = args.gender.toUpperCase();
                 }
                 if (args.address !== undefined && args.address !== null && args.address.trim() !== "") {
-                    formData.append("address", args.address.trim());
-                }
-                if (args.file) {
-                    formData.append("file", args.file);
+                    jsonBody.address = args.address.trim();
                 }
 
-                return {
-                    url: "/user-profiles/me",
-                    method: "PATCH",
-                    body: formData,
-                };
+                const updateResult = await baseQuery(
+                    {
+                        url: "/user-profiles/me",
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: jsonBody,
+                    },
+                    api,
+                    extraOptions
+                );
+
+                if (updateResult.error) {
+                    return { error: updateResult.error };
+                }
+
+                return { data: updateResult.data as UserProfileResponse };
             },
             invalidatesTags: ["Profile"],
         }),
