@@ -247,6 +247,15 @@ export interface ItemAttribute {
     values: ItemAttributeValue[];
 }
 
+export interface DescriptionBlockResponse {
+    type: string;
+    text?: string | null;
+    items?: string[] | null;
+    url?: string | null;
+    caption?: string | null;
+    columns?: { blocks: DescriptionBlockResponse[] }[] | null;
+}
+
 export interface StorefrontItemResponse {
     id: string;
     businessId: string;
@@ -265,6 +274,7 @@ export interface StorefrontItemResponse {
     badge?: string | null;
     itemType: string;
     attributes: ItemAttribute[] | null;
+    descriptionBlocks?: DescriptionBlockResponse[] | null;
     variants: ItemVariant[];
     lowStockDefault: number | null;
     status: string;

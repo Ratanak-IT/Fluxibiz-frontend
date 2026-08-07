@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const STRICT_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
+export const STRICT_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/; 
 
 export function validateEmailFormat(val?: string | null): string | true {
   if (!val || val.trim() === "") return "Email is required";
@@ -54,7 +54,7 @@ export const userRegisterSchema = z
     phone: z
       .string()
       .min(8, "Phone number must be at least 8 digits")
-      .regex(/^[0-9+\s-]+$/, "Invalid phone number format"),
+      .regex(/^\+?[0-9\s]+$/, "Invalid phone number format"),
     email: strictEmailSchema,
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(8, "Confirm password is required"),

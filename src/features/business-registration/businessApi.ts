@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { AuthState } from "@/features/auth/authSlice";
 
 export interface RegisterUserPayload {
   username: string;
