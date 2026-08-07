@@ -5,6 +5,7 @@ import { Clock, MapPin, Store as StoreIcon } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import type { Store } from "@/lib/type/storeType";
 
 export type { Store } from "@/lib/type/storeType";
@@ -19,6 +20,7 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     name,
     description,
     location,
+    address,
     hours,
     openTime,
     closeTime,
@@ -26,6 +28,15 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     discountLabel,
     isOpen,
   } = store;
+
+  const { data: storeDetail } = useGetPublicStoreQuery(
+    store.slug || store.id,
+    {
+      skip: Boolean(address),
+    }
+  );
+
+  const displayLocation = storeDetail?.address || address || location || "";
 
   const [hasError, setHasError] = useState(false);
 
@@ -154,7 +165,7 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
                     "
             />
 
-            <span>{location}</span>
+            <span className="line-clamp-1">{displayLocation}</span>
           </div>
 
           {displayHours && (

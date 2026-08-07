@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Image from "next/image";
-import {  Products } from "@/lib/store/productdetail/product";
+import { Products, formatPrice } from "@/lib/store/productdetail/product";
 
 
 
@@ -18,9 +18,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ item }: ProductCardProps) {
-  function t(arg0: string, arg1: { name: string; }): string | undefined {
-    throw new Error("Function not implemented.");
-  }
+  const t = useTranslations("Store.detail");
 
   return (
 <Card
@@ -54,7 +52,7 @@ export function ProductCard({ item }: ProductCardProps) {
         <p
           className=" text-2xl font-bold 
             text-destructive sm:text-lg" >
-          $ {item.price}
+          {formatPrice(item.price, item.currency)}
         </p>
 
         <CardDescription

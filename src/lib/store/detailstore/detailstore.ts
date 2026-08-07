@@ -4,9 +4,12 @@ export interface MenuItemData {
   id: string;
   name: string;
   price: string;
+  compareAtPrice?: string;
+  badge?: string | null;
   description: string;
   category: string;
   image: string;
+  currency?: string;
   rawItem?: StorefrontItemResponse;
 }
 

@@ -31,6 +31,7 @@ interface ProductDetailProps {
   item?: StorefrontItemResponse;
   storeSlug?: string;
   storeName?: string;
+  currency?: string;
   isLoading?: boolean;
 }
 
@@ -38,6 +39,7 @@ export default function ProductDetail({
   item,
   storeSlug,
   storeName,
+  currency,
   isLoading = false,
 }: ProductDetailProps) {
   const t = useTranslations("Store");
@@ -73,12 +75,12 @@ export default function ProductDetail({
   const variants: ItemVariant[] = useMemo(() => item?.variants ?? [], [item]);
 
   // Extract attributes
-  const attributes: Record<string, unknown> = useMemo(() => {
-    if (item?.attributes && typeof item.attributes === "object") {
+  const attributes = useMemo(() => {
+    if (Array.isArray(item?.attributes)) {
       return item.attributes;
     }
-    return {};
-  }, [item]);
+    return [];
+  }, [item?.attributes]);
 
   useEffect(() => {
     if (variants.length > 0) {
@@ -89,14 +91,14 @@ export default function ProductDetail({
     }
 
     const initialAttrs: Record<string, string> = {};
-    Object.entries(attributes).forEach(([key, val]) => {
-      if (Array.isArray(val) && val.length > 0) {
-        initialAttrs[key] = String(val[0]);
-      } else if (typeof val === "string" || typeof val === "number") {
-        initialAttrs[key] = String(val);
+    attributes.forEach((attr) => {
+      const firstVal = attr.values?.[0];
+      if (firstVal) {
+        initialAttrs[attr.name] = firstVal.label || firstVal.value;
       }
     });
     setSelectedAttributes(initialAttrs);
+
     setActiveImg(0);
     setQuantity(1);
   }, [item, variants, attributes]);
@@ -255,7 +257,7 @@ export default function ProductDetail({
 
           <div className="flex flex-wrap items-center gap-3">
             <div className="text-2xl font-bold text-[#00932A] sm:text-3xl">
-              {formatPrice(unitPrice)}
+              {formatPrice(unitPrice, currency)}
             </div>
           </div>
 
@@ -289,7 +291,7 @@ export default function ProductDetail({
                       <span>{vName}</span>
                       {v.price !== undefined && (
                         <span className="text-xs opacity-80">
-                          {formatPrice(v.price)}
+                          {formatPrice(v.price, currency)}
                         </span>
                       )}
                     </button>
@@ -300,28 +302,23 @@ export default function ProductDetail({
           )}
 
           {/* Attributes Selection */}
-          {Object.keys(attributes).length > 0 && (
-            <div className="space-y-4">
-              {Object.entries(attributes).map(([attrKey, attrVal]) => {
-                const options: string[] = Array.isArray(attrVal)
-                  ? attrVal.map(String)
-                  : typeof attrVal === "string" || typeof attrVal === "number"
-                    ? [String(attrVal)]
-                    : [];
-
-                if (options.length === 0) return null;
-
-                const currentSelected = selectedAttributes[attrKey] || options[0];
+          {attributes.length > 0 && (
+            <div className="space-y-4 mt-4 flex flex-col gap-4">
+              {attributes.map((attr, idx) => {
+                const attrKey = attr.name;
+                const options = attr.values.map(v => v.label || v.value);
+                const currentSelected = selectedAttributes[attrKey];
 
                 return (
-                  <div key={attrKey} className="space-y-2">
-                    <p className="text-sm font-semibold text-muted-foreground">
+                  <div key={idx} className="space-y-2">
+                    <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
                       {attrKey}:{" "}
-                      <span className="font-bold text-foreground">
-                        {currentSelected}
-                      </span>
+                      {currentSelected && (
+                        <span className="font-bold text-[#00932A]">
+                          {currentSelected}
+                        </span>
+                      )}
                     </p>
-
                     <div className="flex flex-wrap gap-2">
                       {options.map((opt) => {
                         const isSelected = currentSelected === opt;
@@ -394,7 +391,7 @@ export default function ProductDetail({
                 <ShoppingBag className="h-5 w-5" />
                 {isAdding
                   ? t("detail.adding")
-                  : `${t("detail.addToCart")} · ${formatPrice(unitPrice * quantity)}`}
+                  : `${t("detail.addToCart")} · ${formatPrice(unitPrice * quantity, currency)}`}
               </>
             )}
           </button>
