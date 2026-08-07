@@ -14,6 +14,7 @@ import StoreProvider from "./StoreProvider";
 
 import "./globals.css";
 import "./about/about.css";
+import { NetworkStatusBanner } from "@/components/common/NetworkStatusBanner";
 
 export const metadata: Metadata = {
   title: "FluxiBiz - Run your whole business from one screen",
@@ -44,6 +45,7 @@ export default async function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>
+          <NetworkStatusBanner />
           <StoreProvider>
             <AuthProvider>
               <ThemeProvider
