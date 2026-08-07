@@ -69,9 +69,7 @@ export default function DetailProductPage({
         isLoading={isLoadingItems}
       />
       
-      <DescriptionCard
-        description={rawItem?.description || undefined}
-      />
+
 
       {relatedStoreItems.length > 0 && (
         <section className="mx-auto my-12 max-w-7xl px-4 sm:px-6 lg:px-8">
