@@ -17,6 +17,7 @@ import {
 } from "@/features/store-api/store-api";
 import { PublicStore, toStoreCard, type Store } from "@/lib/type/storeType";
 import { RecommendedRowSkeleton, StoreRowSkeleton } from "@/components/common/Skeletons";
+import SearchFilterBar from "@/components/store/detailstore/button";
 
 function SectionHeader({ title }: { title: string }) {
   return (
@@ -267,6 +268,7 @@ export default function HomePage() {
             selected={selectedCategories}
             onSelectedChange={setSelectedCategories}
           />
+         
         </div>
       </div>
     </aside>

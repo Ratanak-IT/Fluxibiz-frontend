@@ -323,8 +323,7 @@ export default function NavbarAfterLoginComponent({
                     "openNavigationMenu",
                   )}
                 />
-              }
-            >
+              }>
               <Menu className="size-5 sm:size-6" />
             </SheetTrigger>
 
@@ -724,8 +723,7 @@ function StyledCartDrawer() {
         dark:[&_button:hover]:!bg-transparent
         dark:[&_button:focus-visible]:!bg-transparent
         dark:[&_button:active]:!bg-transparent
-      "
-    >
+      ">
       <CartDrawer />
     </div>
   );
