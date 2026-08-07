@@ -232,6 +232,30 @@ export interface ItemVariant {
     price: number;
 }
 
+export interface ItemAttributeValue {
+    value: string;
+    label?: string;
+    colorHex?: string;
+    available?: boolean;
+}
+
+export interface ItemAttribute {
+    name: string;
+    type?: string;
+    placement?: string;
+    icon?: string;
+    values: ItemAttributeValue[];
+}
+
+export interface DescriptionBlockResponse {
+    type: string;
+    text?: string | null;
+    items?: string[] | null;
+    url?: string | null;
+    caption?: string | null;
+    columns?: { blocks: DescriptionBlockResponse[] }[] | null;
+}
+
 export interface StorefrontItemResponse {
     id: string;
     businessId: string;
@@ -246,8 +270,11 @@ export interface StorefrontItemResponse {
     images: ItemImage[];
     barcode: string | null;
     price: number;
+    compareAtPrice?: number | null;
+    badge?: string | null;
     itemType: string;
-    attributes: Record<string, unknown> | null;
+    attributes: ItemAttribute[] | null;
+    descriptionBlocks?: DescriptionBlockResponse[] | null;
     variants: ItemVariant[];
     lowStockDefault: number | null;
     status: string;

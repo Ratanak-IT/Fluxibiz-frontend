@@ -38,6 +38,7 @@ export interface Products {
   description: string;
   category: string;
   image: string;
+  currency?: string;
 }
 export async function getProduct(id: string): Promise<Product> {
   return {
@@ -123,7 +124,11 @@ export async function addToCart(payload: {
   return { success: true };
 }
 
-export function formatPrice(value: number): string {
+export function formatPrice(value: number, currency: string = "USD"): string {
+  const code = currency.toUpperCase();
+  if (code === "KHR" || code === "KH") {
+    return `${Math.round(value).toLocaleString('en-US')} ៛`;
+  }
   return `$${value.toFixed(2)}`;
 }
 

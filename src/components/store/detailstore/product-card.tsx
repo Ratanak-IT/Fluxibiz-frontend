@@ -13,6 +13,7 @@ import Image from "next/image";
 import { MenuItemData } from "@/lib/store/detailstore/detailstore";
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { formatPrice } from "@/lib/store/productdetail/product";
 import ProductQuickViewModal from "./product-view-modal";
 
 interface MenuProductCardProps {
@@ -24,7 +25,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
   const router = useRouter();
   const params = useParams();
   const storeSlug = (params?.slug as string) || "";
-  const t = useTranslations();
+  const t = useTranslations("Store");
 
   const imageUrl = item.image?.trim() ? item.image : null;
 
@@ -49,9 +50,16 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
               <CardTitle className="truncate text-sm font-bold text-text sm:text-base dark:text-text">
                 {item.name}
               </CardTitle>
-              <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
-                $ {item.price}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
+                  {formatPrice(Number(item.price), item.currency)}
+                </p>
+                {item.compareAtPrice && Number(item.compareAtPrice) > Number(item.price) && (
+                  <p className="text-xs font-medium text-neutral-400 line-through">
+                    {formatPrice(Number(item.compareAtPrice), item.currency)}
+                  </p>
+                )}
+              </div>
               <CardDescription className="line-clamp-2 text-[11px] text-neutral-500 sm:text-xs dark:text-neutral-400">
                 {item.description}
               </CardDescription>
@@ -65,6 +73,11 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
           </div>
 
           <div className="relative m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 sm:m-2.5 sm:w-24 md:w-28 dark:bg-card">
+            {item.badge && (
+              <div className="absolute left-0 top-0 z-10 rounded-br-lg bg-red-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white shadow-xs">
+                {item.badge}
+              </div>
+            )}
             {imageUrl ? (
               <Image
                 src={imageUrl}
@@ -103,6 +116,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
         productId={item.id}
         item={item}
         rawItem={item.rawItem}
+        currency={item.currency}
         open={quickViewOpen}
         onOpenChange={setQuickViewOpen}
       />

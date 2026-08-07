@@ -20,18 +20,26 @@ import { resolveMediaUrl } from "@/lib/type/cartType";
 import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import ProductList from "@/components/store/detailstore/product-list";
+import { formatPrice } from "@/lib/store/productdetail/product";
 
 function toMenuItem(
   item: StorefrontItemResponse,
   fallbackCategory: string,
+  currency?: string
 ): MenuItemData {
   return {
     id: item.id,
     name: item.name,
     price:
       item.price !== undefined && item.price !== null
-        ? Number(item.price).toFixed(2)
-        : "0.00",
+        ? String(item.price)
+        : "0",
+    compareAtPrice:
+      item.compareAtPrice !== undefined && item.compareAtPrice !== null
+        ? String(item.compareAtPrice)
+        : undefined,
+    badge: item.badge,
+    currency: currency,
     description: item.description ?? "",
     category: item.itemGroup?.name ?? fallbackCategory,
     image: primaryItemImage(item) ?? "",
@@ -166,11 +174,13 @@ export default function StoreDetail({
   const hasRealItems = storeItems.length > 0;
   const hasFilteredItems = filteredItems.length > 0;
 
+  const currency = storeDetail?.displayCurrency || storeDetail?.baseCurrency;
+
   const groupedItems = filteredItems.reduce<Record<string, MenuItemData[]>>(
     (acc, item) => {
       const groupName = item.itemGroup?.name?.trim() || t("common.menu");
       if (!acc[groupName]) acc[groupName] = [];
-      acc[groupName].push(toMenuItem(item, t("common.menu")));
+      acc[groupName].push(toMenuItem(item, t("common.menu"), currency));
       return acc;
     },
     {},

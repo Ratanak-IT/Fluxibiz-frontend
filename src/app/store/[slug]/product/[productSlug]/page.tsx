@@ -15,14 +15,17 @@ import {
 import { MenuItemData } from "@/lib/store/detailstore/detailstore";
 import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
 
-function toMenuItem(item: StorefrontItemResponse): MenuItemData {
+import { formatPrice } from "@/lib/store/productdetail/product";
+
+function toMenuItem(item: StorefrontItemResponse, currency?: string): MenuItemData {
   return {
     id: item.id,
     name: item.name,
     price:
       item.price !== undefined && item.price !== null
-        ? Number(item.price).toFixed(2)
-        : "0.00",
+        ? String(item.price)
+        : "0",
+    currency: currency,
     description: item.description ?? "",
     category: item.itemGroup?.name ?? "Menu",
     image: primaryItemImage(item) ?? "",
@@ -53,9 +56,8 @@ export default function DetailProductPage({
     .filter((i) => i.id !== rawItem?.id)
     .slice(0, 6);
 
-  function t(arg0: string): import("react").ReactNode {
-    throw new Error("Function not implemented.");
-  }
+  const currency = storeDetail?.displayCurrency || storeDetail?.baseCurrency;
+  const t = useTranslations("Store.common");
 
   return (
     <div className="dark:bg-background">
@@ -63,12 +65,11 @@ export default function DetailProductPage({
         item={rawItem}
         storeSlug={storeSlug}
         storeName={storeDetail?.name}
+        currency={currency}
         isLoading={isLoadingItems}
       />
       
-      <DescriptionCard
-        description={rawItem?.description || undefined}
-      />
+
 
       {relatedStoreItems.length > 0 && (
         <section className="mx-auto my-12 max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -87,7 +88,7 @@ export default function DetailProductPage({
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {relatedStoreItems.map((item) => (
-              <MenuProductCard key={item.id} item={toMenuItem(item)} />
+              <MenuProductCard key={item.id} item={toMenuItem(item, currency)} />
             ))}
           </div>
         </section>
