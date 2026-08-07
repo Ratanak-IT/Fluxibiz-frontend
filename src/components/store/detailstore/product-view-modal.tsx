@@ -37,6 +37,7 @@ interface ProductQuickViewModalProps {
   productId?: string;
   item?: MenuItemData;
   rawItem?: StorefrontItemResponse;
+  currency?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -44,10 +45,12 @@ interface ProductQuickViewModalProps {
 export default function ProductQuickViewModal({
   item,
   rawItem,
+  currency,
   open,
   onOpenChange,
 }: ProductQuickViewModalProps) {
-  const t = useTranslations();
+  const t = useTranslations("Store");
+  const tCart = useTranslations("Cart");
   const product: StorefrontItemResponse | undefined = rawItem ?? item?.rawItem;
 
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
@@ -91,15 +94,21 @@ export default function ProductQuickViewModal({
         ? parseFloat(item.price)
         : 0;
 
+  const compareAtPrice =
+    product?.compareAtPrice !== undefined && product?.compareAtPrice !== null
+      ? Number(product.compareAtPrice)
+      : item?.compareAtPrice
+        ? parseFloat(item.compareAtPrice)
+        : 0;
+
   const variants = useMemo<ItemVariant[]>(() => product?.variants ?? [], [product]);
 
-  const attributes = useMemo<Record<string, unknown>>(
-    () =>
-      product?.attributes && typeof product.attributes === "object"
-        ? product.attributes
-        : {},
-    [product],
-  );
+  const attributes = useMemo(() => {
+    if (Array.isArray(product?.attributes)) {
+      return product.attributes;
+    }
+    return [];
+  }, [product?.attributes]);
 
   useEffect(() => {
     if (!open) return;
@@ -113,11 +122,10 @@ export default function ProductQuickViewModal({
       setSelectedVariant(variants[0] ?? null);
 
       const initialAttrs: Record<string, string> = {};
-      Object.entries(attributes).forEach(([key, val]) => {
-        if (Array.isArray(val) && val.length > 0) {
-          initialAttrs[key] = String(val[0]);
-        } else if (typeof val === "string" || typeof val === "number") {
-          initialAttrs[key] = String(val);
+      attributes.forEach((attr) => {
+        const firstVal = attr.values?.[0];
+        if (firstVal) {
+          initialAttrs[attr.name] = firstVal.label || firstVal.value;
         }
       });
       setSelectedAttributes(initialAttrs);
@@ -164,7 +172,7 @@ export default function ProductQuickViewModal({
         },
       }).unwrap();
 
-      toast.success(t("Store.messages.addedToCart", { quantity, name }));
+      toast.success(t("messages.addedToCart", { quantity, name }));
       onOpenChange(false);
     } catch (err) {
       if (isUnauthorized(err)) {
@@ -262,11 +270,11 @@ export default function ProductQuickViewModal({
               {/* Pricing */}
               <div className="flex items-baseline gap-3">
                 <span className="text-2xl font-extrabold text-[#00932A] sm:text-3xl">
-                  {formatPrice(unitPrice)}
+                  {formatPrice(unitPrice, currency)}
                 </span>
-                {basePrice > unitPrice && (
+                {compareAtPrice > unitPrice && (
                   <span className="text-sm text-muted-foreground line-through">
-                    {formatPrice(basePrice)}
+                    {formatPrice(compareAtPrice, currency)}
                   </span>
                 )}
               </div>
@@ -306,7 +314,7 @@ export default function ProductQuickViewModal({
                         >
                           <span>{variantDisplayName}</span>
                           <span className="text-[10px] opacity-80">
-                            {formatPrice(Number(v.price))}
+                            {formatPrice(Number(v.price), currency)}
                           </span>
                         </button>
                       );
@@ -316,14 +324,13 @@ export default function ProductQuickViewModal({
               )}
 
               {/* Dynamic Attributes */}
-              {Object.entries(attributes).map(([attrKey, attrVal]) => {
-                const options = Array.isArray(attrVal)
-                  ? attrVal.map(String)
-                  : [String(attrVal)];
+              {attributes.map((attr, idx) => {
+                const attrKey = attr.name;
+                const options = attr.values.map(v => v.label || v.value);
                 const currentSelected = selectedAttributes[attrKey];
 
                 return (
-                  <div key={attrKey} className="space-y-1.5 pt-1">
+                  <div key={idx} className="space-y-1.5 pt-1">
                     <p className="text-xs font-semibold text-foreground">
                       {attrKey}:{" "}
                       {currentSelected && (
@@ -443,7 +450,7 @@ export default function ProductQuickViewModal({
                         <ShoppingBag className="h-4 w-4" />
                         {isAdding
                           ? t("detail.adding")
-                          : `${t("detail.addToCart")} · ${formatPrice(unitPrice * quantity)}`}
+                          : `${t("detail.addToCart")} · ${formatPrice(unitPrice * quantity, currency)}`}
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -453,14 +460,14 @@ export default function ProductQuickViewModal({
               {needsLogin && (
                 <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/50 px-3 py-1.5">
                   <p className="text-xs text-muted-foreground">
-                    {t("Cart.signInPrompt")}
+                    {tCart("signInPrompt")}
                   </p>
                   <button
                     onClick={login}
                     className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#00932A] px-3 py-1 text-xs font-medium text-white hover:bg-[#007a22]"
                   >
                     <LogIn className="h-3.5 w-3.5" />
-                    {t("Cart.signIn")}
+                    {tCart("signIn")}
                   </button>
                 </div>
               )}

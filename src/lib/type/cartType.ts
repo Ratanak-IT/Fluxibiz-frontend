@@ -52,8 +52,9 @@ export interface AddToCartPayload {
 }
 
 export function formatMoney(amount: number, currency = "USD"): string {
-    if (currency === "KHR") {
-        return `៛${Math.round(amount).toLocaleString("en-US")}`;
+    const code = currency.toUpperCase();
+    if (code === "KHR" || code === "KH") {
+        return `${Math.round(amount).toLocaleString("en-US")} ៛`;
     }
     return `$${amount.toFixed(2)}`;
 }
