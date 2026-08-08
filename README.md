@@ -124,13 +124,3 @@ print(resp.json())
 
 Contributions are welcome. Please open an issue or a pull request. Include tests and keep changes focused and small.
 
-## License
-
-This project is released under the MIT License. Replace with the correct license if different.
-
----
-
-If you'd like, I can:
-
-- Fill in the placeholder values: `Project Name`, short description, tech stack, and prerequisites; or
-- Keep `API_REFERENCE.md` as the canonical API documentation and add a short link in this README.
