@@ -6,6 +6,22 @@ FluxiBiz is an advanced multichannel commerce and business management platform d
 - [Download OpenAPI Document ( JSON )](./public/api-document/api.json)
 - [Download OpenAPI Document ( YAML )](./public/api-document/api.yaml)
 
+
+## FLUXIBIZ Logo
+<p align="center">
+  <img src="./public/image/footer/fluxibiz-logo-darkmode.png" alt="StackQuiz Logo" width="200"/>
+</p>
+
+---
+
+## 📱 Platform Preview
+<p align="center">
+  <img src="./public/desktop-view.png" alt="Desktop Preview" width="300" style="margin: 0 10px;"/>
+  <img src="./public/tablet-review.png" alt="Tablet Preview" width="170" style="margin: 0 10px;"/>
+  <img src="./public/mobile-review.png" alt="Mobile Preview" width="130" style="margin: 0 10px;"/>
+</p>
+
+
 ## Features
 
 - Clean, responsive Next.js frontend for interacting with the backend API
