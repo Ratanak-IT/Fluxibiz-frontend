@@ -3,9 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Clock, Loader2, Search, SearchX, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import {
   useGetBusinessCategoryQuery,
   useGetPublicStoresQuery,
@@ -182,9 +180,13 @@ const SearchDrawer = ({
     <Dialog open={isOpen} onOpenChange={setOpen}>
       {!hideTrigger && (
         <DialogTrigger>
-          <Button variant="outline" size="icon" className="rounded-full">
-            <Search className=" h-4 w-4" />
-          </Button>
+          <button
+            type="button"
+            aria-label="Open search"
+            className="flex h-9 w-9 items-center justify-center rounded-full border hover:bg-card"
+          >
+            <Search className="h-4 w-4" />
+          </button>
         </DialogTrigger>
       )}
 
@@ -194,60 +196,59 @@ const SearchDrawer = ({
           fixed inset-0 top-0 left-0 z-50 flex h-full w-full max-w-full
           translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden
           rounded-none border-0 p-0
-          xl:inset-auto xl:left-[50%] xl:top-[50%] xl:h-auto xl:max-h-[85vh]
-          xl:w-full xl:max-w-lg xl:-translate-x-1/2 xl:-translate-y-1/2
-          xl:rounded-lg xl:border
+          sm:h-full sm:w-full sm:max-w-full sm:rounded-none
+          xl:inset-auto xl:left-[50%] xl:top-[50%] xl:min-h-[560px] xl:max-h-[92vh]
+          xl:w-[min(90vw,860px)] xl:max-w-4xl xl:-translate-x-1/2 xl:-translate-y-1/2
+          xl:rounded-2xl xl:border
         "
       >
-        <DialogHeader className="flex-row shrink-0 items-center justify-between border-b px-5 py-4 space-y-0">
-          <DialogTitle className="text-base font-semibold">
-            Search
-          </DialogTitle>
-
-          <DialogClose>
-            <button
-              type="button"
-              aria-label="Close search"
-              className="
-                flex
-                h-7
-                w-7
-                items-center
-                justify-center
-                rounded-full
-                text-muted-foreground
-                transition-colors
-                hover:bg-accent
-                hover:text-foreground
-              "
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </DialogClose>
-        </DialogHeader>
-
-        <div className="flex-1 space-y-5 overflow-y-auto p-5">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
+        {/* iOS-style search bar: input + inline Cancel link */}
+        <div className="flex shrink-0 items-center gap-2 border-b px-3 py-2.5 sm:px-4 sm:py-3">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
               autoFocus
               value={currentValue}
               onChange={(e) => handleChange(e.target.value)}
-              className="h-11 rounded-lg pl-10 pr-9 text-sm"
-              placeholder="Search by name, category, or location..."
+              placeholder="Search by name or category"
+              className="
+                h-9
+                w-full
+                rounded-xl
+                border-0
+                bg-muted
+                pl-9
+                pr-9
+                text-sm
+                text-foreground
+                placeholder:text-muted-foreground
+                focus:outline-none
+                focus:ring-2
+                focus:ring-primary/30
+                sm:h-10
+                sm:text-base
+              "
             />
             {currentValue && (
               <button
                 type="button"
                 onClick={() => handleChange("")}
                 aria-label="Clear search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:text-foreground"
+                className="absolute right-2.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded-full bg-muted-foreground/30 text-background hover:bg-muted-foreground/50"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-3 w-3" />
               </button>
             )}
           </div>
 
+          <DialogClose>
+            <span className="shrink-0 whitespace-nowrap px-1 text-sm font-medium text-primary hover:opacity-70 sm:text-base">
+              Cancel
+            </span>
+          </DialogClose>
+        </div>
+
+        <div className="flex-1 space-y-5 overflow-y-auto p-4 sm:p-5">
           {showResults ? (
             <div className="space-y-2.5">
               <h4 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -260,7 +261,7 @@ const SearchDrawer = ({
                   Looking for &quot;{currentValue}&quot;...
                 </div>
               ) : results.length > 0 ? (
-                <div className="max-h-80 space-y-0.5 overflow-y-auto xl:max-h-80">
+                <div className="space-y-0.5 xl:max-h-80 xl:overflow-y-auto">
                   {results.map((store) => (
                     <DialogClose key={store.id}>
                       <Link
@@ -346,7 +347,9 @@ const SearchDrawer = ({
                         text-sm
                         text-foreground
                         transition-colors
-                        hover:bg-primary/5 ">
+                        hover:bg-primary/5
+                      "
+                    >
                       <button
                         type="button"
                         onClick={() => handleRecentClick(term)}
