@@ -284,7 +284,7 @@ export default function NavbarAfterLoginComponent({
 
         {/* Mobile actions */}
         <div className="flex items-center gap-1 lg:hidden">
-          <StyledCartDrawer />
+          <ThemeToggle />
 
           <Sheet
             open={mobileNavOpen}

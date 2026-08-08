@@ -50,7 +50,7 @@ export const team: TeamMember[] = [
     nameKey: "pechPhakley",
     roleKey: "fullstack",
     levelKey: "member",
-    avatar: "/image/team/members/lokbong.png",
+    avatar: "/image/team/members/1.png",
     github: "https://github.com/pechphakley",
     telegram: "https://t.me/phakley",
     linkedin:

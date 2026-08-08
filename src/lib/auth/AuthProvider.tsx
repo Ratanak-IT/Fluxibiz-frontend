@@ -44,7 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    fetchSession();
+    const timer = setTimeout(() => {
+      fetchSession();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [fetchSession]);
 
   const login = useCallback(() => {
