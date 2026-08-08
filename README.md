@@ -1,36 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FluxiBiz
 
-## Getting Started
+FluxiBiz is an advanced multichannel commerce and business management platform designed to centralize and automate the entire lifecycle of modern business operations across digital and physical marketplaces.
 
-First, run the development server:
+- [Scalar API Docs](https://sb-ite-basic-course-api-production.up.railway.app/scalar)
+- [Download OpenAPI Document ( JSON )](./public/api-document/api.json)
+- [Download OpenAPI Document ( YAML )](./public/api-document/api.yaml)
+
+
+## FLUXIBIZ Logo
+<p align="center">
+  <img src="./public/image/footer/fluxibiz-logo-darkmode.png" alt="StackQuiz Logo" width="200"/>
+</p>
+
+---
+
+## 📱 Platform Preview
+<p align="center">
+  <img src="./public/desktop-view.png" alt="Desktop Preview" width="300" style="margin: 0 10px;"/>
+  <img src="./public/tablet-review.png" alt="Tablet Preview" width="170" style="margin: 0 10px;"/>
+  <img src="./public/mobile-review.png" alt="Mobile Preview" width="130" style="margin: 0 10px;"/>
+</p>
+
+
+## Features
+
+- Clean, responsive Next.js frontend for interacting with the backend API
+- Interactive API documentation via [Scalar](https://sb-ite-basic-course-api-production.up.railway.app/scalar#introduction) (OpenAPI-powered)
+- Postman Collection: Run in Postman or [download](./public/api-document/api.json) the Postman JSON export from the repo.
+- Authenticated API flows using Bearer (JWT) tokens
+- Example integrations for staff, sales channels, store, and platform resources
+
+## Quick Start / Installation
+
+Prerequisites: Node.js v18+ (or your project's target), optional Docker
+
+1. Clone the repository
+
+```bash
+git clone <repo-url>
+cd ipos-frontend
+```
+
+2. Install dependencies
+
+```bash
+npm install
+# or
+pnpm install
+```
+
+3. Create a `.env.local` (copy `.env.example` if provided) and add required values (see Environment Variables below)
+
+4. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Interactive API Documentation (Scalar)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project links to a live Scalar-based API reference. Scalar renders the OpenAPI spec and exposes an interactive docs UI.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Live Scalar UI: https://sb-ite-basic-course-api-production.up.railway.app/scalar
+- OpenAPI JSON: https://sb-ite-basic-course-api-production.up.railway.app/v3/api-docs
 
-## Learn More
+If you run the backend locally, serve the OpenAPI JSON at `/v3/api-docs` and open `/scalar` (or the local docs path) to use the interactive tester.
 
-To learn more about Next.js, take a look at the following resources:
+## Core API Endpoints (summary)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Below are some of the primary endpoints surfaced in the OpenAPI spec. For the full list, open the Scalar docs linked above.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- GET /api/v1/platform/staff/{userId} — Get staff detail (Auth: Bearer required)
+- PUT /api/v1/sales-channels/{id} — Update sales channel (Auth: Bearer required)
+- DELETE /api/v1/sales-channels/{id} — Delete sales channel (Auth: Bearer required)
+- GET /api/v1/store/{slug} — Get store by slug (may be public or protected depending on implementation)
 
-## Deploy on Vercel
+Note: Many endpoints are under `/api/v1/...`. Use the OpenAPI JSON or Scalar UI to view request/response schemas and example payloads.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Create a `.env.local` with the values below (adjust names to match the project's config loader).
+
+| Key | Default | Description |
+|---|---:|---|
+| `NODE_ENV` | `development` | Node environment |
+| `PORT` | `3000` | Frontend server port |
+| `API_BASE_URL` | `https://sb-ite-basic-course-api-production.up.railway.app` | Base URL for backend API |
+| `SCALAR_DOCS_URL` | `https://sb-ite-basic-course-api-production.up.railway.app/scalar` | Scalar docs URL |
+| `SCALAR_TOKEN` | (none) | Optional: bearer token for testing authenticated calls locally |
+
+## Usage examples
+
+Fetch OpenAPI JSON
+
+```bash
+curl -sS https://sb-ite-basic-course-api-production.up.railway.app/v3/api-docs | jq .
+```
+
+Authenticated request example (curl)
+
+```bash
+curl -sS -H "Authorization: Bearer <TOKEN>" \
+  https://sb-ite-basic-course-api-production.up.railway.app/api/v1/platform/staff/<USER_ID>
+```
+
+JavaScript (fetch)
+
+```js
+const token = process.env.SCALAR_TOKEN;
+fetch(`${process.env.API_BASE_URL}/api/v1/platform/staff/USER_ID`, {
+  headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+})
+.then(r => r.json())
+.then(console.log)
+.catch(console.error)
+```
+
+Python (requests)
+
+```py
+import os
+import requests
+
+TOKEN = os.getenv('SCALAR_TOKEN')
+BASE = os.getenv('API_BASE_URL', 'https://sb-ite-basic-course-api-production.up.railway.app')
+resp = requests.get(f"{BASE}/api/v1/platform/staff/USER_ID", headers={'Authorization': f'Bearer {TOKEN}'})
+print(resp.status_code)
+print(resp.json())
+```
+
+## Errors & Troubleshooting
+
+- 401 / 403: check Bearer token validity and scopes
+- 413: request payload too large — reduce size or send in chunks
+- CORS errors (browser): ensure the API allows the requesting origin or use the Scalar UI to test server-side
+
+## Contributing
+
+Contributions are welcome. Please open an issue or a pull request. Include tests and keep changes focused and small.
+
