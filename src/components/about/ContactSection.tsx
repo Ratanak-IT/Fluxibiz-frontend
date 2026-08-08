@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Mail, MapPin, Phone, Send } from "lucide-react";
@@ -17,9 +18,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ContactFormValues, contactSchema } from "@/lib/about/contact-schema";
+import { sendContactEmail } from "@/lib/about/contact";
+ // adjust path to wherever your server action file lives
 
 export function ContactSection() {
   const t = useTranslations("Support.contact");
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>(
+    'idle'
+  );
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const contactDetails = [
     {
@@ -61,9 +68,18 @@ export function ContactSection() {
   } = form;
 
   async function onSubmit(values: ContactFormValues) {
-    // TODO: wire up to your API (for example, an RTK Query mutation).
-    console.log(values);
-    form.reset();
+    setSubmitStatus("idle");
+    setErrorMessage("");
+
+    const result = await sendContactEmail(values);
+
+    if (result.success) {
+      setSubmitStatus("success");
+      form.reset();
+    } else {
+      setSubmitStatus("error");
+      setErrorMessage(result.error);
+    }
   }
 
   return (
@@ -209,6 +225,18 @@ export function ContactSection() {
                   </FormItem>
                 )}
               />
+
+              {submitStatus === "success" && (
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                  {t("form.successMessage")}
+                </p>
+              )}
+
+              {submitStatus === "error" && (
+                <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                  {errorMessage || t("form.errorMessage")}
+                </p>
+              )}
 
               <Button
                 type="submit"
