@@ -6,7 +6,7 @@ import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Store as StoreIcon } from "lucide-react";
 import BannerCarousel from "@/components/store/store-component/banner-carousel";
 import StoreCardHorizontal from "@/components/store/store-component/store-card-horizontal";
-import StoreFilterComponent, { StorePriceRange, StoreSortOption } from "@/components/store/store-component/store-filter-component";
+
 import { StoreCardComponent } from "@/components/store/store-component/store-cart-component";
 import Link from "next/link";
 import {
@@ -18,6 +18,7 @@ import {
   RecommendedRowSkeleton,
   StoreRowSkeleton,
 } from "@/components/common/Skeletons";
+import StoreFilterComponent from "@/components/store/store-component/store-filter-component";
 
 function SectionHeader({ title }: { title: string }) {
   return (
@@ -269,8 +270,7 @@ function PromotionsSection() {
 
 export default function HomePage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-const [sortBy, setSortBy] = useState<StoreSortOption>("Default");
-const [priceRange, setPriceRange] = useState<StorePriceRange>("All Prices");
+
 
   return (
     <div className="mx-auto max-w-362.5 space-y-6 px-4 pt-2 pb-6 sm:space-y-10 sm:pt-6 sm:py-6">
@@ -283,8 +283,7 @@ const [priceRange, setPriceRange] = useState<StorePriceRange>("All Prices");
               <StoreFilterComponent
                 selected={selectedCategories}
                 onSelectedChange={setSelectedCategories}
-                sortBy={sortBy}
-                onSortByChange={setSortBy}
+                
               />
             </div>
           </div>

@@ -15,32 +15,11 @@ import { Label } from "@/components/ui/label";
 import { useGetBusinessCategoryQuery } from "@/features/store-api/store-api";
 import SearchDrawer from "./search";
 
-export type StoreSortOption = "Default" | "Name: A to Z" | "Name: Z to A";
-export type StorePriceRange =
-  | "All Prices"
-  | "Under $2"
-  | "$2 - $5"
-  | "$5 - $10"
-  | "Over $10";
-
-const SORT_OPTIONS: StoreSortOption[] = ["Default", "Name: A to Z", "Name: Z to A"];
-const PRICE_OPTIONS: StorePriceRange[] = [
-  "All Prices",
-  "Under $2",
-  "$2 - $5",
-  "$5 - $10",
-  "Over $10",
-];
-
 interface StoreFilterComponentProps {
   selected?: string[];
   onSelectedChange?: (selected: string[]) => void;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
-  sortBy?: StoreSortOption;
-  onSortByChange?: (sort: StoreSortOption) => void;
-  priceRange?: StorePriceRange;
-  onPriceRangeChange?: (price: StorePriceRange) => void;
 }
 
 const VISIBLE_COUNT = 10;
@@ -50,18 +29,12 @@ export default function StoreFilterComponent({
   onSelectedChange,
   searchValue,
   onSearchChange,
-  sortBy: controlledSortBy,
-  onSortByChange,
-  priceRange: controlledPriceRange,
-  onPriceRangeChange,
 }: StoreFilterComponentProps) {
   const t = useTranslations("Store.filters");
   const [showMore, setShowMore] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [localSearchValue, setLocalSearchValue] = useState("");
-  const [localSortBy, setLocalSortBy] = useState<StoreSortOption>("Default");
-  const [localPriceRange, setLocalPriceRange] = useState<StorePriceRange>("All Prices");
 
   const {
     data: category = [],
@@ -70,8 +43,6 @@ export default function StoreFilterComponent({
   } = useGetBusinessCategoryQuery();
 
   const currentSearchValue = searchValue ?? localSearchValue;
-  const currentSortBy = controlledSortBy ?? localSortBy;
-  const currentPriceRange = controlledPriceRange ?? localPriceRange;
 
   const handleSearchChange = (value: string) => {
     if (onSearchChange) {
@@ -79,22 +50,6 @@ export default function StoreFilterComponent({
       return;
     }
     setLocalSearchValue(value);
-  };
-
-  const handleSortChange = (sort: StoreSortOption) => {
-    if (onSortByChange) {
-      onSortByChange(sort);
-      return;
-    }
-    setLocalSortBy(sort);
-  };
-
-  const handlePriceChange = (price: StorePriceRange) => {
-    if (onPriceRangeChange) {
-      onPriceRangeChange(price);
-      return;
-    }
-    setLocalPriceRange(price);
   };
 
   const allTypes = category.flatMap((categoryItem) =>
@@ -120,77 +75,12 @@ export default function StoreFilterComponent({
   };
 
   const hasActiveFilters =
-    currentSearchValue.trim() !== "" ||
-    selected.length > 0 ||
-    currentSortBy !== "Default" ||
-    currentPriceRange !== "All Prices";
+    currentSearchValue.trim() !== "" || selected.length > 0;
 
   const handleResetFilters = () => {
     handleSearchChange("");
     onSelectedChange?.([]);
-    handleSortChange("Default");
-    handlePriceChange("All Prices");
   };
-
-  const optionLabel = (option: string) =>
-    ({
-      Default: t("default"),
-      "Name: A to Z": t("nameAZ"),
-      "Name: Z to A": t("nameZA") ?? "Name: Z to A",
-      "All Prices": t("allPrices"),
-      "Under $2": t("underTwo"),
-      "$2 - $5": t("twoToFive"),
-      "$5 - $10": t("fiveToTen"),
-      "Over $10": t("overTen"),
-    } as Record<string, string>)[option] ?? option;
-
-  const renderSortChecklist = () => (
-    <div>
-      <h4 className="mb-3 text-lg font-medium text-foreground">{t("sortBy")}</h4>
-      <div className="space-y-2.5">
-        {SORT_OPTIONS.map((option) => {
-          const inputId = `store-sort-${option}`;
-          return (
-            <div key={option} className="flex items-center gap-2">
-              <Checkbox
-                id={inputId}
-                checked={currentSortBy === option}
-                onCheckedChange={(checked) => { if (checked) handleSortChange(option); }}
-                className="rounded-[4px] border border-primary/10 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-              />
-              <Label htmlFor={inputId} className="cursor-pointer text-sm font-medium text-foreground">
-                {optionLabel(option)}
-              </Label>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-
-  const renderPriceChecklist = () => (
-    <div>
-      <h4 className="mb-3 text-lg font-medium text-foreground">{t("priceRange")}</h4>
-      <div className="space-y-2.5">
-        {PRICE_OPTIONS.map((option) => {
-          const inputId = `store-price-${option}`;
-          return (
-            <div key={option} className="flex items-center gap-2">
-              <Checkbox
-                id={inputId}
-                checked={currentPriceRange === option}
-                onCheckedChange={(checked) => { if (checked) handlePriceChange(option); }}
-                className="rounded-[4px] border border-primary/10 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-              />
-              <Label htmlFor={inputId} className="cursor-pointer text-sm font-medium text-foreground">
-                {optionLabel(option)}
-              </Label>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
 
   const renderCategoryFilters = () => (
     <div>
@@ -259,14 +149,6 @@ export default function StoreFilterComponent({
           )}
         </>
       )}
-    </div>
-  );
-
-  const renderAllFilters = () => (
-    <div className="space-y-6">
-      {renderSortChecklist()}
-      {renderPriceChecklist()}
-      {renderCategoryFilters()}
     </div>
   );
 
@@ -357,7 +239,7 @@ export default function StoreFilterComponent({
               )}
             </div>
 
-            {renderAllFilters()}
+            {renderCategoryFilters()}
           </CollapsibleContent>
         </Collapsible>
       </div>
@@ -379,7 +261,7 @@ export default function StoreFilterComponent({
           )}
         </div>
 
-        {renderAllFilters()}
+        {renderCategoryFilters()}
       </div>
     </div>
   );

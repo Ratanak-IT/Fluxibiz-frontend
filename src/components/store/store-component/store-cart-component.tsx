@@ -46,15 +46,14 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     openTime && closeTime ? `${openTime} – ${closeTime}` : hours;
 
   return (
-    <div
-      className="
+<div
+  className="
     group relative mx-auto mt-3 
     w-65 cursor-pointer p-2 bg-white
-    overflow-hidden  rounded-lg duration-100 hover:duration-100 hover:shadow-sm  hover:scale-98 ease-out transition-transform
-    dark:bg-muted dark:hover:shadow-muted/5
-  
-"
-    >
+    overflow-hidden rounded-lg shadow-sm duration-100 hover:duration-100 hover:shadow-md hover:scale-98 ease-out transition-transform
+    dark:bg-muted dark:shadow-md dark:shadow-black/40 dark:hover:shadow-sm dark:hover:shadow-black/50
+  "
+>
       <div className="relative grow h-38 w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
         {image && !hasError ? (
           <Image
@@ -73,16 +72,17 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
           <div
             className="
           absolute top-2 left-2 
+       bg-red-500 
           z-10 flex flex-col 
           h-12 w-12 
           items-center justify-center 
           text-center leading-none 
           rounded-full
-          text-foreground
+          text-white
           border-2 border-dashed 
           border-input
           bg-accent shadow-xs p-0.5
-          dark:bg-neutral-800 dark:border-neutral-600 dark:text-white
+          dark:bg-red-500 dark:border-foreground/80 dark:text-white
         "
           >
             {discountLabel.includes(" ") ? (

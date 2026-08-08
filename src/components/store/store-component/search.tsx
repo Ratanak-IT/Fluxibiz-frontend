@@ -1,12 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Clock, Loader2, Search, SearchX, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { useGetPublicStoresQuery } from "@/features/store-api/store-api"
+import {
+  useGetBusinessCategoryQuery,
+  useGetPublicStoresQuery,
+} from "@/features/store-api/store-api"
 import { toStoreCard } from "@/lib/type/storeType"
 
 interface SearchDrawerProps {
@@ -113,14 +116,60 @@ const SearchDrawer = ({
     return () => clearTimeout(handle)
   }, [currentValue])
 
-  const { data, isFetching } = useGetPublicStoresQuery(
+  // Match the typed term against category names so we can also search "by category".
+  const { data: categories = [] } = useGetBusinessCategoryQuery()
+  const matchedCategoryIds = useMemo(() => {
+    if (!debouncedKeyword) return []
+    const term = debouncedKeyword.toLowerCase()
+    const ids: string[] = []
+    for (const categoryItem of categories) {
+      if (categoryItem.name?.toLowerCase().includes(term)) {
+        ids.push(categoryItem.id)
+      }
+      for (const sub of categoryItem.subCategories ?? []) {
+        if (sub.name?.toLowerCase().includes(term)) {
+          ids.push(sub.id)
+        }
+      }
+    }
+    return ids
+  }, [categories, debouncedKeyword])
+
+  // Search by store name.
+  const { data: nameData, isFetching: isFetchingByName } = useGetPublicStoresQuery(
     { keyword: debouncedKeyword, size: 8 },
     { skip: !debouncedKeyword },
   )
 
-  const results = (data?.content ?? []).map(toStoreCard)
+  // Search by location (city / province).
+  const { data: locationData, isFetching: isFetchingByLocation } = useGetPublicStoresQuery(
+    { cityOrProvince: debouncedKeyword, size: 8 },
+    { skip: !debouncedKeyword },
+  )
+
+  // Search by matching category names.
+  const { data: categoryData, isFetching: isFetchingByCategory } = useGetPublicStoresQuery(
+    { categoryIds: matchedCategoryIds, size: 8 },
+    { skip: !debouncedKeyword || matchedCategoryIds.length === 0 },
+  )
+
+  const results = useMemo(() => {
+    const byId = new Map<string, ReturnType<typeof toStoreCard>>()
+    for (const page of [nameData, locationData, categoryData]) {
+      for (const store of page?.content ?? []) {
+        const card = toStoreCard(store)
+        if (!byId.has(card.id)) byId.set(card.id, card)
+      }
+    }
+    return [...byId.values()]
+  }, [nameData, locationData, categoryData])
+
   const showResults = currentValue.trim().length > 0
-  const searching = isFetching || (currentValue.trim() !== debouncedKeyword && currentValue.trim().length > 0)
+  const searching =
+    isFetchingByName ||
+    isFetchingByLocation ||
+    (matchedCategoryIds.length > 0 && isFetchingByCategory) ||
+    (currentValue.trim() !== debouncedKeyword && currentValue.trim().length > 0)
 
   useEffect(() => {
     if (!searching && debouncedKeyword && results.length > 0) {
@@ -141,9 +190,16 @@ const SearchDrawer = ({
 
       <DialogContent
         showCloseButton={false}
-        className="gap-0 overflow-hidden p-0 sm:max-w-lg"
+        className="
+          fixed inset-0 top-0 left-0 z-50 flex h-full w-full max-w-full
+          translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden
+          rounded-none border-0 p-0
+          xl:inset-auto xl:left-[50%] xl:top-[50%] xl:h-auto xl:max-h-[85vh]
+          xl:w-full xl:max-w-lg xl:-translate-x-1/2 xl:-translate-y-1/2
+          xl:rounded-lg xl:border
+        "
       >
-        <DialogHeader className="flex-row items-center justify-between border-b px-5 py-4 space-y-0">
+        <DialogHeader className="flex-row shrink-0 items-center justify-between border-b px-5 py-4 space-y-0">
           <DialogTitle className="text-base font-semibold">
             Search
           </DialogTitle>
@@ -170,7 +226,7 @@ const SearchDrawer = ({
           </DialogClose>
         </DialogHeader>
 
-        <div className="space-y-5 p-5">
+        <div className="flex-1 space-y-5 overflow-y-auto p-5">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -178,7 +234,7 @@ const SearchDrawer = ({
               value={currentValue}
               onChange={(e) => handleChange(e.target.value)}
               className="h-11 rounded-lg pl-10 pr-9 text-sm"
-              placeholder="Search for stores..."
+              placeholder="Search by name, category, or location..."
             />
             {currentValue && (
               <button
@@ -204,7 +260,7 @@ const SearchDrawer = ({
                   Looking for &quot;{currentValue}&quot;...
                 </div>
               ) : results.length > 0 ? (
-                <div className="max-h-80 space-y-0.5 overflow-y-auto">
+                <div className="max-h-80 space-y-0.5 overflow-y-auto xl:max-h-80">
                   {results.map((store) => (
                     <DialogClose key={store.id}>
                       <Link
@@ -290,9 +346,7 @@ const SearchDrawer = ({
                         text-sm
                         text-foreground
                         transition-colors
-                        hover:bg-primary/5
-                      "
-                    >
+                        hover:bg-primary/5 ">
                       <button
                         type="button"
                         onClick={() => handleRecentClick(term)}

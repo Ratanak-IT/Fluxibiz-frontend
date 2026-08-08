@@ -78,7 +78,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
   };
 
   return (
-    <Card
+   <Card
   className="
     bg-white
     group
@@ -92,13 +92,17 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
     rounded-xl
     p-2
     text-card-foreground
+    shadow-sm
     transition-all
     duration-200
     ease-out
     hover:scale-[0.99]
-    hover:shadow-sm
+    hover:shadow-md
     dark:bg-muted
-    dark:hover:shadow-muted/5
+    dark:shadow-sm
+    dark:shadow-black/40
+    dark:hover:shadow-sm
+    dark:hover:shadow-black/50
   "
 >
   {/* Store logo */}
