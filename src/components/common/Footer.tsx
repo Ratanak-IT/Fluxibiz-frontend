@@ -16,13 +16,13 @@ import {
 
 // Light mode logos
 import cbrdFundLogo from "../../../public/image/footer/cbrd-fund.png";
-import fluxibizLogo from "../../../public/image/footer/fluxiBix-logo(2).png";
+import fluxibizLogo from "../../../public/image/footer/fluxibiz-lightmode.png";
 import istadLogo from "../../../public/image/footer/istad.png";
 import mptcLogo from "../../../public/image/footer/mptc.png";
 
 // Dark mode logos
 import cbrdDarkMode from "../../../public/image/footer/cbrd-darkmode.png";
-import fluxibizDarkMode from "../../../public/image/footer/fluxibiz-logo-darkmode.png";
+import fluxibizDarkMode from "../../../public/image/footer/fluxibiz-darkmode.png";
 import istadDarkMode from "../../../public/image/footer/istad-darkmode.png";
 import mptcDarkMode from "../../../public/image/footer/mptc-darkmode.png";
 
@@ -30,7 +30,6 @@ const usefulLinks = [
   { key: "aboutUs", href: "/about" },
   { key: "contactUs", href: "/contact" },
   { key: "privacyPolicy", href: "/" },
-  { key: "socialMedia", href: "/social-media" },
 ] as const;
 
 const socialLinks = [
@@ -118,61 +117,68 @@ export default function Footer() {
     >
       <div className="container mx-auto w-full max-w-7xl overflow-hidden px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 lg:px-10 lg:py-14">
         {/* Top section */}
-        <div className="container mx-auto grid max-w-7xl grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-8 md:grid-cols-[1.05fr_0.8fr_1.15fr] md:gap-x-6 md:gap-y-0 lg:grid-cols-3 lg:gap-0">
+        <div className="mx-auto grid px-10 w-full max-w-7xl grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-[1.15fr_0.85fr_1.15fr] md:items-start md:gap-6 lg:gap-8">
           {/* Logo and description */}
           <section
-            className="flex flex-col items-start text-left"
+            className="flex h-full flex-col items-start text-left sm:items-start sm:text-left md:items-center md:pr-9"
             aria-label={t("aboutFluxiBiz")}
           >
-            <Link
-              href="/store"
-              aria-label={t("fluxiBizHome")}
-              className="inline-flex h-[48px] items-center sm:h-[54px] md:h-[63px]"
-            >
-              <Image
-                src={fluxibizLogo}
-                alt="FluxiBiz"
-                priority
-                className="block h-full w-[140px] object-contain object-left sm:w-[155px] md:w-[180px] dark:hidden"
-              />
+            <div className="flex w-full flex-col items-center md:items-center">
+              <Link
+                href="/store"
+                aria-label={t("fluxiBizHome")}
+                className="inline-flex h-[48px] items-center justify-center sm:h-[54px] md:h-[63px]"
+              >
+                <Image
+                  src={fluxibizLogo}
+                  alt="FluxiBiz"
+                  priority
+                  className="block h-full w-[140px] object-contain object-left sm:w-[155px] md:w-[180px] dark:hidden"
+                />
 
-              <Image
-                src={fluxibizDarkMode}
-                alt="FluxiBiz"
-                priority
-                className="hidden h-full w-[140px] object-contain object-left sm:w-[155px] md:w-[180px] dark:block"
-              />
-            </Link>
+                <Image
+                  src={fluxibizDarkMode}
+                  alt="FluxiBiz"
+                  priority
+                  className="hidden h-full w-[140px] object-contain object-left sm:w-[155px] md:w-[180px] dark:block"
+                />
+              </Link>
 
-            <div className="mt-4 max-w-md space-y-1 text-sm leading-6 text-[#6b7280] sm:mt-5 sm:space-y-2 sm:text-[16px] sm:leading-7 md:max-w-[230px] md:text-sm md:leading-6 lg:max-w-md lg:text-[16px] lg:leading-7 dark:text-white">
-              <p>{t("poweringBusiness")}</p>
-              <p>
-                {t("manageBetter")}
-                <br className="hidden md:block lg:hidden" />
-                {t("growFaster")}
-              </p>
-              <p>
-                {t("everythingNeeded")}
-                <br className="hidden md:block lg:hidden" />
-                {t("allInOne")}
-              </p>
+              <div className="mt-4 w-full max-w-md space-y-1 text-center text-sm leading-6 text-[#6b7280] sm:mt-5 sm:space-y-2 sm:text-[16px] sm:leading-7 md:max-w-[230px] md:text-left md:text-sm md:leading-6 lg:max-w-md lg:text-[16px] lg:leading-7 dark:text-white">
+                <p>{t("poweringBusiness")}</p>
+                <p>
+                  {t("manageBetter")}
+                  <br className="hidden md:block lg:hidden" />
+                  {t("growFaster")}
+                </p>
+                <p>
+                  {t("everythingNeeded")}
+                  <br className="hidden md:block lg:hidden" />
+                  {t("allInOne")}
+                </p>
+              </div>
             </div>
           </section>
 
           {/* Useful links */}
           <section
             className="
+              flex
+              h-full
+              flex-col
               rounded-2xl
               border
               border-[#e5e7eb]
               bg-white
-              p-5
+              p-4
               text-left
               sm:p-6
+              md:items-start
               md:rounded-none
               md:border-0
               md:bg-transparent
               md:p-0
+              md:ml-20
               dark:border-white/10
               dark:bg-background
               md:dark:bg-transparent
@@ -181,7 +187,7 @@ export default function Footer() {
             <FooterTitle>{t("usefulLinks")}</FooterTitle>
 
             <nav
-              className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 sm:flex sm:flex-wrap sm:gap-x-6 sm:gap-y-3 md:flex-col md:flex-nowrap md:items-start md:gap-4"
+              className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-6 sm:gap-y-3 md:flex md:min-w-[180px] md:flex-col md:items-start md:gap-4"
               aria-label={t("footerNavigation")}
             >
               {usefulLinks.map(({ key, href }) => (
@@ -211,6 +217,9 @@ export default function Footer() {
           {/* Contact */}
           <section
             className="
+              flex
+              h-full
+              flex-col
               rounded-2xl
               border
               border-[#e5e7eb]
@@ -218,10 +227,12 @@ export default function Footer() {
               p-5
               text-left
               sm:p-6
+              md:items-start
               md:rounded-none
               md:border-0
               md:bg-transparent
               md:p-0
+              md:pl-20
               dark:border-white/10
               dark:bg-background
               md:dark:bg-transparent
@@ -244,10 +255,7 @@ export default function Footer() {
                 </p>
               </div>
 
-              <ContactLink
-                href="tel:+85515338826"
-                label="+855 15 33 88 26"
-              >
+              <ContactLink href="tel:+85515338826" label="+855 15 33 88 26">
                 <Phone
                   aria-hidden="true"
                   className="size-5 sm:size-6"
@@ -277,53 +285,42 @@ export default function Footer() {
 
           <div
             className="
-              mx-auto
-              grid
-              w-[300px]
-              grid-cols-1
-              items-center
-              gap-y-7
-              sm:w-fit
-              sm:grid-cols-[150px_320px]
-              sm:gap-x-5
-              sm:gap-y-8
-              md:w-full
-              md:max-w-[620px]
-              md:grid-cols-[105px_230px_110px]
-              md:justify-center
-              md:gap-x-8
-              md:gap-y-0
-              lg:w-full
-              lg:max-w-7xl
-              lg:grid-cols-3
-              lg:gap-0
-            "
+      mx-auto
+      flex
+      w-[220px]
+      flex-col
+      items-start
+      gap-y-7
+      sm:w-full
+      sm:max-w-7xl
+      sm:flex-row
+      sm:flex-wrap
+      sm:items-center
+      sm:justify-center
+      sm:gap-x-10
+      sm:gap-y-8
+      md:gap-x-12
+      lg:gap-x-16
+    "
           >
-            {partners.map((partner, index) => (
+            {partners.map((partner) => (
               <div
                 key={partner.alt}
-                className={`
-                  w-full
-                  justify-self-start
-                  ${
-                    index === 2
-                      ? "sm:col-span-2 sm:justify-self-center md:col-span-1 md:justify-self-start lg:justify-self-start"
-                      : ""
-                  }
-                  ${index === 0 ? "md:translate-x-0 lg:translate-x-0" : ""}
-                  ${partner.className}
-                `}
+                className={`flex h-16 w-full items-center justify-start sm:w-auto sm:justify-center ${partner.className}`}
               >
                 <Image
                   src={partner.lightSrc}
                   alt={partner.alt}
-                  className={`block h-auto w-full object-contain object-left dark:hidden ${partner.imageClassName}`}
+                  width={200}
+                  height={64}
+                  className={`block !h-full !w-auto max-w-full object-contain object-left dark:hidden ${partner.imageClassName}`}
                 />
-
                 <Image
                   src={partner.darkSrc}
                   alt={partner.alt}
-                  className={`hidden h-auto w-full object-contain object-left dark:block ${partner.imageClassName}`}
+                  width={200}
+                  height={64}
+                  className={`hidden !h-full !w-auto max-w-full object-contain object-left dark:block ${partner.imageClassName}`}
                 />
               </div>
             ))}
@@ -360,10 +357,7 @@ export default function Footer() {
                   sm:size-10
                 "
               >
-                <Icon
-                  aria-hidden="true"
-                  className="size-[17px]"
-                />
+                <Icon aria-hidden="true" className="size-[17px]" />
               </Link>
             ))}
           </div>
@@ -417,9 +411,7 @@ function ContactLink({
         dark:text-white
       "
     >
-      <span className="shrink-0 text-[#00932A]">
-        {children}
-      </span>
+      <span className="shrink-0 text-[#00932A]">{children}</span>
 
       <span className="break-all">{label}</span>
     </a>
