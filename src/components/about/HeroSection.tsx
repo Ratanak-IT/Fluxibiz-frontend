@@ -17,11 +17,7 @@ export interface AboutHeroSectionProps {
 
 const BAR_HEIGHTS = [32, 55, 40, 70, 48, 62, 36, 58, 44, 66, 38];
 
-function useCountUp(
-  target: number,
-  duration = 1500,
-  decimals = 0,
-) {
+function useCountUp(target: number, duration = 1500, decimals = 0) {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
@@ -38,10 +34,7 @@ function useCountUp(
     const startTime = performance.now();
 
     const tick = (currentTime: number) => {
-      const progress = Math.min(
-        (currentTime - startTime) / duration,
-        1,
-      );
+      const progress = Math.min((currentTime - startTime) / duration, 1);
 
       const easedProgress = 1 - Math.pow(1 - progress, 3);
 
@@ -74,14 +67,10 @@ export default function HeroSection({
   const displayedEyebrow = eyebrow ?? t("eyebrow");
   const displayedHeadlineHighlight =
     headlineHighlight ?? t("headlineHighlight");
-  const displayedHeadlineSuffix =
-    headlineSuffix ?? t("headlineSuffix");
-  const displayedDescription =
-    description ?? t("description");
-  const displayedPrimaryCta =
-    primaryCta ?? t("primaryCta");
-  const displayedSecondaryCta =
-    secondaryCta ?? t("secondaryCta");
+  const displayedHeadlineSuffix = headlineSuffix ?? t("headlineSuffix");
+  const displayedDescription = description ?? t("description");
+  const displayedPrimaryCta = primaryCta ?? t("primaryCta");
+  const displayedSecondaryCta = secondaryCta ?? t("secondaryCta");
 
   const revenue = useCountUp(12480, 1600);
   const salesPct = useCountUp(24, 1400);
@@ -163,8 +152,6 @@ export default function HeroSection({
               {displayedSecondaryCta}
             </button>
           </div>
-
-          
         </div>
 
         {/* Right scene */}
@@ -250,9 +237,7 @@ export default function HeroSection({
                     <span
                       key={index}
                       className={`animate-eq flex-1 origin-bottom rounded-[2px] ${
-                        index % 3 === 0
-                          ? "bg-brand "
-                          : "bg-white/20"
+                        index % 3 === 0 ? "bg-brand " : "bg-white/20"
                       }`}
                       style={
                         {
@@ -280,7 +265,6 @@ export default function HeroSection({
             <div className="absolute right-0 top-[4%] w-[30%] min-w-[240px]">
               <div className="animate-float-rating border-line w-full rounded-[14px] border bg-surface px-[1.05rem] py-4 opacity-0 shadow-[0_1px_2px_var(--ah-shadow-sm),0_14px_28px_-14px_var(--ah-shadow-md),0_34px_60px_-34px_var(--ah-shadow-lg)] dark:border-white/10 dark:bg-[#353735]">
                 <div className="mb-2 flex items-center gap-2">
-                 
                   <span
                     className="
                       rounded-full

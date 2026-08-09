@@ -64,6 +64,7 @@ const SearchDrawer = ({
 
   const [recents, setRecents] = useState<string[]>([])
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRecents(loadRecents())
   }, [])
 

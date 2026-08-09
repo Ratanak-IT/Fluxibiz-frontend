@@ -33,7 +33,7 @@ export function ContactSection() {
       icon: MapPin,
       label: t("details.visit"),
       value:
-        "#40, Street 273, Sangkat Boeung Kak Ti Mouy, Khan Toul Kork, Phnom Penh",
+        "#40, Street 273, Sangkat Boeung Kak, Khan Toul Kork, Phnom Penh",
     },
     {
       icon: Mail,

@@ -150,7 +150,7 @@ export default function NavbarBeforeLoginComponent({
               h-auto
              
               w-28
-              translate-y-0.5
+              translate-y-0.3
               object-contain
               sm:w-30
               md:w-33
@@ -168,7 +168,7 @@ export default function NavbarBeforeLoginComponent({
               hidden
               h-auto
               w-28
-              translate-y-0.5
+              translate-y-0.3
               object-contain
               sm:w-30
               md:w-33

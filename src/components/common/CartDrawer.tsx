@@ -3,6 +3,7 @@
 import { useState, useEffect, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
     MapPin,
     Minus,
@@ -57,6 +58,7 @@ export default function CartDrawer({
     iconSize = 25,
 
 }: CartDrawerProps) {
+    const t = useTranslations("Cart");
     const [open, setOpen] = useState(false);
     const { isAuthenticated } = useAuth();
 
@@ -90,10 +92,10 @@ export default function CartDrawer({
             <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
                 <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">
                     <SheetTitle className="flex items-center gap-2 text-xl font-bold text-green-600">
-                        Your Cart
+                        {t("title")}
                         {cart && cart.storeCount > 0 && (
                             <span className="text-sm font-normal text-neutral-500 dark:text-muted-foreground">
-                                · {cart.storeCount} {cart.storeCount === 1 ? "shop" : "shops"}
+                                · {t("shopCount", { count: cart.storeCount })}
                             </span>
                         )}
                     </SheetTitle>
@@ -120,8 +122,7 @@ export default function CartDrawer({
                 {cart && cart.stores.length > 0 && (
                     <div className="border-t border-neutral-200 px-5 py-3 dark:border-border">
                         <p className="text-center text-xs leading-relaxed text-neutral-500 dark:text-muted-foreground">
-                            {cart.totalItems} {cart.totalItems === 1 ? "item" : "items"} ·
-                            pay one shop at a time
+                            {t("itemCount", { count: cart.totalItems })} · {t("multipleShops", { count: cart.storeCount })}
                         </p>
 
                         <Link
@@ -129,7 +130,7 @@ export default function CartDrawer({
                             onClick={() => setOpen(false)}
                             className="mt-1 block text-center text-xs font-medium text-neutral-400 underline-offset-2 hover:text-neutral-600 hover:underline dark:text-muted-foreground"
                         >
-                            View full cart
+                            {t("seeSummary")}
                         </Link>
                     </div>
                 )}
@@ -145,6 +146,7 @@ function StoreSection({
     store: StoreCart;
     onNavigate: () => void;
 }) {
+    const t = useTranslations("Cart");
     const [removeStore, { isLoading: isRemoving }] = useRemoveCartStoreMutation();
 
     const logoUrl = resolveMediaUrl(store.logo);
@@ -199,7 +201,7 @@ function StoreSection({
 
             {!store.open && (
                 <p className="mb-2 rounded-md bg-yellow-50 px-2 py-1.5 text-xs text-yellow-800 dark:bg-yellow-500/10 dark:text-yellow-500">
-                    This shop is closed right now.
+                    {t("shopClosed")}
                 </p>
             )}
 
@@ -211,7 +213,7 @@ function StoreSection({
 
             <div className="mt-3 flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-border">
                 <span className="text-xs text-neutral-500 dark:text-muted-foreground">
-                    {store.itemCount} {store.itemCount === 1 ? "item" : "items"}
+                    {t("itemCount", { count: store.itemCount })}
                 </span>
 
                 <span className="text-base font-bold text-green-600 dark:text-primary">
@@ -231,6 +233,7 @@ function StoreCheckoutButton({
     store: StoreCart;
     onNavigate: () => void;
 }) {
+    const t = useTranslations("Cart");
     const { data: active } = useGetActiveCheckoutQuery();
 
     const pending = active?.hasPendingCheckout ? active.checkout : null;
@@ -246,7 +249,7 @@ function StoreCheckoutButton({
                 className={`${shell} cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400 dark:border-border dark:bg-card dark:text-muted-foreground`}
                 aria-disabled="true"
             >
-                ហាងបិទ
+                {t("shopClosed")}
             </div>
         );
     }
@@ -258,7 +261,7 @@ function StoreCheckoutButton({
                 aria-disabled="true"
                 title={`Finish or cancel your payment at ${pending?.storeName} first`}
             >
-                ទូទាត់បានតែមួយហាងម្តង
+                {t("multipleShops", { count: 1 })}
             </div>
         );
     }
@@ -273,7 +276,7 @@ function StoreCheckoutButton({
             onClick={onNavigate}
             className={`${shell} border-neutral-900 bg-white text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-border dark:bg-background dark:text-card-foreground dark:hover:bg-card`}
         >
-            {pendingHere ? "បញ្ចប់ការទូទាត់" : "ចូលទៅកាន់ការទូទាត់"}
+            {pendingHere ? t("finishPayment") : t("checkout")}
         </Link>
     );
 }
@@ -399,16 +402,18 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
 }
 
 function EmptyState() {
+    const t = useTranslations("Cart");
+
     return (
         <div className="flex h-full flex-col items-center justify-center gap-3 py-16">
             <ShoppingCart className="h-10 w-10 text-neutral-300 dark:text-muted-foreground" />
 
             <p className="text-base font-medium text-neutral-700 dark:text-card-foreground">
-                Your cart is empty
+                {t("emptyTitle")}
             </p>
 
             <p className="max-w-[260px] text-center text-sm text-neutral-500 dark:text-muted-foreground">
-                Add items from any shop. They stay grouped by shop, and you pay one shop at a time.
+                {t("emptyDescription")}
             </p>
         </div>
     );

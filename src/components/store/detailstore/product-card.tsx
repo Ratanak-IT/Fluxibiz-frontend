@@ -44,7 +44,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
         onClick={handleCardClick}
         className="max-w-xl cursor-pointer overflow-hidden border-0 bg-white p-0 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg dark:bg-card"
       >
-        <div className="flex flex-col h-full min-h-25 sm:min-h-30 md:flex-row">
+        <div className="flex h-full min-h-25 sm:min-h-30">
           <div className="flex min-w-0 flex-1 flex-col justify-between p-2.5 pr-2 sm:p-3">
             <CardHeader className="gap-0.5 p-0">
               <CardTitle className="truncate text-sm font-bold text-text sm:text-base dark:text-text">

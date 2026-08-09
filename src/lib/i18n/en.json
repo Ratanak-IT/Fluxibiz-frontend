@@ -38,8 +38,8 @@
     "poweringBusiness": "Powering Business Without Limits.",
     "manageBetter": "Manage Better. Sell More.",
     "growFaster": "Grow Faster.",
-    "everythingNeeded": "Everything Your Business Needs,",
-    "allInOne": "All in One.",
+    "everythingNeeded": "Everything Your Business Needs.",
+    "allInOne": "",
     "usefulLinks": "Useful Links",
     "contactUs": "Contact Us",
     "aboutUs": "About Us",
@@ -50,7 +50,7 @@
     "fluxiBizHome": "FluxiBiz home",
     "addressLine1": "#40, Street 273, Sangkat Boeung Kak Ti Mouy,",
     "addressLine2": "Khan Toul Kork, Phnom Penh",
-    "organizedAndSponsored": "Sponsored  and Organized by",
+    "organizedAndSponsored": "Organized and Sponsored by",
     "copyright": "All Rights Reserved © Copyright 2026 ISTAD."
   },
   "LandingHero": {
@@ -962,88 +962,5 @@
     "backToStore": "Back to {storeName}",
     "viewAllPayments": "View All Payments",
     "notAvailable": "N/A"
-  },
-  "Store": {
-    "common": {
-      "stores": "Stores",
-      "promotions": "Promotions",
-      "recommend": "Recommended",
-      "open": "Open",
-      "closed": "Closed",
-      "menu": "Menu",
-      "openAllDay": "Open All Day",
-      "store": "Store",
-      "noLocation": "Location unavailable",
-      "storeLogo": "Store Logo",
-      "noInformation": "No information",
-      "backToStore": "Back to store",
-      "productImage": "Product image"
-    },
-    "detail": {
-      "add": "Add to Cart",
-      "adding": "Adding...",
-      "storeLoadError": "Error loading store",
-      "noItemsFound": "No items found",
-      "noItemsDescription": "No items found matching your search",
-      "noMenuItems": "No menu items",
-      "noMenuItemsDescription": "This store has no menu items",
-      "addToCartAria": "Add {name} to cart",
-      "productOverview": "Product Overview",
-      "itemNotFound": "Item not found",
-      "itemNotFoundDescription": "We couldn't find the item you're looking for."
-    },
-    "listing": {
-      "noStoresFound": "No stores found",
-      "noStoresDescription": "There are no stores available right now"
-    },
-    "filters": {
-      "resetFilters": "Reset Filters",
-      "shopTypes": "Shop Types",
-      "loading": "Loading...",
-      "cannotLoadTypes": "Cannot load types",
-      "showLess": "Show less",
-      "showMore": "Show more",
-      "searchPlaceholder": "Search stores...",
-      "closeFilters": "Close filters",
-      "openFilters": "Open filters",
-      "title": "Filters",
-      "browseByCategory": "Browse by category",
-      "searchStores": "Search stores"
-    },
-    "errors": {
-      "itemUnavailable": "Item is unavailable"
-    },
-    "scrollLeft": "Scroll left",
-    "scrollRight": "Scroll right",
-    "viewAll": "View All",
-    "title": "Cart",
-    "continueShopping": "Continue Shopping",
-    "couldNotStart": "Could not start checkout",
-    "couldNotCancelOther": "Could not cancel other order",
-    "nothingToCheckout": "Nothing to checkout",
-    "noItemsFromShop": "No items from this shop",
-    "backToCart": "Back to cart",
-    "thisShop": "This shop",
-    "paymentOpenAt": "Payment is open at {storeName}",
-    "paymentOpenDescription": "Payment is open",
-    "goToStore": "Go to {storeName}",
-    "cancelThatOrder": "Cancel order",
-    "total": "Total",
-    "shopClosed": "Shop closed",
-    "payWithBakong": "Pay with Bakong ({amount})"
-  },
-  "Cart": {
-    "addedToCart": "Added to cart successfully",
-    "failedToAdd": "Failed to add to cart",
-    "yourOrder": "Your Order",
-    "itemCount": "{count, plural, one {# item} other {# items}}",
-    "loadingCart": "Loading cart...",
-    "hungry": "Hungry?",
-    "signInPrompt": "Sign in to see your cart",
-    "signIn": "Sign In",
-    "emptySidebar": "Your cart is empty",
-    "otherShopsInCart": "{count, plural, one {# other shop} other {# other shops}}",
-    "seeSummary": "See Summary",
-    "reviewPayment": "Review Payment"
   }
 }
