@@ -15,6 +15,8 @@ import StoreProvider from "./StoreProvider";
 import "./globals.css";
 import "./about/about.css";
 import { NetworkStatusBanner } from "@/components/common/NetworkStatusBanner";
+import { OfflineGate } from "@/components/offline/OfflineGate";
+import { ConnectionProvider } from "@/components/offline/ConnectionProvider";
 
 export const metadata: Metadata = {
   title: "FluxiBiz - Run your whole business from one screen",
@@ -56,7 +58,12 @@ export default async function RootLayout({
                 <Navbar />
 
                 <main className="flex-1">
-                  {children}
+                  <ConnectionProvider>
+                   
+                    <OfflineGate>{children}</OfflineGate>
+                   
+                  </ConnectionProvider>
+                 
                 </main>
 
                 <Footer />

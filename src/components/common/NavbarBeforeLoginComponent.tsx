@@ -103,23 +103,7 @@ export default function NavbarBeforeLoginComponent({
 
   return (
     <header
-      className="
-        sticky
-        top-0
-        z-50
-        w-full
-        border-b
-        border-[#e5e7eb]
-        bg-white
-        text-[#111827]
-        backdrop-blur
-        [color-scheme:light]
-
-        dark:border-white/10
-        dark:bg-background
-        dark:text-white
-        dark:[color-scheme:dark]
-      "
+      className="sticky top-0 z-50 w-full border-b border-[#e5e7eb] bg-white text-[#111827] backdrop-blur [color-scheme:light] dark:border-white/10 dark:bg-background dark:text-white dark:[color-scheme:dark]"
     >
       <div
         className="

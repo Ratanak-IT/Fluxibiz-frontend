@@ -218,8 +218,9 @@ const SearchDrawer = ({
                 h-9
                 w-full
                 rounded-xl
-                border-0
-                bg-muted
+                border
+                border-input
+                bg-white
                 pl-9
                 pr-9
                 text-sm
