@@ -228,8 +228,8 @@ export default function StoreFilterComponent({
             <PopoverContent
               side="bottom"
               sideOffset={8}
-              align="start"
-              collisionAvoidance={{ side: "none", align: "none", fallbackAxisSide: "none" }}
+              align="center"
+              collisionAvoidance={{ side: "shift", align: "shift", fallbackAxisSide: "none" }}
               className="w-[calc(100vw-2rem)] max-w-[400px] rounded-[24px] border border-border/5 bg-card shadow-base p-0"
             >
               <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">

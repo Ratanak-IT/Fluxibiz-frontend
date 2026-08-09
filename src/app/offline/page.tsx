@@ -1,9 +1,12 @@
+
 import Image from 'next/image';
 
 
 export default function OfflinePage() {
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center text-center px-4 bg-white">
+   
+    
+     <div className="h-screen w-screen flex flex-col items-center justify-center text-center px-4 bg-white">
       <Image
         src="/no-internet.png"
         alt="No internet connection"
@@ -19,5 +22,7 @@ export default function OfflinePage() {
       </p>
       {/* <RetryButton /> */}
     </div>
+  
+   
   );
 }
