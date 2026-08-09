@@ -19,19 +19,22 @@ import {
     type CheckoutSession,
 } from "@/lib/type/checkoutType";
 
-const POLL_INTERVAL_MS = 3000;
+const POLL_INTERVAL_MS = 2000;
 
 type Phase = "waiting" | "paid" | "expired" | "cancelled";
 
 function secondsLeft(expiresAt: string | null): number {
-    if (!expiresAt) return 0;
+    if (!expiresAt) return 180; // 3 minutes default KHQR TTL fallback
   
     const normalizedDate =
         expiresAt.endsWith("Z") || expiresAt.includes("+")
             ? expiresAt
             : `${expiresAt}Z`;
 
-    const diff = new Date(normalizedDate).getTime() - Date.now();
+    const parsed = new Date(normalizedDate).getTime();
+    if (Number.isNaN(parsed)) return 180;
+
+    const diff = parsed - Date.now();
     return Math.max(0, Math.floor(diff / 1000));
 }
 
@@ -80,7 +83,7 @@ export default function KhqrPaymentComponent({
         const tick = window.setInterval(() => {
             const left = secondsLeft(expiresAt);
             setRemaining(left);
-            if (left <= 0) setPhase("expired");
+            if (left <= 0 && expiresAt) setPhase("expired");
         }, 1000);
 
         return () => window.clearInterval(tick);
@@ -93,33 +96,38 @@ export default function KhqrPaymentComponent({
         try {
             const status = await getPaymentStatus(orderId).unwrap();
 
-            if (status.paid) {
+            const isPaid =
+                Boolean(status?.paid) ||
+                status?.orderStatus === "PAID" ||
+                status?.qrStatus === "PAID" ||
+                (status as any)?.status === "PAID";
+
+            if (isPaid) {
                 setPhase("paid");
                 toast.success(t("paymentConfirmedToast"));
                 onPaid();
                 return;
             }
 
-            if (status.qrStatus === "EXPIRED") {
+            if (status?.qrStatus === "EXPIRED") {
                 setPhase("expired");
                 toast.error(t("qrExpiredToast"));
                 return;
             }
 
-            if (status.qrStatus === "CANCELLED" || status.orderStatus === "CANCELLED") {
+            if (status?.qrStatus === "CANCELLED" || status?.orderStatus === "CANCELLED") {
                 setPhase("cancelled");
                 toast.info(t("orderCancelledToast"));
                 return;
             }
         } catch (error) {
-        
             setNotice(
                 checkoutErrorMessage(error, t("stillChecking")),
             );
         } finally {
             inFlight.current = false;
         }
-    }, [getPaymentStatus, orderId, onPaid]);
+    }, [getPaymentStatus, orderId, onPaid, t]);
 
     useEffect(() => {
         if (phase !== "waiting") return;
