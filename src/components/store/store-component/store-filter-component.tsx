@@ -214,15 +214,17 @@ export default function StoreFilterComponent({
           </div>
 
           <Popover open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                aria-label={t("openFilters")}
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-neutral-200/70 bg-white shadow-none outline-none transition-all duration-200 hover:bg-neutral-50 hover:text-primary focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900 text-neutral-500"
-              >
-                <SlidersHorizontal strokeWidth={1.9} className="h-4 w-4" />
-              </button>
-            </PopoverTrigger>
+            <PopoverTrigger
+              render={
+                <button
+                  type="button"
+                  aria-label={t("openFilters")}
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-neutral-200/70 bg-white shadow-none outline-none transition-all duration-200 hover:bg-neutral-50 hover:text-primary focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900 text-neutral-500"
+                >
+                  <SlidersHorizontal strokeWidth={1.9} className="h-4 w-4" />
+                </button>
+              }
+            />
             <PopoverContent
               side="bottom"
               sideOffset={8}

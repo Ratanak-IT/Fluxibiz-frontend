@@ -66,28 +66,28 @@ export default function CartDrawer({
 
     const totalItems = cart?.totalItems ?? 0;
 
+    const triggerElement = children ? (
+        children as React.ReactElement
+    ) : (
+        <Button
+            variant="ghost"
+            size="icon"
+            className={`relative rounded-full ${buttonClassName ?? ""}`}
+            aria-label={`Shopping cart with ${totalItems} items`}
+        >
+            <ShoppingCart size={iconSize} className={iconClassName} />
+
+            {totalItems > 0 && (
+                <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+                    {totalItems > 99 ? "99+" : totalItems}
+                </span>
+            )}
+        </Button>
+    );
+
     return (
         <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger className={triggerClassName}>
-                {children ? (
-                    children
-                ) : (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={`relative rounded-full ${buttonClassName ?? ""}`}
-                        aria-label={`Shopping cart with ${totalItems} items`}
-                    >
-                        <ShoppingCart size={iconSize} className={iconClassName} />
-
-                        {totalItems > 0 && (
-                            <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
-                                {totalItems > 99 ? "99+" : totalItems}
-                            </span>
-                        )}
-                    </Button>
-                )}
-            </SheetTrigger>
+            <SheetTrigger className={triggerClassName} render={triggerElement} />
 
             <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
                 <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">

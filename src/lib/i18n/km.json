@@ -752,6 +752,7 @@
       "searchStores": "ស្វែងរកហាង",
       "openFilters": "បើកតម្រងហាង",
       "closeFilters": "បិទតម្រងហាង",
+      "close": "បិទ",
       "clearSearch": "សម្អាតការស្វែងរក",
       "category": "ប្រភេទ",
       "priceRange": "ចន្លោះតម្លៃ",
@@ -783,6 +784,7 @@
       "quantity": "បរិមាណ៖",
       "addedToCart": "បានបន្ថែមទៅកន្ត្រក",
       "adding": "កំពុងបន្ថែម...",
+      "add": "បន្ថែមទៅកន្ត្រក",
       "addToCart": "បន្ថែមទៅកន្ត្រក",
       "addToCartAria": "បន្ថែម {name} ទៅកន្ត្រក",
       "decreaseQuantity": "បន្ថយបរិមាណ",
@@ -802,7 +804,8 @@
       "close": "បិទ",
       "product": "ផលិតផល",
       "optionNumber": "ជម្រើសទី {number}",
-      "notAvailableForOrdering": "ផលិតផលនេះមិនទាន់អាចបញ្ជាទិញបានទេ។"
+      "notAvailableForOrdering": "ផលិតផលនេះមិនទាន់អាចបញ្ជាទិញបានទេ។",
+      "outOfStock": "អស់ពីស្តុក"
     },
     "carousel": {
       "viewSlide": "មើល {title}",
@@ -862,7 +865,9 @@
     "signInPrompt": "ចូលគណនីដើម្បីចាប់ផ្តើមបន្ថែមផលិតផលទៅកន្ត្រក!",
     "signIn": "ចូលគណនី",
     "emptySidebar": "អ្នកមិនទាន់បានបន្ថែមអ្វីទៅកន្ត្រកទេ!",
-    "otherShopsInCart": "មានហាងផ្សេងទៀត {count} នៅក្នុងកន្ត្រករបស់អ្នក"
+    "otherShopsInCart": "មានហាងផ្សេងទៀត {count} នៅក្នុងកន្ត្រករបស់អ្នក",
+    "addedToCart": "បានបន្ថែមទៅកន្ត្រក",
+    "failedToAdd": "មិនអាចបន្ថែមទៅកន្ត្រកបានទេ។ សូមព្យាយាមម្តងទៀត។"
   },
   "Checkout": {
     "title": "ការទូទាត់",
