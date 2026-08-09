@@ -180,7 +180,7 @@ export default function NavbarAfterLoginComponent({
             className="
               h-auto
               w-28
-              translate-y-2.5
+              translate-y-0.5
               object-contain
               sm:w-30
               md:w-33
