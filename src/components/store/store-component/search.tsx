@@ -249,7 +249,7 @@ const SearchDrawer = ({
           </DialogClose>
         </div>
 
-        <div className="flex-1 space-y-5 overflow-y-auto p-4 sm:p-5">
+        <div className="no-scrollbar flex-1 space-y-5 overflow-y-auto p-4 sm:p-5">
           {showResults ? (
             <div className="space-y-2.5">
               <h4 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -262,7 +262,7 @@ const SearchDrawer = ({
                   Looking for &quot;{currentValue}&quot;...
                 </div>
               ) : results.length > 0 ? (
-                <div className="space-y-0.5 xl:max-h-80 xl:overflow-y-auto">
+                <div className="no-scrollbar space-y-0.5 xl:max-h-80 xl:overflow-y-auto">
                   {results.map((store) => (
                     <DialogClose key={store.id}>
                       <Link

@@ -33,7 +33,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
   return (
     <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
       <Card className="overflow-hidden bg-card p-0">
-        <div className="flex flex-col sm:h-44 sm:flex-row">
+        <div className="flex flex-col sm:h-44 md:flex-row">
           <div className="relative h-44 w-full shrink-0 p-3 sm:w-44 md:w-48">
             {imageUrl ? (
               <Image
