@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/components/common/ThemeProvider";
 
 import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";

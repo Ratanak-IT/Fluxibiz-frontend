@@ -180,15 +180,17 @@ const SearchDrawer = ({
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
       {!hideTrigger && (
-        <DialogTrigger>
-          <button
-            type="button"
-            aria-label="Open search"
-            className="flex h-9 w-9 items-center justify-center rounded-full border hover:bg-card"
-          >
-            <Search className="h-4 w-4" />
-          </button>
-        </DialogTrigger>
+        <DialogTrigger
+          render={
+            <button
+              type="button"
+              aria-label="Open search"
+              className="flex h-9 w-9 items-center justify-center rounded-full border hover:bg-card"
+            >
+              <Search className="h-4 w-4" />
+            </button>
+          }
+        />
       )}
 
       <DialogContent
