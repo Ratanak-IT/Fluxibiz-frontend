@@ -279,11 +279,10 @@ export default function HomePage() {
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
         <aside className="w-full shrink-0 lg:sticky lg:top-6 lg:w-55 lg:self-start">
           <div className="flex max-h-[calc(100vh-8rem)] flex-col overflow-hidden rounded-lg p-4">
-            <div className="flex-1 overflow-y-auto pr-1">
+            <div className="no-scrollbar flex-1 overflow-y-auto pr-1">
               <StoreFilterComponent
                 selected={selectedCategories}
                 onSelectedChange={setSelectedCategories}
-                
               />
             </div>
           </div>

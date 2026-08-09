@@ -97,7 +97,7 @@ export default function SearchFilterBar({
     sortBy !== "Default";
 
   return (
-    <div className="flex w-full flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 px-4 sm:px-8 md:px-16 lg:px-24">
+    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-4 sm:px-8 md:px-16 lg:px-24">
       {/* Search input */}
       <div className="relative w-full sm:flex-1">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -121,7 +121,7 @@ export default function SearchFilterBar({
       </div>
 
       {/* Filter Group Container */}
-      <div className="flex w-full sm:w-auto items-center gap-2 sm:gap-3 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+      <div className="flex w-full lg:w-auto items-center gap-2 lg:gap-3 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
         {/* Category */}
         <FilterDropdown
           label={t("category")}
