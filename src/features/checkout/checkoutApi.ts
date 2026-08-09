@@ -37,7 +37,10 @@ export const checkoutApi = createApi({
 
     
         getPaymentStatus: builder.mutation<PaymentStatus, string>({
-            query: (orderId) => `/storefront/checkout/${orderId}/status`,
+            query: (orderId) => ({
+                url: `/storefront/checkout/${orderId}/status`,
+                method: "GET",
+            }),
 
             async onQueryStarted(_orderId, { dispatch, queryFulfilled }) {
                 try {
