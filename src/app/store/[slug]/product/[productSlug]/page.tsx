@@ -29,6 +29,7 @@ function toMenuItem(item: StorefrontItemResponse, currency?: string): MenuItemDa
     description: item.description ?? "",
     category: item.itemGroup?.name ?? "Menu",
     image: primaryItemImage(item) ?? "",
+    status: item.status,
     rawItem: item,
   };
 }

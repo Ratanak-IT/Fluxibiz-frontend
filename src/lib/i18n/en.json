@@ -804,7 +804,8 @@
       "close": "Close",
       "product": "Product",
       "optionNumber": "Option {number}",
-      "notAvailableForOrdering": "This product is not available for ordering yet."
+      "notAvailableForOrdering": "This product is not available for ordering yet.",
+      "outOfStock": "Out of Stock"
     },
     "carousel": {
       "viewSlide": "View {title}",

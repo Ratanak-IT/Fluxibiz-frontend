@@ -43,6 +43,7 @@ function toMenuItem(
     description: item.description ?? "",
     category: item.itemGroup?.name ?? fallbackCategory,
     image: primaryItemImage(item) ?? "",
+    status: item.status,
     rawItem: item,
   };
 }

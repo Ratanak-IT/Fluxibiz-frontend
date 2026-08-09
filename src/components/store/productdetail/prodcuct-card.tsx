@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import { Products, formatPrice } from "@/lib/store/productdetail/product";
-
-
+import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
   item: Products;
@@ -19,108 +19,111 @@ interface ProductCardProps {
 
 export function ProductCard({ item }: ProductCardProps) {
   const t = useTranslations("Store.detail");
+  const outOfStock = isItemOutOfStock(item);
 
   return (
-<Card
-  className="
-    relative w-full overflow-hidden 
-    rounded-2xl border-0 
-    bg-card 
-    p-5 
-    shadow-sm
-    sm:max-w-143 sm:h-41.25 
-    lg:h-41.25 lg:w-143  ">
-  <div className="flex h-full items-center justify-between gap-4">
-    {/* Left Column: Details */}
-    <div
-      className="
-        flex min-w-0 flex-1 
-        flex-col justify-between 
-        space-y-1.5 ">
+    <Card
+      className={cn(
+        "relative w-full overflow-hidden rounded-2xl border-0 bg-card p-5 shadow-sm sm:max-w-143 sm:h-41.25 lg:h-41.25 lg:w-143",
+        outOfStock && "opacity-90"
+      )}>
+      <div className="flex h-full items-center justify-between gap-4">
+        {/* Left Column: Details */}
+        <div
+          className={cn(
+            "flex min-w-0 flex-1 flex-col justify-between space-y-1.5",
+            outOfStock && "filter blur-[0.5px]"
+          )}>
 
-      <CardHeader className="p-0">
+          <CardHeader className="p-0">
 
-        <CardTitle
+            <CardTitle
+              className="
+                truncate 
+                text-sm font-bold 
+                text-foreground
+
+                sm:text-xl " >
+              {item.name}
+            </CardTitle>
+            <p
+              className=" text-2xl font-bold 
+                text-destructive sm:text-lg" >
+              {formatPrice(item.price, item.currency)}
+            </p>
+
+            <CardDescription
+              className="
+                line-clamp-2 
+                text-xs 
+                text-muted-foreground
+                sm:text-sm" >
+              {item.description}
+            </CardDescription>
+
+          </CardHeader>
+
+          <div className="flex items-center gap-2">
+            <span
+              className="
+                text-xs font-semibold 
+                text-brand
+                sm:text-sm" >
+              {item.category}
+            </span>
+            {outOfStock && (
+              <span className="text-xs font-bold text-red-600 dark:text-red-500 sm:text-sm">
+                • {t("outOfStock") || "Out of Stock"}
+              </span>
+            )}
+          </div>
+
+
+        </div>
+
+        <div
           className="
-            truncate 
-            text-sm font-bold 
-            text-foreground
+            relative flex 
+            h-24 w-20 shrink-0 
+            items-center justify-center
+            sm:h-28 sm:w-24" >
 
-            sm:text-xl " >
-          {item.name}
-        </CardTitle>
-        <p
-          className=" text-2xl font-bold 
-            text-destructive sm:text-lg" >
-          {formatPrice(item.price, item.currency)}
-        </p>
+          {outOfStock && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center rounded-lg bg-black/25 backdrop-blur-[1.5px]">
+              <span className="rounded bg-red-600/90 px-1.5 py-0.5 text-[10px] sm:text-xs font-bold text-white shadow-xs">
+                {t("outOfStock") || "Out of Stock"}
+              </span>
+            </div>
+          )}
 
-        <CardDescription
-          className="
-            line-clamp-2 
-            text-xs 
-            text-muted-foreground
-            sm:text-sm" >
-          {item.description}
-        </CardDescription>
+          <Image
+            src={item.image}
+            alt={item.name}
+            width={112}
+            height={112}
+            className={cn("h-full w-full object-contain", outOfStock && "filter blur-[1.5px]")}
+          />
 
-      </CardHeader>
+          <Button
+            type="button"
+            size="icon"
+            variant="secondary"
+            disabled={outOfStock}
+            className={cn(
+              "absolute -bottom-1 -right-1 z-30 h-7 w-7 rounded-full bg-white text-card-foreground shadow-sm transition-transform hover:scale-105 hover:bg-background sm:h-8 sm:w-8",
+              outOfStock && "opacity-50 cursor-not-allowed bg-neutral-200 text-neutral-400 hover:bg-neutral-200"
+            )}
+            aria-label={t("addToCartAria", { name: item.name })}>
+            <Plus
+              className=" text-primary
+                h-3.5 w-3.5 
+                sm:h-4 sm:w-4
+              "
+            />
 
-      <div>
-        <span
-          className="
-            text-xs font-semibold 
-            text-brand
-            sm:text-sm" >
-          {item.category}
-        </span>
+          </Button>
+        </div>
       </div>
-
-
-    </div>
-
-    <div
-      className="
-        relative flex 
-        h-24 w-20 shrink-0 
-        items-center justify-center
-        sm:h-28 sm:w-24" >
-
-      <Image
-        src={item.image}
-        alt={item.name}
-        width={112}
-        height={112}
-        className="h-full w-full object-contain"
-      />
-
-      <Button
-        type="button"
-        size="icon"
-        variant="secondary"
-        className="
-          absolute 
-          -bottom-1 -right-1 
-          h-7 w-7 
-          rounded-full
-          bg-white
-          text-card-foreground
-          shadow-sm
-          transition-transform 
-          hover:scale-105 
-          hover:bg-background
-          sm:h-8 sm:w-8
-        " aria-label={t("addToCartAria", { name: item.name })}>
-        <Plus
-          className=" text-primary
-            h-3.5 w-3.5 
-            sm:h-4 sm:w-4
-          "
-        />
-
-      </Button>
-    </div>
-  </div>
-</Card>
+    </Card>
   );
 }

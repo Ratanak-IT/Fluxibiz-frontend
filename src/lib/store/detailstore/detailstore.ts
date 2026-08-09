@@ -10,7 +10,52 @@ export interface MenuItemData {
   category: string;
   image: string;
   currency?: string;
+  isOutOfStock?: boolean;
+  quantity?: number;
+  stock?: number;
+  status?: string;
   rawItem?: StorefrontItemResponse;
+}
+
+export function isItemOutOfStock(
+  item?: MenuItemData | StorefrontItemResponse | any | null
+): boolean {
+  if (!item) return false;
+
+  // 1. Explicit boolean checks
+  if (typeof item.isOutOfStock === "boolean") return item.isOutOfStock;
+  if (typeof item.outOfStock === "boolean") return item.outOfStock;
+  if (typeof item.inStock === "boolean") return !item.inStock;
+
+  // 2. Numeric quantity or stock checks
+  if (item.quantity !== undefined && item.quantity !== null) {
+    if (Number(item.quantity) <= 0) return true;
+  }
+  if (item.stock !== undefined && item.stock !== null) {
+    if (Number(item.stock) <= 0) return true;
+  }
+
+  // 3. Status string check
+  if (item.status && typeof item.status === "string") {
+    const s = item.status.trim().toUpperCase();
+    if (
+      s === "OUT_OF_STOCK" ||
+      s === "OUT_STOCK" ||
+      s === "UNAVAILABLE" ||
+      s === "SOLDOUT" ||
+      s === "SOLD_OUT" ||
+      s === "INACTIVE"
+    ) {
+      return true;
+    }
+  }
+
+  // 4. Check nested rawItem object if present
+  if (item.rawItem) {
+    return isItemOutOfStock(item.rawItem);
+  }
+
+  return false;
 }
 
 export interface ProductListProps {

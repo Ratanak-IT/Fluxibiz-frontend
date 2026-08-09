@@ -804,7 +804,8 @@
       "close": "បិទ",
       "product": "ផលិតផល",
       "optionNumber": "ជម្រើសទី {number}",
-      "notAvailableForOrdering": "ផលិតផលនេះមិនទាន់អាចបញ្ជាទិញបានទេ។"
+      "notAvailableForOrdering": "ផលិតផលនេះមិនទាន់អាចបញ្ជាទិញបានទេ។",
+      "outOfStock": "អស់ពីស្តុក"
     },
     "carousel": {
       "viewSlide": "មើល {title}",
