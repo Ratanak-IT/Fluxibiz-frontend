@@ -10,6 +10,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGetBusinessCategoryQuery } from "@/features/store-api/store-api";
@@ -169,79 +170,94 @@ export default function StoreFilterComponent({
       />
 
       <div className="xl:hidden">
-        <Collapsible open={mobileFilterOpen} onOpenChange={setMobileFilterOpen} className="w-full">
-          <div className="flex w-full min-w-0 items-center gap-2.5">
-            <div className="group relative min-w-0 flex-1">
-              <Search
-                aria-hidden="true"
-                strokeWidth={1.8}
-                className="pointer-events-none absolute left-4 top-1/2 z-10 size-[18px] -translate-y-1/2 text-neutral-400 transition-colors duration-200 group-hover:text-primary group-focus-within:text-primary"
-              />
-              <Input
-                type="text"
-                value={currentSearchValue}
-                readOnly
-                onClick={() => setMobileSearchOpen(true)}
-                onFocus={(e) => {
-                  e.target.blur();
-                  setMobileSearchOpen(true);
-                }}
-                placeholder={t("searchPlaceholder")}
-                className="
-                  h-12
-                  min-w-0
-                  w-full
-                  rounded-full
-                  border
-                  border-neutral-200/70
-                  bg-neutral-100/60
-                  pl-11
-                  pr-4
-                  text-sm
-                  shadow-none
-                  outline-none
-                  cursor-pointer
-                  placeholder:truncate
-                  placeholder:text-neutral-400
-                  hover:bg-neutral-100
-                  focus-visible:border-primary/30
-                  focus-visible:ring-1
-                  focus-visible:ring-primary/20
-                  dark:border-neutral-800
-                  dark:bg-neutral-900
-                "
-              />
-            </div>
-
-            <CollapsibleTrigger
-              type="button"
-              aria-label={mobileFilterOpen ? t("closeFilters") : t("openFilters")}
-              className={`flex size-12 shrink-0 items-center justify-center rounded-full border border-neutral-200/70 bg-white shadow-none outline-none transition-all duration-200 hover:bg-neutral-50 hover:text-primary focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900 ${mobileFilterOpen ? "text-primary" : "text-neutral-500"}`}
-            >
-              <SlidersHorizontal strokeWidth={1.9} className="size-[18px]" />
-            </CollapsibleTrigger>
+        <div className="flex w-full min-w-0 items-center gap-2.5">
+          <div className="group relative min-w-0 flex-1">
+            <Search
+              aria-hidden="true"
+              strokeWidth={1.8}
+              className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-neutral-400 transition-colors duration-200 group-hover:text-primary group-focus-within:text-primary"
+            />
+            <Input
+              type="text"
+              value={currentSearchValue}
+              readOnly
+              onClick={() => setMobileSearchOpen(true)}
+              onFocus={(e) => {
+                e.target.blur();
+                setMobileSearchOpen(true);
+              }}
+              placeholder={t("searchPlaceholder")}
+              className="
+                h-12
+                min-w-0
+                w-full
+                rounded-full
+                border
+                border-neutral-200/70
+                bg-neutral-100/60
+                pl-11
+                pr-4
+                text-sm
+                shadow-none
+                outline-none
+                cursor-pointer
+                placeholder:truncate
+                placeholder:text-neutral-400
+                hover:bg-neutral-100
+                focus-visible:border-primary/30
+                focus-visible:ring-1
+                focus-visible:ring-primary/20
+                dark:border-neutral-800
+                dark:bg-neutral-900
+              "
+            />
           </div>
 
-          <CollapsibleContent className="mt-3 overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-none">
-            <div className="mb-4 flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-bold text-foreground">{t("title")}</h2>
-                <p className="text-sm text-muted-foreground">{t("browseByCategory")}</p>
-              </div>
-              {hasActiveFilters && (
+          <Popover open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                aria-label={t("openFilters")}
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-neutral-200/70 bg-white shadow-none outline-none transition-all duration-200 hover:bg-neutral-50 hover:text-primary focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900 text-neutral-500"
+              >
+                <SlidersHorizontal strokeWidth={1.9} className="h-4 w-4" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              side="bottom"
+              sideOffset={8}
+              align="start"
+              className="w-[calc(100vw-2rem)] max-w-[400px] rounded-[24px] border border-border/5 bg-card shadow-base p-0"
+            >
+              <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">{t("title")}</h2>
+                  <p className="text-sm text-muted-foreground">{t("browseByCategory")}</p>
+                </div>
                 <button
                   type="button"
-                  onClick={handleResetFilters}
-                  className="shrink-0 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
+                  onClick={() => setMobileFilterOpen(false)}
+                  className="rounded-full border border-neutral-200/70 bg-white px-3 py-2 text-sm font-medium text-foreground transition hover:bg-neutral-50 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900"
                 >
-                  {t("resetFilters")}
+                  {t("close")}
                 </button>
-              )}
-            </div>
+              </div>
 
-            {renderCategoryFilters()}
-          </CollapsibleContent>
-        </Collapsible>
+              <div className="max-h-[70vh] overflow-y-auto p-4 sm:p-5">
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="mb-4 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
+                  >
+                    {t("resetFilters")}
+                  </button>
+                )}
+                {renderCategoryFilters()}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       <div className="hidden w-full max-w-[420px] space-y-3 xl:block xl:min-w-[340px]">
