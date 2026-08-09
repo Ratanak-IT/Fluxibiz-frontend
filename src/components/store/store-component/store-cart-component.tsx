@@ -132,10 +132,10 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
         </h3>
         <p
           className="
-            line-clamp-1 
+            line-clamp-2 
             text-sm 
             text-muted-foreground
-            min-h-[1.25rem]
+            min-h-[2.5rem]
             dark:text-neutral-400
         "
         >

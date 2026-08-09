@@ -17,22 +17,50 @@ export interface MenuItemData {
   rawItem?: StorefrontItemResponse;
 }
 
+const clientOutOfStockSet = new Set<string>();
+
+export function markItemOutOfStock(itemId?: string | null) {
+  if (!itemId) return;
+  clientOutOfStockSet.add(itemId);
+  if (typeof window !== "undefined") {
+    try {
+      const stored: string[] = JSON.parse(sessionStorage.getItem("out_of_stock_items") || "[]");
+      if (!stored.includes(itemId)) {
+        stored.push(itemId);
+        sessionStorage.setItem("out_of_stock_items", JSON.stringify(stored));
+      }
+    } catch {}
+  }
+}
+
 export function isItemOutOfStock(
   item?: MenuItemData | StorefrontItemResponse | any | null
 ): boolean {
   if (!item) return false;
 
+  const id = item.id || item.itemId || item.rawItem?.id;
+  if (id && clientOutOfStockSet.has(id)) return true;
+  if (id && typeof window !== "undefined") {
+    try {
+      const stored: string[] = JSON.parse(sessionStorage.getItem("out_of_stock_items") || "[]");
+      if (stored.includes(id)) {
+        clientOutOfStockSet.add(id);
+        return true;
+      }
+    } catch {}
+  }
+
   // 1. Explicit boolean checks
   if (typeof item.isOutOfStock === "boolean") return item.isOutOfStock;
   if (typeof item.outOfStock === "boolean") return item.outOfStock;
   if (typeof item.inStock === "boolean") return !item.inStock;
+  if (typeof item.available === "boolean") return !item.available;
+  if (typeof item.isAvailable === "boolean") return !item.isAvailable;
 
   // 2. Numeric quantity or stock checks
-  if (item.quantity !== undefined && item.quantity !== null) {
-    if (Number(item.quantity) <= 0) return true;
-  }
-  if (item.stock !== undefined && item.stock !== null) {
-    if (Number(item.stock) <= 0) return true;
+  const qty = item.quantity ?? item.stock ?? item.availableQuantity ?? item.stockQuantity;
+  if (qty !== undefined && qty !== null) {
+    if (Number(qty) <= 0) return true;
   }
 
   // 3. Status string check
@@ -44,14 +72,33 @@ export function isItemOutOfStock(
       s === "UNAVAILABLE" ||
       s === "SOLDOUT" ||
       s === "SOLD_OUT" ||
-      s === "INACTIVE"
+      s === "INACTIVE" ||
+      s === "OFF_SHELF"
     ) {
       return true;
     }
   }
 
-  // 4. Check nested rawItem object if present
-  if (item.rawItem) {
+  // 4. Badge check
+  if (item.badge && typeof item.badge === "string") {
+    const b = item.badge.trim().toUpperCase();
+    if (
+      b.includes("OUT OF STOCK") ||
+      b.includes("SOLD OUT") ||
+      b.includes("OUT_OF_STOCK") ||
+      b.includes("SOLDOUT") ||
+      b.includes("SOLD_OUT") ||
+      b.includes("NO STOCK") ||
+      b.includes("NO_STOCK") ||
+      b.includes("អស់ស្តុក") ||
+      b.includes("អស់ពីស្តុក")
+    ) {
+      return true;
+    }
+  }
+
+  // 5. Check nested rawItem object if present
+  if (item.rawItem && item.rawItem !== item) {
     return isItemOutOfStock(item.rawItem);
   }
 

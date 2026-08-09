@@ -23,7 +23,7 @@ import mptcDarkMode from "../../../public/image/footer/mptc-darkmode.png";
 const usefulLinks = [
   { key: "aboutUs", href: "/about" },
   { key: "contactUs", href: "/contact" },
-  { key: "privacyPolicy", href: "/" },
+  { key: "privacyPolicy", href: "/privacy-policy" },
 ] as const;
 
 const socialLinks = [

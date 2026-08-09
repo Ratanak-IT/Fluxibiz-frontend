@@ -7,7 +7,7 @@ import SearchFilterBar from "@/components/store/detailstore/button";
 
 import CartSidebar from "@/components/store/detailstore/cart-sidebar";
 import StoreCard from "@/components/store/detailstore/store-card";
-import { MenuItemData } from "@/lib/store/detailstore/detailstore";
+import { MenuItemData, isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { ChevronLeft, UtensilsCrossed } from "lucide-react";
 import Link from "next/link";
 import { StorePageSkeleton } from "@/components/common/Skeletons";
@@ -27,6 +27,7 @@ function toMenuItem(
   fallbackCategory: string,
   currency?: string
 ): MenuItemData {
+  const isOutOfStock = isItemOutOfStock(item);
   return {
     id: item.id,
     name: item.name,
@@ -44,6 +45,9 @@ function toMenuItem(
     category: item.itemGroup?.name ?? fallbackCategory,
     image: primaryItemImage(item) ?? "",
     status: item.status,
+    quantity: item.quantity ?? item.stock ?? undefined,
+    stock: item.stock ?? item.quantity ?? undefined,
+    isOutOfStock,
     rawItem: item,
   };
 }
@@ -200,14 +204,6 @@ export default function StoreDetail({
           <ChevronLeft className="h-4 w-4" />
           {t("common.store")}
         </Link>
-
-        {/* <Link
-          href={`/cart?shop=${encodeURIComponent(slug)}`}
-          className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary sm:h-11 sm:px-5 lg:hidden"
-        >
-          <ShoppingCart className="h-4 w-4" />
-          Cart
-        </Link> */}
       </div>
 
       {isLoading ? (

@@ -19,6 +19,7 @@ import {
     checkoutErrorMessage,
     type CheckoutSession,
 } from "@/lib/type/checkoutType";
+import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
 export default function CheckoutPage({
     params,
@@ -75,9 +76,16 @@ export default function CheckoutPage({
 
             setSession(created);
         } catch (err) {
-            setError(
-                checkoutErrorMessage(err, t("couldNotStart")),
-            );
+            const msg = checkoutErrorMessage(err, t("couldNotStart"));
+            const lower = msg.toLowerCase();
+            if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
+                if (store?.items) {
+                    store.items.forEach((line) => {
+                        markItemOutOfStock(line.itemId);
+                    });
+                }
+            }
+            setError(msg);
         }
     };
 

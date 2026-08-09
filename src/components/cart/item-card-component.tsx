@@ -8,11 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 
-import { formatMoney, resolveMediaUrl, type CartLine } from "@/lib/type/cartType";
+import { formatMoney, resolveMediaUrl, isCartLineOutOfStock, type CartLine } from "@/lib/type/cartType";
 import {
     useRemoveCartItemMutation,
     useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
+import { cn } from "@/lib/utils";
 
 export default function ItemCardComponent({
     line,
@@ -21,24 +22,33 @@ export default function ItemCardComponent({
     line: CartLine;
     currency?: string;
 }) {
+    const tStore = useTranslations("Store");
     const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
     const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
     const imageUrl = resolveMediaUrl(line.imageUrl);
     const busy = isUpdating || isRemoving;
+    const outOfStock = isCartLineOutOfStock(line);
 
     return (
-        <Card className="w-full overflow-hidden border-0 bg-gray-100 p-0 sm:h-33.5 dark:bg-card">
+        <Card className={cn("w-full overflow-hidden border-0 bg-gray-100 p-0 sm:h-33.5 dark:bg-card relative", outOfStock && "opacity-90")}>
             <div className="grid h-full grid-cols-[80px_1fr] items-center gap-4 p-4 sm:grid-cols-[110px_1fr_96px_150px] sm:px-4 sm:py-0">
                 {/* Image */}
                 <div className="relative h-20 w-20 overflow-hidden rounded-lg bg-white sm:h-25 sm:w-full">
+                    {outOfStock && (
+                        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/25 backdrop-blur-[1.5px]">
+                            <span className="rounded bg-red-600/90 px-1 py-0.5 text-[9px] sm:text-[10px] font-bold text-white shadow-xs">
+                                {tStore("detail.outOfStock") || "Out of Stock"}
+                            </span>
+                        </div>
+                    )}
                     {imageUrl ? (
                         <Image
                             src={imageUrl}
                             alt={line.name}
                             width={110}
                             height={110}
-                            className="h-full w-full object-cover"
+                            className={cn("h-full w-full object-cover", outOfStock && "filter blur-[1.5px]")}
                         />
                     ) : (
                         <div className="flex h-full w-full items-center justify-center">
@@ -50,9 +60,16 @@ export default function ItemCardComponent({
                 {/* Title, description, badges — the only flexible column */}
                 <div className="flex min-w-0 flex-col gap-1.5 overflow-hidden">
                     <CardHeader className="gap-1 p-0">
-                        <CardTitle className="truncate text-base font-semibold sm:text-xl dark:text-card-foreground">
-                            {line.name}
-                        </CardTitle>
+                        <div className="flex items-center gap-2">
+                            <CardTitle className="truncate text-base font-semibold sm:text-xl dark:text-card-foreground">
+                                {line.name}
+                            </CardTitle>
+                            {outOfStock && (
+                                <span className="text-xs font-bold text-red-600 dark:text-red-500 shrink-0">
+                                    • {tStore("detail.outOfStock") || "Out of Stock"}
+                                </span>
+                            )}
+                        </div>
 
                         {line.description && (
                             <CardDescription className="truncate text-sm dark:text-muted-foreground">
@@ -76,7 +93,7 @@ export default function ItemCardComponent({
                     )}
 
                     <div className="mt-1 flex items-center gap-4 sm:hidden">
-                        <Stepper line={line} busy={busy} onChange={updateItem} />
+                        <Stepper line={line} busy={busy} outOfStock={outOfStock} onChange={updateItem} />
 
                         <span className="ml-auto whitespace-nowrap text-lg font-semibold text-red-500 dark:text-destructive">
                             {formatMoney(line.subtotal, currency)}
@@ -92,7 +109,7 @@ export default function ItemCardComponent({
 
                 {/* Desktop columns */}
                 <div className="hidden items-center justify-center gap-4 sm:flex">
-                    <Stepper line={line} busy={busy} onChange={updateItem} />
+                    <Stepper line={line} busy={busy} outOfStock={outOfStock} onChange={updateItem} />
                 </div>
 
                 <div className="hidden items-center justify-end gap-6 sm:flex">
@@ -114,10 +131,12 @@ export default function ItemCardComponent({
 function Stepper({
     line,
     busy,
+    outOfStock,
     onChange,
 }: {
     line: CartLine;
     busy: boolean;
+    outOfStock?: boolean;
     onChange: (args: { cartItemId: string; quantity: number }) => void;
 }) {
     const t = useTranslations("Cart");
@@ -155,8 +174,8 @@ function Stepper({
                 variant="outline"
                 size="icon"
                 onClick={handleIncrease}
-                disabled={busy}
-                className="h-6 w-6 text-green-600 dark:border-border dark:bg-card dark:text-primary"
+                disabled={busy || outOfStock}
+                className="h-6 w-6 text-green-600 dark:border-border dark:bg-card dark:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
                 aria-label={t("increaseQuantity")}
             >
                 <Plus className="h-3.5 w-3.5" />

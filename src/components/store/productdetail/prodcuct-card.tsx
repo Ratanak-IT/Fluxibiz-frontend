@@ -89,9 +89,9 @@ export function ProductCard({ item }: ProductCardProps) {
             sm:h-28 sm:w-24" >
 
           {outOfStock && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center rounded-lg bg-black/25 backdrop-blur-[1.5px]">
-              <span className="rounded bg-red-600/90 px-1.5 py-0.5 text-[10px] sm:text-xs font-bold text-white shadow-xs">
-                {t("outOfStock") || "Out of Stock"}
+            <div className="absolute inset-0 z-20 flex items-center justify-center rounded-lg bg-black/40 backdrop-blur-[2px] p-1 text-center">
+              <span className="rounded bg-red-600 px-2 py-1 text-[10px] sm:text-xs font-black text-white uppercase tracking-wide shadow-md border border-red-400">
+                {t("outOfStock") || "Out Stock"}
               </span>
             </div>
           )}
@@ -101,7 +101,7 @@ export function ProductCard({ item }: ProductCardProps) {
             alt={item.name}
             width={112}
             height={112}
-            className={cn("h-full w-full object-contain", outOfStock && "filter blur-[1.5px]")}
+            className={cn("h-full w-full object-contain transition-all", outOfStock && "filter blur-[3px]")}
           />
 
           <Button

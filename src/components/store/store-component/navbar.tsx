@@ -42,7 +42,7 @@ export default function Navbar() {
                       <Icon className="w-5 h-5 transition-all group-hover:stroke-secondary" />
 
                       {totalItems > 0 && (
-                        <span className="absolute -right-2 -top-2 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+                        <span className="absolute -right-2 top-0 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
                           {totalItems > 99 ? "99+" : totalItems}
                         </span>
                       )}

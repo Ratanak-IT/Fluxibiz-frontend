@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
-import { MenuItemData } from "@/lib/store/detailstore/detailstore";
+import { MenuItemData, markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { StorefrontItemResponse, ItemVariant } from "@/lib/type/storeType";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
 import { apiErrorMessage, isUnauthorized } from "@/lib/type/cartType";
@@ -96,7 +96,12 @@ export default function ProductQuickViewModal({
         if (isUnauthorized(err)) {
             login();
         } else {
-            toast.error(apiErrorMessage(err) || tCart("failedToAdd"));
+            const msg = apiErrorMessage(err) || tCart("failedToAdd");
+            const lower = msg.toLowerCase();
+            if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
+                if (product?.id) markItemOutOfStock(product.id);
+            }
+            toast.error(msg);
         }
     }
   }

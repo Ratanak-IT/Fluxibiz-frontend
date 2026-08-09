@@ -37,9 +37,11 @@ import { useAuth } from "@/features/auth/useAuth";
 import {
     formatMoney,
     resolveMediaUrl,
+    isCartLineOutOfStock,
     type CartLine,
     type StoreCart,
 } from "@/lib/type/cartType";
+import { cn } from "@/lib/utils";
 
 type CartDrawerProps = {
     children?: ReactNode;
@@ -78,7 +80,7 @@ export default function CartDrawer({
             <ShoppingCart size={iconSize} className={iconClassName} />
 
             {totalItems > 0 && (
-                <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+                <span className="absolute -right-1 top-0 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
                     {totalItems > 99 ? "99+" : totalItems}
                 </span>
             )}
@@ -282,6 +284,7 @@ function StoreCheckoutButton({
 }
 
 function LineRow({ line, currency }: { line: CartLine; currency: string }) {
+    const tStore = useTranslations("Store");
     const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
     const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
@@ -294,6 +297,7 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
 
     const imageUrl = resolveMediaUrl(line.imageUrl);
     const busy = isUpdating || isRemoving;
+    const outOfStock = isCartLineOutOfStock(line);
 
     const handleDecrease = () => {
         if (pendingQty <= 1) {
@@ -314,7 +318,7 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
     const currentSubtotal = line.unitPrice * pendingQty;
 
     return (
-        <div className="flex items-center gap-3 rounded-lg bg-white p-2 dark:bg-background">
+        <div className={cn("flex items-center gap-3 rounded-lg bg-white p-2 dark:bg-background relative", outOfStock && "opacity-90")}>
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-card">
                 {imageUrl ? (
                     <Image
@@ -322,7 +326,7 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                         alt={line.name}
                         width={56}
                         height={56}
-                        className="h-full w-full object-cover"
+                        className={cn("h-full w-full object-cover", outOfStock && "filter blur-[1.5px]")}
                     />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center">
@@ -332,9 +336,16 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
             </div>
 
             <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-neutral-900 dark:text-card-foreground">
-                    {line.name}
-                </p>
+                <div className="flex items-center gap-1.5">
+                    <p className="truncate text-sm font-semibold text-neutral-900 dark:text-card-foreground">
+                        {line.name}
+                    </p>
+                    {outOfStock && (
+                        <span className="text-[10px] font-bold text-red-600 dark:text-red-500 shrink-0">
+                            • {tStore("detail.outOfStock") || "Out of Stock"}
+                        </span>
+                    )}
+                </div>
 
                 {line.description && (
                     <p className="line-clamp-1 text-xs text-neutral-500 dark:text-muted-foreground">
@@ -361,6 +372,7 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                         variant="outline"
                         size="icon"
                         onClick={handleDecrease}
+                        disabled={busy}
                         className="h-5 w-5 text-yellow-400 dark:border-border dark:bg-card"
                         aria-label="Decrease quantity"
                     >
@@ -375,7 +387,8 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                         variant="outline"
                         size="icon"
                         onClick={handleIncrease}
-                        className="h-5 w-5 text-green-600 dark:border-border dark:bg-card dark:text-primary"
+                        disabled={busy || outOfStock}
+                        className="h-5 w-5 text-green-600 dark:border-border dark:bg-card dark:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
                         aria-label="Increase quantity"
                     >
                         <Plus className="h-3 w-3" />
