@@ -9,6 +9,61 @@ export interface CartLine {
     quantity: number;
     unitPrice: number;
     subtotal: number;
+    isOutOfStock?: boolean | null;
+    outOfStock?: boolean | null;
+    inStock?: boolean | null;
+    available?: boolean | null;
+    status?: string | null;
+    stock?: number | null;
+}
+
+import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+
+export function isCartLineOutOfStock(line?: CartLine | any | null): boolean {
+    if (!line) return false;
+    const itemId = line.itemId || line.cartItemId;
+    if (itemId && isItemOutOfStock({ id: itemId })) return true;
+    if (typeof line.isOutOfStock === "boolean") return line.isOutOfStock;
+    if (typeof line.outOfStock === "boolean") return line.outOfStock;
+    if (typeof line.inStock === "boolean") return !line.inStock;
+    if (typeof line.available === "boolean") return !line.available;
+    if (line.stock !== undefined && line.stock !== null) {
+        if (Number(line.stock) <= 0) return true;
+    }
+    if (line.status && typeof line.status === "string") {
+        const s = line.status.trim().toUpperCase();
+        if (
+            s === "OUT_OF_STOCK" ||
+            s === "OUT_STOCK" ||
+            s === "UNAVAILABLE" ||
+            s === "SOLDOUT" ||
+            s === "SOLD_OUT" ||
+            s === "INACTIVE"
+        ) {
+            return true;
+        }
+    }
+    if (Array.isArray(line.badges)) {
+        for (const badge of line.badges) {
+            if (typeof badge === "string") {
+                const b = badge.trim().toUpperCase();
+                if (
+                    b.includes("OUT OF STOCK") ||
+                    b.includes("SOLD OUT") ||
+                    b.includes("OUT_OF_STOCK") ||
+                    b.includes("SOLDOUT") ||
+                    b.includes("SOLD_OUT") ||
+                    b.includes("NO STOCK") ||
+                    b.includes("NO_STOCK") ||
+                    b.includes("អស់ស្តុក") ||
+                    b.includes("អស់ពីស្តុក")
+                ) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 export interface StoreCart {

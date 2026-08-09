@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const STRICT_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/; 
+export const STRICT_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
 
 export function validateEmailFormat(val?: string | null): string | true {
   if (!val || val.trim() === "") return "Email is required";

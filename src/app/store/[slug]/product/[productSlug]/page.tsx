@@ -12,12 +12,13 @@ import {
   useGetPublicStoreItemsQuery,
   useGetPublicStoreQuery,
 } from "@/features/store-api/store-api";
-import { MenuItemData } from "@/lib/store/detailstore/detailstore";
+import { MenuItemData, isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
 
 import { formatPrice } from "@/lib/store/productdetail/product";
 
 function toMenuItem(item: StorefrontItemResponse, currency?: string): MenuItemData {
+  const isOutOfStock = isItemOutOfStock(item);
   return {
     id: item.id,
     name: item.name,
@@ -30,6 +31,9 @@ function toMenuItem(item: StorefrontItemResponse, currency?: string): MenuItemDa
     category: item.itemGroup?.name ?? "Menu",
     image: primaryItemImage(item) ?? "",
     status: item.status,
+    quantity: item.quantity ?? item.stock ?? undefined,
+    stock: item.stock ?? item.quantity ?? undefined,
+    isOutOfStock,
     rawItem: item,
   };
 }

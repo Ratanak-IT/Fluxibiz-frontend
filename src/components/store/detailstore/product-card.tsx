@@ -84,9 +84,9 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
 
           <div className="relative m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 sm:m-2.5 sm:w-24 md:w-28 dark:bg-card">
             {outOfStock ? (
-              <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/25 backdrop-blur-[1.5px]">
-                <span className="rounded bg-red-600/90 px-1.5 py-0.5 text-[10px] sm:text-xs font-bold text-white shadow-xs">
-                  {t("detail.outOfStock") || "Out of Stock"}
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-1 text-center">
+                <span className="rounded bg-red-600 px-2 py-1 text-[10px] sm:text-xs font-black text-white uppercase tracking-wide shadow-md border border-red-400">
+                  {t("detail.outOfStock") || "Out Stock"}
                 </span>
               </div>
             ) : (
@@ -103,7 +103,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 fill
                 unoptimized
                 sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, 112px"
-                className={cn("h-full w-full object-cover", outOfStock && "filter blur-[1.5px]")}
+                className={cn("h-full w-full object-cover transition-all", outOfStock && "filter blur-[3px]")}
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -146,4 +146,4 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
       />
     </>
   );
-}
+}     

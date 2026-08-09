@@ -19,9 +19,11 @@ import { useAuth } from "@/features/auth/useAuth";
 import {
   formatMoney,
   resolveMediaUrl,
+  isCartLineOutOfStock,
   type CartLine,
   type StoreCart,
 } from "@/lib/type/cartType";
+import { cn } from "@/lib/utils";
 
 interface CartSidebarProps {
   slug?: string;
@@ -162,6 +164,7 @@ function CartSidebarLine({
 
   const busy = isUpdating || isRemoving;
   const imageUrl = resolveMediaUrl(line.imageUrl);
+  const outOfStock = isCartLineOutOfStock(line);
 
   const decrease = () => {
     if (line.quantity <= 1) {
@@ -182,7 +185,7 @@ function CartSidebarLine({
   const currentSubtotal = line.unitPrice * line.quantity;
 
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-neutral-50 p-2 dark:bg-muted/40">
+    <div className={cn("flex items-center gap-3 rounded-xl bg-neutral-50 p-2 dark:bg-muted/40 relative", outOfStock && "opacity-90")}>
       <div className="relative h-13 w-13 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-card">
         {imageUrl ? (
           <Image
@@ -191,7 +194,7 @@ function CartSidebarLine({
             fill
             unoptimized
             sizes="52px"
-            className="object-cover"
+            className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
@@ -201,9 +204,16 @@ function CartSidebarLine({
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-50">
-          {line.name}
-        </p>
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+            {line.name}
+          </p>
+          {outOfStock && (
+            <span className="text-[10px] font-bold text-red-600 dark:text-red-500 shrink-0">
+              • {rootT("Store.detail.outOfStock") || "Out of Stock"}
+            </span>
+          )}
+        </div>
 
         {line.badges.length > 0 && (
           <p className="truncate text-[11px] text-neutral-500 dark:text-neutral-400">
@@ -215,6 +225,7 @@ function CartSidebarLine({
           <button
             type="button"
             onClick={decrease}
+            disabled={busy}
             aria-label={t("decreaseQuantity")}
             className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-card"
           >
@@ -228,8 +239,9 @@ function CartSidebarLine({
           <button
             type="button"
             onClick={increase}
+            disabled={busy || outOfStock}
             aria-label={t("increaseQuantity")}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-primary transition-colors hover:bg-primary/10"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-primary transition-colors hover:bg-primary/10 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Plus className="h-3 w-3" />
           </button>
