@@ -17,7 +17,7 @@ import "./about/about.css";
 import { NetworkStatusBanner } from "@/components/common/NetworkStatusBanner";
 import { OfflineGate } from "@/components/offline/OfflineGate";
 import { ConnectionProvider } from "@/components/offline/ConnectionProvider";
-import { ConditionalChrome } from "@/components/hidden/ConditionalChrome";
+
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fluxibiz.store";
 
