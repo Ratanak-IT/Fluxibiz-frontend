@@ -8,7 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 
-import { formatMoney, resolveMediaUrl, isCartLineOutOfStock, type CartLine } from "@/lib/type/cartType";
+import { formatMoney, resolveMediaUrl, isCartLineOutOfStock, apiErrorMessage, formatStockErrorMessage, type CartLine } from "@/lib/type/cartType";
+import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { toast } from "sonner";
 import {
     useRemoveCartItemMutation,
     useUpdateCartItemMutation,
@@ -137,18 +139,38 @@ function Stepper({
     line: CartLine;
     busy: boolean;
     outOfStock?: boolean;
-    onChange: (args: { cartItemId: string; quantity: number }) => void;
+    onChange: (args: { cartItemId: string; quantity: number }) => any;
 }) {
     const t = useTranslations("Cart");
 
     const handleDecrease = () => {
         const nextQty = Math.max(1, line.quantity - 1);
-        onChange({ cartItemId: line.cartItemId, quantity: nextQty });
+        const res = onChange({ cartItemId: line.cartItemId, quantity: nextQty });
+        if (res && typeof res.unwrap === "function") {
+            res.unwrap().catch((err: any) => {
+                toast.error(apiErrorMessage(err, "Failed to update item"));
+            });
+        }
     };
 
     const handleIncrease = () => {
         const nextQty = line.quantity + 1;
-        onChange({ cartItemId: line.cartItemId, quantity: nextQty });
+        const res = onChange({ cartItemId: line.cartItemId, quantity: nextQty });
+        if (res && typeof res.unwrap === "function") {
+            res.unwrap().catch((err: any) => {
+                const msg = formatStockErrorMessage(err, line.name);
+                const lower = msg.toLowerCase();
+                if (
+                    lower.includes("stock") ||
+                    lower.includes("enough") ||
+                    lower.includes("negative") ||
+                    lower.includes("unavailable")
+                ) {
+                    if (line.itemId) markItemOutOfStock(line.itemId);
+                }
+                toast.error(msg);
+            });
+        }
     };
 
     return (

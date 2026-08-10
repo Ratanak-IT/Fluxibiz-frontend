@@ -9,7 +9,7 @@ import { useAddToCartMutation } from "@/features/cart/cartApi";
 import { StorefrontItemResponse, ItemVariant } from "@/lib/type/storeType";
 import { useAuth } from "@/features/auth/useAuth";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
-import { apiErrorMessage, isUnauthorized } from "@/lib/type/cartType";
+import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
 interface ProductDetailProps {
@@ -113,7 +113,7 @@ export default function ProductDetail({
         if (isUnauthorized(err)) {
             login();
         } else {
-            const msg = apiErrorMessage(err) || tCart("failedToAdd");
+            const msg = formatStockErrorMessage(err, item?.name);
             const lower = msg.toLowerCase();
             if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
                 if (item?.id) markItemOutOfStock(item.id);

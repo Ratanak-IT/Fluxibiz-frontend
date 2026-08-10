@@ -140,9 +140,12 @@ export default function KhqrPaymentComponent({
         try {
             await cancelCheckout(orderId).unwrap();
             setPhase("cancelled");
+            toast.info(t("orderCancelledToast"));
             onCancelled();
         } catch (error) {
-            setNotice(checkoutErrorMessage(error, t("couldNotCancel")));
+            const msg = checkoutErrorMessage(error, t("couldNotCancel"));
+            setNotice(msg);
+            toast.error(msg);
         }
     };
 

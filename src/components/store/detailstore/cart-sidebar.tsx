@@ -20,9 +20,12 @@ import {
   formatMoney,
   resolveMediaUrl,
   isCartLineOutOfStock,
+  apiErrorMessage,
+  formatStockErrorMessage,
   type CartLine,
   type StoreCart,
 } from "@/lib/type/cartType";
+import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { cn } from "@/lib/utils";
 
 interface CartSidebarProps {
@@ -168,18 +171,41 @@ function CartSidebarLine({
 
   const decrease = () => {
     if (line.quantity <= 1) {
-      removeItem(line.cartItemId).unwrap().then(() =>
-        toast.info(rootT("Store.messages.removedFromCart", { name: line.name })),
-      );
+      removeItem(line.cartItemId)
+        .unwrap()
+        .then(() =>
+          toast.info(rootT("Store.messages.removedFromCart", { name: line.name })),
+        )
+        .catch((err: any) => {
+          toast.error(apiErrorMessage(err, "Failed to remove item"));
+        });
     } else {
       const nextQty = line.quantity - 1;
-      updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+      updateItem({ cartItemId: line.cartItemId, quantity: nextQty })
+        .unwrap()
+        .catch((err: any) => {
+          toast.error(apiErrorMessage(err, "Failed to update item"));
+        });
     }
   };
 
   const increase = () => {
     const nextQty = line.quantity + 1;
-    updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+    updateItem({ cartItemId: line.cartItemId, quantity: nextQty })
+      .unwrap()
+      .catch((err: any) => {
+        const msg = formatStockErrorMessage(err, line.name);
+        const lower = msg.toLowerCase();
+        if (
+          lower.includes("stock") ||
+          lower.includes("enough") ||
+          lower.includes("negative") ||
+          lower.includes("unavailable")
+        ) {
+          if (line.itemId) markItemOutOfStock(line.itemId);
+        }
+        toast.error(msg);
+      });
   };
 
   const currentSubtotal = line.unitPrice * line.quantity;

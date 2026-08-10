@@ -10,7 +10,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGetBusinessCategoryQuery } from "@/features/store-api/store-api";
@@ -106,13 +112,13 @@ export default function StoreFilterComponent({
             {visibleTypes.map((categoryType) => {
               const checkboxId = `store-category-${categoryType.id}`;
               return (
-                <div key={categoryType.id} className="flex items-center gap-2">
+                <div key={categoryType.id} className="flex items-center gap-2 min-w-0">
                   <Checkbox
                     id={checkboxId}
                     checked={selected.includes(categoryType.id)}
                     onCheckedChange={() => toggle(categoryType.id)}
                   />
-                  <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground">
+                  <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground min-w-0 break-words">
                     {categoryType.name}
                   </Label>
                 </div>
@@ -126,13 +132,13 @@ export default function StoreFilterComponent({
                 {extraTypes.map((categoryType) => {
                   const checkboxId = `store-extra-category-${categoryType.id}`;
                   return (
-                    <div key={categoryType.id} className="flex items-center gap-2">
+                    <div key={categoryType.id} className="flex items-center gap-2 min-w-0">
                       <Checkbox
                         id={checkboxId}
                         checked={selected.includes(categoryType.id)}
                         onCheckedChange={() => toggle(categoryType.id)}
                       />
-                      <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground">
+                      <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground min-w-0 break-words">
                         {categoryType.name}
                       </Label>
                     </div>
@@ -213,8 +219,8 @@ export default function StoreFilterComponent({
             />
           </div>
 
-          <Popover open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
-            <PopoverTrigger
+          <Drawer open={mobileFilterOpen} onOpenChange={setMobileFilterOpen} showSwipeHandle>
+            <DrawerTrigger
               render={
                 <button
                   type="button"
@@ -225,28 +231,25 @@ export default function StoreFilterComponent({
                 </button>
               }
             />
-            <PopoverContent
-              side="bottom"
-              sideOffset={8}
-              align="start"
-              collisionAvoidance={{ side: "none", align: "none", fallbackAxisSide: "none" }}
-              className="w-[calc(100vw-2rem)] max-w-[400px] rounded-[24px] border border-border/5 bg-card shadow-base p-0"
-            >
+            <DrawerContent className="rounded-t-[28px] border-t border-border/10 bg-card p-0 overflow-x-hidden">
               <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
-                <div>
-                  <h2 className="text-xl font-bold text-foreground">{t("title")}</h2>
-                  <p className="text-sm text-muted-foreground">{t("browseByCategory")}</p>
+                <div className="min-w-0">
+                  <DrawerTitle className="text-xl font-bold text-foreground truncate">{t("title")}</DrawerTitle>
+                  <p className="text-sm text-muted-foreground truncate">{t("browseByCategory")}</p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setMobileFilterOpen(false)}
-                  className="rounded-full border border-neutral-200/70 bg-white px-3 py-2 text-sm font-medium text-foreground transition hover:bg-neutral-50 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900"
-                >
-                  {t("close")}
-                </button>
+                <DrawerClose
+                  render={
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-full border border-neutral-200/70 bg-white px-3 py-2 text-sm font-medium text-foreground transition hover:bg-neutral-50 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900"
+                    >
+                      {t("close")}
+                    </button>
+                  }
+                />
               </div>
 
-              <div className="max-h-[70vh] overflow-y-auto p-4 sm:p-5">
+              <div className="max-h-[70vh] overflow-y-auto overflow-x-hidden p-4 sm:p-5">
                 {hasActiveFilters && (
                   <button
                     type="button"
@@ -258,8 +261,8 @@ export default function StoreFilterComponent({
                 )}
                 {renderCategoryFilters()}
               </div>
-            </PopoverContent>
-          </Popover>
+            </DrawerContent>
+          </Drawer>
         </div>
       </div>
 

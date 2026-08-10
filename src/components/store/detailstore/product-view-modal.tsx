@@ -9,7 +9,7 @@ import { useAuth } from "@/features/auth/useAuth";
 import { MenuItemData, markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { StorefrontItemResponse, ItemVariant } from "@/lib/type/storeType";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
-import { apiErrorMessage, isUnauthorized } from "@/lib/type/cartType";
+import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
 
 interface ProductQuickViewModalProps {
   productId?: string;
@@ -96,7 +96,7 @@ export default function ProductQuickViewModal({
         if (isUnauthorized(err)) {
             login();
         } else {
-            const msg = apiErrorMessage(err) || tCart("failedToAdd");
+            const msg = formatStockErrorMessage(err, product?.name || item?.name);
             const lower = msg.toLowerCase();
             if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
                 if (product?.id) markItemOutOfStock(product.id);
