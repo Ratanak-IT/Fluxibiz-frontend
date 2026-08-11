@@ -57,7 +57,7 @@ export default function ProductQuickViewModal({
       attributes.forEach((attr) => {
         const firstVal = attr.values?.[0];
         if (firstVal) {
-          initialAttrs[attr.name] = firstVal.label || firstVal.value;
+          initialAttrs[attr.name] = firstVal.value;
         }
       });
       setSelectedAttributes(initialAttrs);

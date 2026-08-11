@@ -88,7 +88,7 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        "text-xs font-semibold uppercase tracking-[0.18em] text-amber",
+        "text-xs font-semibold uppercase tracking-[0.12em] text-amber",
         align === "center" && "text-center",
         className,
       )}

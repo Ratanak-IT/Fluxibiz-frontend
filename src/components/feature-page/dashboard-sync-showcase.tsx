@@ -205,7 +205,7 @@ function DashboardCard({ card }: { card: ShowcaseCard }) {
 
   return (
     <div className="px-5 py-5 sm:px-7 lg:h-full lg:overflow-hidden lg:px-9 lg:py-4">
-      <p className="font-mono text-xs font-semibold tracking-[0.16em] text-brand sm:text-sm">
+      <p className="font-mono text-xs font-semibold tracking-[0.10em] text-[#21b94b] sm:text-sm">
         {card.label}
       </p>
 

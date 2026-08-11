@@ -267,7 +267,7 @@ export function FeatureBento() {
     <section className="bg-background px-5 py-20 text-text md:px-8 md:py-28 dark:text-white">
       <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary sm:text-xs sm:tracking-[0.10em]">
             {t("eyebrow")}
           </p>
 

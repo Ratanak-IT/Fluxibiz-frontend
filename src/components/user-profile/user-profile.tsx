@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link2, Pencil, User, Check, Loader2, Camera, Trash2 } from "lucide-react";
+import { Link2, Pencil, User, Check, Loader2, Camera, Trash2, ChevronDown } from "lucide-react";
 import { useAuth } from "@/features/auth/useAuth";
 import {
   useGetMyProfileQuery,
@@ -266,7 +266,7 @@ export default function UserProfile() {
 
               {/* Photo Actions */}
               <div className="mt-3 flex items-center gap-2">
-                <Button
+                {/* <Button
                   type="button"
                   variant="outline"
                   size="sm"
@@ -275,7 +275,7 @@ export default function UserProfile() {
                 >
                   <Pencil className="size-3.5" />
                   Change Photo
-                </Button>
+                </Button> */}
 
                 {hasCustomPicture && (
                   <Button
@@ -323,7 +323,7 @@ export default function UserProfile() {
                           {...field}
                           id="firstName"
                           placeholder="Enter first name"
-                          className="h-11 rounded-full px-4 border-gray-200 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
                         />
                       )}
                     />
@@ -349,7 +349,7 @@ export default function UserProfile() {
                           {...field}
                           id="lastName"
                           placeholder="Enter last name"
-                          className="h-11 rounded-full px-4 border-gray-200 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
                         />
                       )}
                     />
@@ -404,7 +404,7 @@ export default function UserProfile() {
                           id="phoneNumber"
                           type="tel"
                           placeholder="+855 12 345 678"
-                          className="h-11 rounded-full px-4 border-gray-200 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
                         />
                       )}
                     />
@@ -426,16 +426,19 @@ export default function UserProfile() {
                       name="gender"
                       control={control}
                       render={({ field }) => (
-                        <select
-                          {...field}
-                          id="gender"
-                          className="flex h-11 w-full rounded-full border border-gray-200 bg-background px-4 text-sm transition-colors dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00932A]"
-                        >
-                          <option value="UNSPECIFIED" className="dark:bg-neutral-900 dark:text-foreground">Unspecified</option>
-                          <option value="MALE" className="dark:bg-neutral-900 dark:text-foreground">Male</option>
-                          <option value="FEMALE" className="dark:bg-neutral-900 dark:text-foreground">Female</option>
-                          <option value="OTHER" className="dark:bg-neutral-900 dark:text-foreground">Other</option>
-                        </select>
+                        <div className="relative">
+                          <select
+                            {...field}
+                            id="gender"
+                            className="h-11 w-full rounded-full border border-[#00932A] bg-white px-4 pr-12 text-sm font-medium text-slate-900 shadow-sm transition-colors outline-none appearance-none focus:border-[#00932A] focus:ring-2 focus:ring-[#00932A]/30 hover:bg-[#f3fcf5] dark:border-[#21B94B] dark:bg-card dark:text-white dark:hover:bg-[#132018]"
+                          >
+                            <option value="UNSPECIFIED" className="bg-white text-foreground dark:bg-card dark:text-white">Unspecified</option>
+                            <option value="MALE" className="bg-white text-foreground dark:bg-card dark:text-white">Male</option>
+                            <option value="FEMALE" className="bg-white text-foreground dark:bg-card dark:text-white">Female</option>
+                            <option value="OTHER" className="bg-white text-foreground dark:bg-card dark:text-white">Other</option>
+                          </select>
+                          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-slate-300" />
+                        </div>
                       )}
                     />
                   </div>
@@ -455,7 +458,7 @@ export default function UserProfile() {
                           {...field}
                           id="address"
                           placeholder="Phnom Penh, Cambodia"
-                          className="h-11 rounded-full px-4 border-gray-200 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
                         />
                       )}
                     />
@@ -484,7 +487,7 @@ export default function UserProfile() {
                       className="flex flex-col items-start justify-between gap-3 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex size-10 items-center justify-center rounded-lg border border-neutral-200 bg-white dark:border-border dark:bg-neutral-900">
+                        <div className="flex size-10 items-center justify-center rounded-lg border border-neutral-200 bg-white dark:border-border dark:bg-card">
                           {icon}
                         </div>
                         <div>

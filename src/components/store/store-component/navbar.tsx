@@ -19,7 +19,7 @@ export default function Navbar() {
   ];
 
   const baseItemStyles =
-    "flex flex-col items-center justify-center py-1 transition-colors group cursor-pointer text-slate-500";
+    "flex flex-col items-center justify-center py-1 transition-colors group cursor-pointer text-slate-500 dark:text-slate-300";
   const activeItemStyles = "text-primary font-semibold";
 
   const { isAuthenticated } = useAuth();
@@ -28,7 +28,7 @@ export default function Navbar() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 p-3 lg:hidden">
-      <div className="max-w-md mx-auto bg-white/90 backdrop-blur-md rounded-3xl shadow-lg border border-gray-100 px-4 py-2">
+      <div className="max-w-md mx-auto bg-white/90 dark:bg-slate-950/90 backdrop-blur-md rounded-3xl shadow-lg border border-gray-100 dark:border-white/10 px-4 py-2">
         <div className="grid grid-cols-4 gap-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -39,7 +39,7 @@ export default function Navbar() {
                 <CartDrawer key={item.label}>
                   <button type="button" className={`${baseItemStyles} w-full group-hover:text-secondary relative`}>
                     <span className="relative inline-block">
-                      <Icon className="w-5 h-5 transition-all group-hover:stroke-secondary" />
+                      <Icon className="w-5 h-5 transition-all stroke-slate-500 dark:stroke-slate-300 group-hover:stroke-secondary" />
 
                       {totalItems > 0 && (
                         <span className="absolute -right-2 top-0 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
@@ -73,14 +73,14 @@ export default function Navbar() {
                   className={`w-5 h-5 transition-all ${
                     isActive
                       ? "stroke-primary fill-primary/10 group-hover:stroke-secondary group-hover:fill-secondary/10"
-                      : "stroke-slate-500 group-hover:stroke-secondary"
+                      : "stroke-slate-500 dark:stroke-slate-300 group-hover:stroke-secondary"
                   }`}
                 />
                 <span
                   className={`text-[11px] mt-1 tracking-tight text-center truncate w-full transition-colors ${
                     isActive
                       ? "text-primary group-hover:text-secondary"
-                      : "text-slate-500 group-hover:text-secondary"
+                      : "text-slate-500 dark:text-slate-300 group-hover:text-secondary"
                   }`}
                 >
                   {item.label}
