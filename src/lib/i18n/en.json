@@ -631,7 +631,10 @@
         "subjectPlaceholder": "Subject...",
         "messageLabel": "Message",
         "messagePlaceholder": "Message...",
-        "submit": "Send message"
+        "submit": "Send message",
+        "submitting": "Sending...",
+        "successMessage": "Your message has been sent successfully!",
+        "errorMessage": "Failed to send message. Please try again."
       }
     }
   },
@@ -825,7 +828,8 @@
     },
     "messages": {
       "addedToCart": "Added {quantity} × {name} to cart",
-      "removedFromCart": "Removed {name} from cart"
+      "removedFromCart": "Removed {name} from cart",
+      "notEnoughStock": "\"{name}\" does not have enough stock left"
     }
   },
   "Cart": {

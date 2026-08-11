@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..900&family=Google+Sans:ital,wght@0,400..700;1,400..700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -62,8 +63,8 @@
   --sidebar-border: #E8E8E8;
   --sidebar-ring: #00932A;
 
-  --font-body: "Google Sans KH",sans-serif;
-  --font-display: "Google Sans KH", sans-serif;
+  --font-body: "Google Sans", "Google Sans Flex", "Google Sans KH", sans-serif;
+  --font-display: "Google Sans", "Google Sans Flex", "Google Sans KH", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

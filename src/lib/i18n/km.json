@@ -631,7 +631,10 @@
         "subjectPlaceholder": "បញ្ចូលប្រធានបទ...",
         "messageLabel": "សារ",
         "messagePlaceholder": "បញ្ចូលសារ...",
-        "submit": "ផ្ញើសារ"
+        "submit": "ផ្ញើសារ",
+        "submitting": "កំពុងផ្ញើ...",
+        "successMessage": "សាររបស់អ្នកត្រូវបានផ្ញើដោយជោគជ័យ!",
+        "errorMessage": "បរាជ័យក្នុងការផ្ញើសារ។ សូមព្យាយាមម្តងទៀត។"
       }
     }
   },
@@ -825,7 +828,8 @@
     },
     "messages": {
       "addedToCart": "បានបន្ថែម {quantity} × {name} ទៅកន្ត្រក",
-      "removedFromCart": "បានដក {name} ចេញពីកន្ត្រក"
+      "removedFromCart": "បានដក {name} ចេញពីកន្ត្រក",
+      "notEnoughStock": "\"{name}\" មិនមានស្តុកគ្រប់គ្រាន់ទេ"
     }
   },
   "Cart": {

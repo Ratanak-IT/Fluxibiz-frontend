@@ -1,6 +1,6 @@
 
 import Image from 'next/image';
-
+import { NO_INTERNET_IMAGE_BASE64 } from '@/components/offline/no-internet-base64';
 
 export default function OfflinePage() {
   return (
@@ -8,11 +8,12 @@ export default function OfflinePage() {
     
      <div className="h-screen w-screen flex flex-col items-center justify-center text-center px-4 bg-white dark:bg-[#2e302f]">
       <Image
-        src="/no-internet.png"
+        src={NO_INTERNET_IMAGE_BASE64}
         alt="No internet connection"
         width={450}
         height={340}
         priority
+        unoptimized
       />
       <h1 className="text-2xl font-semibold mt-6 mb-2 text-gray-900 dark:text-[#f3f7f4]">
         Oops! No Internet Connection

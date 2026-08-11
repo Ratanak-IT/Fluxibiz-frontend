@@ -61,7 +61,7 @@ export function FeatureHero() {
 
         <div className="mt-9 flex flex-wrap justify-center gap-3.5">
           <Button
-            render={<Link href="/register" />}
+            render={<Link href="/register/business" />}
             nativeButton={false}
             className="
                     h-[52px]
@@ -84,7 +84,7 @@ export function FeatureHero() {
           </Button>
 
           <Button
-            render={<a href="mailto:ipos.istad@gmail.com" />}
+            render={<Link href="/support#contact" />}
             nativeButton={false}
             variant="outline"
             className="

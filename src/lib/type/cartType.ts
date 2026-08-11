@@ -177,3 +177,31 @@ export function isUnauthorized(error: unknown): boolean {
     const status = (error as { status?: number | string }).status;
     return status === 401 || status === 403;
 }
+
+export function formatStockErrorMessage(error: unknown, itemName?: string): string {
+    const raw = apiErrorMessage(error, "");
+    const nameStr = itemName ? `"${itemName}"` : "Item";
+
+    if (!raw) {
+        return `${nameStr} does not have enough stock left`;
+    }
+
+    if (/^item\b/i.test(raw)) {
+        return raw.replace(/^item\b/i, nameStr);
+    }
+
+    const lower = raw.toLowerCase();
+    if (
+        lower.includes("stock") ||
+        lower.includes("enough") ||
+        lower.includes("negative") ||
+        lower.includes("unavailable")
+    ) {
+        if (!itemName || raw.includes(itemName)) {
+            return raw;
+        }
+        return `${nameStr} does not have enough stock left`;
+    }
+
+    return raw;
+}

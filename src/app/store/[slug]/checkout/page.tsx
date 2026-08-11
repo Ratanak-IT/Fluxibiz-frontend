@@ -6,6 +6,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, Loader2, Store, TriangleAlert } from "lucide-react";
 
+import { toast } from "sonner";
 import KhqrPaymentComponent from "@/components/checkout/khqr-payment-component";
 import { Button } from "@/components/ui/button";
 import { useGetCartQuery } from "@/features/cart/cartApi";
@@ -14,7 +15,7 @@ import {
     useCreateCheckoutMutation,
     useGetActiveCheckoutQuery,
 } from "@/features/checkout/checkoutApi";
-import { formatMoney } from "@/lib/type/cartType";
+import { formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
@@ -76,7 +77,7 @@ export default function CheckoutPage({
 
             setSession(created);
         } catch (err) {
-            const msg = checkoutErrorMessage(err, t("couldNotStart"));
+            const msg = formatStockErrorMessage(err) || checkoutErrorMessage(err, t("couldNotStart"));
             const lower = msg.toLowerCase();
             if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
                 if (store?.items) {
@@ -86,6 +87,7 @@ export default function CheckoutPage({
                 }
             }
             setError(msg);
+            toast.error(msg);
         }
     };
 
@@ -97,9 +99,9 @@ export default function CheckoutPage({
             await cancelCheckout(blockedBy.orderId).unwrap();
             await refetchActive();
         } catch (err) {
-            setError(
-                checkoutErrorMessage(err, t("couldNotCancelOther")),
-            );
+            const msg = checkoutErrorMessage(err, t("couldNotCancelOther"));
+            setError(msg);
+            toast.error(msg);
         }
     };
 

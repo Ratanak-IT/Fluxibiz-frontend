@@ -38,9 +38,13 @@ import {
     formatMoney,
     resolveMediaUrl,
     isCartLineOutOfStock,
+    apiErrorMessage,
+    formatStockErrorMessage,
     type CartLine,
     type StoreCart,
 } from "@/lib/type/cartType";
+import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 type CartDrawerProps = {
@@ -301,18 +305,40 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
 
     const handleDecrease = () => {
         if (pendingQty <= 1) {
-            removeItem(line.cartItemId);
+            removeItem(line.cartItemId).unwrap().catch((err: any) => {
+                toast.error(apiErrorMessage(err, "Failed to remove item"));
+            });
         } else {
             const nextQty = pendingQty - 1;
             setPendingQty(nextQty);
-            updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+            updateItem({ cartItemId: line.cartItemId, quantity: nextQty })
+                .unwrap()
+                .catch((err: any) => {
+                    setPendingQty(line.quantity);
+                    toast.error(apiErrorMessage(err, "Failed to update item"));
+                });
         }
     };
 
     const handleIncrease = () => {
         const nextQty = pendingQty + 1;
         setPendingQty(nextQty);
-        updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+        updateItem({ cartItemId: line.cartItemId, quantity: nextQty })
+            .unwrap()
+            .catch((err: any) => {
+                setPendingQty(line.quantity);
+                const msg = formatStockErrorMessage(err, line.name);
+                const lower = msg.toLowerCase();
+                if (
+                    lower.includes("stock") ||
+                    lower.includes("enough") ||
+                    lower.includes("negative") ||
+                    lower.includes("unavailable")
+                ) {
+                    if (line.itemId) markItemOutOfStock(line.itemId);
+                }
+                toast.error(msg);
+            });
     };
 
     const currentSubtotal = line.unitPrice * pendingQty;

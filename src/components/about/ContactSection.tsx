@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Mail, MapPin, Phone, Send } from "lucide-react";
+import { ArrowRight, Loader2, Mail, MapPin, Phone, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,10 +24,6 @@ import { sendContactEmail } from "@/lib/about/contact";
 
 export function ContactSection() {
   const t = useTranslations("Support.contact");
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>(
-    'idle'
-  );
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const contactDetails = [
     {
@@ -68,22 +65,18 @@ export function ContactSection() {
   } = form;
 
   async function onSubmit(values: ContactFormValues) {
-    setSubmitStatus("idle");
-    setErrorMessage("");
-
     const result = await sendContactEmail(values);
 
     if (result.success) {
-      setSubmitStatus("success");
+      toast.success(t("form.successMessage"));
       form.reset();
     } else {
-      setSubmitStatus("error");
-      setErrorMessage(result.error);
+      toast.error(result.error || t("form.errorMessage"));
     }
   }
 
   return (
-    <section className="bg-background py-20 font-body dark:bg-background">
+    <section id="contact" className="bg-background py-20 font-body dark:bg-background">
       <div className="mx-auto grid max-w-[1900px] gap-10 px-[5.5%] lg:grid-cols-2 lg:gap-12">
         {/* Left: heading + contact details */}
         <div>
@@ -226,25 +219,22 @@ export function ContactSection() {
                 )}
               />
 
-              {submitStatus === "success" && (
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                  {t("form.successMessage")}
-                </p>
-              )}
-
-              {submitStatus === "error" && (
-                <p className="text-sm font-medium text-red-600 dark:text-red-400">
-                  {errorMessage || t("form.errorMessage")}
-                </p>
-              )}
-
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 className="rounded-full bg-primary px-6 text-white hover:bg-green-700 dark:bg-primary dark:text-white dark:hover:bg-green-600"
               >
-                {t("form.submit")}
-                <ArrowRight className="ml-2 h-4 w-4" />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t("form.submitting")}
+                  </>
+                ) : (
+                  <>
+                    {t("form.submit")}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             </form>
           </Form>
