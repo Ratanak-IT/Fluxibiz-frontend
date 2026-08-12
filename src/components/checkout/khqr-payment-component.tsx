@@ -155,32 +155,32 @@ export default function KhqrPaymentComponent({
 
     if (phase === "paid") {
         return (
-            <div className="rounded-2xl border border-green-200 bg-green-50 p-8 text-center dark:border-green-900 dark:bg-green-950/40">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-600">
+            <div className="rounded-2xl border border-green-200/80 bg-green-50/60 p-7 sm:p-8 text-center dark:border-green-900/60 dark:bg-green-950/30">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-600 shadow-md">
                     <Check className="h-7 w-7 text-white" strokeWidth={3} />
                 </div>
 
-                <h2 className="mt-5 text-xl font-bold text-green-700 dark:text-green-400">
+                <h2 className="mt-4 text-xl font-bold tracking-tight text-green-700 dark:text-green-400 sm:text-2xl">
                     Payment received
                 </h2>
 
-                <p className="mt-2 text-sm text-neutral-600 dark:text-muted-foreground">
+                <p className="mt-2 text-sm font-medium text-neutral-600 dark:text-neutral-300">
                     {t("paymentConfirmed", { amount: formatMoney(session.total, session.currency), storeName: session.storeName })}
                 </p>
 
-                <p className="mt-1 font-mono text-xs text-neutral-500 dark:text-muted-foreground">
+                <p className="mt-1 font-mono text-xs text-neutral-400 dark:text-neutral-500">
                     {session.invoiceNumber}
                 </p>
 
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
                     <Link href={`/receipt/${session.orderId}`}>
-                        <Button className="w-full sm:w-auto rounded-full bg-[#00932A] font-bold text-white hover:bg-[#007d24]">
+                        <Button className="h-11 w-full rounded-full bg-green-600 px-6 font-semibold text-white shadow-sm hover:bg-green-700 sm:w-auto dark:bg-primary dark:text-primary-foreground">
                             View E-Receipt
                         </Button>
                     </Link>
 
                     <Link href="/payment-history">
-                        <Button variant="outline" className="w-full sm:w-auto rounded-full">
+                        <Button variant="outline" className="h-11 w-full rounded-full border-primary bg-white px-6 font-semibold text-primary transition-colors hover:bg-primary/5 sm:w-auto dark:bg-transparent dark:text-primary dark:hover:bg-primary/10">
                             Payment History
                         </Button>
                     </Link>
@@ -192,7 +192,7 @@ export default function KhqrPaymentComponent({
 
     if (phase === "cancelled") {
         return (
-            <div className="rounded-2xl bg-gray-100 p-8 text-center dark:bg-card">
+            <div className="rounded-2xl bg-white border border-neutral-100/80 p-8 text-center shadow-xs dark:border-neutral-800 dark:bg-card">
                 <h2 className="text-lg font-semibold text-neutral-900 dark:text-card-foreground">
                     Order cancelled
                 </h2>
@@ -210,26 +210,33 @@ export default function KhqrPaymentComponent({
     const progress = Math.min(100, Math.max(0, (remaining / totalWindow) * 100));
 
     return (
-        <div className="rounded-2xl bg-gray-100 p-6 dark:bg-card">
-            <div className="flex items-center justify-between">
+        <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
+            <div className="flex items-center justify-between gap-3">
                 <div>
                     <h2 className="text-lg font-bold text-neutral-900 dark:text-card-foreground">
                         Scan to pay
                     </h2>
 
-                    <p className="text-sm text-neutral-500 dark:text-muted-foreground">
+                    <p className="mt-1 text-sm text-neutral-500 dark:text-muted-foreground">
                         {t("bankingAppDescription")}
                     </p>
                 </div>
 
-                <span className="rounded-full bg-white px-3 py-1 font-mono text-xs text-neutral-600 dark:bg-background dark:text-muted-foreground">
+                <span className="shrink-0 rounded-full bg-neutral-100 px-3 py-1 font-mono text-xs font-semibold text-neutral-600 dark:bg-background dark:text-muted-foreground">
                     {session.invoiceNumber}
                 </span>
             </div>
 
-            {/* QR */}
+            {/* QR Code Container with official KHQR Red Label */}
             <div className="mt-6 flex flex-col items-center">
-                <div className="relative rounded-2xl bg-white p-4 shadow-sm">
+                <div className="relative flex flex-col items-center overflow-hidden rounded-2xl bg-white border border-neutral-200/80 p-4 shadow-xs dark:border-neutral-800 dark:bg-background">
+                    {/* Official KHQR Red Badge Header */}
+                    <div className="mb-3 flex w-full items-center justify-center rounded-lg bg-red-600 px-4 py-1.5 shadow-xs">
+                        <span className="font-sans text-xs font-black tracking-widest text-white uppercase">
+                            KHQR
+                        </span>
+                    </div>
+
                     {session.qrImage ? (
                         <Image
                             src={session.qrImage}
@@ -258,27 +265,28 @@ export default function KhqrPaymentComponent({
                     {formatMoney(session.total, currency)}
                 </p>
 
-                <p className="mt-1 text-sm text-neutral-600 dark:text-muted-foreground">
+                <p className="mt-1 text-sm font-medium text-neutral-500 dark:text-muted-foreground">
                     {t("payTo", { storeName: session.storeName })}
                 </p>
             </div>
 
+            {/* Timer Status Bar in Accent Red Color */}
             {!expired && (
                 <div className="mt-6">
-                    <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-muted-foreground">
-                        <span className="inline-flex items-center gap-1.5">
-                            <Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" />
+                    <div className="flex items-center justify-between text-xs text-red-500 dark:text-red-400">
+                        <span className="inline-flex items-center gap-1.5 font-medium">
+                            <Loader2 className="h-3.5 w-3.5 animate-spin text-red-500 dark:text-red-400 motion-reduce:animate-none" />
                             Waiting for Bakong
                         </span>
 
-                        <span className="font-mono tabular-nums">
+                        <span className="font-mono text-xs font-bold tabular-nums">
                             {formatCountdown(remaining)}
                         </span>
                     </div>
 
-                    <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-border">
+                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-red-100 dark:bg-red-950/40">
                         <div
-                            className="h-full rounded-full bg-green-600 transition-[width] duration-1000 ease-linear dark:bg-primary"
+                            className="h-full rounded-full bg-red-500 transition-[width] duration-1000 ease-linear dark:bg-red-500"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
@@ -296,9 +304,8 @@ export default function KhqrPaymentComponent({
                 {expired ? (
                     <>
                         <Button
-                            variant="outline"
                             onClick={poll}
-                            className="h-12 w-full rounded-full text-base font-semibold"
+                            className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
                         >
                             {t("alreadyPaidCheck")}
                         </Button>
@@ -306,7 +313,7 @@ export default function KhqrPaymentComponent({
                         <Button
                             onClick={onRegenerate}
                             disabled={regenerating}
-                            className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
+                            className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
                         >
                             {regenerating ? (
                                 <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
@@ -318,9 +325,8 @@ export default function KhqrPaymentComponent({
                     </>
                 ) : (
                     <Button
-                        variant="outline"
                         onClick={poll}
-                        className="h-12 w-full rounded-full text-base font-semibold"
+                        className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
                     >
                         {t("paidCheckNow")}
                     </Button>
@@ -330,15 +336,19 @@ export default function KhqrPaymentComponent({
                     variant="ghost"
                     onClick={handleCancel}
                     disabled={cancelling}
-                    className="h-10 w-full rounded-full text-sm text-neutral-500 hover:text-destructive"
+                    className="h-10 w-full rounded-full text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950/20"
                 >
-                    <X className="h-4 w-4" />
+                    {cancelling ? (
+                        <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
+                    ) : (
+                        <X className="h-4 w-4 text-red-500 dark:text-red-400" />
+                    )}
                     {t("cancelOrder")}
                 </Button>
             </div>
 
             <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-500 dark:text-muted-foreground">
-                <ShieldCheck className="h-3.5 w-3.5" />
+                <ShieldCheck className="h-3.5 w-3.5 text-neutral-400" />
                 Paid directly {t("payTo", { storeName: session.storeName })} through Bakong
             </p>
         </div>

@@ -496,3 +496,40 @@
     animation: none;
   }
 }
+
+/* Custom sleek scrollbar for sidebar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.38);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Enforce white text and SVG icon color for all primary buttons */
+.bg-primary,
+button.bg-primary,
+.btn-primary,
+[data-slot="button"].bg-primary {
+  color: #ffffff !important;
+}
+
+.bg-primary svg,
+button.bg-primary svg {
+  color: #ffffff !important;
+}
+

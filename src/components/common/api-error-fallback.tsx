@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { AlertTriangle, RefreshCw, ArrowLeft, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,10 +29,9 @@ export default function ApiErrorFallback({
   iconType = "error",
   className,
 }: ApiErrorFallbackProps) {
-  const defaultTitle = title || "មិនអាចទាញយកទិន្នន័យបានឡើយ";
-  const defaultDesc =
-    description ||
-    "មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server ឬទិន្នន័យមិនទាន់រួចរាល់។ សូមព្យាយាមម្ដងទៀត។";
+  const t = useTranslations("Common");
+  const defaultTitle = title || t("couldNotLoadData");
+  const defaultDesc = description || t("serverConnectError");
 
   if (variant === "compact") {
     return (
@@ -54,7 +54,7 @@ export default function ApiErrorFallback({
             className="h-8 gap-1.5 rounded-lg border-destructive/30 text-xs font-semibold hover:bg-destructive/10"
           >
             <RefreshCw className={cn("h-3.5 w-3.5", isRetrying && "animate-spin")} />
-            {isRetrying ? "កំពុងទាញយក..." : "ព្យាយាមឡើងវិញ"}
+            {isRetrying ? t("retrying") : t("retry")}
           </Button>
         )}
       </div>
@@ -100,7 +100,7 @@ export default function ApiErrorFallback({
             className="gap-2 rounded-full bg-green-600 px-5 text-sm font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
           >
             <RefreshCw className={cn("h-4 w-4", isRetrying && "animate-spin")} />
-            {isRetrying ? "កំពុងទាញយក..." : "ព្យាយាមឡើងវិញ (Retry)"}
+            {isRetrying ? t("retrying") : t("retry")}
           </Button>
         )}
 
@@ -111,7 +111,7 @@ export default function ApiErrorFallback({
               className="gap-2 rounded-full border-neutral-300 px-5 text-sm font-semibold text-neutral-700 hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
             >
               <ArrowLeft className="h-4 w-4" />
-              {backLabel || "ត្រឡប់ទៅហាង (Back)"}
+              {backLabel || t("backToStore")}
             </Button>
           </Link>
         )}

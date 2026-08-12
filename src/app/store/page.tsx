@@ -1,8 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Store as StoreIcon } from "lucide-react";
 import BannerCarousel from "@/components/store/store-component/banner-carousel";
 import StoreCardHorizontal from "@/components/store/store-component/store-card-horizontal";
@@ -131,18 +130,45 @@ function StoreRow({ items }: { items: Store[] }) {
   );
 }
 
-function RecommendedSection() {
+function RecommendedSection({
+  selectedLocations = [],
+  searchValue = "",
+}: {
+  selectedLocations?: string[];
+  searchValue?: string;
+}) {
   const t = useTranslations("Store.common");
   const { data: recData, isLoading: isLoadingRec } =
     useGetRecommendedStoresQuery({ size: 10 });
   const { data: publicData, isLoading: isLoadingPublic } =
     useGetPublicStoresQuery({ size: 10 });
 
-  const recStores = recData?.content.map(toStoreCard) ?? [];
-  const publicStores = publicData?.content.map(toStoreCard) ?? [];
-
-  const storesToDisplay = recStores.length > 0 ? recStores : publicStores;
+  const rawRecStores = recData?.content ?? [];
+  const rawPublicStores = publicData?.content ?? [];
+  const rawStores = rawRecStores.length > 0 ? rawRecStores : rawPublicStores;
   const isLoading = isLoadingRec && isLoadingPublic;
+
+  const storesToDisplay = useMemo(() => {
+    return rawStores
+      .filter((store) => {
+        if (selectedLocations.length > 0) {
+          const storeText = `${store.cityOrProvince ?? ""} ${store.address ?? ""} ${store.name ?? ""} ${store.about ?? ""}`.toLowerCase();
+          const matchesLoc = selectedLocations.some((loc) =>
+            storeText.includes(loc.toLowerCase()),
+          );
+          if (!matchesLoc) return false;
+        }
+
+        if (searchValue.trim()) {
+          const term = searchValue.trim().toLowerCase();
+          const storeText = `${store.name ?? ""} ${store.category?.name ?? ""} ${store.cityOrProvince ?? ""} ${store.address ?? ""} ${store.about ?? ""}`.toLowerCase();
+          if (!storeText.includes(term)) return false;
+        }
+
+        return true;
+      })
+      .map(toStoreCard);
+  }, [rawStores, selectedLocations, searchValue]);
 
   if (isLoading && storesToDisplay.length === 0) {
     return (
@@ -176,19 +202,13 @@ function RecommendedSection() {
 }
 
 function StoresByCategorySection({
-  selectedCategoryIds,
+  stores = [],
+  isLoading = false,
 }: {
-  selectedCategoryIds?: string[];
+  stores: PublicStore[];
+  isLoading?: boolean;
 }) {
   const t = useTranslations("Store");
-  const { data, isLoading } = useGetPublicStoresQuery({
-    size: 100,
-    categoryIds:
-      selectedCategoryIds && selectedCategoryIds.length > 0
-        ? selectedCategoryIds
-        : undefined,
-  });
-  const publicStores = data?.content ?? [];
 
   if (isLoading) {
     return (
@@ -199,7 +219,7 @@ function StoresByCategorySection({
     );
   }
 
-  if (publicStores.length === 0) {
+  if (stores.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
         <StoreIcon className="h-10 w-10 text-muted-foreground/40" />
@@ -214,7 +234,7 @@ function StoresByCategorySection({
   }
 
   // Group public stores by their category name
-  const grouped = publicStores.reduce<Record<string, PublicStore[]>>(
+  const grouped = stores.reduce<Record<string, PublicStore[]>>(
     (acc, store) => {
       const categoryName = store.category?.name?.trim() || t("common.stores");
       if (!acc[categoryName]) {
@@ -240,12 +260,42 @@ function StoresByCategorySection({
   );
 }
 
-function PromotionsSection() {
+function PromotionsSection({
+  selectedLocations = [],
+  searchValue = "",
+}: {
+  selectedLocations?: string[];
+  searchValue?: string;
+}) {
   const t = useTranslations("Store.common");
   const { data, isLoading } = useGetPublicStoresQuery({ size: 50 });
-  const promoStores = (data?.content ?? [])
-    .map(toStoreCard)
-    .filter((store) => Boolean(store.discountLabel));
+  const rawStores = data?.content ?? [];
+
+  const promoStores = useMemo(() => {
+    return rawStores
+      .filter((store) => {
+        if (!Boolean(store.discountLabel || store.promotionLabel || store.promotion)) {
+          return false;
+        }
+
+        if (selectedLocations.length > 0) {
+          const storeText = `${store.cityOrProvince ?? ""} ${store.address ?? ""} ${store.name ?? ""} ${store.about ?? ""}`.toLowerCase();
+          const matchesLoc = selectedLocations.some((loc) =>
+            storeText.includes(loc.toLowerCase()),
+          );
+          if (!matchesLoc) return false;
+        }
+
+        if (searchValue.trim()) {
+          const term = searchValue.trim().toLowerCase();
+          const storeText = `${store.name ?? ""} ${store.category?.name ?? ""} ${store.cityOrProvince ?? ""} ${store.address ?? ""} ${store.about ?? ""}`.toLowerCase();
+          if (!storeText.includes(term)) return false;
+        }
+
+        return true;
+      })
+      .map(toStoreCard);
+  }, [rawStores, selectedLocations, searchValue]);
 
   if (isLoading) {
     return (
@@ -270,28 +320,69 @@ function PromotionsSection() {
 
 export default function HomePage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [searchValue, setSearchValue] = useState<string>("");
 
+  const { data: filteredStoresData, isLoading: isLoadingPublic } = useGetPublicStoresQuery({
+    size: 100,
+    categoryIds: selectedCategories.length > 0 ? selectedCategories : undefined,
+  });
+
+  const rawPublicStores = filteredStoresData?.content ?? [];
+
+  const filteredStores = useMemo(() => {
+    return rawPublicStores.filter((store) => {
+      if (selectedLocations.length > 0) {
+        const storeText = `${store.cityOrProvince ?? ""} ${store.address ?? ""} ${store.name ?? ""} ${store.about ?? ""}`.toLowerCase();
+        const matchesLoc = selectedLocations.some((loc) =>
+          storeText.includes(loc.toLowerCase()),
+        );
+        if (!matchesLoc) return false;
+      }
+
+      if (searchValue.trim()) {
+        const term = searchValue.trim().toLowerCase();
+        const storeText = `${store.name ?? ""} ${store.category?.name ?? ""} ${store.cityOrProvince ?? ""} ${store.address ?? ""} ${store.about ?? ""}`.toLowerCase();
+        if (!storeText.includes(term)) return false;
+      }
+
+      return true;
+    });
+  }, [rawPublicStores, selectedLocations, searchValue]);
 
   return (
     <div className="mx-auto max-w-362.5 space-y-6 px-4 pt-2 pb-6 sm:space-y-10 sm:pt-6 sm:py-6">
       <BannerCarousel />
 
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
-        <aside className="w-full shrink-0 overflow-x-hidden lg:sticky lg:top-6 lg:w-55 lg:self-start">
-          <div className="flex max-h-[calc(100vh-8rem)] flex-col overflow-hidden rounded-lg p-4 xl:py-0">
-            <div className="no-scrollbar flex-1 overflow-y-auto overflow-x-hidden pr-1">
+      <div className="flex flex-col gap-8 xl:flex-row xl:items-start">
+        <aside className="w-full shrink-0 overflow-x-hidden xl:sticky xl:top-24 xl:w-64 xl:self-start">
+          <div className="flex max-h-[calc(100vh-7rem)] flex-col overflow-hidden py-0">
+            <div className="custom-scrollbar flex-1 overflow-y-auto overflow-x-hidden pr-2">
               <StoreFilterComponent
                 selected={selectedCategories}
                 onSelectedChange={setSelectedCategories}
+                selectedLocations={selectedLocations}
+                onLocationsChange={setSelectedLocations}
+                searchValue={searchValue}
+                onSearchChange={setSearchValue}
               />
             </div>
           </div>
         </aside>
 
         <div className="min-w-0 flex-1 space-y-10">
-          <RecommendedSection />
-          <PromotionsSection />
-          <StoresByCategorySection selectedCategoryIds={selectedCategories} />
+          <RecommendedSection
+            selectedLocations={selectedLocations}
+            searchValue={searchValue}
+          />
+          <PromotionsSection
+            selectedLocations={selectedLocations}
+            searchValue={searchValue}
+          />
+          <StoresByCategorySection
+            stores={filteredStores}
+            isLoading={isLoadingPublic}
+          />
         </div>
       </div>
     </div>
