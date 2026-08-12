@@ -22,6 +22,7 @@ import {
 } from "@/lib/type/checkoutType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
+import ApiErrorFallback from "@/components/common/api-error-fallback";
 
 export default function CheckoutPage({
     params,
@@ -229,9 +230,11 @@ export default function CheckoutPage({
             )}
 
             {error && (
-                <p className="mt-4 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                    {error}
-                </p>
+                <ApiErrorFallback
+                    variant="compact"
+                    title={error}
+                    className="mt-4"
+                />
             )}
 
             {/* Pay */}

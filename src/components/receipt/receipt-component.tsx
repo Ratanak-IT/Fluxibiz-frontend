@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { useGetOrderReceiptQuery } from "@/features/checkout/checkoutApi";
 import { formatMoney, resolveMediaUrl } from "@/lib/type/cartType";
 
+import ApiErrorFallback from "@/components/common/api-error-fallback";
+
 export default function ReceiptComponent({
   params,
 }: {
@@ -26,7 +28,7 @@ export default function ReceiptComponent({
   const { orderId } = use(params);
   const receiptRef = useRef<HTMLDivElement>(null);
 
-  const { data: order, isLoading, isError } = useGetOrderReceiptQuery(orderId);
+  const { data: order, isLoading, isError, refetch } = useGetOrderReceiptQuery(orderId);
 
   const handlePrint = () => {
     window.print();
@@ -47,32 +49,14 @@ export default function ReceiptComponent({
 
   if (isError || !order) {
     return (
-      <div className="mx-auto max-w-xl px-4 py-16 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/40">
-          <XCircle className="h-8 w-8 text-destructive" />
-        </div>
-
-        <h1 className="mt-4 text-2xl font-bold text-neutral-900 dark:text-foreground">
-          Receipt Not Found
-        </h1>
-
-        <p className="mt-2 text-sm text-muted-foreground">
-          We couldn't retrieve the details for this receipt. Please check your order history.
-        </p>
-
-        <div className="mt-6 flex justify-center gap-3">
-          <Link href="/payment-history">
-            <Button variant="outline" className="rounded-full">
-              View Payment History
-            </Button>
-          </Link>
-
-          <Link href="/store">
-            <Button className="rounded-full bg-[#00932A] text-white hover:bg-[#007d24]">
-              Return to Store
-            </Button>
-          </Link>
-        </div>
+      <div className="mx-auto max-w-2xl px-4 py-16">
+        <ApiErrorFallback
+          title="រកមិនឃើញវិក្កយបត្រឡើយ (Receipt Not Found)"
+          description="មិនអាចទាញយកព័ត៌មានវិក្កយបត្រនេះបានទេ។ សូមពិនិត្យមើលប្រវត្តិបញ្ជាទិញរបស់អ្នក។"
+          onRetry={() => refetch()}
+          backHref="/payment-history"
+          backLabel="មើលប្រវត្តិទូទាត់ (Payment History)"
+        />
       </div>
     );
   }

@@ -12,6 +12,8 @@ import StoreGroupComponent from "./store-group-component";
 import EmptyCartComponent from "./empty-cart-component";
 import CartSkeletonComponent from "./cart-skeleton-component";
 
+import ApiErrorFallback from "@/components/common/api-error-fallback";
+
 export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
   const t = useTranslations("Cart");
     const searchParams = useSearchParams();
@@ -19,7 +21,7 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
 
     const { status: authStatus, isAuthenticated } = useAuth();
 
-    const { data: cart, isLoading, isError, error } = useGetCartQuery(undefined, {
+    const { data: cart, isLoading, isError, error, refetch } = useGetCartQuery(undefined, {
         // Don't fire until we know the real auth state. While AuthProvider's
         // session fetch is still in flight (authStatus === "loading"), skip
         // entirely instead of firing an unauthenticated request that would
@@ -38,21 +40,13 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
     }
 
     if (isError) {
-        // TEMP DEBUG: remove this console.error once the root cause is confirmed.
-        // Shows the real HTTP status + body instead of the generic message below.
-        console.error("[CartList] getCart failed:", error);
-
         return (
-            <div className="rounded-2xl bg-gray-100 py-16 text-center dark:bg-card">
-                <p className="text-sm text-destructive">
-                    Could not load your cart. Please refresh the page.
-                </p>
-                {process.env.NODE_ENV !== "production" && (
-                    <pre className="mx-auto mt-3 max-w-md overflow-auto text-left text-xs text-neutral-500">
-                        {JSON.stringify(error, null, 2)}
-                    </pre>
-                )}
-            </div>
+            <ApiErrorFallback
+                title="មិនអាចទាញយកកន្ត្រកទំនិញបានឡើយ"
+                description="មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ព័ត៌មានកន្ត្រករបស់អ្នក។ សូមព្យាយាមម្ដងទៀត។"
+                onRetry={() => refetch()}
+                backHref="/store"
+            />
         );
     }
 
