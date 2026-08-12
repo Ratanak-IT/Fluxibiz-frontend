@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
 import { MenuItemData, markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
-import { StorefrontItemResponse, ItemVariant } from "@/lib/type/storeType";
+import { StorefrontItemResponse, ItemVariant, primaryItemImage } from "@/lib/type/storeType";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
 import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
 
@@ -88,6 +88,12 @@ export default function ProductQuickViewModal({
         itemId: product.id,
         quantity,
         variantId: selectedVariant?.id,
+        itemDetails: {
+          name: product.name,
+          price: selectedVariant?.price ?? product.price,
+          imageUrl: primaryItemImage(product),
+          currency: currency || item?.currency,
+        },
       }).unwrap();
       
       toast.success(tCart("addedToCart"));

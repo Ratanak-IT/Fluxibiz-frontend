@@ -1,12 +1,12 @@
 export interface CartLine {
     cartItemId: string;
     itemId: string;
-    variantId: string | null;
-    name: string;
-    description: string | null;
+    escription: string | null;
     imageUrl: string | null;
     badges: string[];
-    quantity: number;
+    quvariantId: string | null;
+    name: string;
+    dantity: number;
     unitPrice: number;
     subtotal: number;
     isOutOfStock?: boolean | null;
