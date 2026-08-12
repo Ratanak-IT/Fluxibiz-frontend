@@ -267,13 +267,13 @@ export default function StoreDetail({
 
             <div className="hidden lg:block lg:pt-8">
               <div className="sticky top-6">
-                <CartSidebar slug={slug} businessId={storeDetail?.id} />
+                <CartSidebar slug={slug} businessId={storeDetail?.id} storeCurrency={currency} />
               </div>
             </div>
           </div>
 
           <div className="px-4 pb-10 sm:px-6 lg:hidden">
-            <CartSidebar slug={slug} businessId={storeDetail?.id} />
+            <CartSidebar slug={slug} businessId={storeDetail?.id} storeCurrency={currency} />
           </div>
         </>
       )}

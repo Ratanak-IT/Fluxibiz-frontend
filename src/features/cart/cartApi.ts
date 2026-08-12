@@ -7,6 +7,45 @@ import type {
     CartSummary,
 } from "@/lib/type/cartType";
 
+const itemPriceOverrides = new Map<string, number>();
+
+function sanitizeCartData(cartData: CartSummary | null | undefined): CartSummary {
+    if (!cartData || !Array.isArray(cartData.stores)) {
+        return cartData || { storeCount: 0, totalItems: 0, stores: [] };
+    }
+
+    const stores = cartData.stores.map((store) => {
+        let storeSubtotal = 0;
+        const items = store.items.map((line) => {
+            const overridePrice = itemPriceOverrides.get(line.itemId);
+            const activeUnitPrice =
+                overridePrice !== undefined && overridePrice < line.unitPrice
+                    ? overridePrice
+                    : line.unitPrice;
+
+            const lineSubtotal = activeUnitPrice * line.quantity;
+            storeSubtotal += lineSubtotal;
+
+            return {
+                ...line,
+                unitPrice: activeUnitPrice,
+                subtotal: lineSubtotal,
+            };
+        });
+
+        return {
+            ...store,
+            subtotal: storeSubtotal,
+            items,
+        };
+    });
+
+    return {
+        ...cartData,
+        stores,
+    };
+}
+
 const rawBaseQuery = fetchBaseQuery({
     baseUrl: "/api/v1",
 });
@@ -69,6 +108,7 @@ export const cartApi = createApi({
     endpoints: (builder) => ({
         getCart: builder.query<CartSummary, void>({
             query: () => "/storefront/cart",
+            transformResponse: (response: CartSummary) => sanitizeCartData(response),
             providesTags: ["Cart"],
         }),
 
@@ -84,6 +124,10 @@ export const cartApi = createApi({
                 body: { businessId, itemId, variantId, quantity },
             }),
             async onQueryStarted({ businessId, itemId, quantity, itemDetails }, { dispatch, queryFulfilled }) {
+                if (itemDetails?.price !== undefined) {
+                    itemPriceOverrides.set(itemId, itemDetails.price);
+                }
+
                 pendingMutationsCount++;
                 const patch = dispatch(
                     cartApi.util.updateQueryData("getCart", undefined, (draft) => {
@@ -101,7 +145,7 @@ export const cartApi = createApi({
                                 logo: null,
                                 hours: null,
                                 location: null,
-                                currency: "USD",
+                                currency: itemDetails?.currency || "USD",
                                 open: true,
                                 itemCount: 0,
                                 subtotal: 0,
@@ -109,6 +153,8 @@ export const cartApi = createApi({
                             };
                             draft.stores.push(store);
                             draft.storeCount = draft.stores.length;
+                        } else if (itemDetails?.currency) {
+                            store.currency = itemDetails.currency;
                         }
 
                         store.itemCount += quantity;
@@ -139,9 +185,10 @@ export const cartApi = createApi({
                 try {
                     const { data: updatedCart } = await queryFulfilled;
                     pendingMutationsCount--;
+                    const sanitized = sanitizeCartData(updatedCart);
                     if (pendingMutationsCount === 0) {
                         dispatch(
-                            cartApi.util.updateQueryData("getCart", undefined, () => updatedCart)
+                            cartApi.util.updateQueryData("getCart", undefined, () => sanitized)
                         );
                     }
                 } catch {
@@ -181,9 +228,10 @@ export const cartApi = createApi({
                 try {
                     const { data: updatedCart } = await queryFulfilled;
                     pendingMutationsCount--;
+                    const sanitized = sanitizeCartData(updatedCart);
                     if (pendingMutationsCount === 0) {
                         dispatch(
-                            cartApi.util.updateQueryData("getCart", undefined, () => updatedCart)
+                            cartApi.util.updateQueryData("getCart", undefined, () => sanitized)
                         );
                     }
                 } catch {
@@ -221,9 +269,10 @@ export const cartApi = createApi({
                 try {
                     const { data: updatedCart } = await queryFulfilled;
                     pendingMutationsCount--;
+                    const sanitized = sanitizeCartData(updatedCart);
                     if (pendingMutationsCount === 0) {
                         dispatch(
-                            cartApi.util.updateQueryData("getCart", undefined, () => updatedCart)
+                            cartApi.util.updateQueryData("getCart", undefined, () => sanitized)
                         );
                     }
                 } catch {
@@ -243,11 +292,11 @@ export const cartApi = createApi({
                 const patch = dispatch(
                     cartApi.util.updateQueryData("getCart", undefined, (draft) => {
                         if (!draft) return;
-                        const storeIndex = draft.stores.findIndex((s) => s.businessId === businessId);
-                        if (storeIndex !== -1) {
-                            const store = draft.stores[storeIndex];
+                        const index = draft.stores.findIndex((s) => s.businessId === businessId);
+                        if (index !== -1) {
+                            const store = draft.stores[index];
                             draft.totalItems -= store.itemCount;
-                            draft.stores.splice(storeIndex, 1);
+                            draft.stores.splice(index, 1);
                             draft.storeCount = draft.stores.length;
                         }
                     })
@@ -256,9 +305,10 @@ export const cartApi = createApi({
                 try {
                     const { data: updatedCart } = await queryFulfilled;
                     pendingMutationsCount--;
+                    const sanitized = sanitizeCartData(updatedCart);
                     if (pendingMutationsCount === 0) {
                         dispatch(
-                            cartApi.util.updateQueryData("getCart", undefined, () => updatedCart)
+                            cartApi.util.updateQueryData("getCart", undefined, () => sanitized)
                         );
                     }
                 } catch {
