@@ -33,26 +33,29 @@ function FilterDropdown({ label, value, options, onSelect }: FilterDropdownProps
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={`inline-flex h-11 shrink-0 items-center rounded-xl px-4 text-xs font-medium shadow-sm transition-colors sm:px-5 sm:text-sm ${
+        className={`inline-flex h-11 shrink-0 items-center justify-center rounded-full px-4 text-xs font-medium shadow-sm transition-colors outline-none focus:outline-none focus-visible:ring-0 sm:px-5 sm:text-sm ${
           isSelected
             ? "bg-primary/10 text-primary border border-primary/20 dark:bg-primary/20 dark:text-primary"
-            : "bg-white text-neutral-800 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200"
+            : "border-0 bg-white text-neutral-800 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200"
         }`}
       >
         <span>{displayLabel}</span>
         <ChevronDown className="ml-1.5 h-3.5 w-3.5 opacity-60 sm:h-4 sm:w-4" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
+      <DropdownMenuContent
+        align="start"
+        className="w-auto min-w-[180px] whitespace-nowrap rounded-2xl border border-neutral-100/80 bg-white p-1.5 shadow-xl dark:border-neutral-800 dark:bg-neutral-900"
+      >
         {options.map((option) => {
           const active = option === value;
           return (
             <DropdownMenuItem
               key={optionLabel(option)}
               onClick={() => onSelect(option)}
-              className={`cursor-pointer text-xs sm:text-sm ${
+              className={`cursor-pointer rounded-xl px-3.5 py-2.5 text-xs font-medium whitespace-nowrap transition-colors sm:text-sm ${
                 active
-                  ? "bg-primary/10 font-bold text-primary dark:bg-primary/20 dark:text-primary"
-                  : "focus:bg-neutral-100 focus:text-neutral-900 dark:focus:bg-neutral-800 dark:focus:text-neutral-100"
+                  ? "bg-primary/10 font-bold text-primary focus:bg-primary/15 focus:text-primary dark:bg-primary/20 dark:text-primary dark:focus:bg-primary/25"
+                  : "text-neutral-700 hover:bg-neutral-100 focus:bg-neutral-100 focus:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 dark:focus:text-neutral-100"
               }`}
             >
               {optionLabel(option)}
@@ -97,7 +100,7 @@ export default function SearchFilterBar({
     sortBy !== "Default";
 
   return (
-    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-4 sm:px-8 md:px-16 lg:px-24">
+    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-4 sm:px-6 md:px-12 lg:px-20">
       {/* Search input */}
       <div className="relative w-full sm:flex-1">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -121,7 +124,7 @@ export default function SearchFilterBar({
       </div>
 
       {/* Filter Group Container */}
-      <div className="flex w-full lg:w-auto items-center gap-2 lg:gap-3 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
+      <div className="flex w-full lg:w-auto items-center gap-2 lg:gap-3 overflow-x-auto lg:overflow-visible py-2 -my-2 px-1 -mx-1 scrollbar-none">
         {/* Category */}
         <FilterDropdown
           label={t("category")}
@@ -157,7 +160,7 @@ export default function SearchFilterBar({
             type="button"
             variant="ghost"
             onClick={onReset}
-            className="h-11 shrink-0 rounded-full bg-red-50 px-4 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100 sm:px-5 sm:text-sm dark:bg-red-950/40 dark:text-red-400"
+            className="h-11 shrink-0 rounded-full border-0 bg-red-50 px-4 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100 sm:px-5 sm:text-sm dark:bg-red-950/40 dark:text-red-400"
           >
             {t("resetFilters")}
           </Button>
@@ -165,7 +168,7 @@ export default function SearchFilterBar({
           <Button
             type="button"
             variant="ghost"
-            className="h-11 shrink-0 rounded-full bg-white px-4 sm:px-5 font-medium text-neutral-800 shadow-sm hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200"
+            className="h-11 shrink-0 rounded-full border-0 bg-white px-4 text-xs font-medium text-neutral-800 shadow-sm hover:bg-neutral-50 sm:px-5 sm:text-sm dark:bg-neutral-900 dark:text-neutral-200"
           >
             <ListFilter className="mr-1.5 h-4 w-4" />
             {t("filter")}

@@ -197,7 +197,7 @@ export default function StoreDetail({
 
   return (
     <div className="mx-auto max-w-362.5 space-y-10 py-6 px-4 sm:px-10 dark:bg-background">
-      <div className="mb-4 flex items-center justify-between px-4 sm:px-8 md:px-14 lg:px-23">
+      <div className="mb-4 flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-20">
         <Link
           href="/store"
           className="flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-50"
@@ -234,44 +234,46 @@ export default function StoreDetail({
             />
           </div>
 
-          <div className="grid grid-cols-1 items-start justify-center gap-6 lg:grid-cols-[1fr_400px] lg:gap-0 lg:pr-25">
-            <div className="min-w-0 space-y-2">
-              {hasFilteredItems ? (
-                menuSections.map(([groupTitle, items]) => (
-                  <ProductList key={groupTitle} title={groupTitle} items={items} />
-                ))
-              ) : hasRealItems ? (
-                <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
-                  <UtensilsCrossed className="h-8 w-8 text-neutral-400" />
-                  <p className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
-                    {t("detail.noItemsFound")}
-                  </p>
-                  <p className="max-w-xs text-sm text-muted-foreground">
-                    {t("detail.noItemsDescription")}
-                  </p>
-                  <button
-                    onClick={handleResetFilters}
-                    className="mt-2 rounded-full bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90"
-                  >
-                    {t("filters.resetFilters")}
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3 px-6 py-20 text-center">
-                  <UtensilsCrossed className="h-8 w-8 text-neutral-300" />
-                  <p className="text-base font-medium text-neutral-700 dark:text-neutral-200">
-                    {t("detail.noMenuItems")}
-                  </p>
-                  <p className="max-w-xs text-sm text-muted-foreground">
-                    {t("detail.noMenuItemsDescription")}
-                  </p>
-                </div>
-              )}
-            </div>
+          <div className="px-4 sm:px-6 md:px-12 lg:px-20">
+            <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
+              <div className="min-w-0 space-y-2">
+                {hasFilteredItems ? (
+                  menuSections.map(([groupTitle, items]) => (
+                    <ProductList key={groupTitle} title={groupTitle} items={items} />
+                  ))
+                ) : hasRealItems ? (
+                  <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
+                    <UtensilsCrossed className="h-8 w-8 text-neutral-400" />
+                    <p className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
+                      {t("detail.noItemsFound")}
+                    </p>
+                    <p className="max-w-xs text-sm text-muted-foreground">
+                      {t("detail.noItemsDescription")}
+                    </p>
+                    <button
+                      onClick={handleResetFilters}
+                      className="mt-2 rounded-full bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90"
+                    >
+                      {t("filters.resetFilters")}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-3 px-6 py-20 text-center">
+                    <UtensilsCrossed className="h-8 w-8 text-neutral-300" />
+                    <p className="text-base font-medium text-neutral-700 dark:text-neutral-200">
+                      {t("detail.noMenuItems")}
+                    </p>
+                    <p className="max-w-xs text-sm text-muted-foreground">
+                      {t("detail.noMenuItemsDescription")}
+                    </p>
+                  </div>
+                )}
+              </div>
 
-            <div className="hidden lg:block lg:pt-8">
-              <div className="sticky top-6">
-                <CartSidebar slug={slug} businessId={storeDetail?.id} storeCurrency={currency} />
+              <div className="hidden lg:block lg:pt-4">
+                <div className="sticky top-6">
+                  <CartSidebar slug={slug} businessId={storeDetail?.id} storeCurrency={currency} />
+                </div>
               </div>
             </div>
           </div>

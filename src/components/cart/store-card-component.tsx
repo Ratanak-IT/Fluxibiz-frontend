@@ -103,7 +103,7 @@ export function StoreCardComponent({ store }: { store: StoreCart }) {
                         className="gap-1.5 whitespace-nowrap text-xs text-red-500 hover:bg-red-50 hover:text-red-600 disabled:opacity-40 dark:hover:bg-destructive/10"
                     >
                         <Trash2 className="h-3.5 w-3.5" />
-                        Remove shop
+                        Remove all items
                     </Button>
                 </div>
             </div>
