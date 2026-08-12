@@ -215,6 +215,7 @@ export default function CheckoutPage({
                                 </span>
                             </div>
                         ))}
+                        
                     </div>
 
                     <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-border">

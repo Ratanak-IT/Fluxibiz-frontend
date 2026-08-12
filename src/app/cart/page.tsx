@@ -14,7 +14,7 @@ export default function CartPage() {
     return (
         <div className="mx-auto min-h-screen max-w-362.5">
             <div className="px-6 py-7.5 lg:mx-25">
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-2 flex items-center justify-between sm:mb-3">
                     <h1 className="text-3xl font-bold text-green-600">{t("title")}</h1>
 
                     <Link href="/store">

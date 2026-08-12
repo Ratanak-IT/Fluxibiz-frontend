@@ -158,12 +158,12 @@ export default function StoreFilterComponent({
     categoryItem.subCategories && categoryItem.subCategories.length > 0
       ? categoryItem.subCategories
       : [
-          {
-            id: categoryItem.id,
-            name: categoryItem.name,
-            slug: categoryItem.slug,
-          },
-        ],
+        {
+          id: categoryItem.id,
+          name: categoryItem.name,
+          slug: categoryItem.slug,
+        },
+      ],
   );
 
   const visibleTypes = allTypes.slice(0, VISIBLE_COUNT);
@@ -426,7 +426,7 @@ export default function StoreFilterComponent({
                 <button
                   type="button"
                   aria-label={t("openFilters")}
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-white text-primary shadow-none outline-none transition-all duration-200 hover:bg-primary/5 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-primary/50 dark:bg-neutral-900"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-neutral-200/70 bg-white shadow-sm outline-none transition-colors duration-200 hover:bg-neutral-200/80 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
                 >
                   <SlidersHorizontal strokeWidth={2} className="h-4 w-4 text-primary" />
                 </button>

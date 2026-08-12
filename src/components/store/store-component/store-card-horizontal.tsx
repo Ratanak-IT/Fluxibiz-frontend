@@ -89,8 +89,9 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
     flex-row
     items-start
     gap-3
-    rounded-xl
-    p-2
+    rounded-2xl
+    p-2.5
+    mt-3
     text-card-foreground
     shadow-sm
     transition-all

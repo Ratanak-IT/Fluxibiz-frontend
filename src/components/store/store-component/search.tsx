@@ -204,9 +204,9 @@ const SearchDrawer = ({
             <button
               type="button"
               aria-label="Open search"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-primary text-primary hover:bg-primary/10 transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200/70 bg-white shadow-sm transition-colors duration-200 hover:bg-neutral-200/80 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800"
             >
-              <Search className="h-4 w-4 text-primary" strokeWidth={2} />
+              <Search className="h-4 w-4 text-neutral-900 dark:text-neutral-100" />
             </button>
           }
         />
@@ -250,7 +250,7 @@ const SearchDrawer = ({
                 text-foreground
                 placeholder:text-muted-foreground
                 focus:outline-none
-                focus:ring-2
+                focus:ring-1
                 focus:ring-primary/30
                 sm:h-10
                 sm:text-base
@@ -288,7 +288,7 @@ const SearchDrawer = ({
                   Looking for &quot;{currentValue}&quot;...
                 </div>
               ) : results.length > 0 ? (
-                <div className="no-scrollbar space-y-0.5 xl:max-h-80 xl:overflow-y-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 no-scrollbar xl:max-h-80 xl:overflow-y-auto">
                   {results.map((store) => (
                     <DialogClose key={store.id}>
                       <Link
@@ -298,11 +298,10 @@ const SearchDrawer = ({
                           flex
                           w-full
                           items-center
-                          gap-3
-                          rounded-md
-                          px-2.5
-                          py-2
-                          text-sm
+                          gap-3.5
+                          rounded-xl
+                          px-3.5
+                          py-2.5
                           text-foreground
                           dark:text-[#f3f7f4]
                           transition-colors
@@ -314,17 +313,17 @@ const SearchDrawer = ({
                           <img
                             src={store.image}
                             alt={store.name}
-                            className="h-8 w-8 shrink-0 rounded-full object-cover"
+                            className="h-12 w-12 shrink-0 rounded-full object-cover"
                           />
                         ) : (
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 text-xs font-semibold text-primary dark:text-[#35cc60]">
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 text-sm font-semibold text-primary dark:text-[#35cc60]">
                             {store.name?.charAt(0)}
                           </div>
                         )}
-                        <div className="min-w-0">
-                          <p className="truncate font-medium dark:text-[#f3f7f4]">{store.name}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-semibold text-base dark:text-[#f3f7f4]">{store.name}</p>
                           {store.category && (
-                            <p className="truncate text-xs text-muted-foreground dark:text-[#a7b4ad]">
+                            <p className="truncate text-xs sm:text-sm text-muted-foreground dark:text-[#a7b4ad]">
                               {store.category}
                             </p>
                           )}

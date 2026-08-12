@@ -80,10 +80,10 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
     const otherShops = scoped ? cart.storeCount - 1 : 0;
 
     return (
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-8">
             {scoped ? (
                 otherShops > 0 && (
-                    <p className="-mt-8 text-sm text-neutral-500 dark:text-muted-foreground">
+                    <p className="-mt-1 mb-2 text-sm text-neutral-500 dark:text-muted-foreground sm:mb-4">
                         Paying {scoped.name} ·{" "}
                         <Link href="/cart" className="text-green-600 hover:underline">
                             {otherShops} other {otherShops === 1 ? "shop" : "shops"} in your cart
@@ -92,7 +92,7 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
                 )
             ) : (
                 cart.storeCount > 1 && (
-                    <p className="-mt-8 text-sm text-neutral-500 dark:text-muted-foreground">
+                    <p className="-mt-1 mb-2 text-sm text-neutral-500 dark:text-muted-foreground sm:mb-4">
                         {cart.storeCount} shops · you pay one shop at a time
                     </p>
                 )

@@ -108,7 +108,7 @@ export function ProductStorefrontUI({
     const variantIndex = variants.findIndex(v => v.id === selectedVariant?.id);
 
     return (
-        <div className="max-h-[90vh] overflow-y-auto">
+        <div className="max-h-[90vh] overflow-y-auto scrollbar-none">
             {onClose ? (
                 <div className="flex items-center gap-2 px-6 pt-6 text-sm text-[#657064] dark:text-[#94a3b8]">
                     <button type="button" onClick={onClose} className="hover:text-primary transition-colors flex items-center gap-2">
@@ -280,7 +280,7 @@ export function ProductStorefrontUI({
                                     aria-label="Decrease quantity"
                                     disabled={outOfStock}
                                     onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                                    className={cn("text-danger cursor-pointer", outOfStock && "opacity-40 cursor-not-allowed")}
+                                    className={cn("text-red-500 dark:text-red-400 hover:text-red-600 transition-colors cursor-pointer", outOfStock && "opacity-40 cursor-not-allowed")}
                                 >
                                     <Minus className="size-4" />
                                 </button>
@@ -340,11 +340,6 @@ export function ProductStorefrontUI({
                         </div>
                     ) : null}
 
-                    {item.sku ? (
-                        <p className="text-xs text-[#7b857a] dark:text-[#94a3b8]">
-                            SKU {item.sku}
-                        </p>
-                    ) : null}
                 </div>
             </div>
 
@@ -442,7 +437,7 @@ function Gallery({
 
     return (
         <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex flex-row sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto max-w-full shrink-0">
+            <div className="flex flex-row sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto max-w-full shrink-0 scrollbar-none">
                 {images.map((image, position) => (
                     <button
                         key={`${image}-${position}`}
@@ -451,10 +446,10 @@ function Gallery({
                         aria-pressed={position === index}
                         onClick={() => onSelect(position)}
                         className={cn(
-                            "relative size-14 shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer",
+                            "relative size-14 shrink-0 overflow-hidden rounded-xl border-0 transition-all cursor-pointer",
                             position === index
-                                ? "border-primary shadow-xs scale-[1.02]"
-                                : "border-transparent dark:border-[#242937] hover:border-primary/40 opacity-70 hover:opacity-100",
+                                ? "shadow-xs scale-[1.02] opacity-100 ring-0"
+                                : "opacity-70 hover:opacity-100",
                         )}
                     >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
