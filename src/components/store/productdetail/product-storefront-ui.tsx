@@ -453,7 +453,7 @@ function Gallery({
                         className={cn(
                             "relative size-14 shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer",
                             position === index
-                                ? "border-primary ring-2 ring-primary/20 shadow-xs scale-[1.02]"
+                                ? "border-primary shadow-xs scale-[1.02]"
                                 : "border-transparent dark:border-[#242937] hover:border-primary/40 opacity-70 hover:opacity-100",
                         )}
                     >
