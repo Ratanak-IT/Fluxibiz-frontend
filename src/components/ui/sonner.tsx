@@ -12,7 +12,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
         <Sonner
             theme={theme as ToasterProps["theme"]}
             className="toaster group"
-            style={{ top: "80px" }}
+            style={{
+                top: "80px",
+                "--toast-close-button-start": "unset",
+                "--toast-close-button-end": "0",
+                "--toast-close-button-transform": "translate(35%, -35%)",
+            } as React.CSSProperties}
             toastOptions={{
                 classNames: {
                     toast:
@@ -22,6 +27,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
                         "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground font-medium",
                     cancelButton:
                         "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground font-medium",
+                    closeButton:
+                        "group-[.toast]:left-auto group-[.toast]:right-0 group-[.toast]:translate-x-1/3 group-[.toast]:-translate-y-1/3",
                 },
             }}
             richColors

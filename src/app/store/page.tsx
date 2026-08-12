@@ -22,7 +22,7 @@ import StoreFilterComponent from "@/components/store/store-component/store-filte
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between gap-3 mb-0">
       <h2 className="text-xl font-bold">{title}</h2>
     </div>
   );
@@ -84,13 +84,13 @@ function ScrollRow({ children }: { children: React.ReactNode }) {
           className="
             absolute left-1 top-1/2 z-20 -translate-y-1/2
             flex h-10 w-10 items-center justify-center
-            rounded-full bg-white shadow-lg
-            opacity-0 transition-opacity duration-200
+            rounded-full bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 shadow-md border border-neutral-200/60 dark:border-neutral-800
+            opacity-0 transition-colors duration-200
             group-hover/row:opacity-100
-            hover:bg-accent
+            hover:bg-neutral-200/80 dark:hover:bg-neutral-800
           "
         >
-          <ChevronLeft className="h-5 w-5 text-foreground" />
+          <ChevronLeft className="h-5 w-5 text-neutral-900 dark:text-neutral-100" />
         </button>
       )}
 
@@ -102,13 +102,13 @@ function ScrollRow({ children }: { children: React.ReactNode }) {
           className="
             absolute right-1 top-1/2 z-20 -translate-y-1/2
             flex h-10 w-10 items-center justify-center
-            rounded-full bg-white shadow-lg
-            opacity-0 transition-opacity duration-200
+            rounded-full bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 shadow-md border border-neutral-200/60 dark:border-neutral-800
+            opacity-0 transition-colors duration-200
             group-hover/row:opacity-100
-            hover:bg-accent
+            hover:bg-neutral-200/80 dark:hover:bg-neutral-800
           "
         >
-          <ChevronRight className="h-5 w-5 text-foreground" />
+          <ChevronRight className="h-5 w-5 text-neutral-900 dark:text-neutral-100" />
         </button>
       )}
     </div>
@@ -146,7 +146,7 @@ function RecommendedSection() {
 
   if (isLoading && storesToDisplay.length === 0) {
     return (
-      <section className="space-y-3">
+      <section className="space-y-0">
         <SectionHeader title={t("recommend")} />
         <RecommendedRowSkeleton count={4} />
       </section>
@@ -158,7 +158,7 @@ function RecommendedSection() {
   }
 
   return (
-    <section className="space-y-3">
+    <section className="space-y-0">
       <SectionHeader title={t("recommend")} />
       <ScrollRow>
         {storesToDisplay.map((store) => (
@@ -192,7 +192,7 @@ function StoresByCategorySection({
 
   if (isLoading) {
     return (
-      <section className="space-y-3">
+      <section className="space-y-0">
         <SectionHeader title={t("common.stores")} />
         <StoreRowSkeleton count={4} />
       </section>
@@ -231,7 +231,7 @@ function StoresByCategorySection({
   return (
     <div className="space-y-10">
       {categoriesList.map(([catName, catStores]) => (
-        <section key={catName} className="space-y-3">
+        <section key={catName} className="space-y-0">
           <SectionHeader title={catName} />
           <StoreRow items={catStores.map(toStoreCard)} />
         </section>
@@ -249,7 +249,7 @@ function PromotionsSection() {
 
   if (isLoading) {
     return (
-      <section className="space-y-3">
+      <section className="space-y-0">
         <SectionHeader title={t("promotions")} />
         <StoreRowSkeleton count={4} />
       </section>
@@ -261,7 +261,7 @@ function PromotionsSection() {
   }
 
   return (
-    <section className="space-y-3">
+    <section className="space-y-0">
       <SectionHeader title={t("promotions")} />
       <StoreRow items={promoStores} />
     </section>

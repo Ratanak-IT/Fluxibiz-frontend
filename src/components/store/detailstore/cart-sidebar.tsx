@@ -56,7 +56,7 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
   const canCheckout = lines.length > 0 && Boolean(slug);
 
   return (
-    <Card className="w-full gap-0 rounded-2xl border-neutral-100 p-4 shadow-sm sm:p-5 dark:border-neutral-800 dark:bg-card">
+    <Card className="w-full gap-0 rounded-2xl border-neutral-100 bg-white p-4 shadow-sm sm:p-5 dark:border-neutral-800 dark:bg-card">
       <CardContent className="space-y-4 p-0">
         <div className="flex items-center justify-between">
           <p className="text-base font-bold text-neutral-900 dark:text-neutral-50">

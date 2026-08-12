@@ -284,7 +284,7 @@ function StoreCheckoutButton({
         <Link
             href={href}
             onClick={onNavigate}
-            className={`${shell} border-neutral-900 bg-white text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-border dark:bg-background dark:text-card-foreground dark:hover:bg-card`}
+            className={`${shell} border-primary bg-white text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-border dark:bg-background dark:text-card-foreground dark:hover:bg-card`}
         >
             {pendingHere ? t("finishPayment") : t("checkout")}
         </Link>

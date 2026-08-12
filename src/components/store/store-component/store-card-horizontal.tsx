@@ -91,6 +91,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
     gap-3
     rounded-xl
     p-2
+    mt-3
     text-card-foreground
     shadow-sm
     transition-all

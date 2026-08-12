@@ -340,11 +340,6 @@ export function ProductStorefrontUI({
                         </div>
                     ) : null}
 
-                    {item.sku ? (
-                        <p className="text-xs text-[#7b857a] dark:text-[#94a3b8]">
-                            SKU {item.sku}
-                        </p>
-                    ) : null}
                 </div>
             </div>
 

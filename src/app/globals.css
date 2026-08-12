@@ -183,7 +183,12 @@
     margin: 0;
   }
 
-  p, td, th, dd, dt, label {
+  p,
+  td,
+  th,
+  dd,
+  dt,
+  label {
     font-size: clamp(16px, 1rem, 3rem);
   }
 
@@ -205,6 +210,7 @@
 }
 
 @layer utilities {
+
   :not(button):not(input):not(select):not(textarea).text-xs,
   :not(button):not(input):not(select):not(textarea).text-sm {
     font-size: 16px;
@@ -277,8 +283,7 @@
 }
 
 .landing-reveal {
-  animation: landing-reveal var(--reveal-duration, 500ms) ease-out
-    var(--reveal-delay, 0ms) both;
+  animation: landing-reveal var(--reveal-duration, 500ms) ease-out var(--reveal-delay, 0ms) both;
 }
 
 .scroll-reveal {
@@ -337,6 +342,7 @@
 }
 
 @keyframes hero-float {
+
   0%,
   100% {
     transform: translateY(0);
@@ -365,6 +371,7 @@
    gently bobs around that lifted position — the keyframe bakes the lift in as
    its baseline so it doesn't fight with a separate static translate. */
 @keyframes pricing-popular-float {
+
   0%,
   100% {
     transform: translateY(-16px);
@@ -382,6 +389,7 @@
 }
 
 @keyframes hero-float-lg {
+
   0%,
   100% {
     transform: translateY(0);
@@ -440,6 +448,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -464,7 +473,7 @@
   }
 
   .pricing-popular-float-lg {
-    animation:alternate;
+    animation: alternate;
   }
 
   .hero-wave-dash {
@@ -481,6 +490,7 @@
     stroke-dashoffset: 0;
   }
 }
+
 @keyframes marquee-loop {
   to {
     transform: translate3d(-50%, 0, 0);
