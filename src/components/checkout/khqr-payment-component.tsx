@@ -50,14 +50,17 @@ export default function KhqrPaymentComponent({
     onCancelled,
     onRegenerate,
     regenerating,
+    overrideCurrency,
 }: {
     session: CheckoutSession;
     onPaid: () => void;
     onCancelled: () => void;
     onRegenerate: () => void;
     regenerating: boolean;
+    overrideCurrency?: string;
 }) {
   const t = useTranslations("Checkout");
+  const currency = overrideCurrency || session.currency;
     const [phase, setPhase] = useState<Phase>("waiting");
     const [remaining, setRemaining] = useState(() => secondsLeft(session.expiresAt));
     const [notice, setNotice] = useState<string | null>(null);
@@ -140,9 +143,12 @@ export default function KhqrPaymentComponent({
         try {
             await cancelCheckout(orderId).unwrap();
             setPhase("cancelled");
+            toast.info(t("orderCancelledToast"));
             onCancelled();
         } catch (error) {
-            setNotice(checkoutErrorMessage(error, t("couldNotCancel")));
+            const msg = checkoutErrorMessage(error, t("couldNotCancel"));
+            setNotice(msg);
+            toast.error(msg);
         }
     };
 
@@ -227,7 +233,7 @@ export default function KhqrPaymentComponent({
                     {session.qrImage ? (
                         <Image
                             src={session.qrImage}
-                            alt={t("qrAlt", { amount: formatMoney(session.total, session.currency), storeName: session.storeName })}
+                            alt={t("qrAlt", { amount: formatMoney(session.total, currency), storeName: session.storeName })}
                             width={240}
                             height={240}
                             unoptimized
@@ -249,7 +255,7 @@ export default function KhqrPaymentComponent({
                 </div>
 
                 <p className="mt-5 text-3xl font-bold text-green-600 dark:text-primary">
-                    {formatMoney(session.total, session.currency)}
+                    {formatMoney(session.total, currency)}
                 </p>
 
                 <p className="mt-1 text-sm text-neutral-600 dark:text-muted-foreground">

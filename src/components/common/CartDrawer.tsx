@@ -33,13 +33,20 @@ import {
     useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
 import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
+import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import { useAuth } from "@/features/auth/useAuth";
 import {
     formatMoney,
     resolveMediaUrl,
+    isCartLineOutOfStock,
+    apiErrorMessage,
+    formatStockErrorMessage,
     type CartLine,
     type StoreCart,
 } from "@/lib/type/cartType";
+import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type CartDrawerProps = {
     children?: ReactNode;
@@ -66,76 +73,74 @@ export default function CartDrawer({
 
     const totalItems = cart?.totalItems ?? 0;
 
-    return (
-        <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger className={triggerClassName}>
-                {children ? (
-                    children
-                ) : (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={`relative rounded-full ${buttonClassName ?? ""}`}
-                        aria-label={`Shopping cart with ${totalItems} items`}
-                    >
-                        <ShoppingCart size={iconSize} className={iconClassName} />
+    const triggerElement = children ? (
+        children as React.ReactElement
+    ) : (
+        <Button
+            variant="ghost"
+            size="icon"
+            className={`relative rounded-full ${buttonClassName ?? ""}`}
+            aria-label={`Shopping cart with ${totalItems} items`}
+        >
+            <ShoppingCart size={iconSize} className={iconClassName} />
 
-                        {totalItems > 0 && (
-                            <span className="absolute -right-1 top-0.5 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
-                                {totalItems > 99 ? "99+" : totalItems}
-                            </span>
-                        )}
-                    </Button>
+            {totalItems > 0 && (
+                <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+                    {totalItems > 99 ? "99+" : totalItems}
+                </span>
+            )}
+        </Button>
+    )
+}
+            </SheetTrigger >
+
+    <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
+        <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">
+            <SheetTitle className="flex items-center gap-2 text-xl font-bold text-green-600">
+                {t("title")}
+                {cart && cart.storeCount > 0 && (
+                    <span className="text-sm font-normal text-neutral-500 dark:text-muted-foreground">
+                        · {t("shopCount", { count: cart.storeCount })}
+                    </span>
                 )}
-            </SheetTrigger>
+            </SheetTitle>
+        </SheetHeader>
 
-            <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
-                <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">
-                    <SheetTitle className="flex items-center gap-2 text-xl font-bold text-green-600">
-                        {t("title")}
-                        {cart && cart.storeCount > 0 && (
-                            <span className="text-sm font-normal text-neutral-500 dark:text-muted-foreground">
-                                · {t("shopCount", { count: cart.storeCount })}
-                            </span>
-                        )}
-                    </SheetTitle>
-                </SheetHeader>
+        <div className="flex-1 overflow-y-auto px-5 py-4">
+            {isLoading && <DrawerSkeleton />}
 
-                <div className="flex-1 overflow-y-auto px-5 py-4">
-                    {isLoading && <DrawerSkeleton />}
+            {!isLoading && (!cart || cart.stores.length === 0) && <EmptyState />}
 
-                    {!isLoading && (!cart || cart.stores.length === 0) && <EmptyState />}
-
-                    {!isLoading && cart && cart.stores.length > 0 && (
-                        <div className="flex flex-col gap-6">
-                            {cart.stores.map((store) => (
-                                <StoreSection
-                                    key={store.businessId}
-                                    store={store}
-                                    onNavigate={() => setOpen(false)}
-                                />
-                            ))}
-                        </div>
-                    )}
+            {!isLoading && cart && cart.stores.length > 0 && (
+                <div className="flex flex-col gap-6">
+                    {cart.stores.map((store) => (
+                        <StoreSection
+                            key={store.businessId}
+                            store={store}
+                            onNavigate={() => setOpen(false)}
+                        />
+                    ))}
                 </div>
+            )}
+        </div>
 
-                {cart && cart.stores.length > 0 && (
-                    <div className="border-t border-neutral-200 px-5 py-3 dark:border-border">
-                        <p className="text-center text-xs leading-relaxed text-neutral-500 dark:text-muted-foreground">
-                            {t("itemCount", { count: cart.totalItems })} · {t("multipleShops", { count: cart.storeCount })}
-                        </p>
+        {cart && cart.stores.length > 0 && (
+            <div className="border-t border-neutral-200 px-5 py-3 dark:border-border">
+                <p className="text-center text-xs leading-relaxed text-neutral-500 dark:text-muted-foreground">
+                    {t("itemCount", { count: cart.totalItems })} · {t("multipleShops", { count: cart.storeCount })}
+                </p>
 
-                        <Link
-                            href="/cart"
-                            onClick={() => setOpen(false)}
-                            className="mt-1 block text-center text-xs font-medium text-neutral-400 underline-offset-2 hover:text-neutral-600 hover:underline dark:text-muted-foreground"
-                        >
-                            {t("seeSummary")}
-                        </Link>
-                    </div>
-                )}
-            </SheetContent>
-        </Sheet>
+                <Link
+                    href="/cart"
+                    onClick={() => setOpen(false)}
+                    className="mt-1 block text-center text-xs font-medium text-neutral-400 underline-offset-2 hover:text-neutral-600 hover:underline dark:text-muted-foreground"
+                >
+                    {t("seeSummary")}
+                </Link>
+            </div>
+        )}
+    </SheetContent>
+        </Sheet >
     );
 }
 
@@ -148,6 +153,9 @@ function StoreSection({
 }) {
     const t = useTranslations("Cart");
     const [removeStore, { isLoading: isRemoving }] = useRemoveCartStoreMutation();
+
+    const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
+    const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
 
     const logoUrl = resolveMediaUrl(store.logo);
 
@@ -207,7 +215,7 @@ function StoreSection({
 
             <div className="flex flex-col gap-2">
                 {store.items.map((line) => (
-                    <LineRow key={line.cartItemId} line={line} currency={store.currency} />
+                    <LineRow key={line.cartItemId} line={line} currency={effectiveCurrency} />
                 ))}
             </div>
 
@@ -217,7 +225,7 @@ function StoreSection({
                 </span>
 
                 <span className="text-base font-bold text-green-600 dark:text-primary">
-                    {formatMoney(store.subtotal, store.currency)}
+                    {formatMoney(store.subtotal, effectiveCurrency)}
                 </span>
             </div>
 
@@ -282,6 +290,7 @@ function StoreCheckoutButton({
 }
 
 function LineRow({ line, currency }: { line: CartLine; currency: string }) {
+    const tStore = useTranslations("Store");
     const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
     const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
@@ -294,27 +303,50 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
 
     const imageUrl = resolveMediaUrl(line.imageUrl);
     const busy = isUpdating || isRemoving;
+    const outOfStock = isCartLineOutOfStock(line);
 
     const handleDecrease = () => {
         if (pendingQty <= 1) {
-            removeItem(line.cartItemId);
+            removeItem(line.cartItemId).unwrap().catch((err: any) => {
+                toast.error(apiErrorMessage(err, "Failed to remove item"));
+            });
         } else {
             const nextQty = pendingQty - 1;
             setPendingQty(nextQty);
-            updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+            updateItem({ cartItemId: line.cartItemId, quantity: nextQty })
+                .unwrap()
+                .catch((err: any) => {
+                    setPendingQty(line.quantity);
+                    toast.error(apiErrorMessage(err, "Failed to update item"));
+                });
         }
     };
 
     const handleIncrease = () => {
         const nextQty = pendingQty + 1;
         setPendingQty(nextQty);
-        updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+        updateItem({ cartItemId: line.cartItemId, quantity: nextQty })
+            .unwrap()
+            .catch((err: any) => {
+                setPendingQty(line.quantity);
+                const msg = formatStockErrorMessage(err, line.name);
+                const lower = msg.toLowerCase();
+                if (
+                    lower.includes("stock") ||
+                    lower.includes("enough") ||
+                    lower.includes("negative") ||
+                    lower.includes("unavailable")
+                ) {
+                    if (line.itemId) markItemOutOfStock(line.itemId);
+                }
+                toast.error(msg);
+            });
     };
 
     const currentSubtotal = line.unitPrice * pendingQty;
 
     return (
-        <div className="flex items-center gap-3 rounded-lg bg-white p-2 dark:bg-background">
+        <div className={cn("flex items-center gap-3 rounded-lg bg-white p-2 dark:bg-background relative", outOfStock && "opacity-90")}>
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-card">
                 {imageUrl ? (
                     <Image
@@ -322,7 +354,7 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                         alt={line.name}
                         width={56}
                         height={56}
-                        className="h-full w-full object-cover"
+                        className={cn("h-full w-full object-cover", outOfStock && "filter blur-[1.5px]")}
                     />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center">
@@ -332,9 +364,16 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
             </div>
 
             <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-neutral-900 dark:text-card-foreground">
-                    {line.name}
-                </p>
+                <div className="flex items-center gap-1.5">
+                    <p className="truncate text-sm font-semibold text-neutral-900 dark:text-card-foreground">
+                        {line.name}
+                    </p>
+                    {outOfStock && (
+                        <span className="text-[10px] font-bold text-red-600 dark:text-red-500 shrink-0">
+                            • {tStore("detail.outOfStock") || "Out of Stock"}
+                        </span>
+                    )}
+                </div>
 
                 {line.description && (
                     <p className="line-clamp-1 text-xs text-neutral-500 dark:text-muted-foreground">
@@ -361,6 +400,7 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                         variant="outline"
                         size="icon"
                         onClick={handleDecrease}
+                        disabled={busy}
                         className="h-5 w-5 text-yellow-400 dark:border-border dark:bg-card"
                         aria-label="Decrease quantity"
                     >
@@ -375,7 +415,8 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                         variant="outline"
                         size="icon"
                         onClick={handleIncrease}
-                        className="h-5 w-5 text-green-600 dark:border-border dark:bg-card dark:text-primary"
+                        disabled={busy || outOfStock}
+                        className="h-5 w-5 text-green-600 dark:border-border dark:bg-card dark:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
                         aria-label="Increase quantity"
                     >
                         <Plus className="h-3 w-3" />

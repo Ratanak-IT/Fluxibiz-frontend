@@ -6,10 +6,11 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
-import { StorefrontItemResponse, ItemVariant } from "@/lib/type/storeType";
+import { StorefrontItemResponse, ItemVariant, primaryItemImage } from "@/lib/type/storeType";
 import { useAuth } from "@/features/auth/useAuth";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
-import { apiErrorMessage, isUnauthorized } from "@/lib/type/cartType";
+import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
+import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
 interface ProductDetailProps {
   item?: StorefrontItemResponse;
@@ -105,6 +106,12 @@ export default function ProductDetail({
         itemId: item.id,
         quantity,
         variantId: selectedVariant?.id,
+        itemDetails: {
+          name: item.name,
+          price: selectedVariant?.price ?? item.price,
+          imageUrl: primaryItemImage(item),
+          currency: currency,
+        },
       }).unwrap();
       
       toast.success(tCart("addedToCart"));
@@ -112,7 +119,12 @@ export default function ProductDetail({
         if (isUnauthorized(err)) {
             login();
         } else {
-            toast.error(apiErrorMessage(err) || tCart("failedToAdd"));
+            const msg = formatStockErrorMessage(err, item?.name);
+            const lower = msg.toLowerCase();
+            if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
+                if (item?.id) markItemOutOfStock(item.id);
+            }
+            toast.error(msg);
         }
     }
   }

@@ -416,7 +416,7 @@ export function FeatureCta() {
           )}
         >
           <Button
-            render={<Link href="/register" />}
+            render={<Link href="/register/business" />}
             nativeButton={false}
             className={cn(
               "h-13 rounded-full bg-primary px-7",
@@ -430,7 +430,7 @@ export function FeatureCta() {
           </Button>
 
           <Button
-            render={<a href="mailto:ipos.istad@gmail.com" />}
+            render={<Link href="/support#contact" />}
             nativeButton={false}
             variant="outline"
             className={cn(

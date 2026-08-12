@@ -16,6 +16,7 @@ import { attributeIcon } from "@/lib/api/attribute-icons";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/store/productdetail/product";
 import { StorefrontItemResponse, primaryItemImage, itemImageUrl, ItemAttributeValue, ItemAttribute, DescriptionBlockResponse } from "@/lib/type/storeType";
+import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
 // We extract displayOf for options
 function displayOf(value: ItemAttributeValue) {
@@ -56,6 +57,7 @@ export function ProductStorefrontUI({
     const t = useTranslations("Store");
     const attributes = item.attributes || [];
     const variants = item.variants || [];
+    const outOfStock = isItemOutOfStock(item);
 
     const options = attributes.filter(
         (attribute) =>
@@ -129,6 +131,7 @@ export function ProductStorefrontUI({
                     name={item.name}
                     index={imageIndex}
                     onSelect={setImageIndex}
+                    outOfStock={outOfStock}
                 />
 
                 <div className="flex flex-col gap-4">
@@ -141,6 +144,13 @@ export function ProductStorefrontUI({
                             {item.name || "Untitled item"}
                         </h2>
                     </div>
+
+                    {outOfStock && (
+                        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-red-600 dark:border-red-800/60 dark:bg-red-950/40 dark:text-red-400 font-bold text-sm flex items-center gap-2">
+                            <span>⚠️</span>
+                            <span>{t("detail.outOfStock") || "Out of Stock"}</span>
+                        </div>
+                    )}
 
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-2xl font-bold text-danger">
@@ -268,8 +278,9 @@ export function ProductStorefrontUI({
                                 <button
                                     type="button"
                                     aria-label="Decrease quantity"
+                                    disabled={outOfStock}
                                     onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                                    className="text-danger cursor-pointer"
+                                    className={cn("text-danger cursor-pointer", outOfStock && "opacity-40 cursor-not-allowed")}
                                 >
                                     <Minus className="size-4" />
                                 </button>
@@ -279,8 +290,9 @@ export function ProductStorefrontUI({
                                 <button
                                     type="button"
                                     aria-label="Increase quantity"
+                                    disabled={outOfStock}
                                     onClick={() => setQuantity((current) => current + 1)}
-                                    className="text-primary cursor-pointer"
+                                    className={cn("text-primary cursor-pointer", outOfStock && "opacity-40 cursor-not-allowed")}
                                 >
                                     <Plus className="size-4" />
                                 </button>
@@ -289,11 +301,14 @@ export function ProductStorefrontUI({
                             <button
                                 type="button"
                                 onClick={onAddToCart}
-                                disabled={isAddingToCart}
-                                className="flex h-12 items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-white shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                disabled={isAddingToCart || outOfStock}
+                                className={cn(
+                                    "flex h-12 items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-white shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
+                                    outOfStock && "bg-neutral-300 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-300 dark:hover:bg-neutral-800 cursor-not-allowed shadow-none"
+                                )}
                             >
                                 <ShoppingBag className="size-4" />
-                                {isAddingToCart ? t("detail.adding") || "Adding..." : t("detail.add") || "Add to Cart"}
+                                {outOfStock ? (t("detail.outOfStock") || "Out of Stock") : isAddingToCart ? (t("detail.adding") || "Adding...") : (t("detail.add") || "Add to Cart")}
                             </button>
                         </>
                     )}
@@ -404,11 +419,13 @@ function Gallery({
     name,
     index,
     onSelect,
+    outOfStock,
 }: {
     images: string[];
     name: string;
     index: number;
     onSelect: (index: number) => void;
+    outOfStock?: boolean;
 }) {
     if (!images.length) {
         return (
@@ -436,7 +453,7 @@ function Gallery({
                         className={cn(
                             "relative size-14 shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer",
                             position === index
-                                ? "border-primary ring-2 ring-primary/20 shadow-xs scale-[1.02]"
+                                ? "border-primary shadow-xs scale-[1.02]"
                                 : "border-transparent dark:border-[#242937] hover:border-primary/40 opacity-70 hover:opacity-100",
                         )}
                     >
@@ -444,7 +461,7 @@ function Gallery({
                         <img
                             src={image}
                             alt=""
-                            className="size-full object-cover"
+                            className={cn("size-full object-cover", outOfStock && "filter blur-[1.5px]")}
                         />
                     </button>
                 ))}
@@ -454,7 +471,7 @@ function Gallery({
                 <img
                     src={active}
                     alt={name || "Item image"}
-                    className="size-full object-cover transition-all duration-300"
+                    className={cn("size-full object-cover transition-all duration-300", outOfStock && "filter blur-[1.5px]")}
                 />
             </div>
         </div>
@@ -499,7 +516,7 @@ function Chip({
             disabled={disabled}
             aria-pressed={active}
             className={cn(
-                "cursor-pointer rounded-lg border px-4 py-2 text-center text-sm transition-colors",
+                "max-w-full cursor-pointer break-words rounded-lg border px-4 py-2 text-center text-sm leading-5 transition-colors",
                 disabled
                     ? "cursor-not-allowed border-[#f0f1ef] dark:border-[#2a3042] bg-[#fafbfa] dark:bg-[#151821] text-[#c2c8c0] dark:text-[#64748b] line-through"
                     : active

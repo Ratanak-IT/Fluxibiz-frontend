@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown, Loader2, Search } from "lucide-react";
+import { ChevronDown, Loader2, Search, SlidersHorizontal } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -10,10 +10,18 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGetBusinessCategoryQuery } from "@/features/store-api/store-api";
 import SearchDrawer from "./search";
+import ApiErrorFallback from "@/components/common/api-error-fallback";
 
 interface StoreFilterComponentProps {
   selected?: string[];
@@ -32,6 +40,7 @@ export default function StoreFilterComponent({
 }: StoreFilterComponentProps) {
   const t = useTranslations("Store.filters");
   const [showMore, setShowMore] = useState(false);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [localSearchValue, setLocalSearchValue] = useState("");
 
@@ -39,6 +48,7 @@ export default function StoreFilterComponent({
     data: category = [],
     isLoading,
     isError,
+    refetch,
   } = useGetBusinessCategoryQuery();
 
   const currentSearchValue = searchValue ?? localSearchValue;
@@ -95,7 +105,11 @@ export default function StoreFilterComponent({
       )}
 
       {isError && !isLoading && (
-        <div className="text-sm text-destructive">{t("cannotLoadTypes")}</div>
+        <ApiErrorFallback
+          variant="compact"
+          title="មិនអាចទាញប្រភេទហាងបានឡើយ"
+          onRetry={() => refetch()}
+        />
       )}
 
       {!isLoading && !isError && (
@@ -104,13 +118,13 @@ export default function StoreFilterComponent({
             {visibleTypes.map((categoryType) => {
               const checkboxId = `store-category-${categoryType.id}`;
               return (
-                <div key={categoryType.id} className="flex items-center gap-2">
+                <div key={categoryType.id} className="flex items-center gap-2 min-w-0">
                   <Checkbox
                     id={checkboxId}
                     checked={selected.includes(categoryType.id)}
                     onCheckedChange={() => toggle(categoryType.id)}
                   />
-                  <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground">
+                  <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground min-w-0 break-words">
                     {categoryType.name}
                   </Label>
                 </div>
@@ -118,20 +132,19 @@ export default function StoreFilterComponent({
             })}
           </div>
 
-
           {extraTypes.length > 0 && (
             <Collapsible open={showMore} onOpenChange={setShowMore}>
               <CollapsibleContent className="space-y-2.5 pt-3">
                 {extraTypes.map((categoryType) => {
                   const checkboxId = `store-extra-category-${categoryType.id}`;
                   return (
-                    <div key={categoryType.id} className="flex items-center gap-2">
+                    <div key={categoryType.id} className="flex items-center gap-2 min-w-0">
                       <Checkbox
                         id={checkboxId}
                         checked={selected.includes(categoryType.id)}
                         onCheckedChange={() => toggle(categoryType.id)}
                       />
-                      <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground">
+                      <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground min-w-0 break-words">
                         {categoryType.name}
                       </Label>
                     </div>
@@ -169,46 +182,93 @@ export default function StoreFilterComponent({
       />
 
       <div className="xl:hidden">
-        <div className="group relative w-full min-w-0">
-          <Search
-            aria-hidden="true"
-            strokeWidth={1.8}
-            className="pointer-events-none absolute left-4 top-1/2 z-10 size-[18px] -translate-y-1/2 text-neutral-400 transition-colors duration-200 group-hover:text-primary group-focus-within:text-primary"
-          />
-          <Input
-            type="text"
-            value={currentSearchValue}
-            readOnly
-            onClick={() => setMobileSearchOpen(true)}
-            onFocus={(e) => {
-              e.target.blur();
-              setMobileSearchOpen(true);
-            }}
-            placeholder={t("searchPlaceholder")}
-            className="
-              h-12
-              min-w-0
-              w-full
-              rounded-full
-              border
-              border-neutral-200/70
-              bg-neutral-100/60
-              pl-11
-              pr-4
-              text-sm
-              shadow-none
-              outline-none
-              cursor-pointer
-              placeholder:truncate
-              placeholder:text-neutral-400
-              hover:bg-neutral-100
-              focus-visible:border-primary/30
-              focus-visible:ring-1
-              focus-visible:ring-primary/20
-              dark:border-neutral-800
-              dark:bg-neutral-900
-            "
-          />
+        <div className="flex w-full min-w-0 items-center gap-2.5">
+          <div className="group relative min-w-0 flex-1">
+            <Search
+              aria-hidden="true"
+              strokeWidth={1.8}
+              className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-neutral-400 transition-colors duration-200 group-hover:text-primary group-focus-within:text-primary"
+            />
+            <Input
+              type="text"
+              value={currentSearchValue}
+              readOnly
+              onClick={() => setMobileSearchOpen(true)}
+              onFocus={(e) => {
+                e.target.blur();
+                setMobileSearchOpen(true);
+              }}
+              placeholder={t("searchPlaceholder")}
+              className="
+                h-12
+                min-w-0
+                w-full
+                rounded-full
+                border
+                border-neutral-200/70
+                bg-neutral-100/60
+                pl-11
+                pr-4
+                text-sm
+                shadow-none
+                outline-none
+                cursor-pointer
+                placeholder:truncate
+                placeholder:text-neutral-400
+                hover:bg-neutral-100
+                focus-visible:border-primary/30
+                focus-visible:ring-1
+                focus-visible:ring-primary/20
+                dark:border-neutral-800
+                dark:bg-neutral-900
+              "
+            />
+          </div>
+
+          <Drawer open={mobileFilterOpen} onOpenChange={setMobileFilterOpen} showSwipeHandle>
+            <DrawerTrigger
+              render={
+                <button
+                  type="button"
+                  aria-label={t("openFilters")}
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-neutral-200/70 bg-white shadow-none outline-none transition-all duration-200 hover:bg-neutral-50 hover:text-primary focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900 text-neutral-500"
+                >
+                  <SlidersHorizontal strokeWidth={1.9} className="h-4 w-4" />
+                </button>
+              }
+            />
+            <DrawerContent className="rounded-t-[28px] border-t border-border/10 bg-card p-0 overflow-x-hidden">
+              <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
+                <div className="min-w-0">
+                  <DrawerTitle className="text-xl font-bold text-foreground truncate">{t("title")}</DrawerTitle>
+                  <p className="text-sm text-muted-foreground truncate">{t("browseByCategory")}</p>
+                </div>
+                <DrawerClose
+                  render={
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-full border border-neutral-200/70 bg-white px-3 py-2 text-sm font-medium text-foreground transition hover:bg-neutral-50 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900"
+                    >
+                      {t("close")}
+                    </button>
+                  }
+                />
+              </div>
+
+              <div className="max-h-[70vh] overflow-y-auto overflow-x-hidden p-4 sm:p-5">
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="mb-4 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
+                  >
+                    {t("resetFilters")}
+                  </button>
+                )}
+                {renderCategoryFilters()}
+              </div>
+            </DrawerContent>
+          </Drawer>
         </div>
       </div>
 

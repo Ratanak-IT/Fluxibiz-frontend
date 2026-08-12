@@ -76,6 +76,62 @@ export interface PublicStoreDetailResponse {
     promotion?: string | null;
 }
 
+export function isStoreCurrentlyOpen(
+    store?: {
+        isClosed?: boolean | null;
+        openTime?: string | null;
+        closeTime?: string | null;
+        isOpen?: boolean | null;
+    } | null,
+): boolean {
+    if (!store) return true;
+    if (store.isClosed === true) return false;
+    if (store.isOpen === false) return false;
+
+    const openStr = store.openTime;
+    const closeStr = store.closeTime;
+
+    if (!openStr || !closeStr) return true;
+
+    try {
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+        const parseTimeToMinutes = (tStr: string): number | null => {
+            let s = tStr.trim().toUpperCase();
+            const isPM = s.includes("PM");
+            const isAM = s.includes("AM");
+            s = s.replace(/AM|PM/g, "").trim();
+
+            const parts = s.split(":");
+            if (parts.length < 2) return null;
+
+            let hours = parseInt(parts[0], 10);
+            const minutes = parseInt(parts[1], 10);
+
+            if (isNaN(hours) || isNaN(minutes)) return null;
+
+            if (isPM && hours < 12) hours += 12;
+            if (isAM && hours === 12) hours = 0;
+
+            return hours * 60 + minutes;
+        };
+
+        const openMin = parseTimeToMinutes(openStr);
+        const closeMin = parseTimeToMinutes(closeStr);
+
+        if (openMin === null || closeMin === null) return true;
+
+        if (openMin <= closeMin) {
+            return currentMinutes >= openMin && currentMinutes <= closeMin;
+        } else {
+            return currentMinutes >= openMin || currentMinutes <= closeMin;
+        }
+    } catch {
+        return true;
+    }
+}
+
 export interface PageMetadata {
     size: number;
     number: number;
@@ -278,4 +334,9 @@ export interface StorefrontItemResponse {
     variants: ItemVariant[];
     lowStockDefault: number | null;
     status: string;
+    quantity?: number | null;
+    stock?: number | null;
+    availableQuantity?: number | null;
+    isOutOfStock?: boolean | null;
+    outOfStock?: boolean | null;
 }

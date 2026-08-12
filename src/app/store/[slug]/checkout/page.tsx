@@ -6,6 +6,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, Loader2, Store, TriangleAlert } from "lucide-react";
 
+import { toast } from "sonner";
 import KhqrPaymentComponent from "@/components/checkout/khqr-payment-component";
 import { Button } from "@/components/ui/button";
 import { useGetCartQuery } from "@/features/cart/cartApi";
@@ -14,11 +15,14 @@ import {
     useCreateCheckoutMutation,
     useGetActiveCheckoutQuery,
 } from "@/features/checkout/checkoutApi";
-import { formatMoney } from "@/lib/type/cartType";
+import { formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
 } from "@/lib/type/checkoutType";
+import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
+import ApiErrorFallback from "@/components/common/api-error-fallback";
 
 export default function CheckoutPage({
     params,
@@ -29,6 +33,7 @@ export default function CheckoutPage({
     const { slug } = use(params);
 
     const { data: cart, isLoading: cartLoading } = useGetCartQuery();
+    const { data: publicStore } = useGetPublicStoreQuery(slug, { skip: !slug });
     const {
         data: active,
         isLoading: activeLoading,
@@ -75,9 +80,17 @@ export default function CheckoutPage({
 
             setSession(created);
         } catch (err) {
-            setError(
-                checkoutErrorMessage(err, t("couldNotStart")),
-            );
+            const msg = formatStockErrorMessage(err) || checkoutErrorMessage(err, t("couldNotStart"));
+            const lower = msg.toLowerCase();
+            if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
+                if (store?.items) {
+                    store.items.forEach((line) => {
+                        markItemOutOfStock(line.itemId);
+                    });
+                }
+            }
+            setError(msg);
+            toast.error(msg);
         }
     };
 
@@ -89,9 +102,9 @@ export default function CheckoutPage({
             await cancelCheckout(blockedBy.orderId).unwrap();
             await refetchActive();
         } catch (err) {
-            setError(
-                checkoutErrorMessage(err, t("couldNotCancelOther")),
-            );
+            const msg = checkoutErrorMessage(err, t("couldNotCancelOther"));
+            setError(msg);
+            toast.error(msg);
         }
     };
 
@@ -124,8 +137,9 @@ export default function CheckoutPage({
         );
     }
 
-    const storeName = store?.name ?? session?.storeName ?? t("thisShop");
-    const currency = store?.currency ?? session?.currency ?? "USD";
+    const storeName = store?.name ?? session?.storeName ?? publicStore?.name ?? t("thisShop");
+    const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
+    const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
     return (
         <div className="mx-auto max-w-3xl px-6 py-10">
@@ -216,9 +230,11 @@ export default function CheckoutPage({
             )}
 
             {error && (
-                <p className="mt-4 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                    {error}
-                </p>
+                <ApiErrorFallback
+                    variant="compact"
+                    title={error}
+                    className="mt-4"
+                />
             )}
 
             {/* Pay */}
@@ -241,6 +257,7 @@ export default function CheckoutPage({
                 <div className="mt-8">
                     <KhqrPaymentComponent
                         session={session}
+                        overrideCurrency={currency}
                         regenerating={creating}
                         onPaid={() => setPaid(true)}
                         onCancelled={() => {

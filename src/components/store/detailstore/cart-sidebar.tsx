@@ -19,16 +19,22 @@ import { useAuth } from "@/features/auth/useAuth";
 import {
   formatMoney,
   resolveMediaUrl,
+  isCartLineOutOfStock,
+  apiErrorMessage,
+  formatStockErrorMessage,
   type CartLine,
   type StoreCart,
 } from "@/lib/type/cartType";
+import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { cn } from "@/lib/utils";
 
 interface CartSidebarProps {
   slug?: string;
   businessId?: string;
+  storeCurrency?: string;
 }
 
-export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
+export default function CartSidebar({ slug, businessId, storeCurrency }: CartSidebarProps) {
   const t = useTranslations("Cart");
   const { isAuthenticated, status: authStatus, login } = useAuth();
 
@@ -42,7 +48,7 @@ export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
 
   const lines = storeCart?.items ?? [];
   const subtotal = storeCart?.subtotal ?? 0;
-  const currency = storeCart?.currency ?? "USD";
+  const currency = storeCurrency || storeCart?.currency || "USD";
   const itemCount = storeCart?.itemCount ?? 0;
   const otherShops = (cart?.storeCount ?? 0) - (storeCart ? 1 : 0);
 
@@ -162,27 +168,51 @@ function CartSidebarLine({
 
   const busy = isUpdating || isRemoving;
   const imageUrl = resolveMediaUrl(line.imageUrl);
+  const outOfStock = isCartLineOutOfStock(line);
 
   const decrease = () => {
     if (line.quantity <= 1) {
-      removeItem(line.cartItemId).unwrap().then(() =>
-        toast.info(rootT("Store.messages.removedFromCart", { name: line.name })),
-      );
+      removeItem(line.cartItemId)
+        .unwrap()
+        .then(() =>
+          toast.info(rootT("Store.messages.removedFromCart", { name: line.name })),
+        )
+        .catch((err: any) => {
+          toast.error(apiErrorMessage(err, "Failed to remove item"));
+        });
     } else {
       const nextQty = line.quantity - 1;
-      updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+      updateItem({ cartItemId: line.cartItemId, quantity: nextQty })
+        .unwrap()
+        .catch((err: any) => {
+          toast.error(apiErrorMessage(err, "Failed to update item"));
+        });
     }
   };
 
   const increase = () => {
     const nextQty = line.quantity + 1;
-    updateItem({ cartItemId: line.cartItemId, quantity: nextQty });
+    updateItem({ cartItemId: line.cartItemId, quantity: nextQty })
+      .unwrap()
+      .catch((err: any) => {
+        const msg = formatStockErrorMessage(err, line.name);
+        const lower = msg.toLowerCase();
+        if (
+          lower.includes("stock") ||
+          lower.includes("enough") ||
+          lower.includes("negative") ||
+          lower.includes("unavailable")
+        ) {
+          if (line.itemId) markItemOutOfStock(line.itemId);
+        }
+        toast.error(msg);
+      });
   };
 
   const currentSubtotal = line.unitPrice * line.quantity;
 
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-neutral-50 p-2 dark:bg-muted/40">
+    <div className={cn("flex items-center gap-3 rounded-xl bg-neutral-50 p-2 dark:bg-muted/40 relative", outOfStock && "opacity-90")}>
       <div className="relative h-13 w-13 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-card">
         {imageUrl ? (
           <Image
@@ -191,7 +221,7 @@ function CartSidebarLine({
             fill
             unoptimized
             sizes="52px"
-            className="object-cover"
+            className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
@@ -201,9 +231,16 @@ function CartSidebarLine({
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-50">
-          {line.name}
-        </p>
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+            {line.name}
+          </p>
+          {outOfStock && (
+            <span className="text-[10px] font-bold text-red-600 dark:text-red-500 shrink-0">
+              • {rootT("Store.detail.outOfStock") || "Out of Stock"}
+            </span>
+          )}
+        </div>
 
         {line.badges.length > 0 && (
           <p className="truncate text-[11px] text-neutral-500 dark:text-neutral-400">
@@ -215,6 +252,7 @@ function CartSidebarLine({
           <button
             type="button"
             onClick={decrease}
+            disabled={busy}
             aria-label={t("decreaseQuantity")}
             className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-card"
           >
@@ -228,8 +266,9 @@ function CartSidebarLine({
           <button
             type="button"
             onClick={increase}
+            disabled={busy || outOfStock}
             aria-label={t("increaseQuantity")}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-primary transition-colors hover:bg-primary/10"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-primary transition-colors hover:bg-primary/10 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Plus className="h-3 w-3" />
           </button>

@@ -9,9 +9,22 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
 import { formatMoney, type StoreCart } from "@/lib/type/cartType";
 
-export default function OrderSummaryComponent({ store }: { store: StoreCart }) {
+export default function OrderSummaryComponent({
+    store,
+    currency,
+}: {
+    store: StoreCart;
+    currency?: string;
+}) {
   const t = useTranslations("Cart");
-    const discount = 0;
+    const activeCurrency = currency || store.currency;
+    const discount = store.items.reduce((acc, item) => {
+        const raw = item as any;
+        if (raw.compareAtPrice && Number(raw.compareAtPrice) > Number(item.unitPrice)) {
+            return acc + (Number(raw.compareAtPrice) - Number(item.unitPrice)) * item.quantity;
+        }
+        return acc;
+    }, 0);
     const total = Math.max(0, store.subtotal - discount);
 
     const { data: active } = useGetActiveCheckoutQuery();
@@ -43,14 +56,14 @@ export default function OrderSummaryComponent({ store }: { store: StoreCart }) {
                 <div className="flex items-center justify-between">
                     <span>{t("subtotal")}</span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
-                        {formatMoney(store.subtotal, store.currency)}
+                        {formatMoney(store.subtotal, activeCurrency)}
                     </span>
                 </div>
 
                 <div className="flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-border">
                     <span>{t("discount")}</span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
-                        {formatMoney(discount, store.currency)}
+                        {formatMoney(discount, activeCurrency)}
                     </span>
                 </div>
 
@@ -60,7 +73,7 @@ export default function OrderSummaryComponent({ store }: { store: StoreCart }) {
                     </span>
 
                     <span className="text-2xl font-bold text-green-600 dark:text-primary">
-                        {formatMoney(total, store.currency)}
+                        {formatMoney(total, activeCurrency)}
                     </span>
                 </div>
             </CardContent>

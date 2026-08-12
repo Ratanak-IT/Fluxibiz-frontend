@@ -631,7 +631,10 @@
         "subjectPlaceholder": "Subject...",
         "messageLabel": "Message",
         "messagePlaceholder": "Message...",
-        "submit": "Send message"
+        "submit": "Send message",
+        "submitting": "Sending...",
+        "successMessage": "Your message has been sent successfully!",
+        "errorMessage": "Failed to send message. Please try again."
       }
     }
   },
@@ -752,6 +755,7 @@
       "searchStores": "Search stores",
       "openFilters": "Open store filters",
       "closeFilters": "Close store filters",
+      "close": "Close",
       "clearSearch": "Clear search",
       "category": "Category",
       "priceRange": "Price Range",
@@ -783,6 +787,7 @@
       "quantity": "Quantity:",
       "addedToCart": "Added to Cart",
       "adding": "Adding...",
+      "add": "Add to Cart",
       "addToCart": "Add to Cart",
       "addToCartAria": "Add {name} to cart",
       "decreaseQuantity": "Decrease quantity",
@@ -802,7 +807,8 @@
       "close": "Close",
       "product": "Product",
       "optionNumber": "Option {number}",
-      "notAvailableForOrdering": "This product is not available for ordering yet."
+      "notAvailableForOrdering": "This product is not available for ordering yet.",
+      "outOfStock": "Out of Stock"
     },
     "carousel": {
       "viewSlide": "View {title}",
@@ -822,7 +828,8 @@
     },
     "messages": {
       "addedToCart": "Added {quantity} × {name} to cart",
-      "removedFromCart": "Removed {name} from cart"
+      "removedFromCart": "Removed {name} from cart",
+      "notEnoughStock": "\"{name}\" does not have enough stock left"
     }
   },
   "Cart": {
@@ -854,15 +861,17 @@
     "shopCount": "{count, plural, one {# shop} other {# shops}}",
     "seeSummary": "See Summary",
     "reviewPayment": "Review Payment",
-    "signInTitle": "Hungry?",
+    "signInTitle": "Do you want to buy?",
     "signInDescription": "Sign in to add items and manage your cart.",
     "loading": "Loading...",
     "itemsLabel": "Items",
-    "hungry": "Hungry?",
+    "hungry": "Do you want to buy?",
     "signInPrompt": "Sign in to start adding items to your cart!",
     "signIn": "Sign in",
     "emptySidebar": "You haven’t added anything to your cart!",
-    "otherShopsInCart": "{count, plural, one {# other shop in your cart} other {# other shops in your cart}}"
+    "otherShopsInCart": "{count, plural, one {# other shop in your cart} other {# other shops in your cart}}",
+    "addedToCart": "Added to cart",
+    "failedToAdd": "Could not add to cart. Please try again."
   },
   "Checkout": {
     "title": "Checkout",

@@ -6,10 +6,10 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
-import { MenuItemData } from "@/lib/store/detailstore/detailstore";
-import { StorefrontItemResponse, ItemVariant } from "@/lib/type/storeType";
+import { MenuItemData, markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { StorefrontItemResponse, ItemVariant, primaryItemImage } from "@/lib/type/storeType";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
-import { apiErrorMessage, isUnauthorized } from "@/lib/type/cartType";
+import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
 
 interface ProductQuickViewModalProps {
   productId?: string;
@@ -57,7 +57,7 @@ export default function ProductQuickViewModal({
       attributes.forEach((attr) => {
         const firstVal = attr.values?.[0];
         if (firstVal) {
-          initialAttrs[attr.name] = firstVal.label || firstVal.value;
+          initialAttrs[attr.name] = firstVal.value;
         }
       });
       setSelectedAttributes(initialAttrs);
@@ -88,6 +88,12 @@ export default function ProductQuickViewModal({
         itemId: product.id,
         quantity,
         variantId: selectedVariant?.id,
+        itemDetails: {
+          name: product.name,
+          price: selectedVariant?.price ?? product.price,
+          imageUrl: primaryItemImage(product),
+          currency: currency || item?.currency,
+        },
       }).unwrap();
       
       toast.success(tCart("addedToCart"));
@@ -96,7 +102,12 @@ export default function ProductQuickViewModal({
         if (isUnauthorized(err)) {
             login();
         } else {
-            toast.error(apiErrorMessage(err) || tCart("failedToAdd"));
+            const msg = formatStockErrorMessage(err, product?.name || item?.name);
+            const lower = msg.toLowerCase();
+            if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
+                if (product?.id) markItemOutOfStock(product.id);
+            }
+            toast.error(msg);
         }
     }
   }

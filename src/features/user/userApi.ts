@@ -20,7 +20,7 @@ const baseQuery: typeof rawBaseQuery = async (args, api, extraOptions) => {
 
     const result = await rawBaseQuery(args, api, extraOptions);
 
-    if (result.error && (result.error.status === 400 || result.error.status === 401 || result.error.status === 403)) {
+    if (result.error && (result.error.status === 400 || result.error.status === 401 || result.error.status === 403 || result.error.status === 404)) {
         if (method === "GET" && urlStr.startsWith("/user-profiles/me")) {
             return { data: null as any };
         }
@@ -35,6 +35,7 @@ export type UpdateUserProfileArgs = {
     phoneNumber?: string;
     gender?: string;
     address?: string;
+    profilePicture?: string;
     file?: File | null;
 };
 
@@ -53,11 +54,11 @@ export const userApi = createApi({
             UserProfileResponse,
             UpdateUserProfileArgs
         >({
-            queryFn: async (args, api, extraOptions) => {
+            queryFn: async ({ file, ...fields }, api, extraOptions) => {
                 // Step 1: Upload profile picture if a file was provided
-                if (args.file) {
+                if (file) {
                     const formData = new FormData();
-                    formData.append("file", args.file);
+                    formData.append("file", file, file.name);
 
                     const uploadResult = await baseQuery(
                         {
@@ -75,26 +76,11 @@ export const userApi = createApi({
                 }
 
                 // Step 2: Update profile text fields via JSON
-                const jsonBody: Record<string, string | undefined> = {};
-                if (args.firstName !== undefined && args.firstName !== null && args.firstName.trim() !== "") {
-                    jsonBody.firstName = args.firstName.trim();
-                }
-                if (args.lastName !== undefined && args.lastName !== null && args.lastName.trim() !== "") {
-                    jsonBody.lastName = args.lastName.trim();
-                }
-                if (args.phoneNumber !== undefined && args.phoneNumber !== null && args.phoneNumber.trim() !== "") {
-                    jsonBody.phoneNumber = args.phoneNumber.trim();
-                }
-                if (
-                    args.gender &&
-                    ["MALE", "FEMALE", "OTHER", "UNSPECIFIED"].includes(
-                        args.gender.toUpperCase()
-                    )
-                ) {
-                    jsonBody.gender = args.gender.toUpperCase();
-                }
-                if (args.address !== undefined && args.address !== null && args.address.trim() !== "") {
-                    jsonBody.address = args.address.trim();
+                const jsonBody: Record<string, string> = {};
+                for (const [key, value] of Object.entries(fields)) {
+                    if (value !== undefined && value !== null && String(value).trim() !== "") {
+                        jsonBody[key] = String(value).trim();
+                    }
                 }
 
                 const updateResult = await baseQuery(

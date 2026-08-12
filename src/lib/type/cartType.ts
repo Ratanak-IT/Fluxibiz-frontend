@@ -9,6 +9,61 @@ export interface CartLine {
     quantity: number;
     unitPrice: number;
     subtotal: number;
+    isOutOfStock?: boolean | null;
+    outOfStock?: boolean | null;
+    inStock?: boolean | null;
+    available?: boolean | null;
+    status?: string | null;
+    stock?: number | null;
+}
+
+import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+
+export function isCartLineOutOfStock(line?: CartLine | any | null): boolean {
+    if (!line) return false;
+    const itemId = line.itemId || line.cartItemId;
+    if (itemId && isItemOutOfStock({ id: itemId })) return true;
+    if (typeof line.isOutOfStock === "boolean") return line.isOutOfStock;
+    if (typeof line.outOfStock === "boolean") return line.outOfStock;
+    if (typeof line.inStock === "boolean") return !line.inStock;
+    if (typeof line.available === "boolean") return !line.available;
+    if (line.stock !== undefined && line.stock !== null) {
+        if (Number(line.stock) <= 0) return true;
+    }
+    if (line.status && typeof line.status === "string") {
+        const s = line.status.trim().toUpperCase();
+        if (
+            s === "OUT_OF_STOCK" ||
+            s === "OUT_STOCK" ||
+            s === "UNAVAILABLE" ||
+            s === "SOLDOUT" ||
+            s === "SOLD_OUT" ||
+            s === "INACTIVE"
+        ) {
+            return true;
+        }
+    }
+    if (Array.isArray(line.badges)) {
+        for (const badge of line.badges) {
+            if (typeof badge === "string") {
+                const b = badge.trim().toUpperCase();
+                if (
+                    b.includes("OUT OF STOCK") ||
+                    b.includes("SOLD OUT") ||
+                    b.includes("OUT_OF_STOCK") ||
+                    b.includes("SOLDOUT") ||
+                    b.includes("SOLD_OUT") ||
+                    b.includes("NO STOCK") ||
+                    b.includes("NO_STOCK") ||
+                    b.includes("អស់ស្តុក") ||
+                    b.includes("អស់ពីស្តុក")
+                ) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 export interface StoreCart {
@@ -48,13 +103,26 @@ export interface AddToCartPayload {
         price: number;
         imageUrl?: string | null;
         storeName?: string;
+        currency?: string;
     };
 }
 
-export function formatMoney(amount: number, currency = "USD"): string {
-    const code = currency.toUpperCase();
-    if (code === "KHR" || code === "KH") {
-        return `${Math.round(amount).toLocaleString("en-US")} ៛`;
+export function formatMoney(amount: number, currency = "USD", exchangeRate = 4000): string {
+    const code = (currency || "").toUpperCase().trim();
+    if (
+        code === "KHR" ||
+        code === "KH" ||
+        code === "RIEL" ||
+        code === "REIL" ||
+        code === "៛" ||
+        code.includes("KHR") ||
+        code.includes("RIEL") ||
+        code.includes("REIL") ||
+        code.includes("KHMER") ||
+        code.includes("៛")
+    ) {
+        const finalAmount = amount < 100 ? amount * exchangeRate : amount;
+        return `${Math.round(finalAmount).toLocaleString("en-US")} ៛`;
     }
     return `$${amount.toFixed(2)}`;
 }
@@ -77,6 +145,8 @@ export function resolveMediaUrl(keyOrUrl: string | null | undefined): string | n
     }
 
     if (
+        value.startsWith("data:") ||
+        value.startsWith("blob:") ||
         value.startsWith("http://") ||
         value.startsWith("https://") ||
         value.startsWith("/")
@@ -121,4 +191,32 @@ export function isUnauthorized(error: unknown): boolean {
     if (!error || typeof error !== "object") return false;
     const status = (error as { status?: number | string }).status;
     return status === 401 || status === 403;
+}
+
+export function formatStockErrorMessage(error: unknown, itemName?: string): string {
+    const raw = apiErrorMessage(error, "");
+    const nameStr = itemName ? `"${itemName}"` : "Item";
+
+    if (!raw) {
+        return `${nameStr} does not have enough stock left`;
+    }
+
+    if (/^item\b/i.test(raw)) {
+        return raw.replace(/^item\b/i, nameStr);
+    }
+
+    const lower = raw.toLowerCase();
+    if (
+        lower.includes("stock") ||
+        lower.includes("enough") ||
+        lower.includes("negative") ||
+        lower.includes("unavailable")
+    ) {
+        if (!itemName || raw.includes(itemName)) {
+            return raw;
+        }
+        return `${nameStr} does not have enough stock left`;
+    }
+
+    return raw;
 }

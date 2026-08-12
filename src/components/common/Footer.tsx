@@ -22,8 +22,8 @@ import mptcDarkMode from "../../../public/image/footer/mptc-darkmode.png";
 
 const usefulLinks = [
   { key: "aboutUs", href: "/about" },
-  { key: "contactUs", href: "/contact" },
-  { key: "privacyPolicy", href: "/" },
+  { key: "contactUs", href: "/support#contact" },
+  { key: "privacyPolicy", href: "/privacy-policy" },
 ] as const;
 
 const socialLinks = [
@@ -634,7 +634,7 @@ export default function Footer() {
       {/* ======================================================
           COPYRIGHT BAR
       ====================================================== */}
-      <div className="bg-[#00932A] text-white">
+      <div className="bg-[#007A23] text-white">
         <div
           className="
             mx-auto
@@ -666,7 +666,7 @@ export default function Footer() {
               text-center
               text-xs
               leading-5
-              text-white/80
+              text-white
 
               sm:text-sm
 

@@ -187,7 +187,7 @@ export function FeatureModules() {
                       <span className="grid size-11 place-items-center rounded-xl bg-primary text-white shadow-[0_12px_30px_-12px_rgba(0,147,42,0.8)]">
                         <Icon className="size-5" />
                       </span>
-                      <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary ">
+                      <span className="text-xs font-bold uppercase tracking-[0.10em] text-[#21b94b]">
                         {activeModule.index} · {t("module")}
                       </span>
                     </motion.div>

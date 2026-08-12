@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ArrowRightIcon } from "lucide-react";
 
@@ -134,8 +135,8 @@ export default function HeroSection({
           </p>
 
           <div className="animate-fade-up-3 mb-[1.7rem] flex translate-y-[14px] flex-wrap gap-3 opacity-0">
-            <button
-              type="button"
+            <Link
+              href="/register/business"
               className="ease-hero relative inline-flex cursor-pointer items-center gap-[0.55rem] overflow-hidden rounded-full bg-brand px-6 py-[0.85rem] text-[0.95rem] font-semibold text-white shadow-[0_10px_24px_-8px_var(--ah-glow)] transition-[transform,box-shadow,background] duration-300 after:absolute after:inset-0 after:-translate-x-[130%] after:bg-[linear-gradient(100deg,transparent_20%,rgba(255,255,255,0.35)_50%,transparent_80%)] after:transition-transform after:duration-700 after:ease-hero after:content-[''] hover:-translate-y-0.5 hover:bg-brand-strong hover:shadow-[0_16px_32px_-10px_var(--ah-glow)] hover:after:translate-x-[130%]"
             >
               <span className="inline-flex size-[26px] items-center justify-center rounded-full bg-white/20">
@@ -143,14 +144,14 @@ export default function HeroSection({
               </span>
 
               {displayedPrimaryCta}
-            </button>
+            </Link>
 
-            <button
-              type="button"
+            <Link
+              href="/support#contact"
               className="ease-hero border-line text-ink inline-flex cursor-pointer items-center gap-[0.55rem] rounded-full border bg-surface px-6 py-[0.85rem] text-[0.95rem] font-semibold transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_22px_-10px_var(--ah-shadow-md)] dark:border-white/15 dark:bg-white/10 dark:text-white"
             >
               {displayedSecondaryCta}
-            </button>
+            </Link>
           </div>
         </div>
 
