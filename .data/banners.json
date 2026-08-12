@@ -1,0 +1,74 @@
+[
+  {
+    "id": "banner-1",
+    "title": "",
+    "subtitle": "",
+    "imageUrl": "/carousel/banner2.png",
+    "linkUrl": "/store",
+    "badge": "",
+    "status": "OPEN",
+    "position": 1,
+    "createdAt": "2026-08-12T00:00:00.000Z",
+    "updatedAt": "2026-08-12T00:00:00.000Z"
+  },
+  {
+    "id": "banner-2",
+    "title": "",
+    "subtitle": "",
+    "imageUrl": "/carousel/banner7.png",
+    "linkUrl": "/store",
+    "badge": "",
+    "status": "OPEN",
+    "position": 2,
+    "createdAt": "2026-08-12T00:00:00.000Z",
+    "updatedAt": "2026-08-12T00:00:00.000Z"
+  },
+  {
+    "id": "banner-3",
+    "title": "",
+    "subtitle": "",
+    "imageUrl": "/carousel/banner3.png",
+    "linkUrl": "/store",
+    "badge": "",
+    "status": "OPEN",
+    "position": 3,
+    "createdAt": "2026-08-12T00:00:00.000Z",
+    "updatedAt": "2026-08-12T00:00:00.000Z"
+  },
+  {
+    "id": "banner-4",
+    "title": "",
+    "subtitle": "",
+    "imageUrl": "/carousel/banner8.png",
+    "linkUrl": "/store",
+    "badge": "",
+    "status": "OPEN",
+    "position": 4,
+    "createdAt": "2026-08-12T00:00:00.000Z",
+    "updatedAt": "2026-08-12T00:00:00.000Z"
+  },
+  {
+    "id": "banner-5",
+    "title": "",
+    "subtitle": "",
+    "imageUrl": "/carousel/banner6.png",
+    "linkUrl": "/store",
+    "badge": "",
+    "status": "OPEN",
+    "position": 5,
+    "createdAt": "2026-08-12T00:00:00.000Z",
+    "updatedAt": "2026-08-12T00:00:00.000Z"
+  },
+  {
+    "id": "banner-6",
+    "title": "",
+    "subtitle": "",
+    "imageUrl": "/carousel/banner1.jpg",
+    "linkUrl": "/store",
+    "badge": "",
+    "status": "OPEN",
+    "position": 6,
+    "createdAt": "2026-08-12T00:00:00.000Z",
+    "updatedAt": "2026-08-12T00:00:00.000Z"
+  }
+]

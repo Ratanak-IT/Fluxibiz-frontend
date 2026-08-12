@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGetBusinessCategoryQuery } from "@/features/store-api/store-api";
 import SearchDrawer from "./search";
+import ApiErrorFallback from "@/components/common/api-error-fallback";
 
 interface StoreFilterComponentProps {
   selected?: string[];
@@ -47,6 +48,7 @@ export default function StoreFilterComponent({
     data: category = [],
     isLoading,
     isError,
+    refetch,
   } = useGetBusinessCategoryQuery();
 
   const currentSearchValue = searchValue ?? localSearchValue;
@@ -103,7 +105,11 @@ export default function StoreFilterComponent({
       )}
 
       {isError && !isLoading && (
-        <div className="text-sm text-destructive">{t("cannotLoadTypes")}</div>
+        <ApiErrorFallback
+          variant="compact"
+          title="មិនអាចទាញប្រភេទហាងបានឡើយ"
+          onRetry={() => refetch()}
+        />
       )}
 
       {!isLoading && !isError && (

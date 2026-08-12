@@ -185,14 +185,46 @@ export default function UserProfile() {
     setSaveError(null);
     setSaveSuccess(false);
 
+    // Compare form values against current profile/user data to send ONLY changed fields
+    const currentFirstName = profile?.firstName ?? user?.firstName ?? "";
+    const currentLastName = profile?.lastName ?? user?.lastName ?? "";
+    const currentPhone = profile?.phoneNumber ?? "";
+    const currentAddress = profile?.address ?? "";
+    const currentGender = (profile?.gender ?? "UNSPECIFIED").toUpperCase();
+
+    const newFirstName = data.firstName?.trim() ?? "";
+    const newLastName = data.lastName?.trim() ?? "";
+    const newPhone = data.phoneNumber?.trim() ?? "";
+    const newAddress = data.address?.trim() ?? "";
+    const newGender = (data.gender ?? "UNSPECIFIED").toUpperCase();
+
+    const isFirstNameChanged = newFirstName !== currentFirstName;
+    const isLastNameChanged = newLastName !== currentLastName;
+    const isPhoneChanged = newPhone !== currentPhone;
+    const isAddressChanged = newAddress !== currentAddress;
+    const isGenderChanged = newGender !== currentGender;
+    const isFileChanged = Boolean(selectedFile);
+
+    if (
+      !isFirstNameChanged &&
+      !isLastNameChanged &&
+      !isPhoneChanged &&
+      !isAddressChanged &&
+      !isGenderChanged &&
+      !isFileChanged
+    ) {
+      toast.info("No changes were made to your profile.");
+      return;
+    }
+
     try {
       await updateProfile({
-        firstName: data.firstName?.trim() ? data.firstName.trim() : undefined,
-        lastName: data.lastName?.trim() ? data.lastName.trim() : undefined,
-        phoneNumber: data.phoneNumber?.trim() ? data.phoneNumber.trim() : undefined,
-        address: data.address?.trim() ? data.address.trim() : undefined,
-        gender: data.gender ? data.gender : undefined,
-        file: selectedFile || undefined,
+        firstName: isFirstNameChanged ? (newFirstName || undefined) : undefined,
+        lastName: isLastNameChanged ? (newLastName || undefined) : undefined,
+        phoneNumber: isPhoneChanged ? (newPhone || undefined) : undefined,
+        address: isAddressChanged ? (newAddress || undefined) : undefined,
+        gender: isGenderChanged ? newGender : undefined,
+        file: isFileChanged ? selectedFile : undefined,
       }).unwrap();
 
       setSelectedFile(null);
@@ -202,11 +234,25 @@ export default function UserProfile() {
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err: any) {
       console.error("Failed to update profile", err);
-      const errMsg =
-        err?.data?.message ||
-        err?.data?.error ||
-        err?.data?.detail ||
-        "Could not save profile changes. Please check your input.";
+      let errMsg = "Could not save profile changes. Please check your input.";
+
+      if (typeof err?.data === "string") {
+        errMsg = err.data;
+      } else if (err?.data?.message && typeof err.data.message === "string") {
+        errMsg = err.data.message;
+      } else if (err?.data?.detail && typeof err.data.detail === "string") {
+        errMsg = err.data.detail;
+      } else if (err?.data?.error && typeof err.data.error === "string") {
+        errMsg = err.data.error;
+      } else if (err?.data?.errors && typeof err.data.errors === "object") {
+        const firstKey = Object.keys(err.data.errors)[0];
+        if (firstKey) {
+          errMsg = `${firstKey}: ${err.data.errors[firstKey]}`;
+        }
+      } else if (err?.error && typeof err.error === "string") {
+        errMsg = err.error;
+      }
+
       setSaveError(errMsg);
       toast.error(errMsg);
     }

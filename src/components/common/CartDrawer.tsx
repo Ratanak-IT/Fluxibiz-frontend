@@ -33,6 +33,7 @@ import {
     useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
 import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
+import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import { useAuth } from "@/features/auth/useAuth";
 import {
     formatMoney,
@@ -155,6 +156,9 @@ function StoreSection({
     const t = useTranslations("Cart");
     const [removeStore, { isLoading: isRemoving }] = useRemoveCartStoreMutation();
 
+    const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
+    const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
+
     const logoUrl = resolveMediaUrl(store.logo);
 
     return (
@@ -213,7 +217,7 @@ function StoreSection({
 
             <div className="flex flex-col gap-2">
                 {store.items.map((line) => (
-                    <LineRow key={line.cartItemId} line={line} currency={store.currency} />
+                    <LineRow key={line.cartItemId} line={line} currency={effectiveCurrency} />
                 ))}
             </div>
 
@@ -223,7 +227,7 @@ function StoreSection({
                 </span>
 
                 <span className="text-base font-bold text-green-600 dark:text-primary">
-                    {formatMoney(store.subtotal, store.currency)}
+                    {formatMoney(store.subtotal, effectiveCurrency)}
                 </span>
             </div>
 
