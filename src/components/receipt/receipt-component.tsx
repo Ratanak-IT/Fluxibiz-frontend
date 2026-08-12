@@ -83,7 +83,7 @@ export default function ReceiptComponent({
       <div className="mx-auto mb-8 max-w-xl flex flex-wrap items-center justify-between gap-4 print:hidden">
         <Link
           href="/payment-history"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-600 transition-colors hover:text-[#00932A] dark:text-muted-foreground dark:hover:text-[#00932A]"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-600 transition-colors hover:text-green-600 dark:text-muted-foreground dark:hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Payment History
@@ -92,7 +92,7 @@ export default function ReceiptComponent({
         <div className="flex items-center gap-2">
           <Button
             onClick={handlePrint}
-            className="gap-2 rounded-full bg-[#00932A] font-bold text-white shadow-sm hover:bg-[#007d24]"
+            className="h-11 gap-2 rounded-full bg-green-600 px-5 text-sm font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
           >
             <Printer className="h-4 w-4" />
             Print Receipt
@@ -103,11 +103,8 @@ export default function ReceiptComponent({
       {/* Main E-Receipt Card */}
       <div
         ref={receiptRef}
-        className="mx-auto max-w-xl overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-xl dark:border-border dark:bg-card print:border-none print:shadow-none print:w-full print:max-w-none"
+        className="mx-auto max-w-xl overflow-hidden rounded-3xl border border-neutral-100/80 bg-white shadow-xl dark:border-border dark:bg-card print:border-none print:shadow-none print:w-full print:max-w-none"
       >
-        {/* Decorative Top Banner */}
-        <div className="h-3 bg-[#00932A] print:hidden" />
-
         <div className="p-6 sm:p-8">
           {/* Store Branding Header */}
           <div className="flex flex-col items-center text-center border-b border-dashed border-neutral-200 pb-6 dark:border-border">
@@ -117,15 +114,15 @@ export default function ReceiptComponent({
                 alt={order.storeName}
                 width={80}
                 height={80}
-                className="mb-3 size-16 rounded-2xl object-cover shadow-sm"
+                className="mb-3 size-16 rounded-2xl object-cover shadow-xs border border-neutral-100"
               />
             ) : (
-              <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-[#00932A]/10 text-[#00932A]">
+              <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-green-50 text-green-600 dark:bg-primary/10 dark:text-primary">
                 <Store className="h-7 w-7" />
               </div>
             )}
 
-            <h1 className="text-2xl font-black text-neutral-900 dark:text-foreground">
+            <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-foreground">
               {order.storeName}
             </h1>
 
@@ -184,7 +181,7 @@ export default function ReceiptComponent({
 
             <div>
               <p className="font-medium text-neutral-400">Payment Method</p>
-              <p className="font-semibold text-[#00932A]">
+              <p className="font-semibold text-green-600 dark:text-primary">
                 {order.paymentMethod || "Bakong KHQR"}
               </p>
             </div>
@@ -248,7 +245,7 @@ export default function ReceiptComponent({
               <span className="text-base font-bold text-neutral-900 dark:text-foreground">
                 Total Paid
               </span>
-              <span className="text-2xl font-black text-[#00932A]">
+              <span className="text-2xl font-black text-green-600 dark:text-primary">
                 {formatMoney(order.total, order.currency)}
               </span>
             </div>
@@ -256,8 +253,8 @@ export default function ReceiptComponent({
 
           {/* Verification Footer & QR Stamp */}
           <div className="mt-8 flex flex-col items-center justify-center rounded-2xl bg-emerald-50/60 p-4 text-center dark:bg-emerald-950/20">
-            <ShieldCheck className="h-6 w-6 text-[#00932A]" />
-            <p className="mt-1 text-xs font-semibold text-[#00932A]">
+            <ShieldCheck className="h-6 w-6 text-green-600 dark:text-primary" />
+            <p className="mt-1 text-xs font-semibold text-green-600 dark:text-primary">
               Official Digital Receipt Verified by FluxiBiz
             </p>
             <p className="text-[11px] text-neutral-400">
@@ -265,27 +262,21 @@ export default function ReceiptComponent({
             </p>
           </div>
         </div>
-
-        {/* Receipt Cutout Edge Effect (Printed paper style) */}
-        <div className="relative h-4 overflow-hidden bg-neutral-100 dark:bg-neutral-800 print:hidden">
-          <div className="absolute inset-x-0 -bottom-2 flex justify-between gap-1">
-            {Array.from({ length: 24 }).map((_, i) => (
-              <div key={i} className="size-3 rotate-45 bg-white dark:bg-card" />
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Bottom Navigation Links (Hidden when printing) */}
       <div className="mx-auto mt-8 flex max-w-xl justify-center gap-4 print:hidden">
         <Link href={`/store/${order.storeSlug}`}>
-          <Button variant="outline" className="rounded-full">
+          <Button
+            variant="outline"
+            className="h-11 rounded-full border-primary bg-white px-6 font-semibold text-primary transition-colors hover:bg-primary/5 dark:bg-transparent dark:text-primary dark:hover:bg-primary/10"
+          >
             Back to {order.storeName}
           </Button>
         </Link>
 
         <Link href="/payment-history">
-          <Button className="rounded-full bg-[#00932A] font-bold text-white hover:bg-[#007d24]">
+          <Button className="h-11 rounded-full bg-green-600 px-6 font-semibold text-white shadow-sm hover:bg-green-700 dark:bg-primary dark:text-primary-foreground">
             View All Payments
           </Button>
         </Link>

@@ -36,25 +36,84 @@ export function ProductGridSkeleton({ count = 6 }: { count?: number }) {
 
 export function StoreCardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border/40 bg-card p-6 shadow-sm">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-20 w-20 shrink-0 rounded-2xl sm:h-24 sm:w-24" />
-          <div className="space-y-2">
-            <Skeleton className="h-6 w-48 rounded-md" />
-            <Skeleton className="h-4 w-32 rounded-md" />
-            <Skeleton className="h-4 w-64 rounded-md" />
+    <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
+      <Card className="overflow-hidden bg-card p-0">
+        <div className="flex flex-col sm:h-44 md:flex-row">
+          <div className="relative h-44 w-full shrink-0 p-3 sm:w-44 md:w-48">
+            <Skeleton className="h-full w-full rounded-xl" />
+          </div>
+
+          <div className="flex flex-1 flex-col justify-between p-4 sm:px-6 sm:py-3.5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Skeleton className="h-4 w-24 rounded-md" />
+              <Skeleton className="h-5 w-32 rounded-full" />
+            </div>
+
+            <div className="my-1">
+              <Skeleton className="h-8 w-56 rounded-md sm:w-72" />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+              <Skeleton className="h-4 w-40 rounded-md" />
+              <Skeleton className="h-4 w-28 rounded-md" />
+            </div>
           </div>
         </div>
-        <Skeleton className="h-10 w-32 rounded-full" />
+      </Card>
+    </div>
+  );
+}
+
+export function SearchFilterBarSkeleton() {
+  return (
+    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-4 sm:px-8 md:px-16 lg:px-24">
+      <Skeleton className="h-11 flex-1 min-w-[200px] rounded-xl" />
+      <div className="flex items-center gap-2 shrink-0">
+        <Skeleton className="h-11 w-28 rounded-xl" />
+        <Skeleton className="h-11 w-28 rounded-xl" />
+        <Skeleton className="h-11 w-28 rounded-xl" />
       </div>
     </div>
   );
 }
 
+export function MenuProductCardSkeleton() {
+  return (
+    <Card className="max-w-xl overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-card">
+      <div className="flex h-full min-h-25 sm:min-h-30">
+        <div className="flex min-w-0 flex-1 flex-col justify-between p-2.5 pr-2 sm:p-3 space-y-2">
+          <div className="space-y-1.5">
+            <Skeleton className="h-4 w-3/4 rounded-md" />
+            <Skeleton className="h-4 w-1/3 rounded-md" />
+            <Skeleton className="h-3 w-full rounded-md" />
+          </div>
+          <Skeleton className="h-3.5 w-20 rounded-md" />
+        </div>
+
+        <div className="m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 sm:m-2.5 sm:w-24 md:w-28 dark:bg-card">
+          <Skeleton className="h-full w-full rounded-lg" />
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+export function MenuProductListSkeleton({ count = 4 }: { count?: number }) {
+  return (
+    <section className="px-4 py-6 sm:px-6 lg:px-20 space-y-6">
+      <Skeleton className="h-8 w-36 rounded-md" />
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {Array.from({ length: count }).map((_, i) => (
+          <MenuProductCardSkeleton key={i} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function CartSidebarSkeleton() {
   return (
-    <Card className="w-full rounded-2xl border-neutral-100 p-4 shadow-sm sm:p-5 dark:border-neutral-800 dark:bg-card">
+    <Card className="w-full rounded-2xl border-neutral-100 bg-white p-4 shadow-sm sm:p-5 dark:border-neutral-800 dark:bg-card">
       <CardContent className="space-y-4 p-0">
         <div className="flex items-center justify-between">
           <Skeleton className="h-5 w-28 rounded-md" />
@@ -91,21 +150,14 @@ export function StorePageSkeleton() {
   return (
     <div className="space-y-10">
       <StoreCardSkeleton />
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <Skeleton className="h-10 w-64 rounded-full" />
-        <div className="flex gap-2">
-          <Skeleton className="h-10 w-24 rounded-full" />
-          <Skeleton className="h-10 w-24 rounded-full" />
-        </div>
-      </div>
+      <SearchFilterBarSkeleton />
 
-      <div className="grid grid-cols-1 items-start justify-center gap-6 lg:grid-cols-[1fr_400px]">
-        <div className="space-y-6">
-          <Skeleton className="h-7 w-36 rounded-md" />
-          <ProductGridSkeleton count={6} />
+      <div className="grid grid-cols-1 items-start justify-center gap-6 lg:grid-cols-[1fr_400px] lg:gap-0 lg:pr-25">
+        <div className="min-w-0">
+          <MenuProductListSkeleton count={4} />
         </div>
 
-        <div className="hidden lg:block lg:pt-2">
+        <div className="hidden lg:block lg:pt-6">
           <CartSidebarSkeleton />
         </div>
       </div>

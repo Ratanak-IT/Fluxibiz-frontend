@@ -145,7 +145,7 @@ export default function CheckoutPage({
         <div className="mx-auto max-w-3xl px-6 py-10">
             <Link
                 href={backToCart}
-                className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
+                className="mb-5 inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
             >
                 <ChevronLeft className="h-4 w-4" />
                 {t("backToCart")}
@@ -153,10 +153,10 @@ export default function CheckoutPage({
 
             <h1 className="text-3xl font-bold text-green-600">{t("title")}</h1>
 
-            <p className="mt-1 text-sm text-muted-foreground">{storeName}</p>
+            <p className="mt-1 mb-6 text-sm text-muted-foreground">{storeName}</p>
 
             {blockedBy && !session && (
-                <div className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900 dark:bg-amber-950/40">
+                <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900 dark:bg-amber-950/40">
                     <div className="flex items-start gap-3">
                         <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
 
@@ -199,12 +199,12 @@ export default function CheckoutPage({
             )}
 
             {!session && store && (
-                <div className="mt-8 rounded-xl bg-gray-100 p-5 dark:bg-card">
-                    <div className="flex flex-col gap-3">
+                <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
+                    <div className="flex flex-col gap-4">
                         {store.items.map((line) => (
                             <div
                                 key={line.cartItemId}
-                                className="flex items-center justify-between text-sm"
+                                className="flex items-center justify-between text-base"
                             >
                                 <span className="text-neutral-700 dark:text-card-foreground">
                                     {line.name} × {line.quantity}
@@ -217,7 +217,7 @@ export default function CheckoutPage({
                         ))}
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between border-t border-neutral-200 pt-5 dark:border-border">
+                    <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-border">
                         <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
                             {t("total")}
                         </span>
@@ -277,14 +277,14 @@ export default function CheckoutPage({
                     <Link href="/store" className="flex-1">
                         <Button
                             variant="outline"
-                            className="h-12 w-full rounded-full text-base font-semibold"
+                            className="h-12 w-full rounded-full border-primary bg-white text-base font-semibold text-primary transition-colors hover:bg-primary/5 dark:bg-transparent dark:text-primary dark:hover:bg-primary/10"
                         >
                             Keep shopping
                         </Button>
                     </Link>
 
                     <Link href="/cart" className="flex-1">
-                        <Button className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white hover:bg-green-700 dark:bg-primary dark:text-primary-foreground">
+                        <Button className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground">
                             {t("backToCart")}
                         </Button>
                     </Link>

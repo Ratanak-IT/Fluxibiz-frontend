@@ -56,7 +56,7 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
   const canCheckout = lines.length > 0 && Boolean(slug);
 
   return (
-    <Card className="w-full gap-0 rounded-2xl border-neutral-100 p-4 shadow-sm sm:p-5 dark:border-neutral-800 dark:bg-card">
+    <Card className="w-full gap-0 rounded-2xl border-neutral-100 bg-white p-5 pb-7 shadow-xs sm:p-6 sm:pb-8 dark:border-neutral-800 dark:bg-card">
       <CardContent className="space-y-4 p-0">
         <div className="flex items-center justify-between">
           <p className="text-base font-bold text-neutral-900 dark:text-neutral-50">
@@ -82,7 +82,7 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
             <p className="mt-2 max-w-55 text-sm text-neutral-500 dark:text-neutral-400">
               {t("signInPrompt")}
             </p>
-            <Button onClick={login} className="mt-4 rounded-full" size="sm">
+            <Button onClick={login} className="mt-4 rounded-full bg-primary text-white hover:bg-primary/90" size="sm">
               <LogIn className="mr-1.5 h-4 w-4" />
               {t("signIn")}
             </Button>
@@ -135,14 +135,13 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
           {canCheckout ? (
             <Link
               href={`/store/${slug}/checkout`}
-              className="flex h-9 w-full items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="flex h-9 w-full items-center justify-center rounded-full bg-primary text-sm font-medium text-white transition-colors hover:bg-primary/90"
             >
               {t("reviewPayment")}
             </Link>
           ) : (
             <Button
-              className="w-full rounded-full bg-primary"
-              variant="secondary"
+              className="w-full rounded-full bg-primary text-white disabled:opacity-50"
               disabled
             >
               {t("reviewPayment")}

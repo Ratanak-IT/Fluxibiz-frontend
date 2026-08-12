@@ -41,6 +41,36 @@ function buildStoresRequest(
     return { url: "/public/stores", params };
 }
 
+async function enrichStoresWithDetails(
+    stores: PublicStore[],
+    fetchWithBQ: (
+        arg: string | FetchArgs,
+    ) => ReturnType<BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>>,
+): Promise<PublicStore[]> {
+    if (!stores || stores.length === 0) return [];
+    return Promise.all(
+        stores.map(async (store) => {
+            if ((store.cityOrProvince && store.address) || !store.slug) {
+                return store;
+            }
+            try {
+                const res = await fetchWithBQ(`/public/stores/${store.slug}`);
+                if (res.data) {
+                    const detail = res.data as PublicStoreDetailResponse;
+                    return {
+                        ...store,
+                        cityOrProvince: store.cityOrProvince ?? detail.cityOrProvince ?? null,
+                        address: store.address ?? detail.address ?? null,
+                    };
+                }
+            } catch {
+                // Ignore detail fetch failure
+            }
+            return store;
+        })
+    );
+}
+
 /**
  * The API takes a single `categoryId`. To honour a multi-select filter we fan
  * out one request per selected category and merge, de-duplicating by store id.
@@ -59,7 +89,9 @@ async function fetchMergedStores(
             buildStoresRequest(query, categoryIds[0]),
         );
         if (result.error) return { error: result.error };
-        return { data: result.data as PublicStorePage };
+        const page = result.data as PublicStorePage;
+        const enrichedContent = await enrichStoresWithDetails(page.content ?? [], fetchWithBQ);
+        return { data: { ...page, content: enrichedContent } };
     }
 
     const results = await Promise.all(
@@ -78,16 +110,17 @@ async function fetchMergedStores(
     }
 
     const content = [...byId.values()];
+    const enrichedContent = await enrichStoresWithDetails(content, fetchWithBQ);
     const size = query.size ?? 20;
 
     return {
         data: {
-            content,
+            content: enrichedContent,
             page: {
                 size,
                 number: query.page ?? 0,
-                totalElements: content.length,
-                totalPages: Math.max(1, Math.ceil(content.length / size)),
+                totalElements: enrichedContent.length,
+                totalPages: Math.max(1, Math.ceil(enrichedContent.length / size)),
             },
         } satisfies PublicStorePage,
     };

@@ -152,21 +152,40 @@ const SearchDrawer = ({
     { skip: !debouncedKeyword || matchedCategoryIds.length === 0 },
   )
 
+  // Fetch public stores to match locations, names, and categories client-side.
+  const { data: allPublicData, isFetching: isFetchingAll } = useGetPublicStoresQuery(
+    { size: 100 },
+    { skip: !debouncedKeyword },
+  )
+
   const results = useMemo(() => {
+    if (!debouncedKeyword) return []
+    const term = debouncedKeyword.toLowerCase()
     const byId = new Map<string, ReturnType<typeof toStoreCard>>()
-    for (const page of [nameData, locationData, categoryData]) {
+
+    for (const page of [nameData, locationData, categoryData, allPublicData]) {
       for (const store of page?.content ?? []) {
         const card = toStoreCard(store)
-        if (!byId.has(card.id)) byId.set(card.id, card)
+        const nameMatch = card.name?.toLowerCase().includes(term)
+        const catMatch = card.category?.toLowerCase().includes(term)
+        const locMatch =
+          card.location?.toLowerCase().includes(term) ||
+          card.address?.toLowerCase().includes(term) ||
+          (store.cityOrProvince && store.cityOrProvince.toLowerCase().includes(term))
+
+        if (nameMatch || catMatch || locMatch) {
+          if (!byId.has(card.id)) byId.set(card.id, card)
+        }
       }
     }
     return [...byId.values()]
-  }, [nameData, locationData, categoryData])
+  }, [debouncedKeyword, nameData, locationData, categoryData, allPublicData])
 
   const showResults = currentValue.trim().length > 0
   const searching =
     isFetchingByName ||
     isFetchingByLocation ||
+    isFetchingAll ||
     (matchedCategoryIds.length > 0 && isFetchingByCategory) ||
     (currentValue.trim() !== debouncedKeyword && currentValue.trim().length > 0)
 
@@ -185,9 +204,9 @@ const SearchDrawer = ({
             <button
               type="button"
               aria-label="Open search"
-              className="flex h-9 w-9 items-center justify-center rounded-full border hover:bg-card"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-primary text-primary hover:bg-primary/10 transition-colors"
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-4 w-4 text-primary" strokeWidth={2} />
             </button>
           }
         />
@@ -213,7 +232,7 @@ const SearchDrawer = ({
               autoFocus
               value={currentValue}
               onChange={(e) => handleChange(e.target.value)}
-              placeholder="Search by name or category"
+              placeholder="Search by name, location, or category..."
               className="
                 h-9
                 w-full

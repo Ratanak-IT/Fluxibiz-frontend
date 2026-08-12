@@ -42,8 +42,7 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
     if (isError) {
         return (
             <ApiErrorFallback
-                title="មិនអាចទាញយកកន្ត្រកទំនិញបានឡើយ"
-                description="មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ព័ត៌មានកន្ត្រករបស់អ្នក។ សូមព្យាយាមម្ដងទៀត។"
+                title={t("couldNotLoad")}
                 onRetry={() => refetch()}
                 backHref="/store"
             />
@@ -58,7 +57,7 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
 
     if (slug && !scoped) {
         return (
-            <div className="rounded-2xl bg-gray-100 py-16 text-center dark:bg-card">
+            <div className="rounded-2xl bg-white border border-neutral-100/80 py-16 text-center shadow-xs dark:border-neutral-800 dark:bg-card">
                 <Store className="mx-auto h-8 w-8 text-neutral-300 dark:text-muted-foreground" />
 
                 <p className="mt-3 text-base font-medium text-neutral-700 dark:text-card-foreground">

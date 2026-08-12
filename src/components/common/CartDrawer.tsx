@@ -85,16 +85,18 @@ export default function CartDrawer({
             <ShoppingCart size={iconSize} className={iconClassName} />
 
             {totalItems > 0 && (
-                <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+                <span className="absolute right-0 top-0.5 flex min-w-4.5 h-4.5 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold leading-none text-white shadow-xs">
                     {totalItems > 99 ? "99+" : totalItems}
                 </span>
             )}
         </Button>
-    )
-}
-            </SheetTrigger >
+    );
 
-    <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
+    return (
+        <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger render={triggerElement} className={triggerClassName} />
+
+            <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
         <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">
             <SheetTitle className="flex items-center gap-2 text-xl font-bold text-green-600">
                 {t("title")}
@@ -160,9 +162,9 @@ function StoreSection({
     const logoUrl = resolveMediaUrl(store.logo);
 
     return (
-        <section className="rounded-xl bg-gray-100 p-3 dark:bg-card">
+        <section className="rounded-xl bg-white border border-neutral-100/80 p-3.5 shadow-xs dark:bg-card dark:border-neutral-800">
             <div className="mb-3 flex items-center gap-3">
-                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white">
+                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white border border-neutral-100">
                     {logoUrl ? (
                         <Image
                             src={logoUrl}
@@ -249,7 +251,7 @@ function StoreCheckoutButton({
     const blockedByOther = pending && !pendingHere;
 
     const shell =
-        "mt-3 flex h-11 w-full items-center justify-center rounded-xl border text-sm font-semibold leading-[1.9]";
+        "mt-3 flex h-11 w-full items-center justify-center rounded-full border text-sm font-bold transition-all";
 
     if (!store.open) {
         return (
@@ -282,7 +284,7 @@ function StoreCheckoutButton({
         <Link
             href={href}
             onClick={onNavigate}
-            className={`${shell} border-neutral-900 bg-white text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-border dark:bg-background dark:text-card-foreground dark:hover:bg-card`}
+            className={`${shell} border-primary bg-white text-primary hover:bg-primary/5 dark:border-primary dark:bg-transparent dark:text-primary dark:hover:bg-primary/10`}
         >
             {pendingHere ? t("finishPayment") : t("checkout")}
         </Link>
@@ -346,7 +348,7 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
     const currentSubtotal = line.unitPrice * pendingQty;
 
     return (
-        <div className={cn("flex items-center gap-3 rounded-lg bg-white p-2 dark:bg-background relative", outOfStock && "opacity-90")}>
+        <div className={cn("flex items-center gap-3 rounded-lg bg-background p-2 border border-neutral-100/80 dark:border-neutral-800/60 dark:bg-background relative", outOfStock && "opacity-90")}>
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-card">
                 {imageUrl ? (
                     <Image
@@ -401,10 +403,10 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                         size="icon"
                         onClick={handleDecrease}
                         disabled={busy}
-                        className="h-5 w-5 text-yellow-400 dark:border-border dark:bg-card"
+                        className="h-5 w-5 border-red-200/80 text-red-500 hover:bg-red-50 dark:border-red-950 dark:bg-card dark:text-red-400"
                         aria-label="Decrease quantity"
                     >
-                        <Minus className="h-3 w-3" />
+                        <Minus className="h-3 w-3 text-red-500 dark:text-red-400" />
                     </Button>
 
                     <span className="w-4 text-center text-sm font-medium dark:text-card-foreground">

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown, Loader2, Search, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, Loader2, Search, SlidersHorizontal, X } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -19,30 +19,44 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useGetBusinessCategoryQuery } from "@/features/store-api/store-api";
+import {
+  useGetBusinessCategoryQuery,
+  useGetPublicStoresQuery,
+} from "@/features/store-api/store-api";
 import SearchDrawer from "./search";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
+import type { PublicStore } from "@/lib/type/storeType";
 
 interface StoreFilterComponentProps {
   selected?: string[];
   onSelectedChange?: (selected: string[]) => void;
+  selectedLocations?: string[];
+  onLocationsChange?: (locations: string[]) => void;
+  availableLocations?: string[];
   searchValue?: string;
   onSearchChange?: (value: string) => void;
 }
 
-const VISIBLE_COUNT = 10;
+const VISIBLE_COUNT = 5;
 
 export default function StoreFilterComponent({
   selected = [],
   onSelectedChange,
+  selectedLocations = [],
+  onLocationsChange,
+  availableLocations,
   searchValue,
   onSearchChange,
 }: StoreFilterComponentProps) {
   const t = useTranslations("Store.filters");
   const [showMore, setShowMore] = useState(false);
+  const [showMoreLocations, setShowMoreLocations] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [localSearchValue, setLocalSearchValue] = useState("");
+
+  const [apiLocations, setApiLocations] = useState<string[]>([]);
+  const [isFetchingLocations, setIsFetchingLocations] = useState(false);
 
   const {
     data: category = [],
@@ -50,6 +64,85 @@ export default function StoreFilterComponent({
     isError,
     refetch,
   } = useGetBusinessCategoryQuery();
+
+  const {
+    data: storesData,
+    isLoading: isLoadingStores,
+    isError: isErrorStores,
+    refetch: refetchStores,
+  } = useGetPublicStoresQuery({ size: 100 });
+
+  useEffect(() => {
+    if (availableLocations && availableLocations.length > 0) {
+      setApiLocations(availableLocations);
+      return;
+    }
+
+    const stores = storesData?.content ?? [];
+    if (stores.length === 0) return;
+
+    let isMounted = true;
+    setIsFetchingLocations(true);
+
+    async function loadStoreLocations() {
+      const set = new Set<string>();
+
+      // 1. Collect non-empty cityOrProvince / address from store list items
+      for (const store of stores) {
+        if (store.cityOrProvince?.trim()) set.add(store.cityOrProvince.trim());
+        if (store.address?.trim()) set.add(store.address.trim());
+      }
+
+      // 2. Fetch store details for stores without address in summary list
+      const missingDetailStores = stores.filter(
+        (s) => !s.cityOrProvince?.trim() && !s.address?.trim() && (s.slug || s.id),
+      );
+
+      if (missingDetailStores.length > 0) {
+        await Promise.all(
+          missingDetailStores.map(async (store) => {
+            try {
+              const res = await fetch(`/api/v1/public/stores/${store.slug || store.id}`);
+              if (res.ok) {
+                const detail = await res.json();
+                const locStr = detail.cityOrProvince?.trim() || detail.address?.trim();
+                if (locStr) {
+                  set.add(locStr);
+                }
+              }
+            } catch {
+              // Ignore single store fetch failure
+            }
+          }),
+        );
+      }
+
+      // 3. Process comma-separated locations for district/city parts
+      const finalSet = new Set<string>();
+      for (const item of set) {
+        finalSet.add(item);
+        if (item.includes(",")) {
+          const parts = item.split(",").map((p) => p.trim()).filter(Boolean);
+          for (const p of parts) {
+            if (p.length >= 3 && !/^\d+$/.test(p) && !/^no\.\d+/i.test(p)) {
+              finalSet.add(p);
+            }
+          }
+        }
+      }
+
+      if (isMounted) {
+        setApiLocations(Array.from(finalSet).sort());
+        setIsFetchingLocations(false);
+      }
+    }
+
+    loadStoreLocations();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [storesData, availableLocations]);
 
   const currentSearchValue = searchValue ?? localSearchValue;
 
@@ -76,27 +169,127 @@ export default function StoreFilterComponent({
   const visibleTypes = allTypes.slice(0, VISIBLE_COUNT);
   const extraTypes = allTypes.slice(VISIBLE_COUNT);
 
-  const toggle = (id: string) => {
+  const toggleCategory = (id: string) => {
     const nextSelected = selected.includes(id)
       ? selected.filter((selectedId) => selectedId !== id)
       : [...selected, id];
     onSelectedChange?.(nextSelected);
   };
 
+  const toggleLocation = (loc: string) => {
+    const nextLocations = selectedLocations.includes(loc)
+      ? selectedLocations.filter((item) => item !== loc)
+      : [...selectedLocations, loc];
+    onLocationsChange?.(nextLocations);
+  };
+
+  const visibleLocations = apiLocations.slice(0, VISIBLE_COUNT);
+  const extraLocations = apiLocations.slice(VISIBLE_COUNT);
+
   const hasActiveFilters =
-    currentSearchValue.trim() !== "" || selected.length > 0;
+    currentSearchValue.trim() !== "" ||
+    selected.length > 0 ||
+    selectedLocations.length > 0;
 
   const handleResetFilters = () => {
     handleSearchChange("");
     onSelectedChange?.([]);
+    onLocationsChange?.([]);
   };
 
-  const renderCategoryFilters = () => (
-    <div>
-      <h4 className="mb-3 text-lg font-medium text-foreground">
-        {t("shopTypes")}
-      </h4>
+  const loadingLocations = isLoadingStores || isFetchingLocations;
 
+  const renderLocationItemsOnly = () => (
+    <>
+      {loadingLocations && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="size-4 animate-spin" />
+          <span>{t("loading")}</span>
+        </div>
+      )}
+
+      {isErrorStores && !loadingLocations && (
+        <ApiErrorFallback
+          variant="compact"
+          title={t("cannotLoadLocations")}
+          onRetry={() => refetchStores()}
+        />
+      )}
+
+      {!loadingLocations && !isErrorStores && (
+        <>
+          {apiLocations.length === 0 ? (
+            <p className="text-xs text-muted-foreground py-1">{t("noLocationsFound")}</p>
+          ) : (
+            <div className="space-y-2.5">
+              {visibleLocations.map((loc) => {
+                const checkboxId = `store-location-${loc}`;
+                return (
+                  <div key={loc} className="flex items-center gap-2 min-w-0">
+                    <Checkbox
+                      id={checkboxId}
+                      checked={selectedLocations.includes(loc)}
+                      onCheckedChange={() => toggleLocation(loc)}
+                    />
+                    <Label
+                      htmlFor={checkboxId}
+                      className="cursor-pointer text-sm font-medium text-foreground min-w-0 break-words hover:text-primary transition-colors duration-150"
+                    >
+                      {loc}
+                    </Label>
+                  </div>
+                );
+              })}
+
+              {extraLocations.length > 0 && (
+                <Collapsible open={showMoreLocations} onOpenChange={setShowMoreLocations}>
+                  <CollapsibleContent className="space-y-2.5">
+                    {extraLocations.map((loc) => {
+                      const checkboxId = `store-extra-location-${loc}`;
+                      return (
+                        <div key={loc} className="flex items-center gap-2 min-w-0">
+                          <Checkbox
+                            id={checkboxId}
+                            checked={selectedLocations.includes(loc)}
+                            onCheckedChange={() => toggleLocation(loc)}
+                          />
+                          <Label
+                            htmlFor={checkboxId}
+                            className="cursor-pointer text-sm font-medium text-foreground min-w-0 break-words hover:text-primary transition-colors duration-150"
+                          >
+                            {loc}
+                          </Label>
+                        </div>
+                      );
+                    })}
+                  </CollapsibleContent>
+
+                  <CollapsibleTrigger className="mt-2.5 flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                    {showMoreLocations ? t("showLess") : t("showMore")}
+                    <ChevronDown
+                      className={`size-4 transition-transform duration-200 ${showMoreLocations ? "rotate-180" : ""}`}
+                    />
+                  </CollapsibleTrigger>
+                </Collapsible>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </>
+  );
+
+  const renderLocationFilters = () => (
+    <div className="space-y-3">
+      <h4 className="text-lg font-medium text-foreground hover:text-primary transition-colors cursor-default">
+        {t("locations")}
+      </h4>
+      {renderLocationItemsOnly()}
+    </div>
+  );
+
+  const renderCategoryItemsOnly = () => (
+    <>
       {isLoading && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="size-4 animate-spin" />
@@ -107,34 +300,32 @@ export default function StoreFilterComponent({
       {isError && !isLoading && (
         <ApiErrorFallback
           variant="compact"
-          title="មិនអាចទាញប្រភេទហាងបានឡើយ"
+          title={t("cannotLoadTypes")}
           onRetry={() => refetch()}
         />
       )}
 
       {!isLoading && !isError && (
-        <>
-          <div className="space-y-2.5">
-            {visibleTypes.map((categoryType) => {
-              const checkboxId = `store-category-${categoryType.id}`;
-              return (
-                <div key={categoryType.id} className="flex items-center gap-2 min-w-0">
-                  <Checkbox
-                    id={checkboxId}
-                    checked={selected.includes(categoryType.id)}
-                    onCheckedChange={() => toggle(categoryType.id)}
-                  />
-                  <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground min-w-0 break-words">
-                    {categoryType.name}
-                  </Label>
-                </div>
-              );
-            })}
-          </div>
+        <div className="space-y-2.5">
+          {visibleTypes.map((categoryType) => {
+            const checkboxId = `store-category-${categoryType.id}`;
+            return (
+              <div key={categoryType.id} className="flex items-center gap-2 min-w-0">
+                <Checkbox
+                  id={checkboxId}
+                  checked={selected.includes(categoryType.id)}
+                  onCheckedChange={() => toggleCategory(categoryType.id)}
+                />
+                <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground min-w-0 break-words hover:text-primary transition-colors duration-150">
+                  {categoryType.name}
+                </Label>
+              </div>
+            );
+          })}
 
           {extraTypes.length > 0 && (
             <Collapsible open={showMore} onOpenChange={setShowMore}>
-              <CollapsibleContent className="space-y-2.5 pt-3">
+              <CollapsibleContent className="space-y-2.5">
                 {extraTypes.map((categoryType) => {
                   const checkboxId = `store-extra-category-${categoryType.id}`;
                   return (
@@ -142,9 +333,9 @@ export default function StoreFilterComponent({
                       <Checkbox
                         id={checkboxId}
                         checked={selected.includes(categoryType.id)}
-                        onCheckedChange={() => toggle(categoryType.id)}
+                        onCheckedChange={() => toggleCategory(categoryType.id)}
                       />
-                      <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground min-w-0 break-words">
+                      <Label htmlFor={checkboxId} className="cursor-pointer text-sm font-medium text-foreground min-w-0 break-words hover:text-primary transition-colors duration-150">
                         {categoryType.name}
                       </Label>
                     </div>
@@ -152,7 +343,7 @@ export default function StoreFilterComponent({
                 })}
               </CollapsibleContent>
 
-              <CollapsibleTrigger className="mt-3 flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+              <CollapsibleTrigger className="mt-2.5 flex items-center gap-1 text-sm font-medium text-primary hover:underline">
                 {showMore ? t("showLess") : t("showMore")}
                 <ChevronDown
                   className={`size-4 transition-transform duration-200 ${showMore ? "rotate-180" : ""}`}
@@ -160,19 +351,23 @@ export default function StoreFilterComponent({
               </CollapsibleTrigger>
             </Collapsible>
           )}
-        </>
+        </div>
       )}
+    </>
+  );
+
+  const renderCategoryFilters = () => (
+    <div>
+      <h4 className="mb-3 text-lg font-medium text-foreground hover:text-primary transition-colors cursor-default">
+        {t("shopTypes")}
+      </h4>
+      {renderCategoryItemsOnly()}
     </div>
   );
 
   return (
     <div className="w-full max-w-full">
-      {/* Desktop: unchanged icon-only trigger, exactly as it was */}
-      <div className="hidden xl:block">
-        <SearchDrawer value={currentSearchValue} onChange={handleSearchChange} />
-      </div>
-
-      {/* Mobile/tablet: same SearchDrawer, no own trigger button — opened by tapping the bar below */}
+      {/* Mobile/tablet SearchDrawer */}
       <SearchDrawer
         value={currentSearchValue}
         onChange={handleSearchChange}
@@ -186,8 +381,8 @@ export default function StoreFilterComponent({
           <div className="group relative min-w-0 flex-1">
             <Search
               aria-hidden="true"
-              strokeWidth={1.8}
-              className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-neutral-400 transition-colors duration-200 group-hover:text-primary group-focus-within:text-primary"
+              strokeWidth={2}
+              className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-primary transition-colors duration-200"
             />
             <Input
               type="text"
@@ -205,7 +400,7 @@ export default function StoreFilterComponent({
                 w-full
                 rounded-full
                 border
-                border-neutral-200/70
+                border-primary/40
                 bg-neutral-100/60
                 pl-11
                 pr-4
@@ -216,10 +411,10 @@ export default function StoreFilterComponent({
                 placeholder:truncate
                 placeholder:text-neutral-400
                 hover:bg-neutral-100
-                focus-visible:border-primary/30
+                focus-visible:border-primary
                 focus-visible:ring-1
                 focus-visible:ring-primary/20
-                dark:border-neutral-800
+                dark:border-primary/50
                 dark:bg-neutral-900
               "
             />
@@ -231,23 +426,22 @@ export default function StoreFilterComponent({
                 <button
                   type="button"
                   aria-label={t("openFilters")}
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-neutral-200/70 bg-white shadow-none outline-none transition-all duration-200 hover:bg-neutral-50 hover:text-primary focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900 text-neutral-500"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-white text-primary shadow-none outline-none transition-all duration-200 hover:bg-primary/5 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-primary/50 dark:bg-neutral-900"
                 >
-                  <SlidersHorizontal strokeWidth={1.9} className="h-4 w-4" />
+                  <SlidersHorizontal strokeWidth={2} className="h-4 w-4 text-primary" />
                 </button>
               }
             />
             <DrawerContent className="rounded-t-[28px] border-t border-border/10 bg-card p-0 overflow-x-hidden">
               <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
                 <div className="min-w-0">
-                  <DrawerTitle className="text-xl font-bold text-foreground truncate">{t("title")}</DrawerTitle>
-                  <p className="text-sm text-muted-foreground truncate">{t("browseByCategory")}</p>
+                  <DrawerTitle className="text-xl font-bold text-foreground truncate hover:text-primary transition-colors">{t("title")}</DrawerTitle>
                 </div>
                 <DrawerClose
                   render={
                     <button
                       type="button"
-                      className="shrink-0 rounded-full border border-neutral-200/70 bg-white px-3 py-2 text-sm font-medium text-foreground transition hover:bg-neutral-50 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900"
+                      className="shrink-0 rounded-full border border-primary/40 bg-white px-3 py-2 text-sm font-medium text-primary transition hover:bg-primary/5 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-primary/50 dark:bg-neutral-900"
                     >
                       {t("close")}
                     </button>
@@ -255,41 +449,69 @@ export default function StoreFilterComponent({
                 />
               </div>
 
-              <div className="max-h-[70vh] overflow-y-auto overflow-x-hidden p-4 sm:p-5">
+              <div className="max-h-[70vh] space-y-6 overflow-y-auto overflow-x-hidden p-4 sm:p-5">
                 {hasActiveFilters && (
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="mb-4 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
+                    className="mb-2 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
                   >
                     {t("resetFilters")}
                   </button>
                 )}
                 {renderCategoryFilters()}
+                {renderLocationFilters()}
               </div>
             </DrawerContent>
           </Drawer>
         </div>
       </div>
 
-      <div className="hidden w-full max-w-[420px] space-y-3 xl:block xl:min-w-[340px]">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1 space-y-0.5">
-            <h2 className="text-xl font-bold text-foreground">{t("title")}</h2>
-            <p className="whitespace-nowrap text-sm text-muted-foreground">{t("browseByCategory")}</p>
+      {/* Desktop Sidebar Layout with Primary Colored Search Icon & Text Hover Effects */}
+      <div className="hidden w-full max-w-[420px] xl:block xl:min-w-[340px]">
+        {/* Top Sticky Header (Search Icon + Filters Title) */}
+        <div className="sticky top-0 z-30 bg-background pt-1 pb-4 space-y-4">
+          {/* 1. Search Icon */}
+          <div>
+            <SearchDrawer value={currentSearchValue} onChange={handleSearchChange} />
           </div>
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={handleResetFilters}
-              className="shrink-0 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
-            >
-              {t("resetFilters")}
-            </button>
-          )}
+
+          {/* 2. Filters Title + Reset button */}
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-xl font-bold text-foreground hover:text-primary transition-colors cursor-default">{t("title")}</h2>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="shrink-0 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
+              >
+                {t("resetFilters")}
+              </button>
+            )}
+          </div>
         </div>
 
-        {renderCategoryFilters()}
+        <div className="space-y-6">
+          {/* Section 1: Shop Types */}
+          <div className="space-y-3">
+            <div className="sticky top-[88px] z-20 bg-background py-3 -mt-2">
+              <h4 className="text-lg font-medium text-foreground hover:text-primary transition-colors cursor-default">
+                {t("shopTypes")}
+              </h4>
+            </div>
+            {renderCategoryItemsOnly()}
+          </div>
+
+          {/* Section 2: Locations (Replaces Shop Types header at top-[88px] when scrolling) */}
+          <div className="space-y-3">
+            <div className="sticky top-[88px] z-20 bg-background py-3 -mt-2">
+              <h4 className="text-lg font-medium text-foreground hover:text-primary transition-colors cursor-default">
+                {t("locations")}
+              </h4>
+            </div>
+            {renderLocationItemsOnly()}
+          </div>
+        </div>
       </div>
     </div>
   );

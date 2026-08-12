@@ -34,20 +34,22 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
     <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
       <Card className="overflow-hidden bg-card p-0">
         <div className="flex flex-col sm:h-44 md:flex-row">
-          <div className="relative h-44 w-full shrink-0 p-3 sm:w-44 md:w-48">
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={store.name || t("storeLogo")}
-                fill
-                unoptimized
-                className="h-full w-full rounded-xl object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-xl bg-muted">
-                <ImageOff className="h-6 w-6 text-neutral-300" />
-              </div>
-            )}
+          <div className="relative flex h-44 w-full shrink-0 items-center justify-center p-3.5 sm:w-44 md:w-48">
+            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-white p-2.5 shadow-2xs border border-neutral-100 dark:border-neutral-800">
+              {imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt={store.name || t("storeLogo")}
+                  fill
+                  unoptimized
+                  className="h-full w-full object-contain p-1.5"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center rounded-xl bg-muted">
+                  <ImageOff className="h-6 w-6 text-neutral-300" />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Content — 3 Vertical Sections: Top, Middle, Bottom */}

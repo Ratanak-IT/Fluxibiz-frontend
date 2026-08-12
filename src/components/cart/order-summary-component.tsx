@@ -34,7 +34,7 @@ export default function OrderSummaryComponent({
     const pendingHere = pending?.storeSlug === store.slug;
 
     return (
-        <Card className="w-full bg-gray-100 p-4 lg:w-100 dark:bg-card">
+        <Card className="w-full rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs lg:w-100 dark:border-neutral-800 dark:bg-card">
             <CardHeader className="mb-5 p-0">
                 <CardTitle className="text-xl font-bold tracking-tight text-neutral-900 dark:text-card-foreground">
                     {t("yourOrder")}
@@ -78,7 +78,7 @@ export default function OrderSummaryComponent({
                 </div>
             </CardContent>
 
-            <CardFooter className="mt-6 flex-col gap-3 p-0">
+            <div className="mt-6 flex flex-col gap-3">
                 {!store.open ? (
                     <Button
                         disabled
@@ -100,13 +100,7 @@ export default function OrderSummaryComponent({
                         </Button>
                     </Link>
                 )}
-
-                {/* <p className="text-center text-xs text-neutral-500 dark:text-muted-foreground">
-                    {pendingElsewhere
-                        ? `Finish or cancel your payment at ${pendingElsewhere.storeName} to pay ${store.name}.`
-                        : `This pays ${store.name} only.`}
-                </p> */}
-            </CardFooter>
+            </div>
         </Card>
     );
 }
