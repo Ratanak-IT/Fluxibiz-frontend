@@ -84,7 +84,7 @@ export default function DetailProductPage({
             </h2>
             <Link
               href={`/store/${storeSlug}`}
-              className="flex items-center gap-1 text-sm font-semibold text-[#00932A] transition-colors hover:text-[#007d24]"
+              className="flex items-center gap-1 text-sm text-[#00932A] transition-colors hover:text-[#007d24] hover:underline"
             >
               {t("viewAll")}
               <ArrowRight className="h-4 w-4" />

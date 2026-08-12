@@ -271,7 +271,7 @@ const SearchDrawer = ({
               ) : results.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 no-scrollbar xl:max-h-80 xl:overflow-y-auto">
                   {results.map((store) => (
-                    <DialogClose key={store.id} asChild>
+                    <DialogClose key={store.id}>
                       <Link
                         href={`/store/${store.slug || store.id}`}
                         onClick={() => addRecent(currentValue)}

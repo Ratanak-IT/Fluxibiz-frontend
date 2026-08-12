@@ -3,15 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Trash2, Store } from "lucide-react";
+import { MapPin, Clock, Store } from "lucide-react";
 
 import { resolveMediaUrl, type StoreCart } from "@/lib/type/cartType";
-import { useRemoveCartStoreMutation } from "@/features/cart/cartApi";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 
 export function StoreCardComponent({ store }: { store: StoreCart }) {
-    const [removeStore, { isLoading: isRemoving }] = useRemoveCartStoreMutation();
     const { data: storeDetail } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
 
     const logoUrl = resolveMediaUrl(store.logo);
@@ -20,9 +17,9 @@ export function StoreCardComponent({ store }: { store: StoreCart }) {
     const finalGoogleMap = storeDetail?.googleMap;
 
     return (
-        <Card className="overflow-hidden p-0 dark:border-neutral-700 dark:bg-[#1b1b1b]">
+        <Card className="overflow-hidden rounded-2xl p-0 dark:border-neutral-700 dark:bg-[#1b1b1b]">
             <div className="flex flex-col sm:h-45 sm:flex-row">
-                <div className="relative h-40 w-40 shrink-0 self-center overflow-hidden rounded-lg bg-white sm:ml-2.5">
+                <div className="relative h-40 w-40 shrink-0 self-center overflow-hidden rounded-xl bg-white sm:ml-2.5">
                     {logoUrl ? (
                         <Image
                             src={logoUrl}
@@ -87,24 +84,6 @@ export function StoreCardComponent({ store }: { store: StoreCart }) {
                             This shop is closed right now.
                         </p>
                     )}
-                </div>
-
-                <div className="flex items-center justify-between gap-3 px-6 pb-4 sm:flex-col sm:items-end sm:justify-center sm:pb-0">
-                    <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 dark:bg-primary/15 dark:text-primary">
-                        {store.itemCount} {store.itemCount === 1 ? "item" : "items"}
-                    </span>
-
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        disabled={isRemoving}
-                        onClick={() => removeStore(store.businessId)}
-                        className="gap-1.5 whitespace-nowrap text-xs text-red-500 hover:bg-red-50 hover:text-red-600 disabled:opacity-40 dark:hover:bg-destructive/10"
-                    >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        Remove all items
-                    </Button>
                 </div>
             </div>
         </Card>

@@ -7,6 +7,12 @@ import { z } from "zod";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link2, Pencil, User, Check, Loader2, Camera, Trash2, ChevronDown } from "lucide-react";
@@ -369,7 +375,7 @@ export default function UserProfile() {
                           {...field}
                           id="firstName"
                           placeholder="Enter first name"
-                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:border-[#00932A] focus-visible:ring-[#00932A]"
                         />
                       )}
                     />
@@ -395,7 +401,7 @@ export default function UserProfile() {
                           {...field}
                           id="lastName"
                           placeholder="Enter last name"
-                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:border-[#00932A] focus-visible:ring-[#00932A]"
                         />
                       )}
                     />
@@ -450,7 +456,7 @@ export default function UserProfile() {
                           id="phoneNumber"
                           type="tel"
                           placeholder="+855 12 345 678"
-                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:border-[#00932A] focus-visible:ring-[#00932A]"
                         />
                       )}
                     />
@@ -471,21 +477,46 @@ export default function UserProfile() {
                     <Controller
                       name="gender"
                       control={control}
-                      render={({ field }) => (
-                        <div className="relative">
-                          <select
-                            {...field}
-                            id="gender"
-                            className="h-11 w-full rounded-full border border-[#00932A] bg-white px-4 pr-12 text-sm font-medium text-slate-900 shadow-sm transition-colors outline-none appearance-none focus:border-[#00932A] focus:ring-2 focus:ring-[#00932A]/30 hover:bg-[#f3fcf5] dark:border-[#21B94B] dark:bg-card dark:text-white dark:hover:bg-[#132018]"
-                          >
-                            <option value="UNSPECIFIED" className="bg-white text-foreground dark:bg-card dark:text-white">Unspecified</option>
-                            <option value="MALE" className="bg-white text-foreground dark:bg-card dark:text-white">Male</option>
-                            <option value="FEMALE" className="bg-white text-foreground dark:bg-card dark:text-white">Female</option>
-                            <option value="OTHER" className="bg-white text-foreground dark:bg-card dark:text-white">Other</option>
-                          </select>
-                          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-slate-300" />
-                        </div>
-                      )}
+                      render={({ field }) => {
+                        const genderOptions = [
+                          { value: "UNSPECIFIED", label: "Unspecified" },
+                          { value: "MALE", label: "Male" },
+                          { value: "FEMALE", label: "Female" },
+                          { value: "OTHER", label: "Other" },
+                        ];
+                        const currentLabel = genderOptions.find(o => o.value === field.value)?.label ?? "Unspecified";
+                        return (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              id="gender"
+                              className="inline-flex h-11 w-full items-center justify-between rounded-full border border-[#00932A] bg-white px-4 text-sm font-medium text-slate-900 shadow-sm transition-colors outline-none focus:outline-none focus-visible:ring-1 focus-visible:ring-[#00932A]/30  dark:border-[#21B94B] dark:bg-card dark:text-white dark:hover:bg-[#132018]"
+                            >
+                              <span>{currentLabel}</span>
+                              <ChevronDown className="h-4 w-4 text-slate-500 dark:text-slate-300" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                              align="start"
+                              className="min-w-[180px] rounded-xl border border-neutral-100/80 bg-white p-1.5 shadow-xl dark:border-neutral-800 dark:bg-neutral-900"
+                            >
+                              {genderOptions.map((option) => {
+                                const active = option.value === field.value;
+                                return (
+                                  <DropdownMenuItem
+                                    key={option.value}
+                                    onClick={() => field.onChange(option.value)}
+                                    className={`cursor-pointer rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${active
+                                        ? "bg-primary/10 font-bold text-primary focus:bg-primary/15 focus:text-primary dark:bg-primary/20 dark:text-primary dark:focus:bg-primary/25"
+                                        : "text-neutral-700 hover:bg-neutral-100 focus:bg-neutral-100 focus:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 dark:focus:text-neutral-100"
+                                      }`}
+                                  >
+                                    {option.label}
+                                  </DropdownMenuItem>
+                                );
+                              })}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        );
+                      }}
                     />
                   </div>
 
@@ -504,7 +535,7 @@ export default function UserProfile() {
                           {...field}
                           id="address"
                           placeholder="Phnom Penh, Cambodia"
-                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:ring-[#00932A]"
+                          className="h-11 rounded-full px-4 border-gray-200 dark:border-border dark:bg-card/80 dark:text-foreground dark:placeholder:text-neutral-500 focus-visible:border-[#00932A] focus-visible:ring-[#00932A]"
                         />
                       )}
                     />

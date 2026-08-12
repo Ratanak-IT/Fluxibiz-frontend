@@ -33,10 +33,10 @@ export default function ItemCardComponent({
     const outOfStock = isCartLineOutOfStock(line);
 
     return (
-        <Card className={cn("w-full overflow-hidden border-0 bg-gray-100 p-0 sm:h-33.5 dark:bg-card relative", outOfStock && "opacity-90")}>
+        <Card className={cn("w-full overflow-hidden rounded-2xl border-0 bg-gray-100 p-0 sm:h-33.5 dark:bg-card relative", outOfStock && "opacity-90")}>
             <div className="grid h-full grid-cols-[80px_1fr] items-center gap-4 p-4 sm:grid-cols-[110px_1fr_96px_150px] sm:px-4 sm:py-0">
                 {/* Image */}
-                <div className="relative h-20 w-20 overflow-hidden rounded-lg bg-white sm:h-25 sm:w-full">
+                <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-white sm:h-25 sm:w-full">
                     {outOfStock && (
                         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/25 backdrop-blur-[1.5px]">
                             <span className="rounded bg-red-600/90 px-1 py-0.5 text-[9px] sm:text-[10px] font-bold text-white shadow-xs">
@@ -181,7 +181,7 @@ function Stepper({
                 size="icon"
                 onClick={handleDecrease}
                 disabled={busy}
-                className="h-6 w-6 text-yellow-400 dark:border-border dark:bg-card dark:text-secondary"
+                className="h-6 w-6 border-red-500 bg-red-500 text-white hover:bg-red-600 hover:border-red-600 dark:border-red-500 dark:bg-red-500 dark:text-white dark:hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed"
                 aria-label={t("decreaseQuantity")}
             >
                 <Minus className="h-3.5 w-3.5" />

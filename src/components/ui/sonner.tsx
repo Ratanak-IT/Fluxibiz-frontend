@@ -28,11 +28,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
                     cancelButton:
                         "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground font-medium",
                     closeButton:
-<<<<<<< HEAD
-                        "group-[.toast]:left-auto group-[.toast]:right-0 group-[.toast]:translate-x-1/3 group-[.toast]:-translate-y-1/3",
-=======
                         "group-[.toast]:!left-auto group-[.toast]:!right-0 group-[.toast]:[transform:translate(35%,-35%)]",
->>>>>>> 93aafc5d2cee751626b3b3f6d0c1eb1f8ac90e7c
                 },
             }}
             richColors

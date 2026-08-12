@@ -46,17 +46,15 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     openTime && closeTime ? `${openTime} – ${closeTime}` : hours;
 
   return (
-<div
-  className="
-    
-    group relative mx-auto mt-3 
-    h-[300px] w-[260px] cursor-pointer p-2 bg-white
-    overflow-hidden rounded-lg shadow-sm duration-100 hover:duration-100 hover:shadow-md hover:scale-98 ease-out transition-transform
-    dark:bg-muted dark:shadow-md dark:shadow-black/40 dark:hover:shadow-sm dark:hover:shadow-black/50
-  
-  "
->
-      <div className="relative grow h-38 w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
+    <div
+      className="
+        group relative mx-auto mt-3 
+        h-[300px] w-[260px] cursor-pointer p-2.5 bg-white
+        overflow-hidden rounded-2xl shadow-sm duration-100 hover:duration-100 hover:shadow-md hover:scale-98 ease-out transition-transform
+        dark:bg-muted dark:shadow-md dark:shadow-black/40 dark:hover:shadow-sm dark:hover:shadow-black/50
+      "
+    >
+      <div className="relative grow h-38 w-full overflow-hidden rounded-xl bg-muted flex items-center justify-center">
         {image && !hasError ? (
           <Image
             src={image}

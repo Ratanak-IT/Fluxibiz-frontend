@@ -280,7 +280,7 @@ export function ProductStorefrontUI({
                                     aria-label="Decrease quantity"
                                     disabled={outOfStock}
                                     onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                                    className={cn("text-danger cursor-pointer", outOfStock && "opacity-40 cursor-not-allowed")}
+                                    className={cn("text-red-500 dark:text-red-400 hover:text-red-600 transition-colors cursor-pointer", outOfStock && "opacity-40 cursor-not-allowed")}
                                 >
                                     <Minus className="size-4" />
                                 </button>
