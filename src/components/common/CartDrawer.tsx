@@ -81,7 +81,7 @@ export default function CartDrawer({
                         <ShoppingCart size={iconSize} className={iconClassName} />
 
                         {totalItems > 0 && (
-                            <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+                            <span className="absolute -right-1 top-0.5 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
                                 {totalItems > 99 ? "99+" : totalItems}
                             </span>
                         )}
