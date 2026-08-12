@@ -5,9 +5,10 @@ import * as React from 'react'
 import { motion } from 'motion/react'
 
 import { Carousel, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import { useGetStorefrontBannersQuery } from '@/features/banner/bannerApi'
 
 
-const Images = [
+const DEFAULT_IMAGES = [
   {
     image: '/carousel/banner2.png',
     title: '',
@@ -100,6 +101,19 @@ function useResponsiveDims() {
 }
 
 const BannerCarousel = () => {
+  const { data: apiBanners } = useGetStorefrontBannersQuery()
+
+  const Images = React.useMemo(() => {
+    if (apiBanners && apiBanners.length > 0) {
+      return apiBanners.map((b) => ({
+        image: b.imageUrl,
+        title: b.title || '',
+        category: b.badge || b.subtitle || '',
+      }))
+    }
+    return DEFAULT_IMAGES
+  }, [apiBanners])
+
   const total = Images.length
   const [active, setActive] = React.useState(0)
   const [isPaused, setIsPaused] = React.useState(false)
