@@ -453,7 +453,7 @@ function Gallery({
                         className={cn(
                             "relative size-14 shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer",
                             position === index
-                                ? "border-primary ring-2 ring-primary/20 shadow-xs scale-[1.02]"
+                                ? "border-primary shadow-xs scale-[1.02]"
                                 : "border-transparent dark:border-[#242937] hover:border-primary/40 opacity-70 hover:opacity-100",
                         )}
                     >
@@ -516,7 +516,7 @@ function Chip({
             disabled={disabled}
             aria-pressed={active}
             className={cn(
-                "cursor-pointer rounded-lg border px-4 py-2 text-center text-sm transition-colors",
+                "max-w-full cursor-pointer break-words rounded-lg border px-4 py-2 text-center text-sm leading-5 transition-colors",
                 disabled
                     ? "cursor-not-allowed border-[#f0f1ef] dark:border-[#2a3042] bg-[#fafbfa] dark:bg-[#151821] text-[#c2c8c0] dark:text-[#64748b] line-through"
                     : active

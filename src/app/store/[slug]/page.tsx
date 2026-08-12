@@ -11,6 +11,7 @@ import { MenuItemData, isItemOutOfStock } from "@/lib/store/detailstore/detailst
 import { ChevronLeft, UtensilsCrossed } from "lucide-react";
 import Link from "next/link";
 import { StorePageSkeleton } from "@/components/common/Skeletons";
+import ApiErrorFallback from "@/components/common/api-error-fallback";
 import {
   useGetPublicStoreQuery,
   useGetPublicStoreItemsQuery,
@@ -209,9 +210,12 @@ export default function StoreDetail({
       {isLoading ? (
         <StorePageSkeleton />
       ) : isStoreError ? (
-        <div className="flex h-40 items-center justify-center text-sm text-destructive">
-          {t("detail.storeLoadError")}
-        </div>
+        <ApiErrorFallback
+          title="មិនអាចទាញយកព័ត៌មានហាងបានឡើយ"
+          description="សូមពិនិត្យមើលអាសយដ្ឋានហាង ឬការភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក រួចព្យាយាមម្ដងទៀត។"
+          onRetry={() => window.location.reload()}
+          backHref="/store"
+        />
       ) : (
         <>
           <div className="space-y-10">
@@ -267,13 +271,13 @@ export default function StoreDetail({
 
             <div className="hidden lg:block lg:pt-8">
               <div className="sticky top-6">
-                <CartSidebar slug={slug} businessId={storeDetail?.id} />
+                <CartSidebar slug={slug} businessId={storeDetail?.id} storeCurrency={currency} />
               </div>
             </div>
           </div>
 
           <div className="px-4 pb-10 sm:px-6 lg:hidden">
-            <CartSidebar slug={slug} businessId={storeDetail?.id} />
+            <CartSidebar slug={slug} businessId={storeDetail?.id} storeCurrency={currency} />
           </div>
         </>
       )}

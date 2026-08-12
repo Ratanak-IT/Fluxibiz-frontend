@@ -198,15 +198,15 @@ const SearchDrawer = ({
         className="
           fixed inset-0 top-0 left-0 z-50 flex h-full w-full max-w-full
           translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden
-          rounded-none border-0 p-0
+          rounded-none border-0 p-0 bg-white dark:bg-[#2e302f]
           sm:h-full sm:w-full sm:max-w-full sm:rounded-none
           xl:inset-auto xl:left-[50%] xl:top-[50%] xl:min-h-[560px] xl:max-h-[92vh]
           xl:w-[min(90vw,860px)] xl:max-w-4xl xl:-translate-x-1/2 xl:-translate-y-1/2
-          xl:rounded-2xl xl:border
+          xl:rounded-2xl xl:border dark:border-[#293831]
         "
       >
         {/* iOS-style search bar: input + inline Cancel link */}
-        <div className="flex shrink-0 items-center gap-2 border-b px-3 py-2.5 sm:px-4 sm:py-3">
+        <div className="flex shrink-0 items-center gap-2 border-b dark:border-[#293831] px-3 py-2.5 sm:px-4 sm:py-3">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -221,6 +221,10 @@ const SearchDrawer = ({
                 border
                 border-input
                 bg-white
+                dark:bg-[#34463e]
+                dark:border-[#34463e]
+                dark:text-[#f3f7f4]
+                dark:placeholder:text-[#a7b4ad]
                 pl-9
                 pr-9
                 text-sm
@@ -238,7 +242,7 @@ const SearchDrawer = ({
                 type="button"
                 onClick={() => handleChange("")}
                 aria-label="Clear search"
-                className="absolute right-2.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded-full bg-muted-foreground/30 text-background hover:bg-muted-foreground/50"
+                className="absolute right-2.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded-full bg-muted-foreground/30 dark:bg-muted-foreground/50 text-background dark:text-[#2e302f] hover:bg-muted-foreground/50 dark:hover:bg-muted-foreground/70"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -246,21 +250,21 @@ const SearchDrawer = ({
           </div>
 
           <DialogClose>
-            <span className="shrink-0 whitespace-nowrap px-1 text-sm font-medium text-primary hover:opacity-70 sm:text-base">
+            <span className="shrink-0 whitespace-nowrap px-1 text-sm font-medium text-primary dark:text-[#35cc60] hover:opacity-70 sm:text-base">
               Cancel
             </span>
           </DialogClose>
         </div>
 
-        <div className="no-scrollbar flex-1 space-y-5 overflow-y-auto p-4 sm:p-5">
+        <div className="no-scrollbar flex-1 space-y-5 overflow-y-auto p-4 sm:p-5 dark:bg-[#2e302f]">
           {showResults ? (
             <div className="space-y-2.5">
-              <h4 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <h4 className="text-xs font-medium uppercase tracking-wide text-muted-foreground dark:text-[#a7b4ad]">
                 {searching ? "Searching..." : `Results (${results.length})`}
               </h4>
 
               {searching ? (
-                <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground dark:text-[#a7b4ad]">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Looking for &quot;{currentValue}&quot;...
                 </div>
@@ -281,8 +285,10 @@ const SearchDrawer = ({
                           py-2
                           text-sm
                           text-foreground
+                          dark:text-[#f3f7f4]
                           transition-colors
                           hover:bg-primary/5
+                          dark:hover:bg-primary/10
                         "
                       >
                         {store.image ? (
@@ -292,14 +298,14 @@ const SearchDrawer = ({
                             className="h-8 w-8 shrink-0 rounded-full object-cover"
                           />
                         ) : (
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 text-xs font-semibold text-primary dark:text-[#35cc60]">
                             {store.name?.charAt(0)}
                           </div>
                         )}
                         <div className="min-w-0">
-                          <p className="truncate font-medium">{store.name}</p>
+                          <p className="truncate font-medium dark:text-[#f3f7f4]">{store.name}</p>
                           {store.category && (
-                            <p className="truncate text-xs text-muted-foreground">
+                            <p className="truncate text-xs text-muted-foreground dark:text-[#a7b4ad]">
                               {store.category}
                             </p>
                           )}
@@ -310,8 +316,8 @@ const SearchDrawer = ({
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-2 py-8 text-center">
-                  <SearchX className="h-6 w-6 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
+                  <SearchX className="h-6 w-6 text-muted-foreground dark:text-[#a7b4ad]" />
+                  <p className="text-sm text-muted-foreground dark:text-[#a7b4ad]">
                     No stores found for &quot;{currentValue}&quot;
                   </p>
                 </div>
@@ -321,14 +327,14 @@ const SearchDrawer = ({
             recentSearches.length > 0 && (
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <h4 className="text-xs font-medium uppercase tracking-wide text-muted-foreground dark:text-[#a7b4ad]">
                     Recent Searches
                   </h4>
                   {!controlledRecents && (
                     <button
                       type="button"
                       onClick={clearRecents}
-                      className="text-xs font-medium text-muted-foreground hover:text-foreground"
+                      className="text-xs font-medium text-muted-foreground dark:text-[#a7b4ad] hover:text-foreground dark:hover:text-[#f3f7f4]"
                     >
                       Clear all
                     </button>
@@ -350,8 +356,10 @@ const SearchDrawer = ({
                         py-2
                         text-sm
                         text-foreground
+                        dark:text-[#f3f7f4]
                         transition-colors
                         hover:bg-primary/5
+                        dark:hover:bg-primary/10
                       "
                     >
                       <button
@@ -359,7 +367,7 @@ const SearchDrawer = ({
                         onClick={() => handleRecentClick(term)}
                         className="flex flex-1 items-center gap-3 text-left"
                       >
-                        <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        <Clock className="h-4 w-4 shrink-0 text-muted-foreground dark:text-[#a7b4ad]" />
                         {term}
                       </button>
                       {!controlledRecents && (
@@ -369,7 +377,7 @@ const SearchDrawer = ({
                           aria-label={`Remove ${term}`}
                           className="opacity-0 transition-opacity group-hover:opacity-100"
                         >
-                          <X className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+                          <X className="h-3.5 w-3.5 text-muted-foreground dark:text-[#a7b4ad] hover:text-foreground dark:hover:text-[#f3f7f4]" />
                         </button>
                       )}
                     </div>

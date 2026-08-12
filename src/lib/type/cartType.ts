@@ -103,13 +103,26 @@ export interface AddToCartPayload {
         price: number;
         imageUrl?: string | null;
         storeName?: string;
+        currency?: string;
     };
 }
 
-export function formatMoney(amount: number, currency = "USD"): string {
-    const code = currency.toUpperCase();
-    if (code === "KHR" || code === "KH") {
-        return `${Math.round(amount).toLocaleString("en-US")} ៛`;
+export function formatMoney(amount: number, currency = "USD", exchangeRate = 4000): string {
+    const code = (currency || "").toUpperCase().trim();
+    if (
+        code === "KHR" ||
+        code === "KH" ||
+        code === "RIEL" ||
+        code === "REIL" ||
+        code === "៛" ||
+        code.includes("KHR") ||
+        code.includes("RIEL") ||
+        code.includes("REIL") ||
+        code.includes("KHMER") ||
+        code.includes("៛")
+    ) {
+        const finalAmount = amount < 100 ? amount * exchangeRate : amount;
+        return `${Math.round(finalAmount).toLocaleString("en-US")} ៛`;
     }
     return `$${amount.toFixed(2)}`;
 }
@@ -132,6 +145,8 @@ export function resolveMediaUrl(keyOrUrl: string | null | undefined): string | n
     }
 
     if (
+        value.startsWith("data:") ||
+        value.startsWith("blob:") ||
         value.startsWith("http://") ||
         value.startsWith("https://") ||
         value.startsWith("/")

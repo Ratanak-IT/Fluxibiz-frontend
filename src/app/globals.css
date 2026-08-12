@@ -183,6 +183,10 @@
     margin: 0;
   }
 
+  p, td, th, dd, dt, label {
+    font-size: clamp(16px, 1rem, 3rem);
+  }
+
   h1,
   h2,
   h3 {
@@ -201,6 +205,11 @@
 }
 
 @layer utilities {
+  :not(button):not(input):not(select):not(textarea).text-xs,
+  :not(button):not(input):not(select):not(textarea).text-sm {
+    font-size: 16px;
+  }
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;

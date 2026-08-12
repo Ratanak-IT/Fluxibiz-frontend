@@ -124,10 +124,22 @@ export async function addToCart(payload: {
   return { success: true };
 }
 
-export function formatPrice(value: number, currency: string = "USD"): string {
-  const code = currency.toUpperCase();
-  if (code === "KHR" || code === "KH") {
-    return `${Math.round(value).toLocaleString('en-US')} ៛`;
+export function formatPrice(value: number, currency: string = "USD", exchangeRate = 4000): string {
+  const code = (currency || "").toUpperCase().trim();
+  if (
+    code === "KHR" ||
+    code === "KH" ||
+    code === "RIEL" ||
+    code === "REIL" ||
+    code === "៛" ||
+    code.includes("KHR") ||
+    code.includes("RIEL") ||
+    code.includes("REIL") ||
+    code.includes("KHMER") ||
+    code.includes("៛")
+  ) {
+    const finalAmount = value < 100 ? value * exchangeRate : value;
+    return `${Math.round(finalAmount).toLocaleString('en-US')} ៛`;
   }
   return `$${value.toFixed(2)}`;
 }

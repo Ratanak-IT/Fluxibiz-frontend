@@ -34,7 +34,7 @@ function ToolCard({
         >
             <div className="origin-center transition-transform duration-500 ease-out group-hover:scale-[1.04]">
                 <p
-                    className={`text-xs font-semibold uppercase tracking-[0.14em] ${inverted ? "text-white/80" : "text-brand"}`}
+                    className={`text-xs font-semibold uppercase tracking-[0.10em] ${inverted ? "text-white/80" : "text-brand"}`}
                 >
                     {label}
                 </p>

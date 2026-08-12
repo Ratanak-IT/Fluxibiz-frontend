@@ -2,9 +2,11 @@ import Link from "next/link"
 import { Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-6 py-12">
+
+     <div className="flex min-h-screen items-center justify-center bg-background px-6 py-12">
       <div className="grid w-full max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-2">
         {/* ================= LEFT: TEXT ================= */}
         <div className="text-center md:text-left">
@@ -162,5 +164,7 @@ export default function NotFound() {
         </div>
       </div>
     </div>
+    
+    
   )
 }

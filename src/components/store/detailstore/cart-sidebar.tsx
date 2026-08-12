@@ -31,9 +31,10 @@ import { cn } from "@/lib/utils";
 interface CartSidebarProps {
   slug?: string;
   businessId?: string;
+  storeCurrency?: string;
 }
 
-export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
+export default function CartSidebar({ slug, businessId, storeCurrency }: CartSidebarProps) {
   const t = useTranslations("Cart");
   const { isAuthenticated, status: authStatus, login } = useAuth();
 
@@ -47,7 +48,7 @@ export default function CartSidebar({ slug, businessId }: CartSidebarProps) {
 
   const lines = storeCart?.items ?? [];
   const subtotal = storeCart?.subtotal ?? 0;
-  const currency = storeCart?.currency ?? "USD";
+  const currency = storeCurrency || storeCart?.currency || "USD";
   const itemCount = storeCart?.itemCount ?? 0;
   const otherShops = (cart?.storeCount ?? 0) - (storeCart ? 1 : 0);
 

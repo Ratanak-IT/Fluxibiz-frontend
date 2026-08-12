@@ -91,7 +91,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
               </div>
             ) : (
               item.badge && (
-                <div className="absolute left-0 top-0 z-10 rounded-br-lg bg-red-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white shadow-xs">
+                <div className="absolute left-0 top-0 z-10 max-w-full truncate whitespace-nowrap rounded-br-lg bg-red-500 px-1.5 py-0.5 text-[8px] font-extrabold text-white shadow-xs sm:text-[10px]">
                   {item.badge}
                 </div>
               )

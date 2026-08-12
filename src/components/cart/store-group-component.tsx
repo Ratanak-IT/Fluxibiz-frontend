@@ -3,12 +3,16 @@
 import { useTranslations } from "next-intl";
 
 import { StoreCart } from "@/lib/type/cartType";
+import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ItemCardComponent from "./item-card-component";
 import OrderSummaryComponent from "./order-summary-component";
 import { StoreCardComponent } from "./store-card-component";
 
 export default function StoreGroupComponent({ store }: { store: StoreCart }) {
   const t = useTranslations("Cart");
+  const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
+  const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
+
     return (
         <section aria-label={t("cartForStore", { storeName: store.name })}>
             <StoreCardComponent store={store} />
@@ -19,12 +23,12 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
                         <ItemCardComponent
                             key={line.cartItemId}
                             line={line}
-                            currency={store.currency}
+                            currency={effectiveCurrency}
                         />
                     ))}
                 </div>
 
-                <OrderSummaryComponent store={store} />
+                <OrderSummaryComponent store={store} currency={effectiveCurrency} />
             </div>
         </section>
     );
