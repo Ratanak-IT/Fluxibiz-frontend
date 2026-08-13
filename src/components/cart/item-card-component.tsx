@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,10 +21,13 @@ import { cn } from "@/lib/utils";
 export default function ItemCardComponent({
     line,
     currency = "USD",
+    storeSlug,
 }: {
     line: CartLine;
     currency?: string;
+    storeSlug?: string;
 }) {
+    const router = useRouter();
     const tStore = useTranslations("Store");
     const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
     const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
@@ -32,11 +36,22 @@ export default function ItemCardComponent({
     const busy = isUpdating || isRemoving;
     const outOfStock = isCartLineOutOfStock(line);
 
+    const productHref = storeSlug && line.itemId ? `/store/${storeSlug}/product/${line.itemId}` : null;
+
+    const handleNavigate = () => {
+        if (productHref) {
+            router.push(productHref);
+        }
+    };
+
     return (
         <Card className={cn("w-full overflow-hidden rounded-2xl border-0 bg-gray-100 p-0 sm:h-33.5 dark:bg-card relative", outOfStock && "opacity-90")}>
             <div className="grid h-full grid-cols-[80px_1fr] items-center gap-3.5 p-3.5 sm:grid-cols-[110px_1fr_96px_150px] sm:gap-4 sm:px-4 sm:py-0">
                 {/* Image */}
-                <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-white sm:h-25 sm:w-full shrink-0">
+                <div
+                    onClick={handleNavigate}
+                    className={cn("relative h-20 w-20 overflow-hidden rounded-xl bg-white sm:h-25 sm:w-full shrink-0", productHref && "cursor-pointer")}
+                >
                     {outOfStock && (
                         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/25 backdrop-blur-[1.5px]">
                             <span className="rounded bg-red-600/90 px-1 py-0.5 text-[9px] sm:text-[10px] font-bold text-white shadow-xs">
@@ -63,8 +78,8 @@ export default function ItemCardComponent({
                 <div className="flex min-w-0 flex-col gap-1.5 overflow-hidden">
                     <CardHeader className="gap-1 p-0">
                         <div className="flex items-start justify-between gap-2">
-                            <div className="min-w-0 flex-1">
-                                <CardTitle className="truncate text-base font-semibold sm:text-xl dark:text-card-foreground">
+                            <div onClick={handleNavigate} className={cn("min-w-0 flex-1", productHref && "cursor-pointer")}>
+                                <CardTitle className={cn("truncate text-base font-semibold sm:text-xl dark:text-card-foreground", productHref && "hover:underline")}>
                                     {line.name}
                                 </CardTitle>
                                 {line.description && (

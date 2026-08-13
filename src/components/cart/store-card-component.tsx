@@ -19,7 +19,7 @@ export function StoreCardComponent({ store }: { store: StoreCart }) {
     return (
         <Card className="overflow-hidden rounded-2xl p-3.5 sm:p-0 bg-white border border-neutral-100/80 shadow-xs dark:border-neutral-700 dark:bg-[#1b1b1b]">
             <div className="flex flex-row items-center gap-4 sm:flex sm:h-45 sm:flex-row sm:gap-0">
-                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-white sm:h-40 sm:w-40 sm:ml-2.5 sm:self-center">
+                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-white sm:h-40 sm:w-40 sm:ml-2.5 sm:self-center">
                     {logoUrl ? (
                         <Image
                             src={logoUrl}

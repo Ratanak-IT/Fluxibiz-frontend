@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Card } from "../../ui/card";
 import { Clock, ImageOff, MapPin } from "lucide-react";
 import { StoreCardData } from "@/lib/store/detailstore/store";
-
+import { StoreCardSkeleton } from "@/components/common/Skeletons";
 
 interface StoreCardComponentProps {
   store?: StoreCardData;
@@ -12,20 +12,7 @@ interface StoreCardComponentProps {
 export default function StoreCard({ store }: StoreCardComponentProps) {
   const t = useTranslations("Store.common");
   if (!store) {
-    return (
-      <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
-        <Card className="overflow-hidden bg-card p-0">
-          <div className="flex h-40 animate-pulse flex-col gap-3 p-4 sm:flex-row">
-            <div className="h-32 w-full rounded-lg bg-muted sm:w-44" />
-            <div className="flex flex-1 flex-col justify-center gap-3">
-              <div className="h-3 w-24 rounded bg-muted" />
-              <div className="h-5 w-48 rounded bg-muted" />
-              <div className="h-3 w-64 rounded bg-muted" />
-            </div>
-          </div>
-        </Card>
-      </div>
-    );
+    return <StoreCardSkeleton />;
   }
 
   const imageUrl = store.image?.trim() ? store.image : null;
@@ -34,18 +21,20 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
     <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
       <Card className="overflow-hidden bg-card p-0">
         <div className="flex flex-col sm:h-44 md:flex-row">
-          <div className="relative flex h-44 w-full shrink-0 items-center justify-center p-3.5 sm:w-44 md:w-48">
-            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-white p-2.5 shadow-2xs border border-neutral-100 dark:border-neutral-800">
+          <div className="relative flex h-56 w-full shrink-0 items-center justify-center p-3.5 sm:h-44 sm:w-44 md:w-48">
+            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-white p-2 dark:bg-card">
               {imageUrl ? (
-                <Image
-                  src={imageUrl}
-                  alt={store.name || t("storeLogo")}
-                  fill
-                  unoptimized
-                  className="h-full w-full object-contain p-1.5"
-                />
+                <div className="relative h-full w-full overflow-hidden rounded-md">
+                  <Image
+                    src={imageUrl}
+                    alt={store.name || t("storeLogo")}
+                    fill
+                    unoptimized
+                    className="h-full w-full rounded-md object-cover"
+                  />
+                </div>
               ) : (
-                <div className="flex h-full w-full items-center justify-center rounded-xl bg-muted">
+                <div className="flex h-full w-full items-center justify-center rounded-md bg-muted">
                   <ImageOff className="h-6 w-6 text-neutral-300" />
                 </div>
               )}

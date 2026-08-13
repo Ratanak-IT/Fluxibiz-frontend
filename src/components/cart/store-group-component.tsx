@@ -38,7 +38,7 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
                             className="gap-1.5 whitespace-nowrap text-xs text-red-500 hover:bg-red-50 hover:text-red-600 disabled:opacity-40 dark:hover:bg-destructive/10"
                         >
                             <Trash2 className="h-3.5 w-3.5" />
-                            Remove shop
+                            {t("removeAllItems")}
                         </Button>
                     </div>
 
@@ -47,7 +47,7 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
                             key={line.cartItemId}
                             line={line}
                             currency={effectiveCurrency}
-
+                            storeSlug={store.slug}
                         />
                     ))}
                 </div>

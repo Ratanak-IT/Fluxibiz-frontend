@@ -280,8 +280,8 @@ export default function StoreFilterComponent({
   );
 
   const renderLocationFilters = () => (
-    <div className="space-y-3">
-      <h4 className="text-lg font-medium text-foreground hover:text-primary transition-colors cursor-default">
+    <div>
+      <h4 className="sticky top-0 z-20 mb-3 bg-card py-3 text-lg font-medium text-foreground transition-colors hover:text-primary cursor-default">
         {t("locations")}
       </h4>
       {renderLocationItemsOnly()}
@@ -358,7 +358,7 @@ export default function StoreFilterComponent({
 
   const renderCategoryFilters = () => (
     <div>
-      <h4 className="mb-3 text-lg font-medium text-foreground hover:text-primary transition-colors cursor-default">
+      <h4 className="sticky top-0 z-20 mb-3 bg-card py-3 text-lg font-medium text-foreground transition-colors hover:text-primary cursor-default">
         {t("shopTypes")}
       </h4>
       {renderCategoryItemsOnly()}
@@ -401,7 +401,7 @@ export default function StoreFilterComponent({
                 rounded-full
                 border
                 border-primary/40
-                bg-neutral-100/60
+                bg-white
                 pl-11
                 pr-4
                 text-sm
@@ -410,12 +410,13 @@ export default function StoreFilterComponent({
                 cursor-pointer
                 placeholder:truncate
                 placeholder:text-neutral-400
-                hover:bg-neutral-100
+                hover:bg-neutral-50
                 focus-visible:border-primary
                 focus-visible:ring-1
                 focus-visible:ring-primary/20
                 dark:border-primary/50
-                dark:bg-neutral-900
+                dark:bg-card
+                dark:hover:bg-muted
               "
             />
           </div>
@@ -426,14 +427,14 @@ export default function StoreFilterComponent({
                 <button
                   type="button"
                   aria-label={t("openFilters")}
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-neutral-200/70 bg-white shadow-sm outline-none transition-colors duration-200 hover:bg-neutral-200/80 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-white outline-none transition-colors duration-200 hover:border-primary hover:bg-neutral-50 dark:border-primary/50 dark:bg-card dark:hover:bg-muted text-neutral-900 dark:text-neutral-100"
                 >
                   <SlidersHorizontal strokeWidth={2} className="h-4 w-4 text-primary" />
                 </button>
               }
             />
             <DrawerContent className="rounded-t-[28px] border-t border-border/10 bg-card p-0 overflow-x-hidden">
-              <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
+              <div className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-4 sm:px-5">
                 <div className="min-w-0">
                   <DrawerTitle className="text-xl font-bold text-foreground truncate hover:text-primary transition-colors">{t("title")}</DrawerTitle>
                 </div>
@@ -441,7 +442,7 @@ export default function StoreFilterComponent({
                   render={
                     <button
                       type="button"
-                      className="shrink-0 rounded-full border border-primary/40 bg-white px-3 py-2 text-sm font-medium text-primary transition hover:bg-primary/5 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-primary/50 dark:bg-neutral-900"
+                      className="shrink-0 rounded-full border border-primary/40 bg-transparent px-3 py-2 text-sm font-medium text-primary transition hover:bg-primary/5 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-primary/50"
                     >
                       {t("close")}
                     </button>
@@ -449,12 +450,12 @@ export default function StoreFilterComponent({
                 />
               </div>
 
-              <div className="max-h-[70vh] space-y-6 overflow-y-auto overflow-x-hidden p-4 sm:p-5">
+              <div className="max-h-[70vh] space-y-6 overflow-y-auto overflow-x-hidden p-4 pt-0 sm:p-5 sm:pt-0">
                 {hasActiveFilters && (
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="mb-2 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
+                    className="mb-2 mt-3 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
                   >
                     {t("resetFilters")}
                   </button>

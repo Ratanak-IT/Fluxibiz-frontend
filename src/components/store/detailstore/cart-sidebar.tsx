@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 
 import Image from "next/image";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { ImageOff, Loader2, LogIn, Minus, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -207,11 +208,25 @@ function CartSidebarLine({
       });
   };
 
+  const params = useParams();
+  const router = useRouter();
+  const slug = typeof params?.slug === "string" ? params.slug : "";
+  const productHref = slug && line.itemId ? `/store/${slug}/product/${line.itemId}` : null;
+
+  const handleNavigate = () => {
+    if (productHref) {
+      router.push(productHref);
+    }
+  };
+
   const currentSubtotal = line.unitPrice * line.quantity;
 
   return (
-    <div className={cn("flex items-center gap-3 rounded-xl bg-neutral-50 p-2 dark:bg-muted/40 relative", outOfStock && "opacity-90")}>
-      <div className="relative h-13 w-13 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-card">
+    <div className={cn("flex w-full items-center gap-3 rounded-xl bg-neutral-50 p-2.5 dark:bg-muted/40 relative", outOfStock && "opacity-90")}>
+      <div
+        onClick={handleNavigate}
+        className={cn("relative h-13 w-13 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-card", productHref && "cursor-pointer")}
+      >
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -229,8 +244,8 @@ function CartSidebarLine({
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <p className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+        <div onClick={handleNavigate} className={cn("flex items-center gap-1.5", productHref && "cursor-pointer")}>
+          <p className={cn("truncate text-sm font-semibold text-neutral-900 dark:text-neutral-50", productHref && "hover:underline")}>
             {line.name}
           </p>
           {outOfStock && (

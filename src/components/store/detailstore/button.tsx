@@ -33,10 +33,10 @@ function FilterDropdown({ label, value, options, onSelect }: FilterDropdownProps
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={`inline-flex h-11 shrink-0 items-center justify-center rounded-full px-4 text-xs font-medium shadow-sm transition-colors outline-none focus:outline-none focus-visible:ring-0 sm:px-5 sm:text-sm ${
+        className={`inline-flex h-11 shrink-0 items-center justify-center rounded-full px-4 text-xs font-medium transition-colors outline-none focus:outline-none focus-visible:ring-0 sm:px-5 sm:text-sm ${
           isSelected
-            ? "bg-primary/10 text-primary border border-primary/20 dark:bg-primary/20 dark:text-primary"
-            : "border-0 bg-white text-neutral-800 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200"
+            ? "border border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary"
+            : "border border-primary/40 bg-white text-neutral-800 hover:border-primary hover:bg-neutral-50 dark:border-primary/50 dark:bg-card dark:text-neutral-200 dark:hover:bg-muted"
         }`}
       >
         <span>{displayLabel}</span>
@@ -109,7 +109,7 @@ export default function SearchFilterBar({
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={t("searchPlaceholder")}
-          className="h-11 w-full rounded-full border-0 bg-white pl-11 pr-8 text-sm shadow-sm placeholder:text-neutral-400 dark:bg-neutral-900"
+          className="h-11 w-full rounded-full border border-primary/40 bg-white pl-11 pr-8 text-sm shadow-sm placeholder:text-neutral-400 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-primary/50 dark:bg-card dark:text-foreground"
         />
         {searchQuery && (
           <button
@@ -168,9 +168,9 @@ export default function SearchFilterBar({
           <Button
             type="button"
             variant="ghost"
-            className="h-11 shrink-0 rounded-full border-0 bg-white px-4 text-xs font-medium text-neutral-800 shadow-sm hover:bg-neutral-50 sm:px-5 sm:text-sm dark:bg-neutral-900 dark:text-neutral-200"
+            className="h-11 shrink-0 rounded-full border border-primary/40 bg-white px-4 text-xs font-medium text-neutral-800 hover:border-primary hover:bg-neutral-50 sm:px-5 sm:text-sm dark:border-primary/50 dark:bg-card dark:text-neutral-200 dark:hover:bg-muted"
           >
-            <ListFilter className="mr-1.5 h-4 w-4" />
+            <ListFilter className="mr-1.5 h-4 w-4 text-primary" />
             {t("filter")}
           </Button>
         )}

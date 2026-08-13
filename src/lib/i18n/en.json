@@ -17,7 +17,10 @@
     "serverConnectError": "Could not connect to the server or data is not ready. Please try again.",
     "retry": "Retry",
     "retrying": "Loading...",
-    "backToStore": "Back to store"
+    "backToStore": "Back to store",
+    "receiptNotFound": "Receipt Not Found",
+    "receiptNotFoundDesc": "Could not load receipt details. Please check your payment history.",
+    "viewPaymentHistory": "Payment History"
   },
   "Navbar": {
     "feature": "Feature",
@@ -784,6 +787,8 @@
     },
     "detail": {
       "storeLoadError": "Store not found or failed to load details.",
+      "couldNotLoadStore": "Could not load store information",
+      "checkStoreAddressOrConnection": "Please check the store address or your internet connection and try again.",
       "noItemsFound": "No items found matching your filters",
       "noItemsDescription": "Try adjusting your search keyword, category, or price range.",
       "noMenuItems": "No menu items yet",
@@ -872,6 +877,7 @@
     "finishPayment": "Finish payment",
     "checkout": "Checkout",
     "removeItem": "Remove {name}",
+    "removeAllItems": "Remove all items from shop",
     "removeSelectedItems": "Remove all selected items",
     "decreaseQuantity": "Decrease quantity",
     "increaseQuantity": "Increase quantity",

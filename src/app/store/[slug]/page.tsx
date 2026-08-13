@@ -215,8 +215,8 @@ export default function StoreDetail({
         <StorePageSkeleton />
       ) : isStoreError ? (
         <ApiErrorFallback
-          title="មិនអាចទាញយកព័ត៌មានហាងបានឡើយ"
-          description="សូមពិនិត្យមើលអាសយដ្ឋានហាង ឬការភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក រួចព្យាយាមម្ដងទៀត។"
+          title={t("detail.couldNotLoadStore")}
+          description={t("detail.checkStoreAddressOrConnection")}
           onRetry={() => window.location.reload()}
           backHref="/store"
         />
@@ -224,18 +224,20 @@ export default function StoreDetail({
         <>
           <div className="space-y-10">
             <StoreCard store={storeData} />
-            <SearchFilterBar
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              categories={dynamicCategories}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              selectedPriceRange={selectedPriceRange}
-              onPriceRangeChange={setSelectedPriceRange}
-              sortBy={sortBy}
-              onSortByChange={setSortBy}
-              onReset={handleResetFilters}
-            />
+            <div className="sticky top-0 z-30 bg-background/95 py-2.5 backdrop-blur-md">
+              <SearchFilterBar
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                categories={dynamicCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                selectedPriceRange={selectedPriceRange}
+                onPriceRangeChange={setSelectedPriceRange}
+                sortBy={sortBy}
+                onSortByChange={setSortBy}
+                onReset={handleResetFilters}
+              />
+            </div>
           </div>
 
           <div className="px-4 sm:px-6 md:px-12 lg:px-20">
@@ -282,9 +284,6 @@ export default function StoreDetail({
             </div>
           </div>
 
-          <div className="px-4 pb-10 sm:px-6 lg:hidden">
-            <CartSidebar slug={slug} businessId={storeDetail?.id} storeCurrency={currency} />
-          </div>
         </>
       )}
     </div>

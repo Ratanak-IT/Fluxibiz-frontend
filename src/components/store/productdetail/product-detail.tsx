@@ -86,8 +86,8 @@ export default function ProductDetail({
 
   if (isLoading) {
     return (
-      <div className="mx-auto my-10 max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="h-96 w-full animate-pulse rounded-2xl bg-neutral-100 dark:bg-neutral-800" />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 my-6 sm:my-8">
+        <div className="h-96 w-full animate-pulse rounded-2xl bg-neutral-100 dark:bg-card" />
       </div>
     );
   }
