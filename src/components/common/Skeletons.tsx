@@ -5,9 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export function ProductCardSkeleton() {
   return (
-    <Card className="max-w-xl overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-card">
-      <div className="flex h-full min-h-25 sm:min-h-30">
-        <div className="flex min-w-0 flex-1 flex-col justify-between p-2.5 sm:p-3 space-y-2">
+    <Card className="max-w-xl @container overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-card">
+      <div className="flex h-full min-h-25 @xs:min-h-30">
+        <div className="flex min-w-0 flex-1 flex-col justify-between p-2.5 pr-2 @xs:p-3 space-y-2">
           <div className="space-y-1.5">
             <Skeleton className="h-4 w-3/4 rounded-md" />
             <Skeleton className="h-4 w-1/3 rounded-md" />
@@ -16,7 +16,7 @@ export function ProductCardSkeleton() {
           <Skeleton className="h-3 w-1/4 rounded-md" />
         </div>
 
-        <div className="relative m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg sm:m-2.5 sm:w-24 md:w-28">
+        <div className="relative m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg @xs:m-2.5 @xs:w-24 @sm:w-28">
           <Skeleton className="h-full w-full" />
         </div>
       </div>
@@ -79,9 +79,9 @@ export function SearchFilterBarSkeleton() {
 
 export function MenuProductCardSkeleton() {
   return (
-    <Card className="max-w-xl overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-card">
-      <div className="flex h-full min-h-25 sm:min-h-30">
-        <div className="flex min-w-0 flex-1 flex-col justify-between p-2.5 pr-2 sm:p-3 space-y-2">
+    <Card className="max-w-xl @container overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-card">
+      <div className="flex h-full min-h-25 @xs:min-h-30">
+        <div className="flex min-w-0 flex-1 flex-col justify-between p-2.5 pr-2 @xs:p-3 space-y-2">
           <div className="space-y-1.5">
             <Skeleton className="h-4 w-3/4 rounded-md" />
             <Skeleton className="h-4 w-1/3 rounded-md" />
@@ -90,7 +90,7 @@ export function MenuProductCardSkeleton() {
           <Skeleton className="h-3.5 w-20 rounded-md" />
         </div>
 
-        <div className="m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 sm:m-2.5 sm:w-24 md:w-28 dark:bg-card">
+        <div className="m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 @xs:m-2.5 @xs:w-24 @sm:w-28 dark:bg-card">
           <Skeleton className="h-full w-full rounded-lg" />
         </div>
       </div>
@@ -102,7 +102,7 @@ export function MenuProductListSkeleton({ count = 4 }: { count?: number }) {
   return (
     <section className="px-4 py-6 sm:px-6 lg:px-20 space-y-6">
       <Skeleton className="h-8 w-36 rounded-md" />
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {Array.from({ length: count }).map((_, i) => (
           <MenuProductCardSkeleton key={i} />
         ))}

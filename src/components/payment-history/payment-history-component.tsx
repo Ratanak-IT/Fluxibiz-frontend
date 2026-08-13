@@ -87,15 +87,15 @@ export default function PaymentHistoryComponent() {
         </div>
 
         {/* Search & Filter Controls */}
-        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+     <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           {/* Status Tabs */}
-          <div className="flex w-full min-w-0 items-center gap-1 sm:gap-1.5 overflow-x-auto rounded-2xl sm:rounded-full bg-gray-200/70 p-1 sm:p-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:bg-neutral-800">
+          <div className="flex w-full min-w-0 items-center gap-1 sm:gap-1.5 overflow-x-auto rounded-2xl sm:rounded-full bg-gray-200/70 p-1 sm:p-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:bg-card ">
             <button
               type="button"
               onClick={() => setActiveTab("ALL")}
               className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-bold transition-all sm:px-4 ${
                 activeTab === "ALL"
-                  ? "bg-white text-neutral-900 shadow-sm dark:bg-card dark:text-foreground"
+                  ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-foreground"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
               }`}
             >
@@ -154,7 +154,6 @@ export default function PaymentHistoryComponent() {
             />
           </div>
         </div>
-
         {/* Orders List */}
         {filteredOrders.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-neutral-200 bg-white p-12 text-center dark:border-border dark:bg-card">

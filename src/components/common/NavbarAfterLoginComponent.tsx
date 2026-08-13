@@ -425,7 +425,9 @@ export default function NavbarAfterLoginComponent({
                 </div>
 
                 {/* User information */}
-                <div
+                <Link
+                  href="/user-profile"
+                  onClick={() => setMobileNavOpen(false)}
                   className="
                     flex
                     min-h-16
@@ -436,8 +438,16 @@ export default function NavbarAfterLoginComponent({
                     bg-[#f3f4f6]
                     px-3
                     py-2
+                    transition-colors
+                    hover:bg-[#e5e7eb]
+                    focus-visible:outline-none
+                    focus-visible:ring-2
+                    focus-visible:ring-primary
+                    focus-visible:ring-offset-2
 
                     dark:bg-white/5
+                    dark:hover:bg-white/10
+                    dark:focus-visible:ring-offset-background
                   "
                 >
                   <Avatar
@@ -447,9 +457,7 @@ export default function NavbarAfterLoginComponent({
                       border
                       border-[#e5e7eb]
 
-                      dark:border-white/10
-                    "
-                  >
+                      dark:border-white/10 " >
                     {avatarSrc ? (
                       <AvatarImage
                         src={avatarSrc}
@@ -480,7 +488,7 @@ export default function NavbarAfterLoginComponent({
                       {user.email}
                     </p>
                   </div>
-                </div>
+                </Link>
 
                 {/* Mobile navigation */}
                 {navigationItems.map((item) => {
@@ -572,7 +580,7 @@ export default function NavbarAfterLoginComponent({
                     dark:hover:text-primary
                   "
                 >
-                  <UserRound className="size-5 shrink-0" />
+                  <UserRound className="size-5 shrink-0 hover:fill-accent-foreground" />
                   {t("account.viewProfile")}
                 </Link>
 
@@ -603,7 +611,7 @@ export default function NavbarAfterLoginComponent({
                     dark:hover:text-primary
                   "
                 >
-                  <Receipt className="size-5 shrink-0" />
+                  <Receipt className="size-5 shrink-0 hover:fill-accent-foreground" />
                   {t("account.paymentHistory")}
                 </Link>
 
@@ -634,7 +642,7 @@ export default function NavbarAfterLoginComponent({
                     dark:hover:text-primary
                   "
                 >
-                  <Settings className="size-5 shrink-0" />
+                  <Settings className="size-5 shrink-0 hover:fill-accent-foreground" />
                   {t("account.settings")}
                 </Link>
 
@@ -828,6 +836,7 @@ function UserDropdown({
               <Link href="/user-profile" />
             }
             className="
+              group
               cursor-pointer
               gap-2
               text-[#1f2937]
@@ -844,7 +853,7 @@ function UserDropdown({
               dark:data-[highlighted]:text-primary
             "
           >
-            <UserRound className="size-[17px]" />
+            <UserRound className="size-[17px] text-[#1f2937] transition-colors group-hover:text-primary group-focus:text-primary group-data-[highlighted]:text-primary dark:text-white/80" />
             {t("account.viewProfile")}
           </DropdownMenuItem>
 
@@ -853,6 +862,7 @@ function UserDropdown({
               <Link href="/payment-history" />
             }
             className="
+              group
               cursor-pointer
               gap-2
               text-[#1f2937]
@@ -869,13 +879,14 @@ function UserDropdown({
               dark:data-[highlighted]:text-primary
             "
           >
-            <Receipt className="size-[17px]" />
+            <Receipt className="size-[17px] text-[#1f2937] transition-colors group-hover:text-primary group-focus:text-primary group-data-[highlighted]:text-primary dark:text-white/80" />
             {t("account.paymentHistory")}
           </DropdownMenuItem>
 
           <DropdownMenuItem
             render={<Link href="/settings" />}
             className="
+              group
               cursor-pointer
               gap-2
               text-[#1f2937]
@@ -892,7 +903,7 @@ function UserDropdown({
               dark:data-[highlighted]:text-primary
             "
           >
-            <Settings className="size-[17px]" />
+            <Settings className="size-[17px] text-[#1f2937] transition-colors group-hover:text-primary group-focus:text-primary group-data-[highlighted]:text-primary dark:text-white/80" />
             {t("account.settings")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -910,8 +921,7 @@ function UserDropdown({
             focus:text-destructive
             data-[highlighted]:bg-destructive/10
             data-[highlighted]:text-destructive
-          "
-        >
+          ">
           <LogOut className="size-[17px]" />
           {t("account.logout")}
         </DropdownMenuItem>

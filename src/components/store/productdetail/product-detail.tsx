@@ -6,10 +6,10 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
-import { StorefrontItemResponse, ItemVariant, primaryItemImage } from "@/lib/type/storeType";
+import { ItemAttribute, StorefrontItemResponse, ItemVariant, primaryItemImage } from "@/lib/type/storeType";
 import { useAuth } from "@/features/auth/useAuth";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
-import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
+import {formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
 interface ProductDetailProps {
@@ -19,6 +19,8 @@ interface ProductDetailProps {
   currency?: string;
   isLoading?: boolean;
 }
+
+const EMPTY_ATTRIBUTES: ItemAttribute[] = [];
 
 export default function ProductDetail({
   item,
@@ -37,12 +39,7 @@ export default function ProductDetail({
   const [quantity, setQuantity] = useState(1);
 
   const variants = useMemo<ItemVariant[]>(() => item?.variants ?? [], [item]);
-  const attributes = useMemo(() => {
-    if (Array.isArray(item?.attributes)) {
-      return item.attributes;
-    }
-    return [];
-  }, [item?.attributes]);
+  const attributes = item?.attributes ?? EMPTY_ATTRIBUTES;
 
   useEffect(() => {
     if (variants.length > 0) {
@@ -64,7 +61,7 @@ export default function ProductDetail({
 
   if (isLoading) {
     return (
-      <div className="mx-auto my-10 max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto my-10 max-w-5xl px-2 sm:px-6 md:px-12 lg:px-20">
         <div className="h-96 w-full animate-pulse rounded-2xl bg-neutral-100 dark:bg-neutral-800" />
       </div>
     );
@@ -130,21 +127,23 @@ export default function ProductDetail({
   }
 
   return (
-    <div className="mx-auto max-w-5xl bg-[#f7f8f7] dark:bg-[#121620] max-sm:dark:bg-background sm:rounded-2xl sm:my-8 overflow-hidden shadow-sm border border-neutral-100 dark:border-neutral-800">
-      <ProductStorefrontUI
-        item={item}
-        currency={currency}
-        storeSlug={storeSlug}
-        storeName={storeName}
-        onAddToCart={handleAddToCart}
-        isAddingToCart={isAdding}
-        quantity={quantity}
-        setQuantity={setQuantity}
-        selectedVariant={selectedVariant}
-        setSelectedVariant={setSelectedVariant}
-        selectedAttributes={selectedAttributes}
-        setSelectedAttributes={setSelectedAttributes}
-      />
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 md:px-12 lg:px-20 sm:my-8">
+      <div className="bg-[#f7f8f7] dark:bg-card max-sm:dark:bg-background rounded-2xl overflow-hidden shadow-sm border border-neutral-100 dark:border-neutral-800">
+        <ProductStorefrontUI
+          item={item}
+          currency={currency}
+          storeSlug={storeSlug}
+          storeName={storeName}
+          onAddToCart={handleAddToCart}
+          isAddingToCart={isAdding}
+          quantity={quantity}
+          setQuantity={setQuantity}
+          selectedVariant={selectedVariant}
+          setSelectedVariant={setSelectedVariant}
+          selectedAttributes={selectedAttributes}
+          setSelectedAttributes={setSelectedAttributes}
+        />
+      </div>
     </div>
   );
 }
