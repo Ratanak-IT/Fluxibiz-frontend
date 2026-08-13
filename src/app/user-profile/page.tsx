@@ -4,9 +4,9 @@ import StoreNavbar from '@/components/store/store-component/navbar'
 
 export default function UserProfilePage() {
   return (
-    <div className="relative min-h-screen pb-24 lg:pb-0">
+    <div className="relative min-h-screen bg-gray-50 pb-24 dark:bg-background lg:pb-0">
       <UserProfile />
       <StoreNavbar />
     </div>
-  )
+  );
 }

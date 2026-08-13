@@ -204,7 +204,7 @@ const SearchDrawer = ({
             <button
               type="button"
               aria-label="Open search"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200/70 bg-white shadow-sm transition-colors duration-200 hover:bg-neutral-200/80 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200/70 bg-transparent transition-colors duration-200 hover:bg-neutral-100 dark:border-neutral-800 dark:hover:bg-neutral-800"
             >
               <Search className="h-4 w-4 text-neutral-900 dark:text-neutral-100" />
             </button>

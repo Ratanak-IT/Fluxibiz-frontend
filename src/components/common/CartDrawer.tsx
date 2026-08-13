@@ -50,7 +50,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 type CartDrawerProps = {
-    children?: ReactNode;
+    children?: ReactNode | ((props: { open: boolean }) => ReactNode);
+    onOpenChange?: (open: boolean) => void;
     triggerClassName?: string;
     buttonClassName?: string;
     iconClassName?: string;
@@ -60,6 +61,7 @@ type CartDrawerProps = {
 
 export default function CartDrawer({
     children,
+    onOpenChange,
     triggerClassName,
     buttonClassName,
     iconClassName,
@@ -74,7 +76,14 @@ export default function CartDrawer({
 
     const totalItems = cart?.totalItems ?? 0;
 
-    const triggerElement = children ? (
+    const handleOpenChange = (newOpen: boolean) => {
+        setOpen(newOpen);
+        onOpenChange?.(newOpen);
+    };
+
+    const triggerElement = typeof children === "function" ? (
+        children({ open }) as React.ReactElement
+    ) : children ? (
         children as React.ReactElement
     ) : (
         <Button
@@ -94,10 +103,10 @@ export default function CartDrawer({
     );
 
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={open} onOpenChange={handleOpenChange}>
             <SheetTrigger render={triggerElement} className={triggerClassName} />
 
-            <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
+            <SheetContent side="right" className="fixed inset-0 z-50 flex h-full h-screen w-full w-screen max-w-full flex-col bg-background p-0 pb-20 sm:pb-0 border-0 rounded-none sm:inset-y-0 sm:right-0 sm:left-auto sm:h-full sm:w-[440px] sm:max-w-[440px] sm:border-l">
                 <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">
                     <SheetTitle className="flex items-center gap-2 text-xl font-bold text-green-600">
                         {t("title")}
@@ -165,7 +174,7 @@ function StoreSection({
     return (
         <section className="rounded-xl bg-white border border-neutral-100/80 p-3.5 shadow-xs dark:bg-card dark:border-neutral-800">
             <div className="mb-3 flex items-center gap-3">
-                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white">
+                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-white">
                     {logoUrl ? (
                         <Image
                             src={logoUrl}
@@ -283,15 +292,13 @@ function StoreCheckoutButton({
         );
     }
 
-    const href = pendingHere
-        ? `/store/${store.slug}/checkout`
-        : `/cart?shop=${encodeURIComponent(store.slug)}`;
+    const href = `/store/${store.slug}/checkout`;
 
     return (
         <Link
             href={href}
             onClick={onNavigate}
-            className={`${shell} border-primary bg-white text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-border dark:bg-background dark:text-card-foreground dark:hover:bg-card`}
+            className={`${shell} border-primary bg-white text-primary transition-colors hover:bg-primary/5 dark:border-primary dark:bg-background dark:text-primary dark:hover:bg-primary/10`}
         >
             {pendingHere ? t("finishPayment") : t("checkout")}
         </Link>
@@ -376,24 +383,24 @@ function LineRow({
 
     return (
         <div
-            style={{ width: "319.72px", height: "77.99px" }}
-            className={cn("flex items-center gap-3 rounded-lg bg-background p-2 border border-neutral-100/80 dark:border-neutral-800/60 dark:bg-background relative box-border overflow-hidden shrink-0", outOfStock && "opacity-90")}
+            className={cn("flex w-full items-center gap-3 rounded-xl bg-neutral-50 p-2.5 dark:bg-muted/40 relative overflow-hidden", outOfStock && "opacity-90")}
         >
             <div
                 onClick={handleNavigate}
-                className={cn("relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-card", productHref && "cursor-pointer")}
+                className={cn("relative h-13 w-13 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-card", productHref && "cursor-pointer")}
             >
                 {imageUrl ? (
                     <Image
                         src={imageUrl}
                         alt={line.name}
-                        width={56}
-                        height={56}
-                        className={cn("h-full w-full object-cover", outOfStock && "filter blur-[1.5px]")}
+                        fill
+                        unoptimized
+                        sizes="52px"
+                        className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
                     />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center">
-                        <ShoppingBag className="h-5 w-5 text-neutral-300" />
+                        <ShoppingBag className="h-4 w-4 text-neutral-300" />
                     </div>
                 )}
             </div>

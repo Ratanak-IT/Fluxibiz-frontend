@@ -142,16 +142,18 @@ export default function CheckoutPage({
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
     return (
-        <div className="mx-auto max-w-3xl px-6 py-10">
-            <Link
-                href={backToCart}
-                className="mb-5 inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
-            >
-                <ChevronLeft className="h-4 w-4" />
-                {t("backToCart")}
-            </Link>
+        <div className="mx-auto max-w-3xl px-6 pt-16 pb-24 sm:pt-8 sm:pb-12">
+            <div className="mb-2 flex items-center justify-between sm:mb-3">
+                <h1 className="text-3xl font-bold text-green-600 dark:text-primary">{t("title")}</h1>
 
-            <h1 className="text-3xl font-bold text-green-600">{t("title")}</h1>
+                <Link
+                    href={backToCart}
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-green-600 transition-colors hover:underline dark:text-primary"
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                    {t("backToCart")}
+                </Link>
+            </div>
 
             <p className="mt-1 mb-6 text-sm text-muted-foreground">{storeName}</p>
 
@@ -274,19 +276,13 @@ export default function CheckoutPage({
             )}
 
             {paid && (
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                    <Link href="/store" className="flex-1">
+                <div className="mt-6">
+                    <Link href="/store" className="block w-full">
                         <Button
                             variant="outline"
                             className="h-12 w-full rounded-full border-primary bg-white text-base font-semibold text-primary transition-colors hover:bg-primary/5 dark:bg-transparent dark:text-primary dark:hover:bg-primary/10"
                         >
                             Keep shopping
-                        </Button>
-                    </Link>
-
-                    <Link href="/cart" className="flex-1">
-                        <Button className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground">
-                            {t("backToCart")}
                         </Button>
                     </Link>
                 </div>

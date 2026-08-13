@@ -355,7 +355,7 @@ export default function HomePage() {
       <BannerCarousel />
 
       <div className="flex flex-col gap-8 xl:flex-row xl:items-start">
-        <aside className="w-full shrink-0 overflow-x-hidden xl:sticky xl:top-24 xl:w-64 xl:self-start">
+        <aside className="sticky top-0 z-30 w-full shrink-0 overflow-x-hidden bg-background/95 py-2.5 backdrop-blur-md xl:sticky xl:top-24 xl:z-0 xl:w-64 xl:bg-transparent xl:py-0 xl:backdrop-blur-none xl:self-start">
           <div className="flex max-h-[calc(100vh-7rem)] flex-col overflow-hidden py-0">
             <div className="custom-scrollbar flex-1 overflow-y-auto overflow-x-hidden pr-2">
               <StoreFilterComponent

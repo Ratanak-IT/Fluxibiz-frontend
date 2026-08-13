@@ -121,6 +121,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
       sizes="80px"
       onError={() => setImgSrc(DEFAULT_STORE_IMAGE)}
       className="
+        rounded-xl
         object-cover
         transition-transform
         duration-300
