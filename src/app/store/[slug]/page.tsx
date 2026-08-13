@@ -18,7 +18,11 @@ import {
 } from "@/features/store-api/store-api";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 
-import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
+import {
+  StorefrontItemResponse,
+  primaryItemImage,
+  remainingStock,
+} from "@/lib/type/storeType";
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import ProductList from "@/components/store/detailstore/product-list";
 import { formatPrice } from "@/lib/store/productdetail/product";
@@ -32,10 +36,11 @@ function toMenuItem(
   return {
     id: item.id,
     name: item.name,
+    // An unpriced item is not a free one, so it carries no price at all.
     price:
       item.price !== undefined && item.price !== null
         ? String(item.price)
-        : "0",
+        : undefined,
     compareAtPrice:
       item.compareAtPrice !== undefined && item.compareAtPrice !== null
         ? String(item.compareAtPrice)
@@ -46,8 +51,7 @@ function toMenuItem(
     category: item.itemGroup?.name ?? fallbackCategory,
     image: primaryItemImage(item) ?? "",
     status: item.status,
-    quantity: item.quantity ?? item.stock ?? undefined,
-    stock: item.stock ?? item.quantity ?? undefined,
+    remaining: remainingStock(item),
     isOutOfStock,
     rawItem: item,
   };
@@ -211,8 +215,8 @@ export default function StoreDetail({
         <StorePageSkeleton />
       ) : isStoreError ? (
         <ApiErrorFallback
-          title="មិនអាចទាញយកព័ត៌មានហាងបានឡើយ"
-          description="សូមពិនិត្យមើលអាសយដ្ឋានហាង ឬការភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក រួចព្យាយាមម្ដងទៀត។"
+          title={t("detail.couldNotLoadStore")}
+          description={t("detail.checkStoreAddressOrConnection")}
           onRetry={() => window.location.reload()}
           backHref="/store"
         />
@@ -220,18 +224,20 @@ export default function StoreDetail({
         <>
           <div className="space-y-10">
             <StoreCard store={storeData} />
-            <SearchFilterBar
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              categories={dynamicCategories}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              selectedPriceRange={selectedPriceRange}
-              onPriceRangeChange={setSelectedPriceRange}
-              sortBy={sortBy}
-              onSortByChange={setSortBy}
-              onReset={handleResetFilters}
-            />
+            <div className="sticky top-0 z-30 bg-background/95 py-2.5 backdrop-blur-md">
+              <SearchFilterBar
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                categories={dynamicCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                selectedPriceRange={selectedPriceRange}
+                onPriceRangeChange={setSelectedPriceRange}
+                sortBy={sortBy}
+                onSortByChange={setSortBy}
+                onReset={handleResetFilters}
+              />
+            </div>
           </div>
 
           <div className="px-4 sm:px-6 md:px-12 lg:px-20">
@@ -278,9 +284,6 @@ export default function StoreDetail({
             </div>
           </div>
 
-          <div className="px-4 pb-10 sm:px-6 lg:hidden">
-            <CartSidebar slug={slug} businessId={storeDetail?.id} storeCurrency={currency} />
-          </div>
         </>
       )}
     </div>

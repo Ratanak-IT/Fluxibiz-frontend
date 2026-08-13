@@ -3,6 +3,7 @@
 import { useState, useEffect, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
     MapPin,
@@ -49,7 +50,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 type CartDrawerProps = {
-    children?: ReactNode;
+    children?: ReactNode | ((props: { open: boolean }) => ReactNode);
+    onOpenChange?: (open: boolean) => void;
     triggerClassName?: string;
     buttonClassName?: string;
     iconClassName?: string;
@@ -59,6 +61,7 @@ type CartDrawerProps = {
 
 export default function CartDrawer({
     children,
+    onOpenChange,
     triggerClassName,
     buttonClassName,
     iconClassName,
@@ -73,7 +76,14 @@ export default function CartDrawer({
 
     const totalItems = cart?.totalItems ?? 0;
 
-    const triggerElement = children ? (
+    const handleOpenChange = (newOpen: boolean) => {
+        setOpen(newOpen);
+        onOpenChange?.(newOpen);
+    };
+
+    const triggerElement = typeof children === "function" ? (
+        children({ open }) as React.ReactElement
+    ) : children ? (
         children as React.ReactElement
     ) : (
         <Button
@@ -93,55 +103,55 @@ export default function CartDrawer({
     );
 
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={open} onOpenChange={handleOpenChange}>
             <SheetTrigger render={triggerElement} className={triggerClassName} />
 
-            <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
-        <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">
-            <SheetTitle className="flex items-center gap-2 text-xl font-bold text-green-600">
-                {t("title")}
-                {cart && cart.storeCount > 0 && (
-                    <span className="text-sm font-normal text-neutral-500 dark:text-muted-foreground">
-                        · {t("shopCount", { count: cart.storeCount })}
-                    </span>
-                )}
-            </SheetTitle>
-        </SheetHeader>
+            <SheetContent side="right" className="fixed inset-0 z-50 flex h-full h-screen w-full w-screen max-w-full flex-col bg-background p-0 pb-20 sm:pb-0 border-0 rounded-none sm:inset-y-0 sm:right-0 sm:left-auto sm:h-full sm:w-[440px] sm:max-w-[440px] sm:border-l">
+                <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">
+                    <SheetTitle className="flex items-center gap-2 text-xl font-bold text-green-600">
+                        {t("title")}
+                        {cart && cart.storeCount > 0 && (
+                            <span className="text-sm font-normal text-neutral-500 dark:text-muted-foreground">
+                                · {t("shopCount", { count: cart.storeCount })}
+                            </span>
+                        )}
+                    </SheetTitle>
+                </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-5 py-4">
-            {isLoading && <DrawerSkeleton />}
+                <div className="flex-1 overflow-y-auto px-5 py-4">
+                    {isLoading && <DrawerSkeleton />}
 
-            {!isLoading && (!cart || cart.stores.length === 0) && <EmptyState />}
+                    {!isLoading && (!cart || cart.stores.length === 0) && <EmptyState />}
 
-            {!isLoading && cart && cart.stores.length > 0 && (
-                <div className="flex flex-col gap-6">
-                    {cart.stores.map((store) => (
-                        <StoreSection
-                            key={store.businessId}
-                            store={store}
-                            onNavigate={() => setOpen(false)}
-                        />
-                    ))}
+                    {!isLoading && cart && cart.stores.length > 0 && (
+                        <div className="flex flex-col gap-6">
+                            {cart.stores.map((store) => (
+                                <StoreSection
+                                    key={store.businessId}
+                                    store={store}
+                                    onNavigate={() => setOpen(false)}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
-            )}
-        </div>
 
-        {cart && cart.stores.length > 0 && (
-            <div className="border-t border-neutral-200 px-5 py-3 dark:border-border">
-                <p className="text-center text-xs leading-relaxed text-neutral-500 dark:text-muted-foreground">
-                    {t("itemCount", { count: cart.totalItems })} · {t("multipleShops", { count: cart.storeCount })}
-                </p>
+                {cart && cart.stores.length > 0 && (
+                    <div className="border-t border-neutral-200 px-5 py-3 dark:border-border">
+                        <p className="text-center text-xs leading-relaxed text-neutral-500 dark:text-muted-foreground">
+                            {t("itemCount", { count: cart.totalItems })} · {t("multipleShops", { count: cart.storeCount })}
+                        </p>
 
-                <Link
-                    href="/cart"
-                    onClick={() => setOpen(false)}
-                    className="mt-1 block text-center text-xs font-medium text-neutral-400 underline-offset-2 hover:text-neutral-600 hover:underline dark:text-muted-foreground"
-                >
-                    {t("seeSummary")}
-                </Link>
-            </div>
-        )}
-    </SheetContent>
+                        <Link
+                            href="/cart"
+                            onClick={() => setOpen(false)}
+                            className="mt-1 block text-center text-xs font-medium text-neutral-400 underline-offset-2 hover:text-neutral-600 hover:underline dark:text-muted-foreground"
+                        >
+                            {t("seeSummary")}
+                        </Link>
+                    </div>
+                )}
+            </SheetContent>
         </Sheet >
     );
 }
@@ -164,7 +174,7 @@ function StoreSection({
     return (
         <section className="rounded-xl bg-white border border-neutral-100/80 p-3.5 shadow-xs dark:bg-card dark:border-neutral-800">
             <div className="mb-3 flex items-center gap-3">
-                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white border border-neutral-100">
+                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-white">
                     {logoUrl ? (
                         <Image
                             src={logoUrl}
@@ -184,7 +194,7 @@ function StoreSection({
                     <Link
                         href={`/store/${store.slug}`}
                         onClick={onNavigate}
-                        className="block truncate text-sm font-semibold text-neutral-900 hover:underline dark:text-card-foreground"
+                        className="block truncate text-[14px] font-semibold text-neutral-900 hover:underline dark:text-card-foreground"
                     >
                         {store.name}
                     </Link>
@@ -192,7 +202,7 @@ function StoreSection({
                     {store.location && (
                         <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-muted-foreground">
                             <MapPin className="h-3 w-3 shrink-0 text-green-600 dark:text-primary" />
-                            <span className="truncate">{store.location}</span>
+                            <span className="truncate text-[12px]">{store.location}</span>
                         </div>
                     )}
                 </div>
@@ -217,7 +227,13 @@ function StoreSection({
 
             <div className="flex flex-col gap-2">
                 {store.items.map((line) => (
-                    <LineRow key={line.cartItemId} line={line} currency={effectiveCurrency} />
+                    <LineRow
+                        key={line.cartItemId}
+                        line={line}
+                        currency={effectiveCurrency}
+                        storeSlug={store.slug}
+                        onNavigate={onNavigate}
+                    />
                 ))}
             </div>
 
@@ -251,7 +267,7 @@ function StoreCheckoutButton({
     const blockedByOther = pending && !pendingHere;
 
     const shell =
-        "mt-3 flex h-11 w-full items-center justify-center rounded-full border text-sm font-bold transition-all";
+        "mt-3 flex h-12 w-full items-center justify-center rounded-full border text-base font-bold transition-all";
 
     if (!store.open) {
         return (
@@ -276,22 +292,31 @@ function StoreCheckoutButton({
         );
     }
 
-    const href = pendingHere
-        ? `/store/${store.slug}/checkout`
-        : `/cart?shop=${encodeURIComponent(store.slug)}`;
+    const href = `/store/${store.slug}/checkout`;
 
     return (
         <Link
             href={href}
             onClick={onNavigate}
-            className={`${shell} border-primary bg-white text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-border dark:bg-background dark:text-card-foreground dark:hover:bg-card`}
+            className={`${shell} border-primary bg-white text-primary transition-colors hover:bg-primary/5 dark:border-primary dark:bg-background dark:text-primary dark:hover:bg-primary/10`}
         >
             {pendingHere ? t("finishPayment") : t("checkout")}
         </Link>
     );
 }
 
-function LineRow({ line, currency }: { line: CartLine; currency: string }) {
+function LineRow({
+    line,
+    currency,
+    storeSlug,
+    onNavigate,
+}: {
+    line: CartLine;
+    currency: string;
+    storeSlug?: string;
+    onNavigate?: () => void;
+}) {
+    const router = useRouter();
     const tStore = useTranslations("Store");
     const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
     const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
@@ -306,6 +331,15 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
     const imageUrl = resolveMediaUrl(line.imageUrl);
     const busy = isUpdating || isRemoving;
     const outOfStock = isCartLineOutOfStock(line);
+
+    const productHref = storeSlug && line.itemId ? `/store/${storeSlug}/product/${line.itemId}` : null;
+
+    const handleNavigate = () => {
+        if (productHref) {
+            onNavigate?.();
+            router.push(productHref);
+        }
+    };
 
     const handleDecrease = () => {
         if (pendingQty <= 1) {
@@ -348,43 +382,51 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
     const currentSubtotal = line.unitPrice * pendingQty;
 
     return (
-        <div className={cn("flex items-center gap-3 rounded-lg bg-background p-2 border border-neutral-100/80 dark:border-neutral-800/60 dark:bg-background relative", outOfStock && "opacity-90")}>
-            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-card">
+        <div
+            className={cn("flex w-full items-center gap-3 rounded-xl bg-neutral-50 p-2.5 dark:bg-muted/40 relative overflow-hidden", outOfStock && "opacity-90")}
+        >
+            <div
+                onClick={handleNavigate}
+                className={cn("relative h-13 w-13 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-card", productHref && "cursor-pointer")}
+            >
                 {imageUrl ? (
                     <Image
                         src={imageUrl}
                         alt={line.name}
-                        width={56}
-                        height={56}
-                        className={cn("h-full w-full object-cover", outOfStock && "filter blur-[1.5px]")}
+                        fill
+                        unoptimized
+                        sizes="52px"
+                        className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
                     />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center">
-                        <ShoppingBag className="h-5 w-5 text-neutral-300" />
+                        <ShoppingBag className="h-4 w-4 text-neutral-300" />
                     </div>
                 )}
             </div>
 
-            <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                    <p className="truncate text-sm font-semibold text-neutral-900 dark:text-card-foreground">
-                        {line.name}
-                    </p>
-                    {outOfStock && (
-                        <span className="text-[10px] font-bold text-red-600 dark:text-red-500 shrink-0">
-                            • {tStore("detail.outOfStock") || "Out of Stock"}
-                        </span>
+            <div className="min-w-0 flex-1 flex flex-col justify-center">
+                <div onClick={handleNavigate} className={cn(productHref && "cursor-pointer")}>
+                    <div className="flex items-center gap-1.5">
+                        <p className="truncate text-[14px] font-semibold text-neutral-900 dark:text-card-foreground">
+                            {line.name}
+                        </p>
+                        {outOfStock && (
+                            <span className="text-[10px] font-bold text-red-600 dark:text-red-500 shrink-0">
+                                • {tStore("detail.outOfStock") || "Out of Stock"}
+                            </span>
+                        )}
+                    </div>
+
+                    {line.description && (
+                        <p className="line-clamp-1 text-[12px] text-neutral-500 dark:text-muted-foreground">
+                            {line.description}
+                        </p>
                     )}
                 </div>
 
-                {line.description && (
-                    <p className="line-clamp-1 text-xs text-neutral-500 dark:text-muted-foreground">
-                        {line.description}
-                    </p>
-                )}
-
                 {line.badges.length > 0 && (
-                    <div className="mt-1 flex flex-nowrap gap-1 overflow-hidden">
+                    <div className="mt-0.5 flex flex-nowrap gap-1 overflow-hidden">
                         {line.badges.map((badge, index) => (
                             <Badge
                                 key={index}
@@ -397,19 +439,19 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                     </div>
                 )}
 
-                <div className="mt-1.5 flex items-center gap-3">
+                <div className="mt-1 flex items-center gap-3">
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         size="icon"
                         onClick={handleDecrease}
                         disabled={busy}
-                        className="h-5 w-5 border-red-200/80 text-red-500 hover:bg-red-50 dark:border-red-950 dark:bg-card dark:text-red-400"
+                        className="h-5 w-5 border-0 text-red-500 hover:bg-red-50 dark:bg-card dark:text-red-400"
                         aria-label="Decrease quantity"
                     >
                         <Minus className="h-3 w-3 text-red-500 dark:text-red-400" />
                     </Button>
 
-                    <span className="w-4 text-center text-sm font-medium dark:text-card-foreground">
+                    <span className="w-4 text-center text-[14px] font-medium dark:text-card-foreground">
                         {pendingQty}
                     </span>
 
@@ -424,7 +466,7 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
                         <Plus className="h-3 w-3" />
                     </Button>
 
-                    <span className="ml-auto whitespace-nowrap text-sm font-semibold text-red-500 dark:text-destructive">
+                    <span className="ml-auto whitespace-nowrap text-[14px] font-semibold text-red-500 dark:text-destructive">
                         {formatMoney(currentSubtotal, currency)}
                     </span>
                 </div>

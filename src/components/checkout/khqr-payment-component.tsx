@@ -172,16 +172,10 @@ export default function KhqrPaymentComponent({
                     {session.invoiceNumber}
                 </p>
 
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <div className="mt-6 flex justify-center">
                     <Link href={`/receipt/${session.orderId}`}>
-                        <Button className="h-11 w-full rounded-full bg-green-600 px-6 font-semibold text-white shadow-sm hover:bg-green-700 sm:w-auto dark:bg-primary dark:text-primary-foreground">
+                        <Button className="h-11 w-full rounded-full bg-green-600 px-8 font-semibold text-white shadow-sm hover:bg-green-700 sm:w-auto dark:bg-primary dark:text-primary-foreground">
                             View E-Receipt
-                        </Button>
-                    </Link>
-
-                    <Link href="/payment-history">
-                        <Button variant="outline" className="h-11 w-full rounded-full border-primary bg-white px-6 font-semibold text-primary transition-colors hover:bg-primary/5 sm:w-auto dark:bg-transparent dark:text-primary dark:hover:bg-primary/10">
-                            Payment History
                         </Button>
                     </Link>
                 </div>

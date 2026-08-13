@@ -1,3 +1,10 @@
+/** One option chosen on a line — "Sugar Level" = "50", shown as "50%". */
+export interface CartSelection {
+    attributeName: string;
+    value: string;
+    label: string;
+}
+
 export interface CartLine {
     cartItemId: string;
     itemId: string;
@@ -5,7 +12,10 @@ export interface CartLine {
     name: string;
     description: string | null;
     imageUrl: string | null;
+    /** Display chips: the variant name, then each chosen option. */
     badges: string[];
+    /** The same choices, structured, for anything that needs them apart. */
+    selections?: CartSelection[];
     quantity: number;
     unitPrice: number;
     subtotal: number;
@@ -97,6 +107,17 @@ export interface AddToCartPayload {
     businessId: string;
     itemId: string;
     variantId?: string;
+    /**
+     * The unit being bought — a six-pack, a case. Absent means one of the
+     * item's base unit. A pack is priced in its own right, so the server
+     * prices the line from this rather than multiplying.
+     */
+    unitId?: string;
+    /**
+     * Options picked on the product page. Sent by attribute name and stored
+     * value — the value is the identity, the label is only how it was shown.
+     */
+    selections?: { attributeName: string; value: string }[];
     quantity: number;
     itemDetails?: {
         name: string;

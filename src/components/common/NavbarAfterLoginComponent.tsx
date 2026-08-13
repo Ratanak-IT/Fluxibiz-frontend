@@ -284,8 +284,6 @@ export default function NavbarAfterLoginComponent({
 
         {/* Mobile actions */}
         <div className="flex items-center gap-1 lg:hidden">
-          <ThemeToggle />
-
           <Sheet
             open={mobileNavOpen}
             onOpenChange={setMobileNavOpen}
@@ -332,27 +330,20 @@ export default function NavbarAfterLoginComponent({
               side="right"
               className="
                 flex
-                w-[62vw]
-                min-w-[235px]
-                max-w-[255px]
+                w-[82vw]
+                max-w-[320px]
                 flex-col
                 gap-0
                 overflow-y-auto
                 border-[#e5e7eb]
                 bg-white
-                px-3
+                px-4
                 text-[#111827]
                 [color-scheme:light]
 
-                min-[390px]:w-[60vw]
-                min-[390px]:max-w-[265px]
-
-                sm:w-[340px]
-                sm:max-w-[340px]
+                sm:w-[350px]
+                sm:max-w-[350px]
                 sm:px-6
-
-                md:w-[370px]
-                md:max-w-[370px]
 
                 dark:border-white/10
                 dark:bg-background
@@ -434,8 +425,11 @@ export default function NavbarAfterLoginComponent({
                 </div>
 
                 {/* User information */}
-                <div
+                <Link
+                  href="/user-profile"
+                  onClick={() => setMobileNavOpen(false)}
                   className="
+                    group
                     flex
                     min-h-16
                     w-full
@@ -445,8 +439,12 @@ export default function NavbarAfterLoginComponent({
                     bg-[#f3f4f6]
                     px-3
                     py-2
+                    transition-colors
+
+                    hover:bg-[#e5e7eb]
 
                     dark:bg-white/5
+                    dark:hover:bg-white/10
                   "
                 >
                   <Avatar
@@ -455,6 +453,8 @@ export default function NavbarAfterLoginComponent({
                       shrink-0
                       border
                       border-[#e5e7eb]
+                      transition-colors
+                      group-hover:border-primary
 
                       dark:border-white/10
                     "
@@ -481,7 +481,7 @@ export default function NavbarAfterLoginComponent({
                   </Avatar>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-bold text-[#1f2937] dark:text-white">
+                    <p className="truncate font-bold text-[#1f2937] transition-colors group-hover:text-primary dark:text-white">
                       {user.name}
                     </p>
 
@@ -489,7 +489,7 @@ export default function NavbarAfterLoginComponent({
                       {user.email}
                     </p>
                   </div>
-                </div>
+                </Link>
 
                 {/* Mobile navigation */}
                 {navigationItems.map((item) => {
@@ -561,6 +561,7 @@ export default function NavbarAfterLoginComponent({
                     setMobileNavOpen(false)
                   }
                   className="
+                    group
                     flex
                     h-11
                     w-full
@@ -576,12 +577,15 @@ export default function NavbarAfterLoginComponent({
                     hover:bg-[#f3f4f6]
                     hover:text-primary
 
+                    [&_svg]:text-current
+                    [&_svg]:transition-colors
+
                     dark:text-white
                     dark:hover:bg-white/5
                     dark:hover:text-primary
                   "
                 >
-                  <UserRound className="size-5 shrink-0" />
+                  <UserRound className="size-5 shrink-0 text-current" />
                   {t("account.viewProfile")}
                 </Link>
 
@@ -592,6 +596,7 @@ export default function NavbarAfterLoginComponent({
                     setMobileNavOpen(false)
                   }
                   className="
+                    group
                     flex
                     h-11
                     w-full
@@ -607,12 +612,15 @@ export default function NavbarAfterLoginComponent({
                     hover:bg-[#f3f4f6]
                     hover:text-primary
 
+                    [&_svg]:text-current
+                    [&_svg]:transition-colors
+
                     dark:text-white
                     dark:hover:bg-white/5
                     dark:hover:text-primary
                   "
                 >
-                  <Receipt className="size-5 shrink-0" />
+                  <Receipt className="size-5 shrink-0 text-current" />
                   {t("account.paymentHistory")}
                 </Link>
 
@@ -623,6 +631,7 @@ export default function NavbarAfterLoginComponent({
                     setMobileNavOpen(false)
                   }
                   className="
+                    group
                     flex
                     h-11
                     w-full
@@ -638,12 +647,15 @@ export default function NavbarAfterLoginComponent({
                     hover:bg-[#f3f4f6]
                     hover:text-primary
 
+                    [&_svg]:text-current
+                    [&_svg]:transition-colors
+
                     dark:text-white
                     dark:hover:bg-white/5
                     dark:hover:text-primary
                   "
                 >
-                  <Settings className="size-5 shrink-0" />
+                  <Settings className="size-5 shrink-0 text-current" />
                   {t("account.settings")}
                 </Link>
 
@@ -655,6 +667,7 @@ export default function NavbarAfterLoginComponent({
                     onLogout?.();
                   }}
                   className="
+                    group
                     flex
                     h-11
                     w-full
@@ -668,9 +681,11 @@ export default function NavbarAfterLoginComponent({
                     text-destructive
                     transition-colors
                     hover:bg-destructive/10
+
+                    [&_svg]:text-destructive
                   "
                 >
-                  <LogOut className="size-5 shrink-0" />
+                  <LogOut className="size-5 shrink-0 text-destructive" />
                   {t("account.logout")}
                 </button>
               </div>
@@ -837,14 +852,18 @@ function UserDropdown({
               <Link href="/user-profile" />
             }
             className="
+              group
               cursor-pointer
-              gap-2
+              gap-2.5
               text-[#1f2937]
 
               focus:bg-[#f3f4f6]
               focus:text-primary
               data-[highlighted]:bg-[#f3f4f6]
               data-[highlighted]:text-primary
+
+              [&_svg]:text-current
+              [&_svg]:transition-colors
 
               dark:text-white
               dark:focus:bg-white/5
@@ -853,7 +872,7 @@ function UserDropdown({
               dark:data-[highlighted]:text-primary
             "
           >
-            <UserRound className="size-[17px]" />
+            <UserRound className="size-[17px] text-current" />
             {t("account.viewProfile")}
           </DropdownMenuItem>
 
@@ -862,14 +881,18 @@ function UserDropdown({
               <Link href="/payment-history" />
             }
             className="
+              group
               cursor-pointer
-              gap-2
+              gap-2.5
               text-[#1f2937]
 
               focus:bg-[#f3f4f6]
               focus:text-primary
               data-[highlighted]:bg-[#f3f4f6]
               data-[highlighted]:text-primary
+
+              [&_svg]:text-current
+              [&_svg]:transition-colors
 
               dark:text-white
               dark:focus:bg-white/5
@@ -878,21 +901,25 @@ function UserDropdown({
               dark:data-[highlighted]:text-primary
             "
           >
-            <Receipt className="size-[17px]" />
+            <Receipt className="size-[17px] text-current" />
             {t("account.paymentHistory")}
           </DropdownMenuItem>
 
           <DropdownMenuItem
             render={<Link href="/settings" />}
             className="
+              group
               cursor-pointer
-              gap-2
+              gap-2.5
               text-[#1f2937]
 
               focus:bg-[#f3f4f6]
               focus:text-primary
               data-[highlighted]:bg-[#f3f4f6]
               data-[highlighted]:text-primary
+
+              [&_svg]:text-current
+              [&_svg]:transition-colors
 
               dark:text-white
               dark:focus:bg-white/5
@@ -901,7 +928,7 @@ function UserDropdown({
               dark:data-[highlighted]:text-primary
             "
           >
-            <Settings className="size-[17px]" />
+            <Settings className="size-[17px] text-current" />
             {t("account.settings")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -911,17 +938,20 @@ function UserDropdown({
         <DropdownMenuItem
           onClick={onLogout}
           className="
+            group
             cursor-pointer
-            gap-2
+            gap-2.5
             text-destructive
 
             focus:bg-destructive/10
             focus:text-destructive
             data-[highlighted]:bg-destructive/10
             data-[highlighted]:text-destructive
+
+            [&_svg]:text-destructive
           "
         >
-          <LogOut className="size-[17px]" />
+          <LogOut className="size-[17px] text-destructive" />
           {t("account.logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>

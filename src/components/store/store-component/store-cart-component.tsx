@@ -63,7 +63,7 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
             alt={name || t("common.storeLogo")}
             onError={() => setHasError(true)}
             sizes="(max-width: 768px) 50vw, 272px"
-            className="object-cover"
+            className="object-cover rounded-xl"
           />
         ) : (
           <StoreIcon className="h-12 w-12 text-muted-foreground" />

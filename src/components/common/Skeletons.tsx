@@ -3,30 +3,31 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 
-export function ProductCardSkeleton() {
+export function MenuProductCardSkeleton() {
   return (
-    <Card className="max-w-xl overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-card">
-      <div className="flex h-full min-h-25 sm:min-h-30">
-        <div className="flex min-w-0 flex-1 flex-col justify-between p-2.5 sm:p-3 space-y-2">
-          <div className="space-y-1.5">
-            <Skeleton className="h-4 w-3/4 rounded-md" />
-            <Skeleton className="h-4 w-1/3 rounded-md" />
-            <Skeleton className="h-3 w-full rounded-md" />
-          </div>
-          <Skeleton className="h-3 w-1/4 rounded-md" />
+    <Card className="w-full overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-card">
+      <div className="flex h-24 items-center sm:h-29">
+        <div className="flex flex-1 flex-col justify-center space-y-1.5 p-2.5 pr-2 sm:p-3">
+          <Skeleton className="h-4 w-3/4 rounded-md sm:h-4.5" />
+          <Skeleton className="h-3.5 w-1/3 rounded-md sm:h-4" />
+          <Skeleton className="h-3 w-5/6 rounded-md" />
         </div>
 
-        <div className="relative m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg sm:m-2.5 sm:w-24 md:w-28">
-          <Skeleton className="h-full w-full" />
+        <div className="relative m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg sm:m-2.5 sm:w-24">
+          <Skeleton className="h-full w-full rounded-lg" />
         </div>
       </div>
     </Card>
   );
 }
 
+export function ProductCardSkeleton() {
+  return <MenuProductCardSkeleton />;
+}
+
 export function ProductGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {Array.from({ length: count }).map((_, i) => (
         <ProductCardSkeleton key={i} />
       ))}
@@ -39,22 +40,24 @@ export function StoreCardSkeleton() {
     <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
       <Card className="overflow-hidden bg-card p-0">
         <div className="flex flex-col sm:h-44 md:flex-row">
-          <div className="relative h-44 w-full shrink-0 p-3 sm:w-44 md:w-48">
-            <Skeleton className="h-full w-full rounded-xl" />
+          <div className="relative flex h-56 w-full shrink-0 items-center justify-center p-3.5 sm:h-44 sm:w-44 md:w-48">
+            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-white p-2.5 dark:bg-card">
+              <Skeleton className="h-full w-full rounded-md" />
+            </div>
           </div>
 
-          <div className="flex flex-1 flex-col justify-between p-4 sm:px-6 sm:py-3.5 space-y-3">
+          <div className="flex flex-1 flex-col justify-between p-4 sm:px-6 sm:py-3.5 space-y-3 sm:space-y-0">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Skeleton className="h-4 w-24 rounded-md" />
               <Skeleton className="h-5 w-32 rounded-full" />
             </div>
 
             <div className="my-1">
-              <Skeleton className="h-8 w-56 rounded-md sm:w-72" />
+              <Skeleton className="h-7 w-48 rounded-md sm:h-8 sm:w-72" />
             </div>
 
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-              <Skeleton className="h-4 w-40 rounded-md" />
+              <Skeleton className="h-4 w-36 rounded-md" />
               <Skeleton className="h-4 w-28 rounded-md" />
             </div>
           </div>
@@ -66,43 +69,22 @@ export function StoreCardSkeleton() {
 
 export function SearchFilterBarSkeleton() {
   return (
-    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-4 sm:px-8 md:px-16 lg:px-24">
-      <Skeleton className="h-11 flex-1 min-w-[200px] rounded-xl" />
+    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-4 sm:px-6 md:px-12 lg:px-20">
+      <Skeleton className="h-11 flex-1 min-w-[200px] rounded-full" />
       <div className="flex items-center gap-2 shrink-0">
-        <Skeleton className="h-11 w-28 rounded-xl" />
-        <Skeleton className="h-11 w-28 rounded-xl" />
-        <Skeleton className="h-11 w-28 rounded-xl" />
+        <Skeleton className="h-11 w-28 rounded-full" />
+        <Skeleton className="h-11 w-28 rounded-full" />
+        <Skeleton className="h-11 w-28 rounded-full" />
       </div>
     </div>
   );
 }
 
-export function MenuProductCardSkeleton() {
+export function MenuProductListSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <Card className="max-w-xl overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-card">
-      <div className="flex h-full min-h-25 sm:min-h-30">
-        <div className="flex min-w-0 flex-1 flex-col justify-between p-2.5 pr-2 sm:p-3 space-y-2">
-          <div className="space-y-1.5">
-            <Skeleton className="h-4 w-3/4 rounded-md" />
-            <Skeleton className="h-4 w-1/3 rounded-md" />
-            <Skeleton className="h-3 w-full rounded-md" />
-          </div>
-          <Skeleton className="h-3.5 w-20 rounded-md" />
-        </div>
-
-        <div className="m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 sm:m-2.5 sm:w-24 md:w-28 dark:bg-card">
-          <Skeleton className="h-full w-full rounded-lg" />
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-export function MenuProductListSkeleton({ count = 4 }: { count?: number }) {
-  return (
-    <section className="px-4 py-6 sm:px-6 lg:px-20 space-y-6">
+    <section className="py-4 space-y-6">
       <Skeleton className="h-8 w-36 rounded-md" />
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {Array.from({ length: count }).map((_, i) => (
           <MenuProductCardSkeleton key={i} />
         ))}
@@ -113,7 +95,7 @@ export function MenuProductListSkeleton({ count = 4 }: { count?: number }) {
 
 export function CartSidebarSkeleton() {
   return (
-    <Card className="w-full rounded-2xl border-neutral-100 bg-white p-4 shadow-sm sm:p-5 dark:border-neutral-800 dark:bg-card">
+    <Card className="w-full gap-0 rounded-2xl border-neutral-100 bg-white p-5 pb-7 shadow-xs sm:p-6 sm:pb-8 dark:border-neutral-800 dark:bg-card">
       <CardContent className="space-y-4 p-0">
         <div className="flex items-center justify-between">
           <Skeleton className="h-5 w-28 rounded-md" />
@@ -122,7 +104,7 @@ export function CartSidebarSkeleton() {
 
         <div className="space-y-3 py-2">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-xl bg-neutral-50 p-2 dark:bg-muted/40">
+            <div key={i} className="flex items-center gap-3 rounded-xl bg-neutral-50 p-2.5 dark:bg-muted/40">
               <Skeleton className="h-12 w-12 shrink-0 rounded-lg" />
               <div className="flex-1 space-y-1.5">
                 <Skeleton className="h-4 w-24 rounded-md" />
@@ -149,16 +131,22 @@ export function CartSidebarSkeleton() {
 export function StorePageSkeleton() {
   return (
     <div className="space-y-10">
-      <StoreCardSkeleton />
-      <SearchFilterBarSkeleton />
+      <div className="space-y-10">
+        <StoreCardSkeleton />
+        <SearchFilterBarSkeleton />
+      </div>
 
-      <div className="grid grid-cols-1 items-start justify-center gap-6 lg:grid-cols-[1fr_400px] lg:gap-0 lg:pr-25">
-        <div className="min-w-0">
-          <MenuProductListSkeleton count={4} />
-        </div>
+      <div className="px-4 sm:px-6 md:px-12 lg:px-20">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
+          <div className="min-w-0 space-y-2">
+            <MenuProductListSkeleton count={6} />
+          </div>
 
-        <div className="hidden lg:block lg:pt-6">
-          <CartSidebarSkeleton />
+          <div className="hidden lg:block lg:pt-4">
+            <div className="sticky top-6">
+              <CartSidebarSkeleton />
+            </div>
+          </div>
         </div>
       </div>
     </div>

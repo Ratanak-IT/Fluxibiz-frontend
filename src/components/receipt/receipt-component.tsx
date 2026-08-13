@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useGetOrderReceiptQuery } from "@/features/checkout/checkoutApi";
 import { formatMoney, resolveMediaUrl } from "@/lib/type/cartType";
 
+import { useTranslations } from "next-intl";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 
 export default function ReceiptComponent({
@@ -25,6 +26,7 @@ export default function ReceiptComponent({
 }: {
   params: Promise<{ orderId: string }>;
 }) {
+  const t = useTranslations("Common");
   const { orderId } = use(params);
   const receiptRef = useRef<HTMLDivElement>(null);
 
@@ -40,7 +42,7 @@ export default function ReceiptComponent({
         <div className="flex flex-col items-center gap-3">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#00932A] border-t-transparent" />
           <p className="text-sm font-medium text-muted-foreground">
-            Loading receipt details...
+            {t("loading")}
           </p>
         </div>
       </div>
@@ -51,11 +53,11 @@ export default function ReceiptComponent({
     return (
       <div className="mx-auto max-w-2xl px-4 py-16">
         <ApiErrorFallback
-          title="រកមិនឃើញវិក្កយបត្រឡើយ (Receipt Not Found)"
-          description="មិនអាចទាញយកព័ត៌មានវិក្កយបត្រនេះបានទេ។ សូមពិនិត្យមើលប្រវត្តិបញ្ជាទិញរបស់អ្នក។"
+          title={t("receiptNotFound")}
+          description={t("receiptNotFoundDesc")}
           onRetry={() => refetch()}
           backHref="/payment-history"
-          backLabel="មើលប្រវត្តិទូទាត់ (Payment History)"
+          backLabel={t("viewPaymentHistory")}
         />
       </div>
     );
@@ -114,7 +116,7 @@ export default function ReceiptComponent({
                 alt={order.storeName}
                 width={80}
                 height={80}
-                className="mb-3 size-16 rounded-2xl object-cover shadow-xs border border-neutral-100"
+                className="mb-3 size-16 rounded-2xl object-cover"
               />
             ) : (
               <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-green-50 text-green-600 dark:bg-primary/10 dark:text-primary">
@@ -210,6 +212,11 @@ export default function ReceiptComponent({
                     <p className="text-sm font-semibold text-neutral-800 dark:text-foreground">
                       {item.itemName}
                     </p>
+                    {item.selections && item.selections.length > 0 ? (
+                      <p className="text-xs text-neutral-500 dark:text-muted-foreground">
+                        {item.selections.join(" · ")}
+                      </p>
+                    ) : null}
                     <p className="text-xs text-neutral-400">
                       {item.quantity} × {formatMoney(item.unitPrice, order.currency)}
                     </p>

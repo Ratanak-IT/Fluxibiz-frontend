@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ShoppingCart, History, User } from "lucide-react";
@@ -26,8 +26,11 @@ export default function Navbar() {
   const { data: cart } = useGetCartQuery(undefined, { skip: !isAuthenticated });
   const totalItems = cart?.totalItems ?? 0;
 
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const isCartActive = isCartOpen || pathname === "/cart";
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 p-3 lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-[60] p-3 lg:hidden">
       <div className="max-w-md mx-auto bg-white/90 dark:bg-slate-950/90 backdrop-blur-md rounded-3xl shadow-lg border border-gray-100 dark:border-white/10 px-4 py-2">
         <div className="grid grid-cols-4 gap-1">
           {navItems.map((item) => {
@@ -36,35 +39,54 @@ export default function Navbar() {
             // CART DRAWER TAB
             if (item.type === "drawer") {
               return (
-                <CartDrawer key={item.label}>
-                  <button type="button" className={`${baseItemStyles} w-full group-hover:text-secondary relative`}>
-                    <span className="relative inline-block">
-                      <Icon className="w-5 h-5 transition-all stroke-slate-500 dark:stroke-slate-300 group-hover:stroke-secondary" />
+                <CartDrawer key={item.label} onOpenChange={setIsCartOpen}>
+                  {({ open }) => {
+                    const isActive = open || isCartActive;
+                    return (
+                      <button type="button" className={`${baseItemStyles} ${isActive ? activeItemStyles : ""} w-full relative`}>
+                        <span className="relative inline-block">
+                          <Icon
+                            className={`w-5 h-5 transition-all ${
+                              isActive
+                                ? "stroke-primary fill-primary/10 group-hover:stroke-secondary group-hover:fill-secondary/10"
+                                : "stroke-slate-500 dark:stroke-slate-300 group-hover:stroke-secondary"
+                            }`}
+                          />
 
-                      {totalItems > 0 && (
-                        <span className="absolute -right-2 top-0 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
-                          {totalItems > 99 ? "99+" : totalItems}
+                          {totalItems > 0 && (
+                            <span className="absolute -right-2 top-0 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+                              {totalItems > 99 ? "99+" : totalItems}
+                            </span>
+                          )}
                         </span>
-                      )}
-                    </span>
-                    <span className="text-[11px] mt-1 tracking-tight text-center truncate w-full transition-colors group-hover:text-secondary">
-                      {item.label}
-                    </span>
-                  </button>
+                        <span
+                          className={`text-[11px] mt-1 tracking-tight text-center truncate w-full transition-colors ${
+                            isActive
+                              ? "text-primary font-semibold group-hover:text-secondary"
+                              : "text-slate-500 dark:text-slate-300 group-hover:text-secondary"
+                          }`}
+                        >
+                          {item.label}
+                        </span>
+                      </button>
+                    );
+                  }}
                 </CartDrawer>
               );
             }
 
             // STANDARD ROUTE LINKS
             const isActive =
-              item.path === "/store"
+              !isCartOpen &&
+              (item.path === "/store"
                 ? pathname?.startsWith("/store")
-                : pathname === item.path;
+                : pathname === item.path || (item.path ? pathname?.startsWith(item.path) : false));
 
             return (
               <Link
                 key={item.label}
                 href={item.path}
+                onClick={() => setIsCartOpen(false)}
                 className={`${baseItemStyles} ${
                   isActive ? activeItemStyles : ""
                 }`}

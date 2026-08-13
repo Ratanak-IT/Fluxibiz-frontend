@@ -23,6 +23,8 @@ const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fluxibiz.store";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  manifest: "/manifest.json",
+  themeColor: "#00932A",
   title: {
     default: "FluxiBiz - Run your whole business from one screen",
     template: "%s | FluxiBiz",
@@ -105,7 +107,7 @@ export default async function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <NextIntlClientProvider>
           <NetworkStatusBanner />
           <StoreProvider>
@@ -119,13 +121,13 @@ export default async function RootLayout({
 
                 <main className="flex-1">
                   <ConnectionProvider>
-                   
+
                     <OfflineGate>
                       {children}
                     </OfflineGate>
-                   
+
                   </ConnectionProvider>
-                 
+
                 </main>
 
                 <Footer />

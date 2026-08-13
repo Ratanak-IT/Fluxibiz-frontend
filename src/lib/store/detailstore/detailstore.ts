@@ -1,9 +1,10 @@
-import type { StorefrontItemResponse } from "@/lib/type/storeType";
+import { remainingStock, type StorefrontItemResponse } from "@/lib/type/storeType";
 
 export interface MenuItemData {
   id: string;
   name: string;
-  price: string;
+  /** Undefined until the seller sets one — the card says so rather than "0". */
+  price?: string;
   compareAtPrice?: string;
   badge?: string | null;
   description: string;
@@ -11,8 +12,8 @@ export interface MenuItemData {
   image: string;
   currency?: string;
   isOutOfStock?: boolean;
-  quantity?: number;
-  stock?: number;
+  /** What the online store has left, or null when the shop tracks no stock for it. */
+  remaining?: number | null;
   status?: string;
   rawItem?: StorefrontItemResponse;
 }
@@ -33,12 +34,40 @@ export function markItemOutOfStock(itemId?: string | null) {
   }
 }
 
-export function isItemOutOfStock(
-  item?: MenuItemData | StorefrontItemResponse | any | null
-): boolean {
+/**
+ * The little any caller needs to answer the stock question — an id to check
+ * against the session marker, and the figure itself. Stated structurally
+ * because callers hold an item, a menu entry or a cart line, and all three
+ * carry these two things.
+ */
+type StockSource = {
+  id?: string | null;
+  availableQuantity?: number | null;
+  rawItem?: { id?: string | null; availableQuantity?: number | null } | null;
+};
+
+/**
+ * Whether this item can still be bought online.
+ *
+ * The API's `availableQuantity` is the answer whenever it gives one — it is
+ * already capped to what the seller allocated the online store, so it is the
+ * same figure the cart will enforce. This used to be guessed from a pile of
+ * fields (`quantity`, `stock`, `inStock`, a badge reading "SOLD OUT") that the
+ * public API never sent, which meant nothing was ever out of stock.
+ *
+ * The session marker is the fallback for items the shop tracks no stock for:
+ * there is no figure to read, so a refused add-to-cart is the only signal
+ * there will ever be.
+ */
+export function isItemOutOfStock(item?: StockSource | null): boolean {
   if (!item) return false;
 
-  const id = item.id || item.itemId || item.rawItem?.id;
+  const source = item.rawItem ?? item;
+  const remaining = remainingStock(source);
+
+  if (remaining !== null) return remaining <= 0;
+
+  const id = source.id;
   if (id && clientOutOfStockSet.has(id)) return true;
   if (id && typeof window !== "undefined") {
     try {
@@ -48,58 +77,6 @@ export function isItemOutOfStock(
         return true;
       }
     } catch {}
-  }
-
-  // 1. Explicit boolean checks
-  if (typeof item.isOutOfStock === "boolean") return item.isOutOfStock;
-  if (typeof item.outOfStock === "boolean") return item.outOfStock;
-  if (typeof item.inStock === "boolean") return !item.inStock;
-  if (typeof item.available === "boolean") return !item.available;
-  if (typeof item.isAvailable === "boolean") return !item.isAvailable;
-
-  // 2. Numeric quantity or stock checks
-  const qty = item.quantity ?? item.stock ?? item.availableQuantity ?? item.stockQuantity;
-  if (qty !== undefined && qty !== null) {
-    if (Number(qty) <= 0) return true;
-  }
-
-  // 3. Status string check
-  if (item.status && typeof item.status === "string") {
-    const s = item.status.trim().toUpperCase();
-    if (
-      s === "OUT_OF_STOCK" ||
-      s === "OUT_STOCK" ||
-      s === "UNAVAILABLE" ||
-      s === "SOLDOUT" ||
-      s === "SOLD_OUT" ||
-      s === "INACTIVE" ||
-      s === "OFF_SHELF"
-    ) {
-      return true;
-    }
-  }
-
-  // 4. Badge check
-  if (item.badge && typeof item.badge === "string") {
-    const b = item.badge.trim().toUpperCase();
-    if (
-      b.includes("OUT OF STOCK") ||
-      b.includes("SOLD OUT") ||
-      b.includes("OUT_OF_STOCK") ||
-      b.includes("SOLDOUT") ||
-      b.includes("SOLD_OUT") ||
-      b.includes("NO STOCK") ||
-      b.includes("NO_STOCK") ||
-      b.includes("អស់ស្តុក") ||
-      b.includes("អស់ពីស្តុក")
-    ) {
-      return true;
-    }
-  }
-
-  // 5. Check nested rawItem object if present
-  if (item.rawItem && item.rawItem !== item) {
-    return isItemOutOfStock(item.rawItem);
   }
 
   return false;

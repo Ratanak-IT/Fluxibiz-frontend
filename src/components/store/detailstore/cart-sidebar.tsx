@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 
 import Image from "next/image";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { ImageOff, Loader2, LogIn, Minus, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -98,9 +99,8 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
           </div>
         ) : (
           <div
-            className={`max-h-[45vh] space-y-3 overflow-y-auto py-2 pr-1 transition-opacity ${
-              isFetching ? "opacity-60" : "opacity-100"
-            }`}
+            className={`max-h-[45vh] space-y-3 overflow-y-auto py-2 pr-1 transition-opacity ${isFetching ? "opacity-60" : "opacity-100"
+              }`}
           >
             {lines.map((line) => (
               <CartSidebarLine key={line.cartItemId} line={line} currency={currency} />
@@ -135,13 +135,13 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
           {canCheckout ? (
             <Link
               href={`/store/${slug}/checkout`}
-              className="flex h-9 w-full items-center justify-center rounded-full bg-primary text-sm font-medium text-white transition-colors hover:bg-primary/90"
+              className="flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-bold text-white transition-colors hover:bg-primary/90"
             >
               {t("reviewPayment")}
             </Link>
           ) : (
             <Button
-              className="w-full rounded-full bg-primary text-white disabled:opacity-50"
+              className="h-12 w-full rounded-full bg-primary text-base font-bold text-white disabled:opacity-50"
               disabled
             >
               {t("reviewPayment")}
@@ -208,11 +208,25 @@ function CartSidebarLine({
       });
   };
 
+  const params = useParams();
+  const router = useRouter();
+  const slug = typeof params?.slug === "string" ? params.slug : "";
+  const productHref = slug && line.itemId ? `/store/${slug}/product/${line.itemId}` : null;
+
+  const handleNavigate = () => {
+    if (productHref) {
+      router.push(productHref);
+    }
+  };
+
   const currentSubtotal = line.unitPrice * line.quantity;
 
   return (
-    <div className={cn("flex items-center gap-3 rounded-xl bg-neutral-50 p-2 dark:bg-muted/40 relative", outOfStock && "opacity-90")}>
-      <div className="relative h-13 w-13 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-card">
+    <div className={cn("flex w-full items-center gap-3 rounded-xl bg-neutral-50 p-2.5 dark:bg-muted/40 relative", outOfStock && "opacity-90")}>
+      <div
+        onClick={handleNavigate}
+        className={cn("relative h-13 w-13 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-card", productHref && "cursor-pointer")}
+      >
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -230,8 +244,8 @@ function CartSidebarLine({
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <p className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+        <div onClick={handleNavigate} className={cn("flex items-center gap-1.5", productHref && "cursor-pointer")}>
+          <p className={cn("truncate text-sm font-semibold text-neutral-900 dark:text-neutral-50", productHref && "hover:underline")}>
             {line.name}
           </p>
           {outOfStock && (
@@ -253,9 +267,9 @@ function CartSidebarLine({
             onClick={decrease}
             disabled={busy}
             aria-label={t("decreaseQuantity")}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-card"
+            className="flex h-6 w-6 items-center justify-center rounded-full border-0 text-red-500 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
           >
-            <Minus className="h-3 w-3" />
+            <Minus className="h-3 w-3 text-red-500 dark:text-red-400" />
           </button>
 
           <span className="w-4 text-center text-xs font-semibold tabular-nums">

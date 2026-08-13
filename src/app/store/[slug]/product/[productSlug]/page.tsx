@@ -8,12 +8,18 @@ import { ArrowRight } from "lucide-react";
 import DescriptionCard from "@/components/store/productdetail/description-card";
 import ProductDetail from "@/components/store/productdetail/product-detail";
 import { MenuProductCard } from "@/components/store/detailstore/product-card";
+import { MenuProductCardSkeleton } from "@/components/common/Skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   useGetPublicStoreItemsQuery,
   useGetPublicStoreQuery,
 } from "@/features/store-api/store-api";
 import { MenuItemData, isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
-import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
+import {
+  StorefrontItemResponse,
+  primaryItemImage,
+  remainingStock,
+} from "@/lib/type/storeType";
 
 import { formatPrice } from "@/lib/store/productdetail/product";
 
@@ -22,17 +28,17 @@ function toMenuItem(item: StorefrontItemResponse, currency?: string): MenuItemDa
   return {
     id: item.id,
     name: item.name,
+    // An unpriced item is not a free one, so it carries no price at all.
     price:
       item.price !== undefined && item.price !== null
         ? String(item.price)
-        : "0",
+        : undefined,
     currency: currency,
     description: item.description ?? "",
     category: item.itemGroup?.name ?? "Menu",
     image: primaryItemImage(item) ?? "",
     status: item.status,
-    quantity: item.quantity ?? item.stock ?? undefined,
-    stock: item.stock ?? item.quantity ?? undefined,
+    remaining: remainingStock(item),
     isOutOfStock,
     rawItem: item,
   };
@@ -65,7 +71,7 @@ export default function DetailProductPage({
   const t = useTranslations("Store.common");
 
   return (
-    <div className="dark:bg-background">
+    <div className="min-h-screen pb-28 dark:bg-background lg:pb-8">
       <ProductDetail
         item={rawItem}
         storeSlug={storeSlug}
@@ -76,8 +82,20 @@ export default function DetailProductPage({
       
 
 
-      {relatedStoreItems.length > 0 && (
-        <section className="mx-auto my-12 max-w-7xl px-4 sm:px-6 lg:px-8">
+      {isLoadingItems ? (
+        <section className="mx-auto my-12 max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20">
+          <div className="mb-6 flex items-center justify-between">
+            <Skeleton className="h-7 w-44 rounded-md" />
+            <Skeleton className="h-4 w-20 rounded-md" />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <MenuProductCardSkeleton key={i} />
+            ))}
+          </div>
+        </section>
+      ) : relatedStoreItems.length > 0 && (
+        <section className="mx-auto my-12 max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
               You May Also Like

@@ -7,12 +7,13 @@ import { useTranslations } from "next-intl";
 
 import CartList from "@/components/cart/cart-list-component";
 import CartSkeletonComponent from "@/components/cart/cart-skeleton-component";
+import StoreNavbar from "@/components/store/store-component/navbar";
 
 export default function CartPage() {
     const t = useTranslations("Cart");
 
     return (
-        <div className="mx-auto min-h-screen max-w-362.5">
+        <div className="relative mx-auto min-h-screen max-w-362.5 pb-24 lg:pb-0">
             <div className="px-6 py-7.5 lg:mx-25">
                 <div className="mb-2 flex items-center justify-between sm:mb-3">
                     <h1 className="text-3xl font-bold text-green-600">{t("title")}</h1>
@@ -32,6 +33,8 @@ export default function CartPage() {
                     <CartList />
                 </Suspense>
             </div>
+
+            <StoreNavbar />
         </div>
     );
 }
