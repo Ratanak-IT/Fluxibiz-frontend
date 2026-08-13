@@ -1,17 +1,14 @@
 "use client";
 
-import { useRef, useState, type PointerEvent } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import {
   AnimatePresence,
   motion,
-  useMotionValue,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
-  useSpring,
   useTransform,
 } from "framer-motion";
 
@@ -23,12 +20,7 @@ const ease = [0.16, 1, 0.3, 1] as const;
 export function FeatureModules() {
   const t = useTranslations("Feature.modules");
   const sectionRef = useRef<HTMLElement>(null);
-  const reduceMotion = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState(0);
-  const pointerX = useMotionValue(0);
-  const pointerY = useMotionValue(0);
-  const rotateX = useSpring(pointerY, { stiffness: 100, damping: 22 });
-  const rotateY = useSpring(pointerX, { stiffness: 100, damping: 22 });
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -61,37 +53,21 @@ export function FeatureModules() {
   const imageFirst = activeIndex % 2 === 1;
   const isPhone = activeModule.index === "06";
 
-  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
-    if (reduceMotion) return;
-
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-
-    pointerX.set(x * 5);
-    pointerY.set(y * -4);
-  }
-
-  function resetPointer() {
-    pointerX.set(0);
-    pointerY.set(0);
-  }
-
   return (
     <section
       ref={sectionRef}
       aria-label={t("ariaLabel")}
-      style={{ height: `${FEATURE_MODULES.length * 105}svh` }}
+      style={{ height: `${FEATURE_MODULES.length * 60}svh` }}
       className="relative dark:bg-background"
     >
       <div className="sticky top-0 flex h-svh items-center overflow-hidden">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b to-transparent dark:from-background" />
-
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 to-transparent dark:from-background" />
 
         <div className="relative mx-auto w-full max-w-7xl px-5 md:px-8">
           <div className="grid items-center gap-8 lg:grid-cols-[72px_1fr] lg:gap-10">
-            <div className="relative hidden h-[64vh] lg:block">
+            {/* Shortened Timeline Indicator */}
+            <div className="relative hidden h-[44vh] lg:block">
               <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-primary/15" />
               <motion.div
                 style={{ height: timelineHeight }}
@@ -110,12 +86,12 @@ export function FeatureModules() {
                   >
                     <motion.span
                       animate={{
-                        scale: active ? 1.35 : 1,
+                        scale: active ? 1.25 : 1,
                         backgroundColor: active ? "#00932A" : "#ffffff",
                         borderColor: active ? "#00932A" : "rgba(0,147,42,0.25)",
                       }}
-                      transition={{ duration: 0.35, ease }}
-                      className="grid size-7 -translate-y-1/2 place-items-center rounded-full border text-[9px] font-bold text-primary shadow-[0_0_0_5px_#f5f5f5]"
+                      transition={{ duration: 0.25, ease }}
+                      className="grid size-6 -translate-y-1/2 place-items-center rounded-full border text-[9px] font-bold text-primary shadow-[0_0_0_4px_#f5f5f5] dark:shadow-none"
                     >
                       <span className={active ? "text-white" : ""}>
                         {module.index}
@@ -126,139 +102,67 @@ export function FeatureModules() {
               })}
             </div>
 
-            <div
-              onPointerMove={handlePointerMove}
-              onPointerLeave={resetPointer}
-              className="
-                relative
-                min-h-[780px]
-                sm:min-h-[850px]
-                lg:min-h-[620px]
-              "
-            >
+            {/* Animated Content Display */}
+            <div className="relative min-h-[780px] sm:min-h-[850px] lg:min-h-[620px]">
               <AnimatePresence mode="wait">
                 <motion.article
                   key={activeModule.index}
-                  initial={reduceMotion ? false : { opacity: 0, y: 72 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -54 }}
-                  transition={{ duration: reduceMotion ? 0 : 0.5, ease }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.25, ease }}
                   className="
-                            absolute
-                            inset-0
-                            grid
-                            content-center
-                            gap-6
-                            pb-12
-                            pt-6
-                            sm:gap-8
-                            lg:grid-cols-[0.86fr_1.14fr]
-                            lg:items-center   
-                            lg:gap-16
-                            lg:pb-0
-                            lg:pt-0
-                                "
+                    absolute
+                    inset-0
+                    grid
+                    content-center
+                    gap-6
+                    pb-12
+                    pt-6
+                    sm:gap-8
+                    lg:grid-cols-[0.86fr_1.14fr]
+                    lg:items-center
+                    lg:gap-16
+                    lg:pb-0
+                    lg:pt-0
+                  "
                 >
-                  <motion.div
-                    className={cn("relative z-10", imageFirst && "lg:order-2")}
-                    initial="hidden"
-                    animate="visible"
-                    variants={{
-                      hidden: {},
-                      visible: {
-                        transition: {
-                          staggerChildren: reduceMotion ? 0 : 0.09,
-                          delayChildren: 0.12,
-                        },
-                      },
-                    }}
-                  >
-                    <motion.div
-                      variants={{
-                        hidden: { opacity: 0, y: 18 },
-                        visible: {
-                          opacity: 1,
-                          y: 0,
-                          transition: { duration: 0.5, ease },
-                        },
-                      }}
-                      className="flex items-center gap-3"
-                    >
+                  <div className={cn("relative z-10", imageFirst && "lg:order-2")}>
+                    <div className="flex items-center gap-3">
                       <span className="grid size-11 place-items-center rounded-xl bg-primary text-white shadow-[0_12px_30px_-12px_rgba(0,147,42,0.8)]">
                         <Icon className="size-5" />
                       </span>
                       <span className="text-xs font-bold uppercase tracking-[0.10em] text-[#21b94b]">
                         {activeModule.index} · {t("module")}
                       </span>
-                    </motion.div>
+                    </div>
 
-                    <motion.h3
-                      variants={{
-                        hidden: { opacity: 0, y: 22 },
-                        visible: {
-                          opacity: 1,
-                          y: 0,
-                          transition: { duration: 0.58, ease },
-                        },
-                      }}
-                      className="mt-7 text-4xl font-extrabold leading-[1.02] tracking-[-0.05em] text-secondary sm:text-5xl "
-                    >
+                    <h3 className="mt-7 text-4xl font-extrabold leading-[1.02] tracking-[-0.05em] text-secondary sm:text-5xl">
                       {activeModuleTitle}
-                    </motion.h3>
+                    </h3>
 
-                    <motion.p
-                      variants={{
-                        hidden: { opacity: 0, y: 20 },
-                        visible: {
-                          opacity: 1,
-                          y: 0,
-                          transition: { duration: 0.55, ease },
-                        },
-                      }}
-                      className="mt-5 max-w-xl text-base leading-7 text-muted-foreground "
-                    >
-                      {t("descriptionPrefix")}{" "}
-                      {activeModuleTitle}{" "}
-                      {t("descriptionSuffix")}
-                    </motion.p>
+                    <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground">
+                      {t("descriptionPrefix")} {activeModuleTitle} {t("descriptionSuffix")}
+                    </p>
 
-                    <motion.ul
-                      variants={{
-                        hidden: {},
-                        visible: {
-                          transition: {
-                            staggerChildren: reduceMotion ? 0 : 0.07,
-                            delayChildren: reduceMotion ? 0 : 0.28,
-                          },
-                        },
-                      }}
-                      className="mt-7 grid grid-cols-2 gap-x-4 gap-y-2.5 sm:gap-x-7 sm:gap-y-3"
-                    >
+                    <ul className="mt-7 grid grid-cols-2 gap-x-4 gap-y-2.5 sm:gap-x-7 sm:gap-y-3">
                       {activeModuleFeatures.map((feature) => (
-                        <motion.li
-                          key={feature}
-                          variants={{
-                            hidden: { opacity: 0, y: 14 },
-                            visible: {
-                              opacity: 1,
-                              y: 0,
-                              transition: { duration: 0.42, ease },
-                            },
-                          }}
-                          className="flex items-center gap-3 text-sm font-medium text-muted-foreground "
-                        >
+                        <li key={feature} className="flex items-center gap-3 text-sm font-medium text-muted-foreground">
                           <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary/10">
                             <Check className="size-3.5 text-primary" />
                           </span>
                           {feature}
-                        </motion.li>
+                        </li>
                       ))}
-                    </motion.ul>
-                  </motion.div>
+                    </ul>
+                  </div>
 
                   <motion.div
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.25, ease }}
                     className={cn(
-                      "relative mx-auto w-full [perspective:1400px]",
+                      "relative mx-auto w-full",
                       imageFirst && "lg:order-1",
                       isPhone
                         ? "max-w-[320px] sm:max-w-[390px]"
@@ -266,28 +170,8 @@ export function FeatureModules() {
                           ? "max-w-[720px]"
                           : "max-w-[640px]",
                     )}
-                    initial={
-                      reduceMotion ? false : { opacity: 0, scale: 0.9, y: 48 }
-                    }
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{
-                      duration: reduceMotion ? 0 : 0.35,
-                      delay: 0.01,
-                      ease,
-                    }}
                   >
-                    <motion.div
-                      style={
-                        reduceMotion
-                          ? undefined
-                          : {
-                              rotateX,
-                              rotateY,
-                              transformStyle: "preserve-3d",
-                            }
-                      }
-                      className="relative"
-                    >
+                    <div className="relative">
                       <div
                         className={cn(
                           "relative",
@@ -295,7 +179,6 @@ export function FeatureModules() {
                             ? "h-[330px] sm:h-[430px] lg:h-[500px]"
                             : "h-[250px] sm:h-[340px] lg:h-auto lg:aspect-[1.48/1]",
                         )}
-                        style={{ transform: "translateZ(34px)" }}
                       >
                         <Image
                           src={activeModule.image}
@@ -309,7 +192,7 @@ export function FeatureModules() {
                           )}
                         />
                       </div>
-                    </motion.div>
+                    </div>
                   </motion.div>
                 </motion.article>
               </AnimatePresence>

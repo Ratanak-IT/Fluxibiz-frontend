@@ -17,7 +17,10 @@
     "serverConnectError": "មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server ឬទិន្នន័យមិនទាន់រួចរាល់។ សូមព្យាយាមម្ដងទៀត។",
     "retry": "ព្យាយាមឡើងវិញ",
     "retrying": "កំពុងទាញយក...",
-    "backToStore": "ត្រឡប់ទៅហាង"
+    "backToStore": "ត្រឡប់ទៅហាង",
+    "receiptNotFound": "រកមិនឃើញវិក្កយបត្រឡើយ",
+    "receiptNotFoundDesc": "មិនអាចទាញយកព័ត៌មានវិក្កយបត្រនេះបានទេ។ សូមពិនិត្យមើលប្រវត្តិបញ្ជាទិញរបស់អ្នក។",
+    "viewPaymentHistory": "មើលប្រវត្តិទូទាត់"
   },
   "Navbar": {
     "feature": "មុខងារ",
@@ -783,6 +786,8 @@
     },
     "detail": {
       "storeLoadError": "រកមិនឃើញហាង ឬមិនអាចទាញយកព័ត៌មានបាន។",
+      "couldNotLoadStore": "មិនអាចទាញយកព័ត៌មានហាងបានឡើយ",
+      "checkStoreAddressOrConnection": "សូមពិនិត្យមើលអាសយដ្ឋានហាង ឬការភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក រួចព្យាយាមម្ដងទៀត។",
       "noItemsFound": "រកមិនឃើញផលិតផលដែលត្រូវនឹងតម្រង",
       "noItemsDescription": "សូមសាកល្បងកែពាក្យស្វែងរក ប្រភេទ ឬចន្លោះតម្លៃ។",
       "noMenuItems": "មិនទាន់មានផលិតផល",
@@ -865,6 +870,7 @@
     "finishPayment": "បញ្ចប់ការទូទាត់",
     "checkout": "ទូទាត់",
     "removeItem": "ដក {name} ចេញ",
+    "removeAllItems": "លុបមុខទំនិញទាំងអស់ចេញពីហាង",
     "removeSelectedItems": "លុបមុខទំនិញដែលបានជ្រើសរើសទាំងអស់",
     "decreaseQuantity": "បន្ថយបរិមាណ",
     "increaseQuantity": "បង្កើនបរិមាណ",
