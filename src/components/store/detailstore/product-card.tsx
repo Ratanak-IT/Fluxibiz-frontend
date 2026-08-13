@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { ImageOff, Plus } from "lucide-react";
 import Image from "next/image";
 import { MenuItemData, isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+
+/** Matches the product page: the count only earns its place when it is small. */
+const LOW_STOCK_THRESHOLD = 10;
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { formatPrice } from "@/lib/store/productdetail/product";
@@ -56,9 +59,15 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 {item.name}
               </CardTitle>
               <div className="flex items-center gap-2">
-                <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
-                  {formatPrice(Number(item.price), item.currency)}
-                </p>
+                {item.price === undefined ? (
+                  <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                    {t("detail.priceNotSet")}
+                  </p>
+                ) : (
+                  <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
+                    {formatPrice(Number(item.price), item.currency)}
+                  </p>
+                )}
                 {item.compareAtPrice && Number(item.compareAtPrice) > Number(item.price) && (
                   <p className="text-xs font-medium text-neutral-400 line-through">
                     {formatPrice(Number(item.compareAtPrice), item.currency)}
@@ -74,11 +83,17 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
               <span className="text-[11px] font-bold text-primary sm:text-xs dark:text-primary">
                 {item.category}
               </span>
-              {outOfStock && (
+              {outOfStock ? (
                 <span className="text-[11px] font-bold text-red-600 dark:text-red-500">
                   • {t("detail.outOfStock") || "Out of Stock"}
                 </span>
-              )}
+              ) : item.remaining !== null &&
+                item.remaining !== undefined &&
+                item.remaining <= LOW_STOCK_THRESHOLD ? (
+                <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                  • {t("detail.countLeft", { count: item.remaining })}
+                </span>
+              ) : null}
             </div>
           </div>
 

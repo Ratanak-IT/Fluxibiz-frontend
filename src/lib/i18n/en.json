@@ -823,7 +823,13 @@
       "product": "Product",
       "optionNumber": "Option {number}",
       "notAvailableForOrdering": "This product is not available for ordering yet.",
-      "outOfStock": "Out of Stock"
+      "outOfStock": "Out of Stock",
+      "priceNotSet": "Price not set",
+      "soldAs": "Sold as",
+      "holds": "Holds {count} {unit}",
+      "onlyLeft": "Only {count} left",
+      "countLeft": "{count} left",
+      "colour": "Color"
     },
     "carousel": {
       "viewSlide": "View {title}",

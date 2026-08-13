@@ -286,11 +286,47 @@ export interface ItemVariant {
     variant_name?: string;
     title?: string;
     price: number;
+    /**
+     * The option's own picture. It leads the gallery while the option is
+     * picked, so choosing a size changes what is on show — and on an item
+     * whose only pictures live on its options, it is the only picture there is.
+     */
+    imageUrl?: string | null;
+    /**
+     * The swatch this option shows — the circle a shopper clicks. Empty on an
+     * option that is not a colour; a size has nothing to show.
+     */
+    /** The size half of the pair — "Large". */
+    optionName?: string | null;
+    /** Which of the item's colours this row is; null when sold by size alone. */
+    colorValue?: string | null;
+    /** Seller's own on/off switch for the option, independent of stock. */
+    available?: boolean | null;
+    /**
+     * How many the online store may still sell, already capped to whatever the
+     * seller allocated this channel. `null` means the shop keeps no stock
+     * record for it — unlimited as far as the storefront is concerned — while
+     * `0` means sold out. Never conflate the two.
+     */
+    availableQuantity?: number | null;
+}
+
+/**
+ * One colour the item comes in, declared once for the whole item.
+ *
+ * The photograph hangs off the colour rather than off every size that comes in
+ * it: one picture of the red shirt serves Small, Medium and Large.
+ */
+export interface ItemColor {
+    value: string;
+    colorHex?: string | null;
+    imageUrl?: string | null;
 }
 
 export interface ItemAttributeValue {
     value: string;
     label?: string;
+    /** Retired: colour moved to Options, which carry stock and a price. */
     colorHex?: string;
     available?: boolean;
 }
@@ -312,6 +348,24 @@ export interface DescriptionBlockResponse {
     columns?: { blocks: DescriptionBlockResponse[] }[] | null;
 }
 
+/**
+ * A bigger unit the item is sold in — a six-pack, a case.
+ *
+ * Priced in its own right rather than as a multiple: a case is not twenty-four
+ * times a can, or nobody would buy the case. `factor` only says how many base
+ * units come off the shelf.
+ */
+export interface ItemUomConversion {
+    id: string;
+    unit: { id: string; name: string; symbol?: string | null } | null;
+    /** The option it is for — a case of Large is not a case of Small. */
+    variantId: string | null;
+    variantName: string | null;
+    factor: number;
+    /** Null when the seller has not priced it as a pack yet, so it cannot be bought. */
+    price: number | null;
+}
+
 export interface StorefrontItemResponse {
     id: string;
     businessId: string;
@@ -330,13 +384,47 @@ export interface StorefrontItemResponse {
     badge?: string | null;
     itemType: string;
     attributes: ItemAttribute[] | null;
+    /** The colours this item comes in, shared by every size that offers them. */
+    colors?: ItemColor[] | null;
     descriptionBlocks?: DescriptionBlockResponse[] | null;
     variants: ItemVariant[];
+    /** The packs this item can be bought by. Empty when it only sells as itself. */
+    uomConversions?: ItemUomConversion[] | null;
     lowStockDefault: number | null;
     status: string;
-    quantity?: number | null;
-    stock?: number | null;
+    /**
+     * How many the online store may still sell, summed over the item's options.
+     * `null` means untracked, `0` means sold out — see {@link ItemVariant}.
+     *
+     * This is the only stock signal the public API sends. Fields like
+     * `quantity`, `stock` or `isOutOfStock` were never part of the response and
+     * are gone; reading them made every item look permanently in stock.
+     */
     availableQuantity?: number | null;
-    isOutOfStock?: boolean | null;
-    outOfStock?: boolean | null;
+}
+
+/** `null` when untracked, so an untracked item is never mistaken for a sold-out one. */
+export function remainingStock(
+    source?: { availableQuantity?: number | null } | null,
+): number | null {
+    const remaining = source?.availableQuantity;
+    if (remaining === undefined || remaining === null) return null;
+    return Number(remaining);
+}
+
+export function isSoldOut(
+    source?: { availableQuantity?: number | null } | null,
+): boolean {
+    const remaining = remainingStock(source);
+    return remaining !== null && remaining <= 0;
+}
+
+/**
+ * Whether an option can be picked at all: the seller's own switch first, then
+ * whatever the web has left.
+ */
+export function isVariantSelectable(variant?: ItemVariant | null): boolean {
+    if (!variant) return false;
+    if (variant.available === false) return false;
+    return !isSoldOut(variant);
 }

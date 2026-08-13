@@ -212,6 +212,11 @@ export default function ReceiptComponent({
                     <p className="text-sm font-semibold text-neutral-800 dark:text-foreground">
                       {item.itemName}
                     </p>
+                    {item.selections && item.selections.length > 0 ? (
+                      <p className="text-xs text-neutral-500 dark:text-muted-foreground">
+                        {item.selections.join(" · ")}
+                      </p>
+                    ) : null}
                     <p className="text-xs text-neutral-400">
                       {item.quantity} × {formatMoney(item.unitPrice, order.currency)}
                     </p>

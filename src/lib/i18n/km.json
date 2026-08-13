@@ -822,7 +822,13 @@
       "product": "ផលិតផល",
       "optionNumber": "ជម្រើសទី {number}",
       "notAvailableForOrdering": "ផលិតផលនេះមិនទាន់អាចបញ្ជាទិញបានទេ។",
-      "outOfStock": "អស់ពីស្តុក"
+      "outOfStock": "អស់ពីស្តុក",
+      "priceNotSet": "មិនទាន់កំណត់តម្លៃ",
+      "soldAs": "លក់ជា",
+      "holds": "មាន {count} {unit}",
+      "onlyLeft": "នៅសល់តែ {count}",
+      "countLeft": "នៅសល់ {count}",
+      "colour": "ពណ៌"
     },
     "carousel": {
       "viewSlide": "មើល {title}",

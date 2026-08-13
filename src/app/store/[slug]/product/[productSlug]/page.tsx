@@ -15,7 +15,11 @@ import {
   useGetPublicStoreQuery,
 } from "@/features/store-api/store-api";
 import { MenuItemData, isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
-import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
+import {
+  StorefrontItemResponse,
+  primaryItemImage,
+  remainingStock,
+} from "@/lib/type/storeType";
 
 import { formatPrice } from "@/lib/store/productdetail/product";
 
@@ -24,17 +28,17 @@ function toMenuItem(item: StorefrontItemResponse, currency?: string): MenuItemDa
   return {
     id: item.id,
     name: item.name,
+    // An unpriced item is not a free one, so it carries no price at all.
     price:
       item.price !== undefined && item.price !== null
         ? String(item.price)
-        : "0",
+        : undefined,
     currency: currency,
     description: item.description ?? "",
     category: item.itemGroup?.name ?? "Menu",
     image: primaryItemImage(item) ?? "",
     status: item.status,
-    quantity: item.quantity ?? item.stock ?? undefined,
-    stock: item.stock ?? item.quantity ?? undefined,
+    remaining: remainingStock(item),
     isOutOfStock,
     rawItem: item,
   };
