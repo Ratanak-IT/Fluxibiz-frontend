@@ -23,6 +23,8 @@ const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fluxibiz.store";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  manifest: "/manifest.json",
+  themeColor: "#00932A",
   title: {
     default: "FluxiBiz - Run your whole business from one screen",
     template: "%s | FluxiBiz",

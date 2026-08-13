@@ -1,0 +1,78 @@
+{
+  "id": "fluxibix168",
+  "name": "FluxiBiz",
+  "short_name": "FluxiBiz",
+  "description": "The all-in-one point-of-sale, inventory, commerce, and business management platform for growing teams.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#00932A",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "business",
+    "shopping",
+    "productivity",
+    "finance"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "https://www.fluxibiz.store/image/footer/fluxibiz-lightmode.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://fluxibiz.store/desktop-view.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "FluxiBiz Desktop Dashboard"
+    },
+    {
+      "src": "https://fluxibiz.store/mobile-review.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "FluxiBiz Mobile View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Explore Stores",
+      "short_name": "Stores",
+      "description": "Browse stores and products",
+      "url": "/store"
+    },
+    {
+      "name": "Payment History",
+      "short_name": "History",
+      "description": "View receipts and payment history",
+      "url": "/payment-history"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
