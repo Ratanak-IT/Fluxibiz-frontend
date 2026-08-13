@@ -490,27 +490,20 @@ export default function NavbarBeforeLoginComponent({
             side="right"
             className="
               flex
-              w-[62vw]
-              min-w-[235px]
-              max-w-[255px]
+              w-[82vw]
+              max-w-[320px]
               flex-col
               gap-0
               overflow-y-auto
               border-[#e5e7eb]
               bg-white
-              px-3
+              px-4
               text-[#111827]
               [color-scheme:light]
 
-              min-[390px]:w-[60vw]
-              min-[390px]:max-w-[265px]
-
-              sm:w-[340px]
-              sm:max-w-[340px]
+              sm:w-[350px]
+              sm:max-w-[350px]
               sm:px-6
-
-              md:w-[370px]
-              md:max-w-[370px]
 
               dark:border-white/10
               dark:bg-background

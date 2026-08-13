@@ -89,11 +89,11 @@ export default function PaymentHistoryComponent() {
         {/* Search & Filter Controls */}
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           {/* Status Tabs */}
-          <div className="flex max-w-full items-center gap-1.5 overflow-x-auto rounded-full bg-gray-200/70 p-1.5 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:bg-neutral-800">
+          <div className="flex w-full min-w-0 items-center gap-1 sm:gap-1.5 overflow-x-auto rounded-2xl sm:rounded-full bg-gray-200/70 p-1 sm:p-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:bg-neutral-800">
             <button
               type="button"
               onClick={() => setActiveTab("ALL")}
-              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-bold transition-all sm:px-4 ${
+              className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-bold transition-all sm:px-4 ${
                 activeTab === "ALL"
                   ? "bg-white text-neutral-900 shadow-sm dark:bg-card dark:text-foreground"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
@@ -105,7 +105,7 @@ export default function PaymentHistoryComponent() {
             <button
               type="button"
               onClick={() => setActiveTab("PAID")}
-              className={`flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all sm:px-4 ${
+              className={`flex shrink-0 whitespace-nowrap items-center gap-1 rounded-full px-2.5 py-1.5 text-xs font-bold transition-all sm:gap-1.5 sm:px-4 ${
                 activeTab === "PAID"
                   ? "bg-[#00932A] text-white shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
@@ -118,7 +118,7 @@ export default function PaymentHistoryComponent() {
             <button
               type="button"
               onClick={() => setActiveTab("PENDING")}
-              className={`flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all sm:px-4 ${
+              className={`flex shrink-0 whitespace-nowrap items-center gap-1 rounded-full px-2.5 py-1.5 text-xs font-bold transition-all sm:gap-1.5 sm:px-4 ${
                 activeTab === "PENDING"
                   ? "bg-amber-500 text-white shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
@@ -131,7 +131,7 @@ export default function PaymentHistoryComponent() {
             <button
               type="button"
               onClick={() => setActiveTab("CANCELLED")}
-              className={`flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all sm:px-4 ${
+              className={`flex shrink-0 whitespace-nowrap items-center gap-1 rounded-full px-2.5 py-1.5 text-xs font-bold transition-all sm:gap-1.5 sm:px-4 ${
                 activeTab === "CANCELLED"
                   ? "bg-red-500 text-white shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
@@ -150,7 +150,7 @@ export default function PaymentHistoryComponent() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("searchPlaceholder")}
-              className="h-10 rounded-full border-gray-200 bg-white pl-9 text-xs focus-visible:ring-[#00932A] dark:border-border dark:bg-card"
+              className="h-10 rounded-full border border-gray-200 bg-white pl-9 text-xs transition-colors focus-visible:border-[#00932A] focus-visible:ring-1 focus-visible:ring-[#00932A]/30 dark:border-neutral-800 dark:bg-card"
             />
           </div>
         </div>

@@ -5,7 +5,7 @@ const CONTACT_DETAILS = [
     icon: Mail,
     label: "Email",
     value: "ipos.istad@gmail.com",
-    href: "mailto:privacy@northbeam.io",
+    href: "mailto:ipos.istad@gmail.com",
   },
   {
     icon: Phone,

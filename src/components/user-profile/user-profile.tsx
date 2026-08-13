@@ -578,7 +578,7 @@ export default function UserProfile() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="rounded-full border-gray-200 bg-gray-50 text-xs font-semibold text-neutral-700 cursor-default dark:border-border dark:bg-muted"
+                        className="rounded-full border-gray-200 bg-gray-50 text-xs font-semibold text-neutral-700 cursor-default dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:text-white"
                       >
                         Connected
                       </Button>

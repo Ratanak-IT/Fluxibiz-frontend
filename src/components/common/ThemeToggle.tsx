@@ -131,7 +131,7 @@ export default function ThemeToggle({
             group-hover:stroke-secondary
 
             ${
-              mounted && !isDark
+              mounted && isDark
                 ? "opacity-100"
                 : "pointer-events-none opacity-0"
             }
@@ -150,7 +150,7 @@ export default function ThemeToggle({
             group-hover:stroke-secondary
 
             ${
-              mounted && isDark
+              mounted && !isDark
                 ? "opacity-100"
                 : "pointer-events-none opacity-0"
             }
