@@ -344,14 +344,14 @@ export function ProductStorefrontUI({
             </div>
 
             {item.descriptionBlocks && item.descriptionBlocks.length > 0 ? (
-                <div className="mx-6 mb-6 rounded-2xl border border-[#e4eae2] dark:border-[#242937] bg-white dark:bg-[#1a1e29] p-6">
+                <div className="mx-6 mb-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-card p-6">
                     <h3 className="mb-4 inline-block border-b-2 border-secondary pb-1 text-base font-semibold text-primary">
                         Description
                     </h3>
                     <BlockList blocks={item.descriptionBlocks} specs={specs} />
                 </div>
             ) : specs.length > 0 ? (
-                <div className="mx-6 mb-6 rounded-2xl border border-[#e4eae2] dark:border-[#242937] bg-white dark:bg-[#1a1e29] p-6">
+                <div className="mx-6 mb-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-card p-6">
                     <h3 className="mb-4 inline-block border-b-2 border-secondary pb-1 text-base font-semibold text-primary">
                         Specifications
                     </h3>
@@ -424,7 +424,7 @@ function Gallery({
 }) {
     if (!images.length) {
         return (
-            <div className="flex aspect-square items-center justify-center rounded-2xl border border-[#e4eae2] dark:border-[#242937] bg-white dark:bg-[#1a1e29] text-center shadow-xs">
+            <div className="flex aspect-square items-center justify-center rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-card text-center shadow-xs">
                 <div className="flex flex-col items-center gap-2 text-[#a3aca1] dark:text-[#64748b]">
                     <ImageOff className="size-8" />
                     <p className="text-sm font-medium">No image available</p>
@@ -461,7 +461,7 @@ function Gallery({
                     </button>
                 ))}
             </div>
-            <div className="relative aspect-square flex-1 overflow-hidden rounded-2xl border border-[#e4eae2] dark:border-[#242937] bg-[#f8faf8] dark:bg-[#151821] shadow-xs">
+            <div className="relative aspect-square flex-1 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-[#f8faf8] dark:bg-card shadow-xs">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     src={active}

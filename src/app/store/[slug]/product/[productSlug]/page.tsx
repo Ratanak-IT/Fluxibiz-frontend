@@ -8,6 +8,8 @@ import { ArrowRight } from "lucide-react";
 import DescriptionCard from "@/components/store/productdetail/description-card";
 import ProductDetail from "@/components/store/productdetail/product-detail";
 import { MenuProductCard } from "@/components/store/detailstore/product-card";
+import { MenuProductCardSkeleton } from "@/components/common/Skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   useGetPublicStoreItemsQuery,
   useGetPublicStoreQuery,
@@ -76,8 +78,20 @@ export default function DetailProductPage({
       
 
 
-      {relatedStoreItems.length > 0 && (
-        <section className="mx-auto my-12 max-w-7xl px-4 sm:px-6 lg:px-8">
+      {isLoadingItems ? (
+        <section className="mx-auto my-12 max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20">
+          <div className="mb-6 flex items-center justify-between">
+            <Skeleton className="h-7 w-44 rounded-md" />
+            <Skeleton className="h-4 w-20 rounded-md" />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <MenuProductCardSkeleton key={i} />
+            ))}
+          </div>
+        </section>
+      ) : relatedStoreItems.length > 0 && (
+        <section className="mx-auto my-12 max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
               You May Also Like

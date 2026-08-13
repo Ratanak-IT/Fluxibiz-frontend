@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function PaymentHistoryPage() {
   return (
-    <div className="relative min-h-screen pb-24 lg:pb-0">
+    <div className="relative min-h-screen bg-gray-50 pb-24 dark:bg-background lg:pb-0">
       <PaymentHistoryComponent />
       <StoreNavbar />
     </div>

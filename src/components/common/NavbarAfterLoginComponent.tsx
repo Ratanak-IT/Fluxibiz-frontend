@@ -429,6 +429,7 @@ export default function NavbarAfterLoginComponent({
                   href="/user-profile"
                   onClick={() => setMobileNavOpen(false)}
                   className="
+                    group
                     flex
                     min-h-16
                     w-full
@@ -439,6 +440,7 @@ export default function NavbarAfterLoginComponent({
                     px-3
                     py-2
                     transition-colors
+<<<<<<< HEAD
                     hover:bg-[#e5e7eb]
                     focus-visible:outline-none
                     focus-visible:ring-2
@@ -448,6 +450,13 @@ export default function NavbarAfterLoginComponent({
                     dark:bg-white/5
                     dark:hover:bg-white/10
                     dark:focus-visible:ring-offset-background
+=======
+
+                    hover:bg-[#e5e7eb]
+
+                    dark:bg-white/5
+                    dark:hover:bg-white/10
+>>>>>>> 8a4fd6b49e7963aa43f4d0fd743fd62a004f9401
                   "
                 >
                   <Avatar
@@ -456,6 +465,8 @@ export default function NavbarAfterLoginComponent({
                       shrink-0
                       border
                       border-[#e5e7eb]
+                      transition-colors
+                      group-hover:border-primary
 
                       dark:border-white/10 " >
                     {avatarSrc ? (
@@ -480,7 +491,7 @@ export default function NavbarAfterLoginComponent({
                   </Avatar>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-bold text-[#1f2937] dark:text-white">
+                    <p className="truncate font-bold text-[#1f2937] transition-colors group-hover:text-primary dark:text-white">
                       {user.name}
                     </p>
 
@@ -560,6 +571,7 @@ export default function NavbarAfterLoginComponent({
                     setMobileNavOpen(false)
                   }
                   className="
+                    group
                     flex
                     h-11
                     w-full
@@ -575,12 +587,15 @@ export default function NavbarAfterLoginComponent({
                     hover:bg-[#f3f4f6]
                     hover:text-primary
 
+                    [&_svg]:text-current
+                    [&_svg]:transition-colors
+
                     dark:text-white
                     dark:hover:bg-white/5
                     dark:hover:text-primary
                   "
                 >
-                  <UserRound className="size-5 shrink-0 hover:fill-accent-foreground" />
+                  <UserRound className="size-5 shrink-0 text-current" />
                   {t("account.viewProfile")}
                 </Link>
 
@@ -591,6 +606,7 @@ export default function NavbarAfterLoginComponent({
                     setMobileNavOpen(false)
                   }
                   className="
+                    group
                     flex
                     h-11
                     w-full
@@ -606,12 +622,15 @@ export default function NavbarAfterLoginComponent({
                     hover:bg-[#f3f4f6]
                     hover:text-primary
 
+                    [&_svg]:text-current
+                    [&_svg]:transition-colors
+
                     dark:text-white
                     dark:hover:bg-white/5
                     dark:hover:text-primary
                   "
                 >
-                  <Receipt className="size-5 shrink-0 hover:fill-accent-foreground" />
+                  <Receipt className="size-5 shrink-0 text-current" />
                   {t("account.paymentHistory")}
                 </Link>
 
@@ -622,6 +641,7 @@ export default function NavbarAfterLoginComponent({
                     setMobileNavOpen(false)
                   }
                   className="
+                    group
                     flex
                     h-11
                     w-full
@@ -637,12 +657,15 @@ export default function NavbarAfterLoginComponent({
                     hover:bg-[#f3f4f6]
                     hover:text-primary
 
+                    [&_svg]:text-current
+                    [&_svg]:transition-colors
+
                     dark:text-white
                     dark:hover:bg-white/5
                     dark:hover:text-primary
                   "
                 >
-                  <Settings className="size-5 shrink-0 hover:fill-accent-foreground" />
+                  <Settings className="size-5 shrink-0 text-current" />
                   {t("account.settings")}
                 </Link>
 
@@ -654,6 +677,7 @@ export default function NavbarAfterLoginComponent({
                     onLogout?.();
                   }}
                   className="
+                    group
                     flex
                     h-11
                     w-full
@@ -667,9 +691,11 @@ export default function NavbarAfterLoginComponent({
                     text-destructive
                     transition-colors
                     hover:bg-destructive/10
+
+                    [&_svg]:text-destructive
                   "
                 >
-                  <LogOut className="size-5 shrink-0" />
+                  <LogOut className="size-5 shrink-0 text-destructive" />
                   {t("account.logout")}
                 </button>
               </div>
@@ -838,13 +864,16 @@ function UserDropdown({
             className="
               group
               cursor-pointer
-              gap-2
+              gap-2.5
               text-[#1f2937]
 
               focus:bg-[#f3f4f6]
               focus:text-primary
               data-[highlighted]:bg-[#f3f4f6]
               data-[highlighted]:text-primary
+
+              [&_svg]:text-current
+              [&_svg]:transition-colors
 
               dark:text-white
               dark:focus:bg-white/5
@@ -853,7 +882,7 @@ function UserDropdown({
               dark:data-[highlighted]:text-primary
             "
           >
-            <UserRound className="size-[17px] text-[#1f2937] transition-colors group-hover:text-primary group-focus:text-primary group-data-[highlighted]:text-primary dark:text-white/80" />
+            <UserRound className="size-[17px] text-current" />
             {t("account.viewProfile")}
           </DropdownMenuItem>
 
@@ -864,13 +893,16 @@ function UserDropdown({
             className="
               group
               cursor-pointer
-              gap-2
+              gap-2.5
               text-[#1f2937]
 
               focus:bg-[#f3f4f6]
               focus:text-primary
               data-[highlighted]:bg-[#f3f4f6]
               data-[highlighted]:text-primary
+
+              [&_svg]:text-current
+              [&_svg]:transition-colors
 
               dark:text-white
               dark:focus:bg-white/5
@@ -879,7 +911,7 @@ function UserDropdown({
               dark:data-[highlighted]:text-primary
             "
           >
-            <Receipt className="size-[17px] text-[#1f2937] transition-colors group-hover:text-primary group-focus:text-primary group-data-[highlighted]:text-primary dark:text-white/80" />
+            <Receipt className="size-[17px] text-current" />
             {t("account.paymentHistory")}
           </DropdownMenuItem>
 
@@ -888,13 +920,16 @@ function UserDropdown({
             className="
               group
               cursor-pointer
-              gap-2
+              gap-2.5
               text-[#1f2937]
 
               focus:bg-[#f3f4f6]
               focus:text-primary
               data-[highlighted]:bg-[#f3f4f6]
               data-[highlighted]:text-primary
+
+              [&_svg]:text-current
+              [&_svg]:transition-colors
 
               dark:text-white
               dark:focus:bg-white/5
@@ -903,7 +938,7 @@ function UserDropdown({
               dark:data-[highlighted]:text-primary
             "
           >
-            <Settings className="size-[17px] text-[#1f2937] transition-colors group-hover:text-primary group-focus:text-primary group-data-[highlighted]:text-primary dark:text-white/80" />
+            <Settings className="size-[17px] text-current" />
             {t("account.settings")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -913,16 +948,20 @@ function UserDropdown({
         <DropdownMenuItem
           onClick={onLogout}
           className="
+            group
             cursor-pointer
-            gap-2
+            gap-2.5
             text-destructive
 
             focus:bg-destructive/10
             focus:text-destructive
             data-[highlighted]:bg-destructive/10
             data-[highlighted]:text-destructive
-          ">
-          <LogOut className="size-[17px]" />
+
+            [&_svg]:text-destructive
+          "
+        >
+          <LogOut className="size-[17px] text-destructive" />
           {t("account.logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
