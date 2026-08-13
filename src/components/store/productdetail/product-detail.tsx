@@ -113,38 +113,38 @@ export default function ProductDetail({
           currency: currency,
         },
       }).unwrap();
-      
+
       toast.success(tCart("addedToCart"));
     } catch (err: any) {
-        if (isUnauthorized(err)) {
-            login();
-        } else {
-            const msg = formatStockErrorMessage(err, item?.name);
-            const lower = msg.toLowerCase();
-            if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
-                if (item?.id) markItemOutOfStock(item.id);
-            }
-            toast.error(msg);
+      if (isUnauthorized(err)) {
+        login();
+      } else {
+        const msg = formatStockErrorMessage(err, item?.name);
+        const lower = msg.toLowerCase();
+        if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
+          if (item?.id) markItemOutOfStock(item.id);
         }
+        toast.error(msg);
+      }
     }
   }
 
   return (
-    <div className="mx-auto max-w-5xl bg-[#f7f8f7] dark:bg-[#121620] sm:rounded-2xl sm:my-8 overflow-hidden shadow-sm border border-neutral-100 dark:border-neutral-800">
-        <ProductStorefrontUI
-            item={item}
-            currency={currency}
-            storeSlug={storeSlug}
-            storeName={storeName}
-            onAddToCart={handleAddToCart}
-            isAddingToCart={isAdding}
-            quantity={quantity}
-            setQuantity={setQuantity}
-            selectedVariant={selectedVariant}
-            setSelectedVariant={setSelectedVariant}
-            selectedAttributes={selectedAttributes}
-            setSelectedAttributes={setSelectedAttributes}
-        />
+    <div className="mx-auto max-w-5xl bg-[#f7f8f7] dark:bg-[#121620] max-sm:dark:bg-background sm:rounded-2xl sm:my-8 overflow-hidden shadow-sm border border-neutral-100 dark:border-neutral-800">
+      <ProductStorefrontUI
+        item={item}
+        currency={currency}
+        storeSlug={storeSlug}
+        storeName={storeName}
+        onAddToCart={handleAddToCart}
+        isAddingToCart={isAdding}
+        quantity={quantity}
+        setQuantity={setQuantity}
+        selectedVariant={selectedVariant}
+        setSelectedVariant={setSelectedVariant}
+        selectedAttributes={selectedAttributes}
+        setSelectedAttributes={setSelectedAttributes}
+      />
     </div>
   );
 }

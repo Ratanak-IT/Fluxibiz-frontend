@@ -135,13 +135,13 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
           {canCheckout ? (
             <Link
               href={`/store/${slug}/checkout`}
-              className="flex h-9 w-full items-center justify-center rounded-full bg-primary text-sm font-medium text-white transition-colors hover:bg-primary/90"
+              className="flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-bold text-white transition-colors hover:bg-primary/90"
             >
               {t("reviewPayment")}
             </Link>
           ) : (
             <Button
-              className="w-full rounded-full bg-primary text-white disabled:opacity-50"
+              className="h-12 w-full rounded-full bg-primary text-base font-bold text-white disabled:opacity-50"
               disabled
             >
               {t("reviewPayment")}
@@ -253,9 +253,9 @@ function CartSidebarLine({
             onClick={decrease}
             disabled={busy}
             aria-label={t("decreaseQuantity")}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-card"
+            className="flex h-6 w-6 items-center justify-center rounded-full border-0 text-red-500 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
           >
-            <Minus className="h-3 w-3" />
+            <Minus className="h-3 w-3 text-red-500 dark:text-red-400" />
           </button>
 
           <span className="w-4 text-center text-xs font-semibold tabular-nums">

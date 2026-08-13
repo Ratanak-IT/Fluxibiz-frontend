@@ -65,7 +65,7 @@ export default function DetailProductPage({
   const t = useTranslations("Store.common");
 
   return (
-    <div className="dark:bg-background">
+    <div className="min-h-screen pb-28 dark:bg-background lg:pb-8">
       <ProductDetail
         item={rawItem}
         storeSlug={storeSlug}

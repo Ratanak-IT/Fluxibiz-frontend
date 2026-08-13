@@ -108,7 +108,7 @@ export function ProductStorefrontUI({
     const variantIndex = variants.findIndex(v => v.id === selectedVariant?.id);
 
     return (
-        <div className="max-h-[90vh] overflow-y-auto scrollbar-none">
+        <div className={cn(onClose ? "max-h-[90vh] overflow-y-auto scrollbar-none" : "w-full md:max-h-[90vh] md:overflow-y-auto scrollbar-none max-md:max-h-none max-md:overflow-visible")}>
             {onClose ? (
                 <div className="flex items-center gap-2 px-6 pt-6 text-sm text-[#657064] dark:text-[#94a3b8]">
                     <button type="button" onClick={onClose} className="hover:text-primary transition-colors flex items-center gap-2">
@@ -515,8 +515,8 @@ function Chip({
                 disabled
                     ? "cursor-not-allowed border-[#f0f1ef] dark:border-[#2a3042] bg-[#fafbfa] dark:bg-[#151821] text-[#c2c8c0] dark:text-[#64748b] line-through"
                     : active
-                      ? "border-primary bg-primary/5 font-medium text-primary"
-                      : "border-[#e8e8e8] dark:border-[#2a3042] bg-white dark:bg-[#1e2330] text-[#1a222b] dark:text-[#f8fafc] hover:border-[#cfd6cc] dark:hover:border-[#384252]",
+                        ? "border-primary bg-primary/5 font-medium text-primary"
+                        : "border-[#e8e8e8] dark:border-[#2a3042] bg-white dark:bg-[#1e2330] text-[#1a222b] dark:text-[#f8fafc] hover:border-[#cfd6cc] dark:hover:border-[#384252]",
             )}
         >
             {children}

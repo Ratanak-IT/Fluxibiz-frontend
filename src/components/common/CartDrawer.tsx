@@ -251,7 +251,7 @@ function StoreCheckoutButton({
     const blockedByOther = pending && !pendingHere;
 
     const shell =
-        "mt-3 flex h-11 w-full items-center justify-center rounded-full border text-sm font-bold transition-all";
+        "mt-3 flex h-12 w-full items-center justify-center rounded-full border text-base font-bold transition-all";
 
     if (!store.open) {
         return (
@@ -399,11 +399,11 @@ function LineRow({ line, currency }: { line: CartLine; currency: string }) {
 
                 <div className="mt-1.5 flex items-center gap-3">
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         size="icon"
                         onClick={handleDecrease}
                         disabled={busy}
-                        className="h-5 w-5 border-red-200/80 text-red-500 hover:bg-red-50 dark:border-red-950 dark:bg-card dark:text-red-400"
+                        className="h-5 w-5 border-0 text-red-500 hover:bg-red-50 dark:bg-card dark:text-red-400"
                         aria-label="Decrease quantity"
                     >
                         <Minus className="h-3 w-3 text-red-500 dark:text-red-400" />

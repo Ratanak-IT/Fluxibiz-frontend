@@ -16,7 +16,7 @@ export default function OrderSummaryComponent({
     store: StoreCart;
     currency?: string;
 }) {
-  const t = useTranslations("Cart");
+    const t = useTranslations("Cart");
     const activeCurrency = currency || store.currency;
     const discount = store.items.reduce((acc, item) => {
         const raw = item as any;
@@ -34,7 +34,7 @@ export default function OrderSummaryComponent({
     const pendingHere = pending?.storeSlug === store.slug;
 
     return (
-        <Card className="w-full rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs lg:w-100 dark:border-neutral-800 dark:bg-card">
+        <Card className="w-full rounded-2xl bg-white pb-6 border border-neutral-100/80 p-6 sm:p-7 shadow-xs lg:w-100 dark:border-neutral-800 dark:bg-card">
             <CardHeader className="mb-5 p-0">
                 <CardTitle className="text-xl font-bold tracking-tight text-neutral-900 dark:text-card-foreground">
                     {t("yourOrder")}
@@ -82,20 +82,20 @@ export default function OrderSummaryComponent({
                 {!store.open ? (
                     <Button
                         disabled
-                        className="h-12 w-full rounded-full bg-neutral-300 text-base font-semibold text-neutral-500"
+                        className="h-13 sm:h-14 w-full rounded-full bg-neutral-300 text-base sm:text-lg font-bold text-neutral-500"
                     >
                         Shop is closed
                     </Button>
                 ) : pendingElsewhere ? (
                     <Button
                         disabled
-                        className="h-12 w-full rounded-full bg-neutral-300 text-base font-semibold text-neutral-500"
+                        className="h-13 sm:h-14 w-full rounded-full bg-neutral-300 text-base sm:text-lg font-bold text-neutral-500"
                     >
                         {t("payingFirst", { storeName: pendingElsewhere.storeName })}
                     </Button>
                 ) : (
                     <Link href={`/store/${store.slug}/checkout`} className="w-full">
-                        <Button className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white transition-colors hover:bg-green-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90">
+                        <Button className="h-13 sm:h-14 w-full rounded-full bg-green-600 text-base sm:text-lg font-bold text-white transition-colors hover:bg-green-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90">
                             {pendingHere ? t("finishPayment") : t("checkout")}
                         </Button>
                     </Link>

@@ -16,7 +16,7 @@ export default function ProductList({ title, items = [] }: ProductListProps) {
                 </h2>
             )}
 
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {Array.isArray(items) && items.map((item) => (
                      <MenuProductCard key={item.id} item={item} /> 
                 ))}

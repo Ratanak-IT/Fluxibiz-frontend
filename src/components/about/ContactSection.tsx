@@ -31,21 +31,29 @@ export function ContactSection() {
       label: t("details.visit"),
       value:
         "#40, Street 273, Sangkat Boeung Kak, Khan Toul Kork, Phnom Penh",
+      href: "https://www.google.com/maps/search/?api=1&query=40+Street+273+Sangkat+Boeung+Kak+Khan+Toul+Kork+Phnom+Penh",
+      external: true,
     },
     {
       icon: Mail,
       label: t("details.email"),
-      value: "ipos.stad@gmail.com",
+      value: "ipos.istad@gmail.com",
+      href: "mailto:ipos.istad@gmail.com",
+      external: false,
     },
     {
       icon: Phone,
       label: t("details.call"),
       value: "+855 15 33 88 26",
+      href: "tel:+85515338826",
+      external: false,
     },
     {
       icon: Send,
       label: t("details.telegram"),
       value: "@ipos_team",
+      href: "https://t.me/ipos_team",
+      external: true,
     },
   ];
 
@@ -93,12 +101,14 @@ export function ContactSection() {
           </p>
 
           <div className="mt-8 space-y-4">
-            {contactDetails.map(({ icon: Icon, label, value }) => (
-              <div
+            {contactDetails.map(({ icon: Icon, label, value, href, external }) => (
+              <a
                 key={label}
-                className="flex items-start gap-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-xs transition-colors dark:border-neutral-800 dark:bg-card"
+                href={href}
+                {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                className="group flex items-start gap-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-xs transition-all hover:border-[#00932A] hover:bg-neutral-50/80 hover:shadow-sm dark:border-neutral-800 dark:bg-card dark:hover:border-[#00932A] dark:hover:bg-neutral-800/60"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-50 dark:bg-green-950/40">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-50 transition-transform group-hover:scale-105 dark:bg-green-950/40">
                   <Icon className="h-5 w-5 text-primary dark:text-green-400" />
                 </div>
 
@@ -107,11 +117,11 @@ export function ContactSection() {
                     {label}
                   </p>
 
-                  <p className="mt-1 text-sm font-medium text-neutral-800 dark:text-gray-200">
+                  <p className="mt-1 text-sm font-medium text-neutral-800 transition-colors group-hover:text-[#00932A] dark:text-gray-200 dark:group-hover:text-green-400">
                     {value}
                   </p>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
@@ -140,7 +150,7 @@ export function ContactSection() {
                       <FormControl>
                         <Input
                           placeholder={t("form.namePlaceholder")}
-                          className="h-10 dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
+                          className="h-10 border border-gray-200 transition-colors focus-visible:border-[#00932A] focus-visible:ring-1 focus-visible:ring-[#00932A]/30 dark:border-neutral-800 dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
                           {...field}
                         />
                       </FormControl>
@@ -163,7 +173,7 @@ export function ContactSection() {
                         <Input
                           type="email"
                           placeholder={t("form.emailPlaceholder")}
-                          className="h-10 dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
+                          className="h-10 border border-gray-200 transition-colors focus-visible:border-[#00932A] focus-visible:ring-1 focus-visible:ring-[#00932A]/30 dark:border-neutral-800 dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
                           {...field}
                         />
                       </FormControl>
@@ -186,7 +196,7 @@ export function ContactSection() {
                     <FormControl>
                       <Input
                         placeholder={t("form.subjectPlaceholder")}
-                        className="h-10 dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
+                        className="h-10 border border-gray-200 transition-colors focus-visible:border-[#00932A] focus-visible:ring-1 focus-visible:ring-[#00932A]/30 dark:border-neutral-800 dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
                         {...field}
                       />
                     </FormControl>
@@ -209,7 +219,7 @@ export function ContactSection() {
                       <Textarea
                         rows={5}
                         placeholder={t("form.messagePlaceholder")}
-                        className="resize-none dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
+                        className="resize-none border border-gray-200 transition-colors focus-visible:border-[#00932A] focus-visible:ring-1 focus-visible:ring-[#00932A]/30 dark:border-neutral-800 dark:bg-neutral-900/50 dark:text-white dark:placeholder:text-gray-500"
                         {...field}
                       />
                     </FormControl>
@@ -222,7 +232,7 @@ export function ContactSection() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-full bg-primary px-6 text-white hover:bg-green-700 dark:bg-primary dark:text-white dark:hover:bg-green-600"
+                className="rounded-full bg-primary px-6 py-5 text-white hover:bg-primary dark:bg-primary dark:text-white dark:hover:bg-green-600"
               >
                 {isSubmitting ? (
                   <>

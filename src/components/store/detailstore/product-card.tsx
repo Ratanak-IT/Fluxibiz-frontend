@@ -45,7 +45,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
       <Card
         onClick={handleCardClick}
         className={cn(
-          "max-w-xl cursor-pointer overflow-hidden border-0 bg-white p-0 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg dark:bg-card relative",
+          "w-full cursor-pointer overflow-hidden border-0 bg-white p-0 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg dark:bg-card relative",
           outOfStock && "opacity-90"
         )}
       >
