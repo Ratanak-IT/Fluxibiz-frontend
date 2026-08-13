@@ -11,6 +11,7 @@ import { useAuth } from "@/features/auth/useAuth";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
 import {formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProductDetailProps {
   item?: StorefrontItemResponse;
@@ -61,8 +62,73 @@ export default function ProductDetail({
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 my-6 sm:my-8">
-        <div className="h-96 w-full animate-pulse rounded-2xl bg-neutral-100 dark:bg-card" />
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 md:px-12 lg:px-20 sm:my-8">
+        <div className="bg-[#f7f8f7] dark:bg-card max-sm:dark:bg-background rounded-2xl overflow-hidden shadow-sm border border-neutral-100 dark:border-neutral-800">
+          
+          {/* Breadcrumb Skeleton */}
+          <div className="flex items-center gap-2 px-6 pt-6 text-sm">
+            <Skeleton className="h-4 w-40" />
+          </div>
+
+          <div className="grid gap-8 p-6 md:grid-cols-2">
+            {/* Gallery Skeleton */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-row sm:flex-col gap-2.5 max-w-full shrink-0">
+                <Skeleton className="size-14 rounded-xl" />
+                <Skeleton className="size-14 rounded-xl" />
+                <Skeleton className="size-14 rounded-xl" />
+              </div>
+              <div className="relative aspect-square flex-1 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-[#f8faf8] dark:bg-card shadow-xs">
+                <Skeleton className="size-full" />
+              </div>
+            </div>
+
+            {/* Details Skeleton */}
+            <div className="flex flex-col gap-4">
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-7 w-3/4" />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-7 w-28" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+              </div>
+
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+              </div>
+
+              <div className="space-y-2.5 pt-2">
+                <Skeleton className="h-3.5 w-16" />
+                <div className="flex flex-wrap gap-2">
+                  <Skeleton className="h-8 w-20 rounded-full" />
+                  <Skeleton className="h-8 w-24 rounded-full" />
+                  <Skeleton className="h-8 w-16 rounded-full" />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 pt-2">
+                <Skeleton className="h-10 w-28 rounded-full" />
+                <Skeleton className="h-12 w-full rounded-xl" />
+              </div>
+
+              <div className="grid gap-4 border-t border-neutral-200/60 dark:border-neutral-800 pt-5 sm:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex gap-2">
+                    <Skeleton className="h-4.5 w-4.5 rounded-full shrink-0 mt-0.5" />
+                    <div className="space-y-1.5 flex-1">
+                      <Skeleton className="h-3.5 w-20" />
+                      <Skeleton className="h-3 w-16" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     );
   }
