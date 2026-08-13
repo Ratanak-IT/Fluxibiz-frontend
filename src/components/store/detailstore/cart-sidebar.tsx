@@ -98,9 +98,8 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
           </div>
         ) : (
           <div
-            className={`max-h-[45vh] space-y-3 overflow-y-auto py-2 pr-1 transition-opacity ${
-              isFetching ? "opacity-60" : "opacity-100"
-            }`}
+            className={`max-h-[45vh] space-y-3 overflow-y-auto py-2 pr-1 transition-opacity ${isFetching ? "opacity-60" : "opacity-100"
+              }`}
           >
             {lines.map((line) => (
               <CartSidebarLine key={line.cartItemId} line={line} currency={currency} />

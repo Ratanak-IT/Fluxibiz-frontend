@@ -13,10 +13,10 @@ import OrderSummaryComponent from "./order-summary-component";
 import { StoreCardComponent } from "./store-card-component";
 
 export default function StoreGroupComponent({ store }: { store: StoreCart }) {
-  const t = useTranslations("Cart");
-  const [removeStore, { isLoading: isRemoving }] = useRemoveCartStoreMutation();
-  const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
-  const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
+    const t = useTranslations("Cart");
+    const [removeStore, { isLoading: isRemoving }] = useRemoveCartStoreMutation();
+    const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
+    const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
 
     return (
         <section aria-label={t("cartForStore", { storeName: store.name })}>
@@ -47,7 +47,7 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
                             key={line.cartItemId}
                             line={line}
                             currency={effectiveCurrency}
-                         
+
                         />
                     ))}
                 </div>
