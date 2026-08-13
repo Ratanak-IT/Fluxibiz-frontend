@@ -69,7 +69,7 @@ export default function PaymentHistoryComponent() {
         {/* Page Title & Header */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="flex items-center gap-2.5 text-2xl font-black text-neutral-900 sm:text-3xl dark:text-foreground">
+            <h1 className="flex items-center gap-2.5 text-2xl font-black text-primary sm:text-3xl  dark:text-primary">
               <Receipt className="h-7 w-7 text-[#00932A]" />
               {t("title")}
             </h1>
@@ -89,55 +89,54 @@ export default function PaymentHistoryComponent() {
         {/* Search & Filter Controls */}
         <div className="mb-6 flex flex-col gap-3.5 md:flex-row md:items-center md:justify-between">
           {/* Status Tabs */}
-          <div className="flex shrink-0 items-center gap-1 sm:gap-1.5 overflow-x-auto rounded-full bg-gray-200/70 p-1 sm:p-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:bg-neutral-800">
+          <div className="flex w-full max-w-full md:w-auto md:max-w-none shrink-0 items-center gap-0.5 sm:gap-1.5 overflow-x-auto rounded-full bg-gray-200/70 p-0.5 sm:p-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:bg-card">
             <button
               type="button"
               onClick={() => setActiveTab("ALL")}
-              className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-bold transition-all sm:px-4 ${
+              className={`flex flex-1 justify-center shrink-0 whitespace-nowrap rounded-full px-2 py-1 text-[10px] font-bold transition-all sm:inline-flex sm:flex-initial sm:px-4 sm:py-1.5 sm:text-xs ${
                 activeTab === "ALL"
                   ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-foreground"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
-              }`}
-            >
+              }`}>
               {t("all")} ({orders.length})
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("PAID")}
-              className={`flex shrink-0 whitespace-nowrap items-center gap-1 rounded-full px-2.5 py-1.5 text-xs font-bold transition-all sm:gap-1.5 sm:px-4 ${
+              className={`flex flex-1 justify-center shrink-0 whitespace-nowrap items-center gap-0 sm:gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold transition-all sm:flex-initial sm:px-4 sm:py-1.5 sm:text-xs ${
                 activeTab === "PAID"
                   ? "bg-[#00932A] text-white shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
               }`}
             >
-              <CheckCircle2 className="h-3.5 w-3.5" />
+              <CheckCircle2 className="h-3.5 w-3.5 hidden sm:block" />
               {t("paid")} ({paidCount})
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("PENDING")}
-              className={`flex shrink-0 whitespace-nowrap items-center gap-1 rounded-full px-2.5 py-1.5 text-xs font-bold transition-all sm:gap-1.5 sm:px-4 ${
+              className={`flex flex-1 justify-center shrink-0 whitespace-nowrap items-center gap-0 sm:gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold transition-all sm:flex-initial sm:px-4 sm:py-1.5 sm:text-xs ${
                 activeTab === "PENDING"
                   ? "bg-amber-500 text-white shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
               }`}
             >
-              <Clock className="h-3.5 w-3.5" />
+              <Clock className="h-3.5 w-3.5 hidden sm:block" />
               {t("pending")} ({pendingCount})
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("CANCELLED")}
-              className={`flex shrink-0 whitespace-nowrap items-center gap-1 rounded-full px-2.5 py-1.5 text-xs font-bold transition-all sm:gap-1.5 sm:px-4 ${
+              className={`flex flex-1 justify-center shrink-0 whitespace-nowrap items-center gap-0 sm:gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold transition-all sm:flex-initial sm:px-4 sm:py-1.5 sm:text-xs ${
                 activeTab === "CANCELLED"
                   ? "bg-red-500 text-white shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
               }`}
             >
-              <XCircle className="h-3.5 w-3.5" />
+              <XCircle className="h-3.5 w-3.5 hidden sm:block" />
               {t("cancelled")} ({cancelledCount})
             </button>
           </div>
@@ -196,12 +195,12 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
 
   const formattedDate = order.createdDate
     ? new Date(order.createdDate).toLocaleDateString(locale, {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
     : t("notAvailable");
 
   const isPaid = order.status === "PAID";
