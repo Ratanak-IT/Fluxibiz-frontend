@@ -65,7 +65,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                   </p>
                 )}
               </div>
-              <CardDescription className="line-clamp-2 text-[10px] text-neutral-500 @xs:text-[11px] @sm:text-xs dark:text-neutral-400">
+              <CardDescription className="line-clamp-2 text-[12px] text-neutral-500 @xs:text-[11px] @sm:text-xs dark:text-neutral-400">
                 {item.description}
               </CardDescription>
             </CardHeader>
