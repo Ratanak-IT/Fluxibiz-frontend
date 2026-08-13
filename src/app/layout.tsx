@@ -105,7 +105,7 @@ export default async function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <NextIntlClientProvider>
           <NetworkStatusBanner />
           <StoreProvider>
@@ -119,13 +119,13 @@ export default async function RootLayout({
 
                 <main className="flex-1">
                   <ConnectionProvider>
-                   
+
                     <OfflineGate>
                       {children}
                     </OfflineGate>
-                   
+
                   </ConnectionProvider>
-                 
+
                 </main>
 
                 <Footer />

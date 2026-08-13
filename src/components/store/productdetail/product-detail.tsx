@@ -6,7 +6,13 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
-import { StorefrontItemResponse, ItemVariant, primaryItemImage } from "@/lib/type/storeType";
+import {
+  StorefrontItemResponse,
+  ItemVariant,
+  ItemUomConversion,
+  primaryItemImage,
+  isVariantSelectable,
+} from "@/lib/type/storeType";
 import { useAuth } from "@/features/auth/useAuth";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
 import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
@@ -34,6 +40,8 @@ export default function ProductDetail({
 
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
+  /** null is the item itself — one of its base unit, rather than a pack. */
+  const [selectedPack, setSelectedPack] = useState<ItemUomConversion | null>(null);
   const [quantity, setQuantity] = useState(1);
 
   const variants = useMemo<ItemVariant[]>(() => item?.variants ?? [], [item]);
@@ -46,19 +54,33 @@ export default function ProductDetail({
 
   useEffect(() => {
     if (variants.length > 0) {
-      setSelectedVariant(variants[0]);
+      // Land on something the shopper can actually buy. Defaulting to the
+      // first option put them on a sold-out size with the button greyed out
+      // and no hint that another size was in stock.
+      setSelectedVariant(variants.find(isVariantSelectable) ?? variants[0]);
     } else {
       setSelectedVariant(null);
     }
 
+    // Keyed by the stored value, not the label: that is the identity the
+    // chips compare against and the only thing the API accepts. Seeding it
+    // with the label meant the pre-selected chip never showed as active
+    // whenever a value had one.
     const initialAttrs: Record<string, string> = {};
-    attributes.forEach((attr) => {
-      const firstVal = attr.values?.[0];
-      if (firstVal) {
-        initialAttrs[attr.name] = firstVal.label || firstVal.value;
-      }
-    });
+    attributes
+      .filter((attr) => (attr.placement ?? "OPTION") === "OPTION")
+      .forEach((attr) => {
+        const firstVal =
+          attr.values?.find((value) => value.available !== false) ??
+          attr.values?.[0];
+        if (firstVal) {
+          initialAttrs[attr.name] = firstVal.value;
+        }
+      });
     setSelectedAttributes(initialAttrs);
+    // A pack belongs to the option it was declared for, so a new item starts
+    // back at the single.
+    setSelectedPack(null);
     setQuantity(1);
   }, [item, variants, attributes]);
 
@@ -106,9 +128,18 @@ export default function ProductDetail({
         itemId: item.id,
         quantity,
         variantId: selectedVariant?.id,
+        // Which unit is being bought. Absent means one of the base unit —
+        // a pack is priced in its own right, so the server needs to know.
+        unitId: selectedPack?.unit?.id,
+        // What the shopper actually picked. These used to be collected and
+        // then dropped on the floor: the basket had no field for them, so a
+        // drink ordered at 50% sugar reached the counter saying nothing.
+        selections: Object.entries(selectedAttributes).map(
+          ([attributeName, value]) => ({ attributeName, value }),
+        ),
         itemDetails: {
           name: item.name,
-          price: selectedVariant?.price ?? item.price,
+          price: selectedPack?.price ?? selectedVariant?.price ?? item.price,
           imageUrl: primaryItemImage(item),
           currency: currency,
         },
@@ -144,6 +175,8 @@ export default function ProductDetail({
         setSelectedVariant={setSelectedVariant}
         selectedAttributes={selectedAttributes}
         setSelectedAttributes={setSelectedAttributes}
+        selectedPack={selectedPack}
+        setSelectedPack={setSelectedPack}
       />
     </div>
   );

@@ -18,7 +18,11 @@ import {
 } from "@/features/store-api/store-api";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 
-import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
+import {
+  StorefrontItemResponse,
+  primaryItemImage,
+  remainingStock,
+} from "@/lib/type/storeType";
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import ProductList from "@/components/store/detailstore/product-list";
 import { formatPrice } from "@/lib/store/productdetail/product";
@@ -32,10 +36,11 @@ function toMenuItem(
   return {
     id: item.id,
     name: item.name,
+    // An unpriced item is not a free one, so it carries no price at all.
     price:
       item.price !== undefined && item.price !== null
         ? String(item.price)
-        : "0",
+        : undefined,
     compareAtPrice:
       item.compareAtPrice !== undefined && item.compareAtPrice !== null
         ? String(item.compareAtPrice)
@@ -46,8 +51,7 @@ function toMenuItem(
     category: item.itemGroup?.name ?? fallbackCategory,
     image: primaryItemImage(item) ?? "",
     status: item.status,
-    quantity: item.quantity ?? item.stock ?? undefined,
-    stock: item.stock ?? item.quantity ?? undefined,
+    remaining: remainingStock(item),
     isOutOfStock,
     rawItem: item,
   };

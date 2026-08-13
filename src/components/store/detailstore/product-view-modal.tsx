@@ -7,7 +7,13 @@ import { toast } from "sonner";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
 import { MenuItemData, markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
-import { StorefrontItemResponse, ItemVariant, primaryItemImage } from "@/lib/type/storeType";
+import {
+  StorefrontItemResponse,
+  ItemVariant,
+  ItemUomConversion,
+  primaryItemImage,
+  isVariantSelectable,
+} from "@/lib/type/storeType";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
 import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
 
@@ -36,6 +42,8 @@ export default function ProductQuickViewModal({
 
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
+  /** null is the item itself — one of its base unit, rather than a pack. */
+  const [selectedPack, setSelectedPack] = useState<ItemUomConversion | null>(null);
   const [quantity, setQuantity] = useState(1);
 
   const variants = useMemo<ItemVariant[]>(() => product?.variants ?? [], [product]);
@@ -51,7 +59,9 @@ export default function ProductQuickViewModal({
 
     const rafId = requestAnimationFrame(() => {
       setQuantity(1);
-      setSelectedVariant(variants[0] ?? null);
+      // Land on something buyable rather than a sold-out first option.
+      setSelectedVariant(variants.find(isVariantSelectable) ?? variants[0] ?? null);
+      setSelectedPack(null);
 
       const initialAttrs: Record<string, string> = {};
       attributes.forEach((attr) => {
@@ -88,9 +98,13 @@ export default function ProductQuickViewModal({
         itemId: product.id,
         quantity,
         variantId: selectedVariant?.id,
+        unitId: selectedPack?.unit?.id,
+        selections: Object.entries(selectedAttributes).map(
+          ([attributeName, value]) => ({ attributeName, value }),
+        ),
         itemDetails: {
           name: product.name,
-          price: selectedVariant?.price ?? product.price,
+          price: selectedPack?.price ?? selectedVariant?.price ?? product.price,
           imageUrl: primaryItemImage(product),
           currency: currency || item?.currency,
         },
@@ -129,6 +143,8 @@ export default function ProductQuickViewModal({
             setSelectedVariant={setSelectedVariant}
             selectedAttributes={selectedAttributes}
             setSelectedAttributes={setSelectedAttributes}
+            selectedPack={selectedPack}
+            setSelectedPack={setSelectedPack}
           />
         ) : null}
       </DialogContent>
