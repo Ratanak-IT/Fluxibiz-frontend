@@ -130,6 +130,15 @@ export const storeCateApi = createApi({
     reducerPath: "storeCateApi",
     baseQuery,
     keepUnusedDataFor: 300,
+    // A storefront is a live shop. The prices, the opening hours and what is
+    // even listed are all changed from the back office while shoppers are on
+    // the page, and a read cached for the session showed them yesterday's menu
+    // until they reloaded. So the store is read again when a page is opened,
+    // when the tab is looked at again, and when the connection comes back.
+    // Nothing here seeds a form, so nobody loses typing to a refetch.
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
     tagTypes: ["BusinessCategory", "PublicStore"],
     endpoints: (builder) => ({
         getBusinessCategory: builder.query<BusinessCategory[], void>({

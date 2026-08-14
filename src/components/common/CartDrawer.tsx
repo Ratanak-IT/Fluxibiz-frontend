@@ -42,6 +42,7 @@ import {
     isCartLineOutOfStock,
     apiErrorMessage,
     formatStockErrorMessage,
+    billedUnitPrice,
     type CartLine,
     type StoreCart,
 } from "@/lib/type/cartType";
@@ -379,7 +380,8 @@ function LineRow({
             });
     };
 
-    const currentSubtotal = line.unitPrice * pendingQty;
+    // Extras included: they are billed with the line, so they show with it.
+    const currentSubtotal = billedUnitPrice(line) * pendingQty;
 
     return (
         <div

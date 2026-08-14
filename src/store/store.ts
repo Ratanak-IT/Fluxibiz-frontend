@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { setupListeners } from '@reduxjs/toolkit/query';
 import authReducer from '../features/auth/authSlice'; 
 
 
@@ -15,7 +16,7 @@ import { menuApi } from '@/lib/store/detailstore/detailstore';
 import { bannerApi } from '@/features/banner/bannerApi';
 
 export const makeStore = () => {
-  return configureStore({
+  const store = configureStore({
     reducer: {
       auth: authReducer,
       [checkoutApi.reducerPath]: checkoutApi.reducer,
@@ -44,7 +45,13 @@ export const makeStore = () => {
         menuApi.middleware,
         bannerApi.middleware
       )
-  }) 
+  })
+
+  // Lets an API opt into re-reading when the tab is looked at again or the
+  // connection comes back. Without this the flags on `storeCateApi` are inert.
+  setupListeners(store.dispatch)
+
+  return store
 }
 
 // Infer the type of makeStore

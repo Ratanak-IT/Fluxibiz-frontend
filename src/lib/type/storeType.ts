@@ -74,6 +74,220 @@ export interface PublicStoreDetailResponse {
     discountLabel?: string | null;
     promotionLabel?: string | null;
     promotion?: string | null;
+    /**
+     * The hours the shop set for its Online Store, as the checkout enforces
+     * them. Absent means it keeps none, which means always open.
+     *
+     * These are not the shopfront's `openTime`/`closeTime`: a shop can take
+     * web orders after the doors are locked, or stop before.
+     */
+    onlineHours?: ChannelSchedule | null;
+    /** The server's own answer, computed against those hours. */
+    openNow?: boolean | null;
+    /** What it is open for today — "open today 08:00–17:00", "closed today". */
+    hoursToday?: string | null;
+}
+
+/** {@code HH:MM}, 24-hour. */
+export interface StoreTimeWindow {
+    open: string;
+    close: string;
+}
+
+export interface ChannelSchedule {
+    alwaysOpen: boolean;
+    /** Keyed MON…SUN. A day may hold several windows — lunch, then dinner. */
+    days?: Record<
+        string,
+        { closed: boolean; windows?: StoreTimeWindow[] | null }
+    > | null;
+}
+
+/** MON…SUN, as the schedule keys them. `Date.getDay()` counts from Sunday. */
+const SCHEDULE_DAY_KEYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
+/**
+ * "09:00" as a shopper reads a clock — "9:00 AM".
+ *
+ * The schedule stores 24-hour times because that is unambiguous to store;
+ * nobody says "eighteen hundred" over a counter. Anything unparseable is
+ * handed back untouched rather than guessed at.
+ */
+export function formatStoreTime(value?: string | null): string {
+    if (!value) return "";
+
+    const match = value.trim().match(/^(\d{1,2}):(\d{2})/);
+    if (!match) return value.trim();
+
+    const hours = Number(match[1]);
+    const minutes = match[2];
+
+    if (!Number.isFinite(hours)) return value.trim();
+
+    const suffix = hours >= 12 ? "PM" : "AM";
+    const shown = hours % 12 === 0 ? 12 : hours % 12;
+
+    return `${shown}:${minutes} ${suffix}`;
+}
+
+/**
+ * What the online store keeps today, read off the schedule itself.
+ *
+ * Built here rather than taken from the server's `hoursToday` because that
+ * sentence is English and 24-hour; this is the same information in parts, for
+ * a caller to word and translate as it likes. A day can hold several windows
+ * — lunch, then dinner — so they come back as a list.
+ */
+export function todaysStoreHours(
+    schedule?: ChannelSchedule | null,
+    now: Date = new Date(),
+): { alwaysOpen: boolean; closedToday: boolean; windows: string[] } {
+    if (!schedule || schedule.alwaysOpen || !schedule.days) {
+        return { alwaysOpen: true, closedToday: false, windows: [] };
+    }
+
+    const day = schedule.days[SCHEDULE_DAY_KEYS[now.getDay()]];
+    const windows = (day?.windows ?? []).filter((window) => window?.open);
+
+    if (!day || day.closed || windows.length === 0) {
+        return { alwaysOpen: false, closedToday: true, windows: [] };
+    }
+
+    return {
+        alwaysOpen: false,
+        closedToday: false,
+        windows: windows.map(
+            (window) =>
+                `${formatStoreTime(window.open)} – ${formatStoreTime(window.close)}`,
+        ),
+    };
+}
+
+/** One day of the week, as the online store keeps it. */
+export interface StoreDayHours {
+    /** MON…SUN, for looking up a translated name. */
+    key: string;
+    closed: boolean;
+    /** "9:00 AM – 6:00 PM", one per window. Empty on a closed day. */
+    windows: string[];
+    /** Whether this is the day the shopper is reading it on. */
+    today: boolean;
+}
+
+/** The days in the order a week is read, Monday first. */
+const WEEK_ORDER = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+
+/**
+ * The whole week, so a shopper who arrives after closing can see when to come
+ * back rather than only that they are too late.
+ *
+ * Empty when the shop keeps no hours for the web — there is nothing to show
+ * about a store that never closes.
+ */
+export function weeklyStoreHours(
+    schedule?: ChannelSchedule | null,
+    now: Date = new Date(),
+): StoreDayHours[] {
+    if (!schedule || schedule.alwaysOpen || !schedule.days) {
+        return [];
+    }
+
+    const todayKey = SCHEDULE_DAY_KEYS[now.getDay()];
+
+    return WEEK_ORDER.map((key) => {
+        const day = schedule.days?.[key];
+        const windows = (day?.windows ?? []).filter((window) => window?.open);
+        const closed = !day || day.closed || windows.length === 0;
+
+        return {
+            key,
+            closed,
+            windows: closed
+                ? []
+                : windows.map(
+                      (window) =>
+                          `${formatStoreTime(window.open)} – ${formatStoreTime(window.close)}`,
+                  ),
+            today: key === todayKey,
+        };
+    });
+}
+
+/** A run of days that keep the same hours — "Mon – Fri", or one day alone. */
+export interface StoreHoursRun {
+    from: string;
+    /** Same as {@link from} on a run of one. */
+    to: string;
+    closed: boolean;
+    windows: string[];
+    /** Whether today falls inside this run. */
+    today: boolean;
+}
+
+/**
+ * The week folded into runs, because that is how hours are actually read.
+ *
+ * Seven rows saying the same thing five times over is a table to be scanned;
+ * "Mon – Fri 9:00 AM – 6:00 PM, Sat – Sun closed" is a sentence to be read.
+ * Consecutive days with identical hours join, and a shop with genuinely
+ * different hours every day still gets its seven rows — it earns them.
+ */
+export function groupedWeeklyStoreHours(
+    schedule?: ChannelSchedule | null,
+    now: Date = new Date(),
+): StoreHoursRun[] {
+    const week = weeklyStoreHours(schedule, now);
+    const runs: StoreHoursRun[] = [];
+
+    for (const day of week) {
+        const held = runs[runs.length - 1];
+        const sameHours =
+            held &&
+            held.closed === day.closed &&
+            held.windows.join("|") === day.windows.join("|");
+
+        if (sameHours) {
+            held.to = day.key;
+            held.today = held.today || day.today;
+            continue;
+        }
+
+        runs.push({
+            from: day.key,
+            to: day.key,
+            closed: day.closed,
+            windows: day.windows,
+            today: day.today,
+        });
+    }
+
+    return runs;
+}
+
+/**
+ * Whether the online store is taking orders right now.
+ *
+ * The server's `openNow` is the authority — it is the same schedule the
+ * checkout enforces, read on the same clock — so a storefront that decided
+ * for itself could offer an Add to Cart the basket then refuses. The local
+ * reading below is only for a payload sent before the field existed.
+ */
+export function isStorefrontOpen(
+    store?: {
+        isClosed?: boolean | null;
+        openNow?: boolean | null;
+        openTime?: string | null;
+        closeTime?: string | null;
+        isOpen?: boolean | null;
+    } | null,
+): boolean {
+    if (!store) return true;
+    if (store.isClosed === true) return false;
+    if (store.openNow !== undefined && store.openNow !== null) {
+        return store.openNow;
+    }
+
+    return isStoreCurrentlyOpen(store);
 }
 
 export function isStoreCurrentlyOpen(
@@ -260,18 +474,36 @@ export function itemImageUrl(image?: ItemImage | null): string | null {
     return resolveMediaUrl(image.url ?? image.imageUrl);
 }
 
+/**
+ * The one picture that stands for the item — on a card, in the cart, on a
+ * shared link.
+ *
+ * The item's own gallery leads, in the order the seller arranged it. Where
+ * there is none, the pictures hanging off its choices answer instead: a
+ * colour's photograph first, since that is the choice a photograph can
+ * actually show, then an option's own. A seller who uploaded nothing at item
+ * level and a shot for every colour did not mean "no picture" — the product
+ * page already shows those, and the card that sent a shopper there should not
+ * be the one blank thing about the item.
+ */
 export function primaryItemImage(
-    item?: { images?: ItemImage[] | null } | null,
+    item?: {
+        images?: ItemImage[] | null;
+        colors?: { imageUrl?: string | null }[] | null;
+        variants?: { imageUrl?: string | null }[] | null;
+    } | null,
 ): string | null {
-    const images = item?.images ?? [];
-    if (images.length === 0) return null;
-
-    const sorted = [...images].sort(
+    const sorted = [...(item?.images ?? [])].sort(
         (a, b) => (a.position ?? 0) - (b.position ?? 0),
     );
 
     for (const image of sorted) {
         const url = itemImageUrl(image);
+        if (url) return url;
+    }
+
+    for (const option of [...(item?.colors ?? []), ...(item?.variants ?? [])]) {
+        const url = resolveMediaUrl(option.imageUrl);
         if (url) return url;
     }
 
@@ -388,6 +620,8 @@ export interface StorefrontItemResponse {
     colors?: ItemColor[] | null;
     descriptionBlocks?: DescriptionBlockResponse[] | null;
     variants: ItemVariant[];
+    /** The extras this item offers — pearls, an extra shot. */
+    addOns?: ItemAddOn[] | null;
     /** The packs this item can be bought by. Empty when it only sells as itself. */
     uomConversions?: ItemUomConversion[] | null;
     lowStockDefault: number | null;
@@ -401,6 +635,38 @@ export interface StorefrontItemResponse {
      * are gone; reading them made every item look permanently in stock.
      */
     availableQuantity?: number | null;
+}
+
+/**
+ * An extra piled on top of an item — pearls, an extra shot.
+ *
+ * It belongs to the shop's library rather than to one item, so the same
+ * "Extra shot" costs the same on every drink that offers it. `available` is
+ * per item: a shop out of pearls takes them off one drink without unlinking
+ * them from it.
+ */
+export interface ItemAddOn {
+    id: string;
+    name: string;
+    slug?: string | null;
+    /** Null until it has been priced, and it cannot be sold until it has. */
+    price?: number | null;
+    available?: boolean | null;
+    note?: string | null;
+}
+
+/** Whether this item still sells that extra today, and at a price it can. */
+export function isAddOnSellable(addOn?: ItemAddOn | null): boolean {
+    if (!addOn) return false;
+    if (addOn.available === false) return false;
+    return addOn.price !== undefined && addOn.price !== null;
+}
+
+/** The extras an item can actually be bought with, in the order it offers them. */
+export function sellableAddOns(
+    item?: { addOns?: ItemAddOn[] | null } | null,
+): ItemAddOn[] {
+    return (item?.addOns ?? []).filter(isAddOnSellable);
 }
 
 /** `null` when untracked, so an untracked item is never mistaken for a sold-out one. */
@@ -427,4 +693,54 @@ export function isVariantSelectable(variant?: ItemVariant | null): boolean {
     if (!variant) return false;
     if (variant.available === false) return false;
     return !isSoldOut(variant);
+}
+
+/** What the item costs, from the cheapest option to the dearest. */
+export interface ItemPriceRange {
+    min: number;
+    max: number;
+}
+
+/**
+ * What an item sold in options actually costs.
+ *
+ * An item sold as Small, Medium and Large is never sold as itself, so its own
+ * `price` stays empty and the card read "Price not set" while three priced
+ * sizes sat behind it. The prices a shopper can really pay are the options',
+ * and the honest headline is the span of them.
+ *
+ * Only options that can be picked count — quoting a price off a sold-out size
+ * is quoting a price nobody can pay. If none can be picked the whole spread is
+ * used anyway, so a sold-out item still says what it went for.
+ */
+export function itemPriceRange(
+    item?: { variants?: ItemVariant[] | null } | null,
+): ItemPriceRange | null {
+    const variants = item?.variants ?? [];
+    const priced = variants.filter((variant) =>
+        Number.isFinite(Number(variant?.price)),
+    );
+    const onOffer = priced.filter(isVariantSelectable);
+    const prices = (onOffer.length ? onOffer : priced).map((variant) =>
+        Number(variant.price),
+    );
+
+    if (!prices.length) return null;
+
+    return { min: Math.min(...prices), max: Math.max(...prices) };
+}
+
+/**
+ * The number to sort and filter an item by: its own price, or the least it can
+ * be bought for. `null` on an item that carries no price at all — which sorts
+ * differently from one that is free.
+ */
+export function sellingPriceFrom(
+    item?: { price?: number | null; variants?: ItemVariant[] | null } | null,
+): number | null {
+    if (item?.price !== undefined && item?.price !== null) {
+        return Number(item.price);
+    }
+
+    return itemPriceRange(item)?.min ?? null;
 }

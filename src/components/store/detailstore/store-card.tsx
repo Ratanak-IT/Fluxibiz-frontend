@@ -4,6 +4,8 @@ import { Card } from "../../ui/card";
 import { Clock, ImageOff, MapPin } from "lucide-react";
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import { StoreCardSkeleton } from "@/components/common/Skeletons";
+import { formatStoreTime } from "@/lib/type/storeType";
+import StoreHours from "./store-hours";
 
 interface StoreCardComponentProps {
   store?: StoreCardData;
@@ -84,14 +86,25 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                 )}
               </div>
 
-              <div className="flex shrink-0 items-center gap-1.5">
-                <Clock className="h-4 w-4 shrink-0 text-primary" />
-                <span>
-                  {store.openTime && store.closeTime
-                    ? `${store.openTime} – ${store.closeTime}`
-                    : store.hours || t("openAllDay")}
-                </span>
-              </div>
+              {/* What the online store keeps, where the shop set it — the
+                  shopfront's own times say nothing about the web, and are
+                  only fallen back on when no web hours were set. */}
+              {store.onlineHours ? (
+                <StoreHours
+                  onlineHours={store.onlineHours}
+                  isOpen={store.isOpen}
+                  className="shrink-0"
+                />
+              ) : (
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <Clock className="h-4 w-4 shrink-0 text-primary" />
+                  <span>
+                    {store.openTime && store.closeTime
+                      ? `${formatStoreTime(store.openTime)} – ${formatStoreTime(store.closeTime)}`
+                      : store.hours || t("openAllDay")}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>

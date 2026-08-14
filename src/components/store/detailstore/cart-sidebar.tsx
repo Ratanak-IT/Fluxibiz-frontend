@@ -23,6 +23,7 @@ import {
   isCartLineOutOfStock,
   apiErrorMessage,
   formatStockErrorMessage,
+  billedUnitPrice,
   type CartLine,
   type StoreCart,
 } from "@/lib/type/cartType";
@@ -219,7 +220,8 @@ function CartSidebarLine({
     }
   };
 
-  const currentSubtotal = line.unitPrice * line.quantity;
+  // Extras included: they are billed with the line, so they show with it.
+  const currentSubtotal = billedUnitPrice(line) * line.quantity;
 
   return (
     <div className={cn("flex w-full items-center gap-3 rounded-xl bg-neutral-50 p-2.5 dark:bg-muted/40 relative", outOfStock && "opacity-90")}>
