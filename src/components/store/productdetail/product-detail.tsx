@@ -12,7 +12,10 @@ import {
   ItemUomConversion,
   primaryItemImage,
   isVariantSelectable,
+  sellableAddOns,
+  type ChannelSchedule,
 } from "@/lib/type/storeType";
+import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
 import { useAuth } from "@/features/auth/useAuth";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
 import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
@@ -24,6 +27,10 @@ interface ProductDetailProps {
   storeName?: string;
   currency?: string;
   isLoading?: boolean;
+  /** Whether the online store is taking orders right now. */
+  isStoreOpen?: boolean;
+  /** The hours the shop set for its Online Store, when it set any. */
+  onlineHours?: ChannelSchedule | null;
 }
 
 export default function ProductDetail({
@@ -32,16 +39,22 @@ export default function ProductDetail({
   storeName,
   currency,
   isLoading = false,
+  isStoreOpen = true,
+  onlineHours,
 }: ProductDetailProps) {
   const t = useTranslations("Store");
   const tCart = useTranslations("Cart");
   const { isAuthenticated, status: authStatus, login } = useAuth();
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
+  const todayHours = useTodayHoursLabel(onlineHours);
 
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
   /** null is the item itself — one of its base unit, rather than a pack. */
   const [selectedPack, setSelectedPack] = useState<ItemUomConversion | null>(null);
+  /** The extras ticked, by id. Nothing is ticked to start with: an extra is
+      something the shopper asks for, never something they have to untick. */
+  const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
 
   const variants = useMemo<ItemVariant[]>(() => item?.variants ?? [], [item]);
@@ -81,6 +94,7 @@ export default function ProductDetail({
     // A pack belongs to the option it was declared for, so a new item starts
     // back at the single.
     setSelectedPack(null);
+    setSelectedAddOnIds([]);
     setQuantity(1);
   }, [item, variants, attributes]);
 
@@ -117,10 +131,32 @@ export default function ProductDetail({
       return;
     }
 
+    // The basket refuses an out-of-hours add anyway; saying so here costs a
+    // shopper nothing and spares them a request that was never going to work.
+    if (!isStoreOpen) {
+      toast.error(
+        todayHours
+          ? `${t("detail.storeClosed")} — ${todayHours}`
+          : t("detail.storeClosed"),
+      );
+      return;
+    }
+
     if (!isAuthenticated && authStatus !== "loading") {
       login();
       return;
     }
+
+    // Priced from the item's own library, and only the ones it still sells:
+    // the server checks the same thing, so a stale tick is refused rather
+    // than billed.
+    const extras = sellableAddOns(item).filter((addOn) =>
+      selectedAddOnIds.includes(addOn.id),
+    );
+    const extrasPerUnit = extras.reduce(
+      (total, addOn) => total + Number(addOn.price ?? 0),
+      0,
+    );
 
     try {
       await addToCartMutation({
@@ -137,11 +173,22 @@ export default function ProductDetail({
         selections: Object.entries(selectedAttributes).map(
           ([attributeName, value]) => ({ attributeName, value }),
         ),
+        // The extras ticked. Only ids travel — the shop's prices are the
+        // shop's to state, and a browser does not get to name them.
+        addOnIds: extras.map((addOn) => addOn.id),
         itemDetails: {
           name: item.name,
-          price: selectedPack?.price ?? selectedVariant?.price ?? item.price,
+          price:
+            Number(
+              selectedPack?.price ?? selectedVariant?.price ?? item.price ?? 0,
+            ) + extrasPerUnit,
           imageUrl: primaryItemImage(item),
           currency: currency,
+          addOns: extras.map((addOn) => ({
+            addOnId: addOn.id,
+            name: addOn.name,
+            unitPrice: Number(addOn.price ?? 0),
+          })),
         },
       }).unwrap();
 
@@ -177,6 +224,10 @@ export default function ProductDetail({
         setSelectedAttributes={setSelectedAttributes}
         selectedPack={selectedPack}
         setSelectedPack={setSelectedPack}
+        selectedAddOnIds={selectedAddOnIds}
+        setSelectedAddOnIds={setSelectedAddOnIds}
+        isStoreOpen={isStoreOpen}
+        onlineHours={onlineHours}
       />
     </div>
   );

@@ -742,7 +742,28 @@
       "backToStore": "Back to Store",
       "menu": "Menu",
       "storeLogo": "Store logo",
-      "productImage": "Product image"
+      "productImage": "Product image",
+      "openToday": "Open today {hours}",
+      "closedToday": "Closed today",
+      "allHours": "All hours",
+      "days": {
+        "MON": "Monday",
+        "TUE": "Tuesday",
+        "WED": "Wednesday",
+        "THU": "Thursday",
+        "FRI": "Friday",
+        "SAT": "Saturday",
+        "SUN": "Sunday"
+      },
+      "daysShort": {
+        "MON": "Mon",
+        "TUE": "Tue",
+        "WED": "Wed",
+        "THU": "Thu",
+        "FRI": "Fri",
+        "SAT": "Sat",
+        "SUN": "Sun"
+      }
     },
     "listing": {
       "noStoresFound": "No stores found",
@@ -829,7 +850,10 @@
       "holds": "Holds {count} {unit}",
       "onlyLeft": "Only {count} left",
       "countLeft": "{count} left",
-      "colour": "Color"
+      "colour": "Color",
+      "extras": "Extras",
+      "includingExtras": "includes {amount} in extras",
+      "storeClosed": "Closed right now"
     },
     "carousel": {
       "viewSlide": "View {title}",

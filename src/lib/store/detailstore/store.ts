@@ -1,3 +1,5 @@
+import type { ChannelSchedule } from "@/lib/type/storeType"
+
 // store card
 export interface StoreCardData {
   id?: string
@@ -12,6 +14,10 @@ export interface StoreCardData {
   openTime?: string | null
   closeTime?: string | null
   discountLabel?: string | null
+  /** Whether the online store is taking orders right now. */
+  isOpen?: boolean
+  /** The hours the shop set for its Online Store, when it set any. */
+  onlineHours?: ChannelSchedule | null
 }
 
 export const mockStore: StoreCardData = {
