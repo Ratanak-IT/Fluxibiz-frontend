@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import type { AuthState } from "@/features/auth/authSlice";
+import { billedUnitPrice } from "@/lib/type/cartType";
 import type {
     AddToCartPayload,
     CartCount,
@@ -23,6 +24,15 @@ function selectionKeyOf(
 }
 
 /**
+ * The extras ticked, reduced to one comparable string. Sorted so the same two
+ * ticked in a different order still match. Mirrors `CartItem.addOnKey()`.
+ */
+function addOnKeyOf(addOnIds?: string[] | null): string {
+    if (!addOnIds || addOnIds.length === 0) return "";
+    return [...addOnIds].sort().join("|");
+}
+
+/**
  * Normalises a cart the server sent, without changing what it charges.
  *
  * Line and store subtotals are recomputed from the server's own unit prices so
@@ -39,7 +49,7 @@ function sanitizeCartData(cartData: CartSummary | null | undefined): CartSummary
     const stores = cartData.stores.map((store) => {
         let storeSubtotal = 0;
         const items = store.items.map((line) => {
-            const lineSubtotal = line.unitPrice * line.quantity;
+            const lineSubtotal = billedUnitPrice(line) * line.quantity;
             storeSubtotal += lineSubtotal;
 
             return { ...line, subtotal: lineSubtotal };
@@ -130,12 +140,12 @@ export const cartApi = createApi({
         }),
 
         addToCart: builder.mutation<CartSummary, AddToCartPayload>({
-            query: ({ businessId, itemId, variantId, unitId, selections, quantity }) => ({
+            query: ({ businessId, itemId, variantId, unitId, selections, addOnIds, quantity }) => ({
                 url: "/storefront/cart/items",
                 method: "POST",
-                body: { businessId, itemId, variantId, unitId, selections, quantity },
+                body: { businessId, itemId, variantId, unitId, selections, addOnIds, quantity },
             }),
-            async onQueryStarted({ businessId, itemId, variantId, selections, quantity, itemDetails }, { dispatch, queryFulfilled }) {
+            async onQueryStarted({ businessId, itemId, variantId, selections, addOnIds, quantity, itemDetails }, { dispatch, queryFulfilled }) {
                 // itemDetails only fills the optimistic line until the server
                 // answers; the response then replaces it wholesale.
                 pendingMutationsCount++;
@@ -176,12 +186,20 @@ export const cartApi = createApi({
                             (l) =>
                                 l.itemId === itemId &&
                                 (l.variantId ?? null) === (variantId ?? null) &&
-                                selectionKeyOf(l.selections) === selectionKeyOf(selections),
+                                selectionKeyOf(l.selections) === selectionKeyOf(selections) &&
+                                // One with pearls is not one without: different
+                                // money, different line — as on the server.
+                                addOnKeyOf(
+                                    (l.addOns ?? [])
+                                        .map((addOn) => addOn.addOnId)
+                                        .filter((id): id is string => Boolean(id)),
+                                ) === addOnKeyOf(addOnIds),
                         );
                         if (existingLine) {
+                            const billed = billedUnitPrice(existingLine);
                             existingLine.quantity += quantity;
-                            existingLine.subtotal += existingLine.unitPrice * quantity;
-                            store.subtotal += existingLine.unitPrice * quantity;
+                            existingLine.subtotal += billed * quantity;
+                            store.subtotal += billed * quantity;
                         } else if (itemDetails) {
                             const newSubtotal = itemDetails.price * quantity;
                             store.subtotal += newSubtotal;
@@ -197,8 +215,10 @@ export const cartApi = createApi({
                                     ...selection,
                                     label: selection.value,
                                 })),
+                                addOns: itemDetails.addOns ?? [],
                                 quantity,
                                 unitPrice: itemDetails.price,
+                                unitPriceWithAddOns: itemDetails.price,
                                 subtotal: newSubtotal,
                             });
                         }
@@ -239,10 +259,11 @@ export const cartApi = createApi({
                             if (!line) return;
 
                             const delta = quantity - line.quantity;
+                            const billed = billedUnitPrice(line);
                             line.quantity = quantity;
-                            line.subtotal = line.unitPrice * quantity;
+                            line.subtotal = billed * quantity;
                             store.itemCount += delta;
-                            store.subtotal += line.unitPrice * delta;
+                            store.subtotal += billed * delta;
                             draft.totalItems += delta;
                         });
                     }),

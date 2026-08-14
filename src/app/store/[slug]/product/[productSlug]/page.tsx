@@ -18,20 +18,31 @@ import { MenuItemData, isItemOutOfStock } from "@/lib/store/detailstore/detailst
 import {
   StorefrontItemResponse,
   primaryItemImage,
+  itemPriceRange,
   remainingStock,
+  isStorefrontOpen,
 } from "@/lib/type/storeType";
 
 import { formatPrice } from "@/lib/store/productdetail/product";
 
 function toMenuItem(item: StorefrontItemResponse, currency?: string): MenuItemData {
   const isOutOfStock = isItemOutOfStock(item);
+  // An item sold in options is never sold as itself, so its own price is
+  // empty and the options carry the real ones.
+  const range = itemPriceRange(item);
+  const hasOwnPrice = item.price !== undefined && item.price !== null;
   return {
     id: item.id,
     name: item.name,
     // An unpriced item is not a free one, so it carries no price at all.
-    price:
-      item.price !== undefined && item.price !== null
-        ? String(item.price)
+    price: hasOwnPrice
+      ? String(item.price)
+      : range
+        ? String(range.min)
+        : undefined,
+    priceMax:
+      !hasOwnPrice && range && range.max > range.min
+        ? String(range.max)
         : undefined,
     currency: currency,
     description: item.description ?? "",
@@ -70,6 +81,11 @@ export default function DetailProductPage({
   const currency = storeDetail?.displayCurrency || storeDetail?.baseCurrency;
   const t = useTranslations("Store.common");
 
+  // The online store's hours, as the checkout enforces them. A shopper who
+  // can read the page can read this too, rather than finding out by being
+  // refused at Add to Cart.
+  const storeOpen = isStorefrontOpen(storeDetail);
+
   return (
     <div className="min-h-screen pb-28 dark:bg-background lg:pb-8">
       <ProductDetail
@@ -78,6 +94,8 @@ export default function DetailProductPage({
         storeName={storeDetail?.name}
         currency={currency}
         isLoading={isLoadingItems}
+        isStoreOpen={storeOpen}
+        onlineHours={storeDetail?.onlineHours}
       />
       
 

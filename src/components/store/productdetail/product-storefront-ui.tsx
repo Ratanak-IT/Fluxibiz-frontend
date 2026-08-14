@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import {
     Check,
     ChevronLeft,
+    Clock,
     ImageOff,
     Minus,
     Plus,
@@ -15,7 +16,8 @@ import { useTranslations } from "next-intl";
 import { attributeIcon } from "@/lib/api/attribute-icons";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/store/productdetail/product";
-import { StorefrontItemResponse, primaryItemImage, itemImageUrl, ItemAttributeValue, ItemAttribute, ItemVariant, ItemUomConversion, DescriptionBlockResponse, remainingStock, isVariantSelectable } from "@/lib/type/storeType";
+import { StorefrontItemResponse, primaryItemImage, itemImageUrl, ItemAttributeValue, ItemAttribute, ItemVariant, ItemUomConversion, DescriptionBlockResponse, remainingStock, isVariantSelectable, sellableAddOns, type ChannelSchedule } from "@/lib/type/storeType";
+import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
@@ -46,6 +48,10 @@ export function ProductStorefrontUI({
     setSelectedAttributes,
     selectedPack,
     setSelectedPack,
+    selectedAddOnIds,
+    setSelectedAddOnIds,
+    isStoreOpen = true,
+    onlineHours,
     hideAddToCart = false,
 }: {
     item: StorefrontItemResponse;
@@ -64,9 +70,17 @@ export function ProductStorefrontUI({
     /** The pack being bought, or null for one of the base unit. */
     selectedPack: ItemUomConversion | null;
     setSelectedPack: React.Dispatch<React.SetStateAction<ItemUomConversion | null>>;
+    /** The extras ticked, by id. Optional so a read-only preview can omit them. */
+    selectedAddOnIds?: string[];
+    setSelectedAddOnIds?: React.Dispatch<React.SetStateAction<string[]>>;
+    /** Whether the online store is taking orders right now. */
+    isStoreOpen?: boolean;
+    /** The hours the shop set for its Online Store, when it set any. */
+    onlineHours?: ChannelSchedule | null;
     hideAddToCart?: boolean;
 }) {
     const t = useTranslations("Store");
+    const todayHours = useTodayHoursLabel(onlineHours);
     const attributes = item.attributes || [];
     // Memoised because the gallery depends on it: a fresh [] each render would
     // rebuild the rail on every keystroke elsewhere in the page.
@@ -235,6 +249,28 @@ export function ProductStorefrontUI({
      * than multiplying it.
      */
     const activePrice = selectedPack ? Number(selectedPack.price) : singlePrice;
+
+    /**
+     * The extras this item can actually be bought with.
+     *
+     * An extra the shop has taken off this item, or one nobody has priced
+     * yet, is not on the menu — the basket refuses both, so offering them
+     * here would only be a tick that fails at Add to Cart.
+     */
+    const addOns = useMemo(() => sellableAddOns(item), [item]);
+    const ticked = useMemo(
+        () => addOns.filter((addOn) => (selectedAddOnIds ?? []).includes(addOn.id)),
+        [addOns, selectedAddOnIds],
+    );
+    /** What the extras add to one of whatever is being bought. */
+    const addOnsPerUnit = ticked.reduce(
+        (total, addOn) => total + Number(addOn.price ?? 0),
+        0,
+    );
+    /** The headline: what one of this actually costs as it stands. */
+    const billedPrice =
+        activePrice === undefined ? undefined : activePrice + addOnsPerUnit;
+
     const compareAt = item.compareAtPrice ? Number(item.compareAtPrice) : 0;
     const discount =
         compareAt && activePrice !== undefined && compareAt > activePrice
@@ -351,18 +387,40 @@ export function ProductStorefrontUI({
                         </div>
                     )}
 
+                    {/* Shut for the night rather than sold out — a different
+                        thing, and one that fixes itself in the morning. The
+                        page stays readable; only the ordering stops. */}
+                    {!isStoreOpen && (
+                        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-400 text-sm flex items-center gap-2">
+                            <Clock className="size-4 shrink-0" />
+                            <span className="font-bold">
+                                {t("detail.storeClosed")}
+                            </span>
+                            {todayHours ? <span>· {todayHours}</span> : null}
+                        </div>
+                    )}
+
                     <div className="flex flex-wrap items-center gap-2">
                         {/* An unpriced item says so rather than reading "$0.00",
                             which is a price, and a wrong one. */}
-                        {activePrice === undefined ? (
+                        {billedPrice === undefined ? (
                             <span className="text-base font-semibold text-[#657064] dark:text-[#94a3b8]">
                                 {t("detail.priceNotSet")}
                             </span>
                         ) : (
                             <span className="text-2xl font-bold text-danger">
-                                {formatPrice(activePrice, currency)}
+                                {formatPrice(billedPrice, currency)}
                             </span>
                         )}
+                        {/* The extras are in the number above, so it has to say
+                            where the difference came from. */}
+                        {addOnsPerUnit > 0 ? (
+                            <span className="text-sm text-[#657064] dark:text-[#94a3b8]">
+                                {t("detail.includingExtras", {
+                                    amount: formatPrice(addOnsPerUnit, currency),
+                                })}
+                            </span>
+                        ) : null}
                         {discount ? (
                             <>
                                 <span className="text-sm text-[#7b857a] dark:text-[#94a3b8] line-through">
@@ -564,6 +622,60 @@ export function ProductStorefrontUI({
                         );
                     })}
 
+                    {/*
+                     * The extras, as a shopper meets them: tick what you want
+                     * on top. Priced per one of whatever is being bought — an
+                     * extra shot in each of two coffees is two extra shots —
+                     * which is how the till bills them too.
+                     */}
+                    {addOns.length > 0 && setSelectedAddOnIds ? (
+                        <div>
+                            <p className="text-xs text-[#657064] dark:text-[#94a3b8]">
+                                {t("detail.extras")}
+                            </p>
+                            <div className="mt-2 flex flex-col gap-2">
+                                {addOns.map((addOn) => {
+                                    const isTicked = (selectedAddOnIds ?? []).includes(
+                                        addOn.id,
+                                    );
+
+                                    return (
+                                        <label
+                                            key={addOn.id}
+                                            className={cn(
+                                                "flex cursor-pointer items-center justify-between gap-3 rounded-lg border px-4 py-2.5 text-sm transition-colors",
+                                                isTicked
+                                                    ? "border-primary bg-primary/5 font-medium text-primary"
+                                                    : "border-[#e8e8e8] dark:border-[#2a3042] bg-white dark:bg-[#1e2330] text-[#1a222b] dark:text-[#f8fafc] hover:border-[#cfd6cc] dark:hover:border-[#384252]",
+                                            )}
+                                        >
+                                            <span className="flex items-center gap-2.5">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isTicked}
+                                                    onChange={(event) =>
+                                                        setSelectedAddOnIds((current) =>
+                                                            event.target.checked
+                                                                ? [...current, addOn.id]
+                                                                : current.filter(
+                                                                      (id) => id !== addOn.id,
+                                                                  ),
+                                                        )
+                                                    }
+                                                    className="size-4 accent-primary"
+                                                />
+                                                <span>{addOn.name}</span>
+                                            </span>
+                                            <span className="shrink-0 text-xs text-[#7b857a] dark:text-[#94a3b8]">
+                                                + {formatPrice(Number(addOn.price), currency)}
+                                            </span>
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ) : null}
+
                     {toggles.map((attribute) => (
                         <label
                             key={attribute.name}
@@ -631,14 +743,20 @@ export function ProductStorefrontUI({
                             <button
                                 type="button"
                                 onClick={onAddToCart}
-                                disabled={isAddingToCart || outOfStock}
+                                disabled={isAddingToCart || outOfStock || !isStoreOpen}
                                 className={cn(
                                     "flex h-12 items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-white shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
-                                    outOfStock && "bg-neutral-300 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-300 dark:hover:bg-neutral-800 cursor-not-allowed shadow-none"
+                                    (outOfStock || !isStoreOpen) && "bg-neutral-300 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-300 dark:hover:bg-neutral-800 cursor-not-allowed shadow-none"
                                 )}
                             >
-                                <ShoppingBag className="size-4" />
-                                {outOfStock ? (t("detail.outOfStock") || "Out of Stock") : isAddingToCart ? (t("detail.adding") || "Adding...") : (t("detail.add") || "Add to Cart")}
+                                {isStoreOpen ? (
+                                    <ShoppingBag className="size-4" />
+                                ) : (
+                                    <Clock className="size-4" />
+                                )}
+                                {!isStoreOpen
+                                    ? t("detail.storeClosed")
+                                    : outOfStock ? (t("detail.outOfStock") || "Out of Stock") : isAddingToCart ? (t("detail.adding") || "Adding...") : (t("detail.add") || "Add to Cart")}
                             </button>
                         </>
                     )}

@@ -3,8 +3,15 @@ import { remainingStock, type StorefrontItemResponse } from "@/lib/type/storeTyp
 export interface MenuItemData {
   id: string;
   name: string;
-  /** Undefined until the seller sets one — the card says so rather than "0". */
+  /**
+   * Undefined until the seller sets one — the card says so rather than "0".
+   *
+   * On an item sold in options this is the cheapest of them, and
+   * {@link MenuItemData.priceMax} is the dearest, so the card reads as a span.
+   */
   price?: string;
+  /** Set only when the options differ in price; the card shows "min – max". */
+  priceMax?: string;
   compareAtPrice?: string;
   badge?: string | null;
   description: string;

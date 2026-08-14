@@ -5,6 +5,13 @@ export interface CartSelection {
     label: string;
 }
 
+/** One extra riding on a line, at the price it was ticked at. */
+export interface CartLineAddOn {
+    addOnId: string | null;
+    name: string;
+    unitPrice: number;
+}
+
 export interface CartLine {
     cartItemId: string;
     itemId: string;
@@ -16,8 +23,17 @@ export interface CartLine {
     badges: string[];
     /** The same choices, structured, for anything that needs them apart. */
     selections?: CartSelection[];
+    /** The extras ticked on this line. Already in the badges as "+ Name". */
+    addOns?: CartLineAddOn[];
     quantity: number;
+    /** The thing itself, without its extras. */
     unitPrice: number;
+    /**
+     * What one of this line is billed at — the price above plus every extra
+     * on it. This is what `subtotal` is a multiple of, so a per-unit price
+     * shown to a shopper should be this one.
+     */
+    unitPriceWithAddOns?: number;
     subtotal: number;
     isOutOfStock?: boolean | null;
     outOfStock?: boolean | null;
@@ -25,6 +41,19 @@ export interface CartLine {
     available?: boolean | null;
     status?: string | null;
     stock?: number | null;
+}
+
+/**
+ * What one of a line is actually billed at.
+ *
+ * The extras ticked on it are part of what the checkout will charge, so every
+ * total on screen has to be a multiple of this rather than of the bare item
+ * price. Falls back for a line sent before the field existed.
+ */
+export function billedUnitPrice(
+    line: { unitPrice: number; unitPriceWithAddOns?: number | null },
+): number {
+    return line.unitPriceWithAddOns ?? line.unitPrice;
 }
 
 import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
@@ -118,13 +147,21 @@ export interface AddToCartPayload {
      * value — the value is the identity, the label is only how it was shown.
      */
     selections?: { attributeName: string; value: string }[];
+    /**
+     * The extras ticked on the product page. The server prices them from the
+     * library and refuses any the item does not offer, so only ids travel.
+     */
+    addOnIds?: string[];
     quantity: number;
     itemDetails?: {
         name: string;
+        /** All-in, extras included: it stands in for the billed price. */
         price: number;
         imageUrl?: string | null;
         storeName?: string;
         currency?: string;
+        /** The extras ticked, named, so the placeholder line reads right. */
+        addOns?: CartLineAddOn[];
     };
 }
 

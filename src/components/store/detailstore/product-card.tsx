@@ -64,8 +64,13 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                     {t("detail.priceNotSet")}
                   </p>
                 ) : (
+                  /* A span where the options differ — "8,000 ៛ – 10,000 ៛" —
+                     since there is no one price such an item is sold at. */
                   <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
                     {formatPrice(Number(item.price), item.currency)}
+                    {item.priceMax
+                      ? ` – ${formatPrice(Number(item.priceMax), item.currency)}`
+                      : ""}
                   </p>
                 )}
                 {item.compareAtPrice && Number(item.compareAtPrice) > Number(item.price) && (
