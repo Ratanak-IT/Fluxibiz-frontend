@@ -14,7 +14,7 @@ FluxiBiz is an advanced multichannel commerce and business management platform d
 
 ---
 
-## 📱 Platform Preview
+## Platform Preview
 <p align="center">
   <img src="./public/desktop-view.png" alt="Desktop Preview" width="300" style="margin: 0 10px;"/>
   <img src="./public/tablet-review.png" alt="Tablet Preview" width="170" style="margin: 0 10px;"/>
