@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | FluxiBiz",
   description: "Learn how FluxiBiz collects, uses, and protects your personal and business data.",
+  alternates: {
+    canonical: `${SITE_URL}/privacy`,
+  },
 };
 
 export default function PrivacyPage() {

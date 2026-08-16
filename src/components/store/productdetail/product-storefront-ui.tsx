@@ -10,6 +10,7 @@ import {
     Plus,
     ShoppingBag,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -21,13 +22,8 @@ import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
-/**
- * Above this, the exact count is noise — a shopper only needs the number when
- * it is small enough to change what they do.
- */
 const LOW_STOCK_THRESHOLD = 10;
 
-// We extract displayOf for options
 function displayOf(value: ItemAttributeValue) {
     return value.label || value.value;
 }
@@ -67,36 +63,22 @@ export function ProductStorefrontUI({
     setSelectedVariant: React.Dispatch<React.SetStateAction<ItemVariant | null>>;
     selectedAttributes: Record<string, string>;
     setSelectedAttributes: React.Dispatch<React.SetStateAction<Record<string, string>>>;
-    /** The pack being bought, or null for one of the base unit. */
     selectedPack: ItemUomConversion | null;
     setSelectedPack: React.Dispatch<React.SetStateAction<ItemUomConversion | null>>;
-    /** The extras ticked, by id. Optional so a read-only preview can omit them. */
     selectedAddOnIds?: string[];
     setSelectedAddOnIds?: React.Dispatch<React.SetStateAction<string[]>>;
-    /** Whether the online store is taking orders right now. */
     isStoreOpen?: boolean;
-    /** The hours the shop set for its Online Store, when it set any. */
     onlineHours?: ChannelSchedule | null;
     hideAddToCart?: boolean;
 }) {
     const t = useTranslations("Store");
     const todayHours = useTodayHoursLabel(onlineHours);
     const attributes = item.attributes || [];
-    // Memoised because the gallery depends on it: a fresh [] each render would
-    // rebuild the rail on every keystroke elsewhere in the page.
     const variants = useMemo(() => item.variants || [], [item.variants]);
     const itemColors = useMemo(() => item.colors || [], [item.colors]);
 
-    /** The size half of what is picked, which the colours below follow. */
     const pickedSize = selectedVariant?.optionName || selectedVariant?.name || "";
 
-    /**
-     * The sizes, folded out of the pairs.
-     *
-     * Storage keeps Large/Red and Large/Navy apart because each has its own
-     * shelf; a shopper picks one Large and then a colour. The first pair of a
-     * size stands for it — every colour of a size costs the same.
-     */
     const sizes = useMemo(() => {
         const rows: { name: string; variant: ItemVariant }[] = [];
         const seen = new Set<string>();
@@ -114,13 +96,6 @@ export function ProductStorefrontUI({
         return rows;
     }, [variants]);
 
-    /**
-     * The colours the picked size comes in.
-     *
-     * Read off that size's own pairs, because Large may come in three and
-     * Small in two — offering a colour the size does not come in offers
-     * something the shop cannot sell.
-     */
     const colorsOnOffer = useMemo(() => {
         if (!pickedSize) return [];
 
@@ -139,7 +114,6 @@ export function ProductStorefrontUI({
             .filter((row) => row.color);
     }, [variants, itemColors, pickedSize]);
 
-    /** Picks a size, holding the colour when that size comes in it too. */
     const pickSize = (name: string) => {
         const ofSize = variants.filter(
             (variant) =>
@@ -154,14 +128,8 @@ export function ProductStorefrontUI({
         setSelectedVariant(
             sameColour ?? ofSize.find(isVariantSelectable) ?? ofSize[0] ?? null,
         );
-        // Packs belong to the option they were declared for, so the one that
-        // was picked is not on offer any more.
         setSelectedPack(null);
     };
-
-    // Stock is counted per option, so the chosen option answers this — not the
-    // item, whose figure is the total across options and would happily sell a
-    // Large that ran out while the Smalls are stacked up.
     const remaining = remainingStock(
         variants.length > 0 ? selectedVariant : item,
     );
@@ -169,19 +137,10 @@ export function ProductStorefrontUI({
         (variants.length > 0
             ? !isVariantSelectable(selectedVariant)
             : isItemOutOfStock(item)) ||
-        // A pack nothing on the shelf can fill is sold out even while single
-        // bottles remain.
         (remaining !== null &&
             selectedPack !== null &&
             remaining < (Number(selectedPack.factor) || 1));
 
-    /*
-     * Never offer more than the online store may sell. Null means the shop
-     * tracks no stock for it, and then there is no ceiling to hold to.
-     *
-     * Counted in packs, not bottles: four bottles left is zero six-packs, and
-     * offering "1" would promise something the basket then refuses.
-     */
     const packFactor = selectedPack ? Number(selectedPack.factor) || 1 : 1;
     const maxQuantity =
         remaining === null ? null : Math.floor(remaining / packFactor);
@@ -207,15 +166,6 @@ export function ProductStorefrontUI({
     const [imageIndex, setImageIndex] = useState(0);
     const [switched, setSwitched] = useState<Record<string, boolean>>({});
 
-    /**
-     * The packs on offer for what is currently picked.
-     *
-     * A case of Large is not a case of Small, so an item sold in options shows
-     * only the packs declared for the one in hand. A pack the seller has not
-     * priced is not something a shopper can buy, so it is not offered at all —
-     * the back-office preview shows it as "Price not set" because that is a
-     * seller's to-do, not a shopper's choice.
-     */
     const selectedVariantId = selectedVariant?.id ?? null;
     const selectedVariantImage = selectedVariant?.imageUrl ?? null;
 
@@ -230,7 +180,6 @@ export function ProductStorefrontUI({
             );
     }, [item.uomConversions, selectedVariantId]);
 
-    /** "bottle", for reading inside "Holds 6 bottles". */
     const unitWord = (item.unit?.name || "unit").trim().toLowerCase();
     const singleLabel = selectedVariant?.name
         ? `One ${selectedVariant.name}`
@@ -243,31 +192,16 @@ export function ProductStorefrontUI({
                 ? undefined
                 : Number(item.price);
 
-    /*
-     * A pack is priced in its own right rather than as a multiple — a case is
-     * not twenty-four times a can — so picking one replaces the price rather
-     * than multiplying it.
-     */
     const activePrice = selectedPack ? Number(selectedPack.price) : singlePrice;
-
-    /**
-     * The extras this item can actually be bought with.
-     *
-     * An extra the shop has taken off this item, or one nobody has priced
-     * yet, is not on the menu — the basket refuses both, so offering them
-     * here would only be a tick that fails at Add to Cart.
-     */
     const addOns = useMemo(() => sellableAddOns(item), [item]);
     const ticked = useMemo(
         () => addOns.filter((addOn) => (selectedAddOnIds ?? []).includes(addOn.id)),
         [addOns, selectedAddOnIds],
     );
-    /** What the extras add to one of whatever is being bought. */
     const addOnsPerUnit = ticked.reduce(
         (total, addOn) => total + Number(addOn.price ?? 0),
         0,
     );
-    /** The headline: what one of this actually costs as it stands. */
     const billedPrice =
         activePrice === undefined ? undefined : activePrice + addOnsPerUnit;
 
@@ -277,16 +211,6 @@ export function ProductStorefrontUI({
             ? Math.round(((compareAt - activePrice) / compareAt) * 100)
             : 0;
 
-    /**
-     * Every picture the item has, in one rail down the left — the item's own
-     * gallery, plus one per colour the seller photographed.
-     *
-     * The chips themselves stay text: a swatch and a name are enough to say
-     * which choice it is, and a thumbnail repeated inside every chip is the
-     * same picture twice on one screen. What the choice does instead is move
-     * the rail — picking "Red" leads with the red one, which is what a shopper
-     * came to see.
-     */
     const images = useMemo(() => {
         const gallery: string[] = [];
 
@@ -300,22 +224,12 @@ export function ProductStorefrontUI({
         sorted.forEach((img) => push(itemImageUrl(img)));
 
         if (gallery.length === 0) push(primaryItemImage(item));
-
-        // Every picture the item has, whichever choice it hangs off: the rail
-        // is how a shopper browses them, not only how they see the one picked.
         itemColors.forEach((color) => push(resolveMediaUrl(color.imageUrl)));
         variants.forEach((option) => push(resolveMediaUrl(option.imageUrl)));
 
         return gallery;
     }, [item, variants, itemColors]);
 
-    /**
-     * Which picture the current choices point at.
-     *
-     * The colour wins, since that is the choice a photograph can actually
-     * show — and it is uploaded once for every size that comes in it. The
-     * pair's own picture is the fallback.
-     */
     const chosenImage =
         resolveMediaUrl(
             itemColors.find(
@@ -323,15 +237,6 @@ export function ProductStorefrontUI({
             )?.imageUrl,
         ) ?? resolveMediaUrl(selectedVariantImage);
 
-    /*
-     * Follow the choice rather than fight it: a shopper who just picked a
-     * colour is asking to see that colour.
-     *
-     * Adjusted during render against the previous choice rather than in an
-     * effect, so the rail never paints the old picture for a frame first — and
-     * because it only fires when the choice actually changes, clicking a
-     * thumbnail afterwards still wins.
-     */
     const [shownChoice, setShownChoice] = useState<string | null>(null);
 
     if (chosenImage && chosenImage !== shownChoice) {
@@ -340,7 +245,6 @@ export function ProductStorefrontUI({
         if (position >= 0) setImageIndex(position);
     }
 
-    // find variant index based on selectedVariant
 
     return (
         <div className={cn(onClose ? "max-h-[90vh] overflow-y-auto scrollbar-none" : "w-full md:max-h-[90vh] md:overflow-y-auto scrollbar-none max-md:max-h-none max-md:overflow-visible")}>
@@ -387,9 +291,6 @@ export function ProductStorefrontUI({
                         </div>
                     )}
 
-                    {/* Shut for the night rather than sold out — a different
-                        thing, and one that fixes itself in the morning. The
-                        page stays readable; only the ordering stops. */}
                     {!isStoreOpen && (
                         <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-400 text-sm flex items-center gap-2">
                             <Clock className="size-4 shrink-0" />
@@ -401,8 +302,6 @@ export function ProductStorefrontUI({
                     )}
 
                     <div className="flex flex-wrap items-center gap-2">
-                        {/* An unpriced item says so rather than reading "$0.00",
-                            which is a price, and a wrong one. */}
                         {billedPrice === undefined ? (
                             <span className="text-base font-semibold text-[#657064] dark:text-[#94a3b8]">
                                 {t("detail.priceNotSet")}
@@ -412,8 +311,6 @@ export function ProductStorefrontUI({
                                 {formatPrice(billedPrice, currency)}
                             </span>
                         )}
-                        {/* The extras are in the number above, so it has to say
-                            where the difference came from. */}
                         {addOnsPerUnit > 0 ? (
                             <span className="text-sm text-[#657064] dark:text-[#94a3b8]">
                                 {t("detail.includingExtras", {
@@ -452,15 +349,6 @@ export function ProductStorefrontUI({
                         </p>
                     )}
 
-                    {/*
-                     * Two rows: the size, then the colours that size comes in.
-                     *
-                     * Both are the one selection — a variant is a size and a
-                     * colour together, because that pair is what the shop
-                     * counts. Picking a size re-reads the colours from it, so
-                     * Large offering three and Small two is what a shopper
-                     * sees rather than a list that lies about one of them.
-                     */}
                     {sizes.length > 0 ? (
                         <OptionRow
                             label={t("detail.option")}
@@ -473,9 +361,6 @@ export function ProductStorefrontUI({
                                         name.trim().toLowerCase() ===
                                         pickedSize.trim().toLowerCase()
                                     }
-                                    // A size is gone only when every colour of
-                                    // it is: Navy running out does not stop
-                                    // Large being sold in Red.
                                     disabled={
                                         !variants.some(
                                             (row) =>
@@ -519,8 +404,6 @@ export function ProductStorefrontUI({
                                         active={
                                             selectedVariant?.colorValue === color!.value
                                         }
-                                        // Its own shelf, so its own answer: the
-                                        // whole point of counting per colour.
                                         disabled={!isVariantSelectable(variant)}
                                         onClick={() => {
                                             setSelectedVariant(variant);
@@ -532,12 +415,6 @@ export function ProductStorefrontUI({
                         </OptionRow>
                     ) : null}
 
-                    {/*
-                     * The item's UoM conversions, as a shopper meets them: one,
-                     * or a whole pack of them. Stock stays a single number in
-                     * the base unit either way — the pack only says how many
-                     * come off the shelf.
-                     */}
                     {packs.length > 0 ? (
                         <OptionRow
                             label={t("detail.soldAs")}
@@ -559,7 +436,6 @@ export function ProductStorefrontUI({
                             </Chip>
                             {packs.map((row) => {
                                 const factor = Number(row.factor) || 1;
-                                // A pack the shelf cannot fill is not on offer.
                                 const packSoldOut =
                                     remaining !== null && remaining < factor;
 
@@ -622,12 +498,6 @@ export function ProductStorefrontUI({
                         );
                     })}
 
-                    {/*
-                     * The extras, as a shopper meets them: tick what you want
-                     * on top. Priced per one of whatever is being bought — an
-                     * extra shot in each of two coffees is two extra shots —
-                     * which is how the till bills them too.
-                     */}
                     {addOns.length > 0 && setSelectedAddOnIds ? (
                         <div>
                             <p className="text-xs text-[#657064] dark:text-[#94a3b8]">
@@ -900,21 +770,26 @@ function Gallery({
                                 : "opacity-70 hover:opacity-100",
                         )}
                     >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                             src={image}
-                            alt=""
-                            className={cn("size-full object-cover", outOfStock && "filter blur-[1.5px]")}
+                            alt={name ? `${name} — photo ${position + 1}` : `Product photo ${position + 1}`}
+                            fill
+                            unoptimized
+                            sizes="56px"
+                            className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
                         />
                     </button>
                 ))}
             </div>
             <div className="relative aspect-square flex-1 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-[#f8faf8] dark:bg-card shadow-xs">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                     src={active}
-                    alt={name || "Item image"}
-                    className={cn("size-full object-cover transition-all duration-300", outOfStock && "filter blur-[1.5px]")}
+                    alt={name || "Product image"}
+                    fill
+                    unoptimized
+                    priority
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                    className={cn("object-cover transition-all duration-300", outOfStock && "filter blur-[1.5px]")}
                 />
             </div>
         </div>
@@ -972,7 +847,6 @@ function Chip({
     );
 }
 
-/** The circle a shopper clicks to pick a colour Option. */
 function Swatch({
     name,
     colorHex,

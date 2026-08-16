@@ -32,6 +32,8 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                     alt={store.name || t("storeLogo")}
                     fill
                     unoptimized
+                    priority
+                    sizes="(max-width: 640px) 100vw, 192px"
                     className="h-full w-full rounded-md object-cover"
                   />
                 </div>
