@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 interface ThemeToggleProps {
   mobile?: boolean;
   showLabel?: boolean;
+  variant?: "before-login" | "after-login";
 }
 
 export default function ThemeToggle({
   mobile = false,
   showLabel = false,
+  variant = "before-login",
 }: ThemeToggleProps) {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -24,6 +26,7 @@ export default function ThemeToggle({
   }, []);
 
   const isDark = mounted && resolvedTheme === "dark";
+  const isAfterLogin = variant === "after-login";
 
   const handleToggleTheme = () => {
     setTheme(isDark ? "light" : "dark");
@@ -41,18 +44,18 @@ export default function ThemeToggle({
     !bg-transparent
     px-3
     text-base
-    font-bold
-    text-[#1f2937]
+    font-semibold
+    text-[#374151]
     shadow-none
-    hover:!bg-transparent
-    hover:text-primary
+    hover:bg-[#f3f4f6]
+    hover:${isAfterLogin ? "text-secondary" : "text-primary"}
     focus-visible:!bg-transparent
     active:!bg-transparent
 
     dark:!bg-transparent
     dark:text-white
-    dark:hover:!bg-transparent
-    dark:hover:text-primary
+    dark:hover:bg-white/5
+    dark:hover:${isAfterLogin ? "text-secondary" : "text-primary"}
     dark:focus-visible:!bg-transparent
     dark:active:!bg-transparent
   `;
@@ -67,17 +70,17 @@ export default function ThemeToggle({
     rounded-full
     !bg-transparent
     p-0
-    text-[#6a6a6a]
+    text-[#4b5563]
     shadow-none
     hover:!bg-transparent
-    hover:text-secondary
+    hover:${isAfterLogin ? "text-secondary" : "text-primary"}
     focus-visible:!bg-transparent
     active:!bg-transparent
 
     dark:!bg-transparent
     dark:text-white
     dark:hover:!bg-transparent
-    dark:hover:text-secondary
+    dark:hover:${isAfterLogin ? "text-secondary" : "text-primary"}
     dark:focus-visible:!bg-transparent
     dark:active:!bg-transparent
   `;
@@ -126,9 +129,9 @@ export default function ThemeToggle({
             inset-0
             size-6
             stroke-current
-            transition-opacity
+            transition-colors
             duration-200
-            group-hover:stroke-secondary
+            ${isAfterLogin ? "group-hover:stroke-secondary" : "group-hover:stroke-primary"}
 
             ${
               mounted && !isDark
@@ -145,9 +148,9 @@ export default function ThemeToggle({
             inset-0
             size-6
             stroke-current
-            transition-opacity
+            transition-colors
             duration-200
-            group-hover:stroke-secondary
+            ${isAfterLogin ? "group-hover:stroke-secondary" : "group-hover:stroke-primary"}
 
             ${
               mounted && isDark

@@ -356,7 +356,7 @@ export default function NavbarBeforeLoginComponent({
             }
           `}
         >
-          <ThemeToggle />
+          <ThemeToggle variant="before-login" />
 
           <LanguageSwitcherButtonComponent variant="before-login" />
 
@@ -384,7 +384,7 @@ export default function NavbarBeforeLoginComponent({
               pending || isLoggingIn
             }
             className="
-              h-9
+              h-10
               rounded-full
               border
               border-primary
@@ -414,7 +414,7 @@ export default function NavbarBeforeLoginComponent({
             }
             variant="outline"
             className="
-              h-9
+              h-10
               rounded-full
               border-2
               border-primary
@@ -456,7 +456,7 @@ export default function NavbarBeforeLoginComponent({
                 variant="ghost"
                 size="icon"
                 className="
-                  size-9
+                  size-10
                   shrink-0
                   !bg-transparent
                   p-0
@@ -467,8 +467,6 @@ export default function NavbarBeforeLoginComponent({
                   hover:text-primary
                   focus-visible:!bg-transparent
                   active:!bg-transparent
-
-                  sm:size-10
 
                   dark:!bg-transparent
                   dark:text-white
@@ -483,7 +481,7 @@ export default function NavbarBeforeLoginComponent({
               />
             }
           >
-            <Menu className="size-5 sm:size-6" />
+            <Menu className="size-6" />
           </SheetTrigger>
 
           <SheetContent
@@ -578,19 +576,8 @@ export default function NavbarBeforeLoginComponent({
               </SheetHeader>
 
               {/* Theme */}
-              <div
-                className="
-                  flex
-                  h-11
-                  shrink-0
-                  items-center
-                  justify-start
-                  px-3
-                "
-              >
-                <div className="grid size-10 shrink-0 place-items-center">
-                  <ThemeToggle mobile />
-                </div>
+              <div className="h-11 w-full shrink-0">
+                <ThemeToggle mobile showLabel variant="before-login" />
               </div>
 
               {/* Navigation */}
