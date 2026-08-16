@@ -90,13 +90,13 @@ export default function LanguageSwitcherButtonComponent({
             className={
               mobile
                 ? `
-                    group h-11 w-full justify-start gap-3 !bg-transparent px-3
+                    group h-11 w-full justify-start gap-3 rounded-lg !bg-transparent px-3
                     text-base font-semibold text-[#374151] shadow-none
-                    hover:!bg-transparent hover:text-primary
-                    focus-visible:!bg-transparent focus-visible:text-primary
-                    aria-expanded:!bg-transparent aria-expanded:text-primary
+                    hover:bg-[#f3f4f6] hover:${isAfterLogin ? "text-secondary" : "text-primary"}
+                    focus-visible:!bg-transparent focus-visible:${isAfterLogin ? "text-secondary" : "text-primary"}
+                    aria-expanded:!bg-transparent aria-expanded:${isAfterLogin ? "text-secondary" : "text-primary"}
                     dark:!bg-transparent dark:text-white
-                    dark:hover:!bg-transparent dark:hover:text-primary
+                    dark:hover:bg-white/5 dark:hover:${isAfterLogin ? "text-secondary" : "text-primary"}
                   `
                 : isAfterLogin
                   ? `
@@ -110,7 +110,7 @@ export default function LanguageSwitcherButtonComponent({
                     `
                   : `
                       group h-10 gap-2 rounded-full !bg-transparent px-3
-                      text-sm font-semibold text-[#374151] shadow-none
+                      text-sm font-semibold text-[#4b5563] shadow-none
                       hover:!bg-transparent hover:text-primary
                       focus-visible:!bg-transparent focus-visible:text-primary
                       aria-expanded:!bg-transparent aria-expanded:text-primary
