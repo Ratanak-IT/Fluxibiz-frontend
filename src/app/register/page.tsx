@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 
 import { RegistrationShell } from "@/components/login/RegistrationShell";
 import { UserRegisterForm } from "@/components/login/UserRegisterForm";
+import { SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
     title: "User registration | FluxiBiz",
     description: "Create your FluxiBiz user account.",
+    alternates: {
+        canonical: `${SITE_URL}/register`,
+    },
 };
 
 export default function UserRegisterPage() {

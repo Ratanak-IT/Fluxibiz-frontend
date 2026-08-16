@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import ReactDOM from "react-dom";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
@@ -17,14 +18,15 @@ import "./about/about.css";
 import { NetworkStatusBanner } from "@/components/common/NetworkStatusBanner";
 import { OfflineGate } from "@/components/offline/OfflineGate";
 import { ConnectionProvider } from "@/components/offline/ConnectionProvider";
+import { SITE_URL, STORE_URL } from "@/lib/seo";
 
-
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fluxibiz.store";
+export const viewport: Viewport = {
+  themeColor: "#00932A",
+};
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   manifest: "/manifest.json",
-  themeColor: "#00932A",
   title: {
     default: "FluxiBiz - Run your whole business from one screen",
     template: "%s | FluxiBiz",
@@ -41,9 +43,12 @@ export const metadata: Metadata = {
     "Cambodia POS",
     "Online Storefront",
   ],
-  authors: [{ name: "FluxiBiz Team", url: siteUrl }],
+  authors: [{ name: "FluxiBiz Team", url: SITE_URL }],
   creator: "FluxiBiz",
   publisher: "FluxiBiz",
+  alternates: {
+    canonical: STORE_URL,
+  },
   robots: {
     index: true,
     follow: true,
@@ -62,7 +67,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: siteUrl,
+    url: STORE_URL,
     siteName: "FluxiBiz",
     title: "FluxiBiz - Run your whole business from one screen",
     description:
@@ -95,6 +100,16 @@ export default async function RootLayout({
 }: Readonly<RootLayoutProps>) {
   // Reads "en" or "km" from src/i18n/request.ts
   const locale = await getLocale();
+  ReactDOM.preconnect("https://fonts.googleapis.com");
+  ReactDOM.preconnect("https://fonts.gstatic.com", { crossOrigin: "anonymous" });
+
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "FluxiBiz",
+    url: STORE_URL,
+    logo: `${SITE_URL}/image/footer/fluxibiz-lightmode.png`,
+  };
 
   return (
     <html
@@ -108,6 +123,10 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <NextIntlClientProvider>
           <NetworkStatusBanner />
           <StoreProvider>

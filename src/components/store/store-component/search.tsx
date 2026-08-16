@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { Clock, Loader2, Search, SearchX, X } from "lucide-react"
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog"
@@ -310,9 +311,12 @@ const SearchDrawer = ({
                         "
                       >
                         {store.image ? (
-                          <img
+                          <Image
                             src={store.image}
                             alt={store.name}
+                            width={48}
+                            height={48}
+                            unoptimized
                             className="h-12 w-12 shrink-0 rounded-full object-cover"
                           />
                         ) : (
