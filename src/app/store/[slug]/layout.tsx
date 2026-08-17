@@ -59,7 +59,6 @@ const DAY_KEY_TO_SCHEMA: Record<string, string> = {
   SUN: "Sunday",
 };
 
-/** Only emits entries for days the seller actually configured — never a guess. */
 function buildOpeningHoursSpecification(
   schedule?: ChannelSchedule | null,
 ): Array<Record<string, unknown>> | undefined {
@@ -123,7 +122,7 @@ export async function generateMetadata({
     const description = buildStoreDescription(store, storeName);
 
     const rawImage = store.logo || store.thumbnail;
-    let imageUrl = absoluteUrl("/desktop-view.png");
+    let imageUrl = absoluteUrl("/thumbnail/thumbnail1.png");
 
     if (rawImage) {
       const resolved = resolveMediaUrl(rawImage);

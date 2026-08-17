@@ -28,12 +28,6 @@ export function absoluteUrl(path: string): string {
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
-/**
- * Server-only backend origin used by generateMetadata/sitemap fetches. Falls
- * back to localhost for local dev; that's fine here since this value is
- * never rendered into a page, only used to `fetch()` from the Next.js
- * server itself.
- */
 export const backendBaseUrl = (
   process.env.BACKEND_API_URL ||
   process.env.NEXT_PUBLIC_API_URL ||

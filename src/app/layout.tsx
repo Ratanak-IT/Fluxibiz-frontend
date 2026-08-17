@@ -60,9 +60,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/image/footer/fluxibiz-lightmode.png",
-    shortcut: "/image/footer/fluxibiz-lightmode.png",
-    apple: "/image/footer/fluxibiz-lightmode.png",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
   openGraph: {
     type: "website",
@@ -74,9 +74,9 @@ export const metadata: Metadata = {
       "The all-in-one point-of-sale, inventory, commerce, and business management platform for growing teams.",
     images: [
       {
-        url: "/desktop-view.png",
-        width: 1200,
-        height: 630,
+        url: "/thumbnail/thumbnail1.png",
+        width: 1536,
+        height: 1024,
         alt: "FluxiBiz Business Platform Preview",
       },
     ],
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
     title: "FluxiBiz - Run your whole business from one screen",
     description:
       "The all-in-one point-of-sale, inventory, commerce, and business management platform for growing teams.",
-    images: ["/desktop-view.png"],
+    images: ["/thumbnail/thumbnail1.png"],
     creator: "@FluxiBiz",
   },
 };
@@ -98,7 +98,6 @@ interface RootLayoutProps {
 export default async function RootLayout({
   children,
 }: Readonly<RootLayoutProps>) {
-  // Reads "en" or "km" from src/i18n/request.ts
   const locale = await getLocale();
   ReactDOM.preconnect("https://fonts.googleapis.com");
   ReactDOM.preconnect("https://fonts.gstatic.com", { crossOrigin: "anonymous" });
@@ -108,7 +107,7 @@ export default async function RootLayout({
     "@type": "Organization",
     name: "FluxiBiz",
     url: STORE_URL,
-    logo: `${SITE_URL}/image/footer/fluxibiz-lightmode.png`,
+    logo: `${SITE_URL}/favicon.png`,
   };
 
   return (

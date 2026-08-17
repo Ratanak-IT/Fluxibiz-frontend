@@ -36,28 +36,15 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    },
-    {
-      "src": "https://www.fluxibiz.store/image/footer/fluxibiz-lightmode.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
     }
   ],
   "screenshots": [
     {
-      "src": "https://fluxibiz.store/desktop-view.png",
-      "sizes": "1920x1080",
+      "src": "https://fluxibiz.store/thumbnail/thumbnail1.png",
+      "sizes": "1536x1024",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "FluxiBiz Desktop Dashboard"
-    },
-    {
-      "src": "https://fluxibiz.store/mobile-review.png",
-      "sizes": "540x1170",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "FluxiBiz Mobile View"
+      "label": "FluxiBiz Business Platform Preview"
     }
   ],
   "shortcuts": [
