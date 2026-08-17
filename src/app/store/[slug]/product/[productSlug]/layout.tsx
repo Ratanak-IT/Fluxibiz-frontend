@@ -100,7 +100,7 @@ export async function generateMetadata({
     const rawImage = primaryItemImage(item);
     const imageUrl = rawImage
       ? absoluteUrl(rawImage)
-      : absoluteUrl("/desktop-view.png");
+      : absoluteUrl("/thumbnail/thumbnail1.png");
 
     return {
       title,
