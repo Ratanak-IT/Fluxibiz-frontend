@@ -1,3 +1,5 @@
+import TelegramWebAppProvider from "@/components/tma/TelegramWebAppProvider";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { resolveMediaUrl } from "@/lib/type/cartType";
@@ -223,7 +225,7 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
       )}
-      {children}
+      <Suspense fallback={null}><TelegramWebAppProvider>{children}</TelegramWebAppProvider></Suspense>
     </>
   );
 }
