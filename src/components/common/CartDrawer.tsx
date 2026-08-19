@@ -50,8 +50,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 type CartDrawerProps = {
-    children?: ReactNode | ((props: { open: boolean }) => ReactNode);
-    onOpenChange?: (open: boolean) => void;
+    children?: ReactNode;
     triggerClassName?: string;
     buttonClassName?: string;
     iconClassName?: string;
@@ -61,7 +60,6 @@ type CartDrawerProps = {
 
 export default function CartDrawer({
     children,
-    onOpenChange,
     triggerClassName,
     buttonClassName,
     iconClassName,
@@ -76,14 +74,7 @@ export default function CartDrawer({
 
     const totalItems = cart?.totalItems ?? 0;
 
-    const handleOpenChange = (newOpen: boolean) => {
-        setOpen(newOpen);
-        onOpenChange?.(newOpen);
-    };
-
-    const triggerElement = typeof children === "function" ? (
-        children({ open }) as React.ReactElement
-    ) : children ? (
+    const triggerElement = children ? (
         children as React.ReactElement
     ) : (
         <Button
@@ -103,10 +94,10 @@ export default function CartDrawer({
     );
 
     return (
-        <Sheet open={open} onOpenChange={handleOpenChange}>
+        <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger render={triggerElement} className={triggerClassName} />
 
-            <SheetContent side="right" className="fixed inset-0 z-50 flex h-full h-screen w-full w-screen max-w-full flex-col bg-background p-0 pb-20 sm:pb-0 border-0 rounded-none sm:inset-y-0 sm:right-0 sm:left-auto sm:h-full sm:w-[440px] sm:max-w-[440px] sm:border-l">
+            <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
                 <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">
                     <SheetTitle className="flex items-center gap-2 text-xl font-bold text-green-600">
                         {t("title")}
@@ -174,7 +165,7 @@ function StoreSection({
     return (
         <section className="rounded-xl bg-white border border-neutral-100/80 p-3.5 shadow-xs dark:bg-card dark:border-neutral-800">
             <div className="mb-3 flex items-center gap-3">
-                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-white">
+                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white border border-neutral-100">
                     {logoUrl ? (
                         <Image
                             src={logoUrl}
@@ -194,7 +185,7 @@ function StoreSection({
                     <Link
                         href={`/store/${store.slug}`}
                         onClick={onNavigate}
-                        className="block truncate text-[14px] font-semibold text-neutral-900 hover:underline dark:text-card-foreground"
+                        className="block truncate text-sm font-semibold text-neutral-900 hover:underline dark:text-card-foreground"
                     >
                         {store.name}
                     </Link>
@@ -202,7 +193,7 @@ function StoreSection({
                     {store.location && (
                         <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-muted-foreground">
                             <MapPin className="h-3 w-3 shrink-0 text-green-600 dark:text-primary" />
-                            <span className="truncate text-[12px]">{store.location}</span>
+                            <span className="truncate">{store.location}</span>
                         </div>
                     )}
                 </div>
@@ -292,13 +283,15 @@ function StoreCheckoutButton({
         );
     }
 
-    const href = `/store/${store.slug}/checkout`;
+    const href = pendingHere
+        ? `/store/${store.slug}/checkout`
+        : `/cart?shop=${encodeURIComponent(store.slug)}`;
 
     return (
         <Link
             href={href}
             onClick={onNavigate}
-            className={`${shell} border-primary bg-white text-primary transition-colors hover:bg-primary/5 dark:border-primary dark:bg-background dark:text-primary dark:hover:bg-primary/10`}
+            className={`${shell} border-primary bg-white text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-border dark:bg-background dark:text-card-foreground dark:hover:bg-card`}
         >
             {pendingHere ? t("finishPayment") : t("checkout")}
         </Link>
@@ -383,24 +376,24 @@ function LineRow({
 
     return (
         <div
-            className={cn("flex w-full items-center gap-3 rounded-xl bg-neutral-50 p-2.5 dark:bg-muted/40 relative overflow-hidden", outOfStock && "opacity-90")}
+            style={{ width: "319.72px", height: "77.99px" }}
+            className={cn("flex items-center gap-3 rounded-lg bg-background p-2 border border-neutral-100/80 dark:border-neutral-800/60 dark:bg-background relative box-border overflow-hidden shrink-0", outOfStock && "opacity-90")}
         >
             <div
                 onClick={handleNavigate}
-                className={cn("relative h-13 w-13 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-card", productHref && "cursor-pointer")}
+                className={cn("relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-card", productHref && "cursor-pointer")}
             >
                 {imageUrl ? (
                     <Image
                         src={imageUrl}
                         alt={line.name}
-                        fill
-                        unoptimized
-                        sizes="52px"
-                        className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
+                        width={56}
+                        height={56}
+                        className={cn("h-full w-full object-cover", outOfStock && "filter blur-[1.5px]")}
                     />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center">
-                        <ShoppingBag className="h-4 w-4 text-neutral-300" />
+                        <ShoppingBag className="h-5 w-5 text-neutral-300" />
                     </div>
                 )}
             </div>
@@ -408,7 +401,7 @@ function LineRow({
             <div className="min-w-0 flex-1 flex flex-col justify-center">
                 <div onClick={handleNavigate} className={cn(productHref && "cursor-pointer")}>
                     <div className="flex items-center gap-1.5">
-                        <p className="truncate text-[14px] font-semibold text-neutral-900 dark:text-card-foreground">
+                        <p className="truncate text-sm font-semibold text-neutral-900 dark:text-card-foreground">
                             {line.name}
                         </p>
                         {outOfStock && (
@@ -419,7 +412,7 @@ function LineRow({
                     </div>
 
                     {line.description && (
-                        <p className="line-clamp-1 text-[12px] text-neutral-500 dark:text-muted-foreground">
+                        <p className="line-clamp-1 text-xs text-neutral-500 dark:text-muted-foreground">
                             {line.description}
                         </p>
                     )}
@@ -451,7 +444,7 @@ function LineRow({
                         <Minus className="h-3 w-3 text-red-500 dark:text-red-400" />
                     </Button>
 
-                    <span className="w-4 text-center text-[14px] font-medium dark:text-card-foreground">
+                    <span className="w-4 text-center text-sm font-medium dark:text-card-foreground">
                         {pendingQty}
                     </span>
 
@@ -466,7 +459,7 @@ function LineRow({
                         <Plus className="h-3 w-3" />
                     </Button>
 
-                    <span className="ml-auto whitespace-nowrap text-[14px] font-semibold text-red-500 dark:text-destructive">
+                    <span className="ml-auto whitespace-nowrap text-sm font-semibold text-red-500 dark:text-destructive">
                         {formatMoney(currentSubtotal, currency)}
                     </span>
                 </div>
