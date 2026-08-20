@@ -42,7 +42,7 @@ export default function MessengerMiniAppPage({
     useEffect(() => {
         async function loadStorefrontData() {
             try {
-                const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+                const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
                 
                 const [storeRes, itemsRes] = await Promise.all([
                     fetch(`${apiBase}/api/v1/public/stores/${businessId}`),
@@ -96,7 +96,7 @@ export default function MessengerMiniAppPage({
         setSubmitting(true);
 
         try {
-            const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
             const response = await fetch(`${apiBase}/api/v1/public/orders`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
