@@ -61,10 +61,13 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: absoluteUrl("/favicon.png?v=2"),
-    shortcut: absoluteUrl("/favicon.png?v=2"),
-    apple: absoluteUrl("/favicon.png?v=2"),
-  },
+  icon: [
+    { url: absoluteUrl("/favicon.ico") },
+    { url: absoluteUrl("/favicon.png?v=2"), type: "image/png" },
+  ],
+  shortcut: absoluteUrl("/favicon.ico"),
+  apple: absoluteUrl("/favicon.png?v=2"),
+},
   openGraph: {
     type: "website",
     locale: "en_US",

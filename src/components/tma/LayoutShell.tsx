@@ -7,10 +7,10 @@ import type { ReactNode } from "react";
 
 export default function LayoutShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const isTma = pathname.startsWith("/tma");
+  const isMiniApp = pathname.startsWith("/tma") || pathname.startsWith("/m-app");
 
-  if (isTma) {
-    return <main className="min-h-screen bg-slate-950">{children}</main>;
+  if (isMiniApp) {
+    return <main className="min-h-screen">{children}</main>;
   }
 
   return (
