@@ -1,3 +1,4 @@
+import { telegramWebAppApi } from '@/features/auth/telegramWebAppApi';
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import authReducer from '../features/auth/authSlice'; 
@@ -18,6 +19,7 @@ import { bannerApi } from '@/features/banner/bannerApi';
 export const makeStore = () => {
   const store = configureStore({
     reducer: {
+      [telegramWebAppApi.reducerPath]: telegramWebAppApi.reducer,
       auth: authReducer,
       [checkoutApi.reducerPath]: checkoutApi.reducer,
       [cartApi.reducerPath]: cartApi.reducer, 
@@ -33,6 +35,7 @@ export const makeStore = () => {
     },
     middleware: (getDefaultMiddleware) => 
       getDefaultMiddleware().concat(
+        telegramWebAppApi.middleware,
         checkoutApi.middleware,
         cartApi.middleware,
         authApi.middleware, 

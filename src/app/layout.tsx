@@ -1,3 +1,4 @@
+import LayoutShell from "@/components/tma/LayoutShell";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import ReactDOM from "react-dom";
@@ -18,7 +19,7 @@ import "./about/about.css";
 import { NetworkStatusBanner } from "@/components/common/NetworkStatusBanner";
 import { OfflineGate } from "@/components/offline/OfflineGate";
 import { ConnectionProvider } from "@/components/offline/ConnectionProvider";
-import { SITE_URL, STORE_URL } from "@/lib/seo";
+import { SITE_URL, STORE_URL, absoluteUrl } from "@/lib/seo";
 
 export const viewport: Viewport = {
   themeColor: "#00932A",
@@ -60,10 +61,13 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
-  },
+  icon: [
+    { url: absoluteUrl("/favicon.ico") },
+    { url: absoluteUrl("/favicon.png?v=2"), type: "image/png" },
+  ],
+  shortcut: absoluteUrl("/favicon.ico"),
+  apple: absoluteUrl("/favicon.png?v=2"),
+},
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -74,7 +78,7 @@ export const metadata: Metadata = {
       "The all-in-one point-of-sale, inventory, commerce, and business management platform for growing teams.",
     images: [
       {
-        url: "/thumbnail/thumbnail1.png",
+        url: absoluteUrl("/thumbnail/thumbnail1.png?v=2"),
         width: 1536,
         height: 1024,
         alt: "FluxiBiz Business Platform Preview",
@@ -86,7 +90,7 @@ export const metadata: Metadata = {
     title: "FluxiBiz - Run your whole business from one screen",
     description:
       "The all-in-one point-of-sale, inventory, commerce, and business management platform for growing teams.",
-    images: ["/thumbnail/thumbnail1.png"],
+    images: [absoluteUrl("/thumbnail/thumbnail1.png?v=2")],
     creator: "@FluxiBiz",
   },
 };
@@ -107,7 +111,7 @@ export default async function RootLayout({
     "@type": "Organization",
     name: "FluxiBiz",
     url: STORE_URL,
-    logo: `${SITE_URL}/favicon.png`,
+    logo: absoluteUrl("/favicon.png?v=2"),
   };
 
   return (
@@ -135,9 +139,9 @@ export default async function RootLayout({
                 defaultTheme="light"
                 enableSystem
               >
-                <Navbar />
+                
 
-                <main className="flex-1">
+                <LayoutShell>
                   <ConnectionProvider>
 
                     <OfflineGate>
@@ -146,9 +150,9 @@ export default async function RootLayout({
 
                   </ConnectionProvider>
 
-                </main>
+                </LayoutShell>
 
-                <Footer />
+                
 
                 <Toaster
                   position="top-right"

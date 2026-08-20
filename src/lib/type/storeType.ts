@@ -744,3 +744,16 @@ export function sellingPriceFrom(
 
     return itemPriceRange(item)?.min ?? null;
 }
+
+
+
+
+export interface ItemResponse {
+    id: string;
+    name: string;
+    description?: string;
+    unitPrice?: number | string;
+    itemGroup?: { id: string; name: string };
+    images?: ItemImage[];
+    status?: string;
+}
