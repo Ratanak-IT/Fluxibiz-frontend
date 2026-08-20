@@ -1,16 +1,50 @@
 # FluxiBiz
 
-FluxiBiz is an advanced multichannel commerce and business management platform designed to centralize and automate the entire lifecycle of modern business operations across digital and physical marketplaces.
-
-- [Scalar API Docs](https://sb-ite-basic-course-api-production.up.railway.app/scalar)
-- [Download OpenAPI Document ( JSON )](./public/api-document/api.json)
-- [Download OpenAPI Document ( YAML )](./public/api-document/api.yaml)
-
-
-## FluxiBiz Logo
 <p align="center">
-  <img src="./public/image/footer/fluxibiz-logo-darkmode.png" alt="StackQuiz Logo" width="200"/>
+  <img src="./public/image/footer/fluxibiz-logo-darkmode.png" alt="FluxiBiz Logo" width="200"/>
 </p>
+
+<p align="center"><b>Run your whole business from one screen.</b></p>
+
+FluxiBiz is an all-in-one point-of-sale, inventory, e-commerce, and business management platform built to centralize and automate the entire lifecycle of modern business operations — across digital and physical marketplaces — for growing teams in Cambodia and beyond.
+
+## What is FluxiBiz?
+
+Most small and medium businesses juggle separate tools for selling in-store, selling online, tracking stock, and managing staff. FluxiBiz replaces that patchwork with a single platform:
+
+- **Point of Sale (POS)** — process in-store sales, manage checkout, and track transactions in real time.
+- **Inventory Management** — keep stock levels synced across every sales channel automatically.
+- **Online Storefront / E-commerce Marketplace** — give every business a public storefront to sell directly to customers.
+- **Business Management** — manage staff, stores, sales channels, and platform resources from one dashboard.
+
+The goal is simple: one platform, every channel, no more switching between disconnected tools to run a business.
+
+## Live Demo
+
+🔗 **[fluxibiz.store](https://fluxibiz.store)** — browse live stores, or [register a business](https://fluxibiz.store/register/business) to try the platform yourself.
+
+## Features
+
+- **Storefront & Marketplace** — public store pages, product browsing, cart, and checkout for customers
+  - Store, product, and product-detail pages by slug
+  - Per-store cart and checkout flow
+  - Promotional banners, managed via an admin API
+- **Business Registration & Onboarding** — self-service sign-up flow for new merchants
+  - Multi-step signup: account, business, and category selection
+- **Sales Channels** — manage and sync multiple channels from one dashboard
+- **Inventory & Store Management** — track stock and store details in real time
+- **Payments** — checkout and payment history, including Bakong integration
+  - Checkout sessions with live payment-status polling
+  - Order history and PDF receipts
+  - Bakong (KHQR) payment support
+- **User Accounts** — customer and staff profiles, authenticated flows
+  - Keycloak-backed OAuth login/session
+  - Profile editing and picture management
+- **Real-time Updates** — STOMP/WebSocket notifications for order/payment status
+- **Offline Support** — network status detection and offline fallback UI
+- **Multi-language** — i18n support via next-intl (English / Khmer)
+- **SEO-ready** — dynamic sitemap, Open Graph/Twitter cards, structured data
+- **PWA** — installable, offline-capable app via `@ducanh2912/next-pwa`
 
 ---
 
@@ -21,114 +55,104 @@ FluxiBiz is an advanced multichannel commerce and business management platform d
   <img src="./public/readme/mobile-review.png" alt="Mobile Preview" width="130" style="margin: 0 10px;"/>
 </p>
 
+## Docs & Links
 
-## Features
+- [Scalar API Docs](https://sb-ite-basic-course-api-production.up.railway.app/scalar)
+- [Download OpenAPI Document ( JSON )](./public/api-document/api.json)
+- [Download OpenAPI Document ( YAML )](./public/api-document/api.yaml)
 
-- Clean, responsive Next.js frontend for interacting with the backend API
-- Interactive API documentation via [Scalar](https://sb-ite-basic-course-api-production.up.railway.app/scalar#introduction) (OpenAPI-powered)
-- Postman Collection: Run in Postman or [download](./public/api-document/api.json) the Postman JSON export from the repo.
-- Authenticated API flows using Bearer (JWT) tokens
-- Example integrations for staff, sales channels, store, and platform resources
+## Getting Started (Developers)
 
-## Quick Start / Installation
-
-Prerequisites: Node.js v18+ (or your project's target), optional Docker
-
-1. Clone the repository
+Prerequisites: Node.js v18+
+Package manager: **npm** (see `package-lock.json`)
 
 ```bash
-git clone <repo-url>
-cd ipos-frontend
-```
-
-2. Install dependencies
-
-```bash
+git clone <repo-url> && cd ipos-frontend
 npm install
-# or
-pnpm install
+# create .env.local (see Environment Variables below)
+npm run dev    # start dev server — open http://localhost:3000
+npm run build  # production build
+npm run start  # serve the production build
+npm run lint   # run ESLint
 ```
 
-3. Create a `.env.local` (copy `.env.example` if provided) and add required values (see Environment Variables below)
+## Project Structure
 
-4. Run the development server
-
-```bash
-npm run dev
-# open http://localhost:3000
 ```
-
-## Interactive API Documentation (Scalar)
-
-This project links to a live Scalar-based API reference. Scalar renders the OpenAPI spec and exposes an interactive docs UI.
-
-- Live Scalar UI: https://sb-ite-basic-course-api-production.up.railway.app/scalar
-- OpenAPI JSON: https://sb-ite-basic-course-api-production.up.railway.app/v3/api-docs
-
-If you run the backend locally, serve the OpenAPI JSON at `/v3/api-docs` and open `/scalar` (or the local docs path) to use the interactive tester.
-
-## Core API Endpoints (summary)
-
-Below are some of the primary endpoints surfaced in the OpenAPI spec. For the full list, open the Scalar docs linked above.
-
-- GET /api/v1/platform/staff/{userId} — Get staff detail (Auth: Bearer required)
-- PUT /api/v1/sales-channels/{id} — Update sales channel (Auth: Bearer required)
-- DELETE /api/v1/sales-channels/{id} — Delete sales channel (Auth: Bearer required)
-- GET /api/v1/store/{slug} — Get store by slug (may be public or protected depending on implementation)
-
-Note: Many endpoints are under `/api/v1/...`. Use the OpenAPI JSON or Scalar UI to view request/response schemas and example payloads.
+.
+├── public/                    # Static assets (images, icons, ...)
+├── src/
+│   ├── app/                   # Next.js App Router — pages & routes
+│   │   ├── store/             # Public storefront (browse, product, checkout)
+│   │   ├── cart/              # Cart
+│   │   ├── register/          # User & business registration
+│   │   ├── profile/           # Account management
+│   │   ├── user-profile/      # Account management
+│   │   ├── payment-history/   # Payments & receipts
+│   │   ├── receipt/           # Order receipts
+│   │   ├── about/             # Marketing page
+│   │   ├── feature/           # Marketing page
+│   │   ├── support/           # Marketing page
+│   │   ├── privacy/           # Legal
+│   │   ├── privacy-policy/    # Legal
+│   │   ├── offline/           # Offline fallback page
+│   │   ├── api/               # Route handlers (auth, health, v1 backend proxy)
+│   │   ├── sitemap.ts         # SEO — dynamic sitemap
+│   │   ├── robots.ts          # SEO — robots.txt
+│   │   ├── layout.tsx         # Root layout
+│   │   └── page.tsx           # Landing redirect (/ → /store)
+│   ├── components/            # UI components, organized per feature/page
+│   ├── features/              # Domain logic (auth, cart, checkout, payment, shop, user, ...)
+│   ├── lib/                   # Shared utilities, API clients, SEO helpers, validations
+│   ├── hooks/                 # Shared React hooks
+│   ├── i18n/                  # next-intl request config
+│   └── store/                 # Redux store & hooks
+├── next.config.ts             # Next.js configuration
+├── eslint.config.mjs          # ESLint configuration
+├── tsconfig.json              # TypeScript configuration
+├── components.json            # shadcn/ui configuration
+└── package.json               # NPM dependencies and scripts
+```
 
 ## Environment Variables
 
-Create a `.env.local` with the values below (adjust names to match the project's config loader).
+Create a `.env` (or `.env.local`) with the keys below.
 
-| Key | Default | Description |
-|---|---:|---|
-| `NODE_ENV` | `development` | Node environment |
-| `PORT` | `3000` | Frontend server port |
-| `API_BASE_URL` | `https://sb-ite-basic-course-api-production.up.railway.app` | Base URL for backend API |
-| `SCALAR_DOCS_URL` | `https://sb-ite-basic-course-api-production.up.railway.app/scalar` | Scalar docs URL |
-| `SCALAR_TOKEN` | (none) | Optional: bearer token for testing authenticated calls locally |
+<table width="90%">
+  <thead>
+    <tr>
+      <th width="40%">Key</th>
+      <th width="60%">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>BETTER_AUTH_SECRET</code></td>
+      <td>Secret used to sign/encrypt auth sessions</td>
+    </tr>
+    <tr>
+      <td><code>BETTER_AUTH_URL</code></td>
+      <td>Base URL of the auth service</td>
+    </tr>
+    <tr>
+      <td><code>KEYCLOAK_CLIENT_ID</code></td>
+      <td>Keycloak client ID used for OAuth login</td>
+    </tr>
+    <tr>
+      <td><code>KEYCLOAK_ISSUER</code></td>
+      <td>Keycloak realm issuer URL</td>
+    </tr>
+    <tr>
+      <td><code>API_BASE_URL</code></td>
+      <td>Base URL of the backend API the frontend proxies to</td>
+    </tr>
+    <tr>
+      <td><code>NEXT_PUBLIC_WS_URL</code></td>
+      <td>Web Socket endpoint: {backend_url}/ws/notifications-sockjs</td>
+    </tr>
+  </tbody>
+</table>
 
-## Usage examples
-
-Fetch OpenAPI JSON
-
-```bash
-curl -sS https://sb-ite-basic-course-api-production.up.railway.app/v3/api-docs | jq .
-```
-
-Authenticated request example (curl)
-
-```bash
-curl -sS -H "Authorization: Bearer <TOKEN>" \
-  https://sb-ite-basic-course-api-production.up.railway.app/api/v1/platform/staff/<USER_ID>
-```
-
-JavaScript (fetch)
-
-```js
-const token = process.env.SCALAR_TOKEN;
-fetch(`${process.env.API_BASE_URL}/api/v1/platform/staff/USER_ID`, {
-  headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-})
-.then(r => r.json())
-.then(console.log)
-.catch(console.error)
-```
-
-Python (requests)
-
-```py
-import os
-import requests
-
-TOKEN = os.getenv('SCALAR_TOKEN')
-BASE = os.getenv('API_BASE_URL', 'https://sb-ite-basic-course-api-production.up.railway.app')
-resp = requests.get(f"{BASE}/api/v1/platform/staff/USER_ID", headers={'Authorization': f'Bearer {TOKEN}'})
-print(resp.status_code)
-print(resp.json())
-```
 
 ## Errors & Troubleshooting
 
@@ -136,7 +160,4 @@ print(resp.json())
 - 413: request payload too large — reduce size or send in chunks
 - CORS errors (browser): ensure the API allows the requesting origin or use the Scalar UI to test server-side
 
-## Contributing
-
-Contributions are welcome. Please open an issue or a pull request. Include tests and keep changes focused and small.
 
