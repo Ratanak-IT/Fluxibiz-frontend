@@ -44,6 +44,8 @@ export interface StorefrontOrderItem {
     quantity: number;
     unitPrice: number;
     lineTotal: number;
+    /** Options this line was ordered with, already rendered — "Sugar Level: 50%". */
+    selections?: string[];
 }
 
 export interface StorefrontOrder {

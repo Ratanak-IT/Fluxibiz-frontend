@@ -7,8 +7,9 @@ import SearchFilterBar from "@/components/store/detailstore/button";
 
 import CartSidebar from "@/components/store/detailstore/cart-sidebar";
 import StoreCard from "@/components/store/detailstore/store-card";
+import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
 import { MenuItemData, isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
-import { ChevronLeft, UtensilsCrossed } from "lucide-react";
+import { ChevronLeft, Clock, UtensilsCrossed } from "lucide-react";
 import Link from "next/link";
 import { StorePageSkeleton } from "@/components/common/Skeletons";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
@@ -18,7 +19,14 @@ import {
 } from "@/features/store-api/store-api";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 
-import { StorefrontItemResponse, primaryItemImage } from "@/lib/type/storeType";
+import {
+  StorefrontItemResponse,
+  primaryItemImage,
+  itemPriceRange,
+  sellingPriceFrom,
+  remainingStock,
+  isStorefrontOpen,
+} from "@/lib/type/storeType";
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import ProductList from "@/components/store/detailstore/product-list";
 import { formatPrice } from "@/lib/store/productdetail/product";
@@ -29,13 +37,23 @@ function toMenuItem(
   currency?: string
 ): MenuItemData {
   const isOutOfStock = isItemOutOfStock(item);
+  // An item sold in options is never sold as itself, so its own price is
+  // empty and the options carry the real ones.
+  const range = itemPriceRange(item);
+  const hasOwnPrice = item.price !== undefined && item.price !== null;
   return {
     id: item.id,
     name: item.name,
-    price:
-      item.price !== undefined && item.price !== null
-        ? String(item.price)
-        : "0",
+    // An unpriced item is not a free one, so it carries no price at all.
+    price: hasOwnPrice
+      ? String(item.price)
+      : range
+        ? String(range.min)
+        : undefined,
+    priceMax:
+      !hasOwnPrice && range && range.max > range.min
+        ? String(range.max)
+        : undefined,
     compareAtPrice:
       item.compareAtPrice !== undefined && item.compareAtPrice !== null
         ? String(item.compareAtPrice)
@@ -46,8 +64,7 @@ function toMenuItem(
     category: item.itemGroup?.name ?? fallbackCategory,
     image: primaryItemImage(item) ?? "",
     status: item.status,
-    quantity: item.quantity ?? item.stock ?? undefined,
-    stock: item.stock ?? item.quantity ?? undefined,
+    remaining: remainingStock(item),
     isOutOfStock,
     rawItem: item,
   };
@@ -112,7 +129,9 @@ export default function StoreDetail({
     // Price range filter
     if (selectedPriceRange !== "All Prices") {
       result = result.filter((item) => {
-        const price = Number(item.price ?? 0);
+        // The least it can be bought for, so an item priced only through its
+        // options is filtered on a price it really has rather than on zero.
+        const price = sellingPriceFrom(item) ?? 0;
         switch (selectedPriceRange) {
           case "Under $2":
             return price < 2;
@@ -131,9 +150,13 @@ export default function StoreDetail({
     // Sort
     const sorted = [...result];
     if (sortBy === "Price: Low to High") {
-      sorted.sort((a, b) => Number(a.price ?? 0) - Number(b.price ?? 0));
+      sorted.sort(
+        (a, b) => (sellingPriceFrom(a) ?? 0) - (sellingPriceFrom(b) ?? 0),
+      );
     } else if (sortBy === "Price: High to Low") {
-      sorted.sort((a, b) => Number(b.price ?? 0) - Number(a.price ?? 0));
+      sorted.sort(
+        (a, b) => (sellingPriceFrom(b) ?? 0) - (sellingPriceFrom(a) ?? 0),
+      );
     } else if (sortBy === "Name: A to Z") {
       sorted.sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -160,6 +183,11 @@ export default function StoreDetail({
       ? `${storeDetail.openTime} - ${storeDetail.closeTime}`
       : t("common.openAllDay"));
 
+  // The online store's own hours, as the checkout enforces them — not the
+  // shopfront's opening times, which say nothing about the web.
+  const storefrontOpen = isStorefrontOpen(storeDetail);
+  const todayHours = useTodayHoursLabel(storeDetail?.onlineHours);
+
   const storeData: StoreCardData | undefined = storeDetail
     ? {
         id: storeDetail.id,
@@ -174,6 +202,8 @@ export default function StoreDetail({
         closeTime: storeDetail.closeTime ?? undefined,
         image: resolvedImage,
         discountLabel: storeDetail.discountLabel,
+        isOpen: storefrontOpen,
+        onlineHours: storeDetail.onlineHours,
       }
     : undefined;
 
@@ -235,6 +265,18 @@ export default function StoreDetail({
               />
             </div>
           </div>
+
+          {/* Said once, at the top: the menu below is still worth reading,
+              but nothing on it can be ordered until the shop reopens. */}
+          {storeDetail && !storefrontOpen ? (
+            <div className="mt-6 px-4 sm:px-6 md:px-12 lg:px-20">
+              <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-400">
+                <Clock className="h-4 w-4 shrink-0" />
+                <span className="font-bold">{t("detail.storeClosed")}</span>
+                {todayHours ? <span>· {todayHours}</span> : null}
+              </div>
+            </div>
+          ) : null}
 
           <div className="px-4 sm:px-6 md:px-12 lg:px-20">
             <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">

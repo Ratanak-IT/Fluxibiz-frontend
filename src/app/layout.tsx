@@ -1,5 +1,7 @@
-import type { Metadata } from "next";
+import LayoutShell from "@/components/tma/LayoutShell";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import ReactDOM from "react-dom";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
@@ -17,14 +19,15 @@ import "./about/about.css";
 import { NetworkStatusBanner } from "@/components/common/NetworkStatusBanner";
 import { OfflineGate } from "@/components/offline/OfflineGate";
 import { ConnectionProvider } from "@/components/offline/ConnectionProvider";
+import { SITE_URL, STORE_URL, absoluteUrl } from "@/lib/seo";
 
-
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fluxibiz.store";
+export const viewport: Viewport = {
+  themeColor: "#00932A",
+};
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   manifest: "/manifest.json",
-  themeColor: "#00932A",
   title: {
     default: "FluxiBiz - Run your whole business from one screen",
     template: "%s | FluxiBiz",
@@ -41,9 +44,12 @@ export const metadata: Metadata = {
     "Cambodia POS",
     "Online Storefront",
   ],
-  authors: [{ name: "FluxiBiz Team", url: siteUrl }],
+  authors: [{ name: "FluxiBiz Team", url: SITE_URL }],
   creator: "FluxiBiz",
   publisher: "FluxiBiz",
+  alternates: {
+    canonical: STORE_URL,
+  },
   robots: {
     index: true,
     follow: true,
@@ -55,23 +61,26 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/image/footer/fluxibiz-lightmode.png",
-    shortcut: "/image/footer/fluxibiz-lightmode.png",
-    apple: "/image/footer/fluxibiz-lightmode.png",
-  },
+  icon: [
+    { url: absoluteUrl("/favicon.ico") },
+    { url: absoluteUrl("/favicon.png?v=2"), type: "image/png" },
+  ],
+  shortcut: absoluteUrl("/favicon.ico"),
+  apple: absoluteUrl("/favicon.png?v=2"),
+},
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: siteUrl,
+    url: STORE_URL,
     siteName: "FluxiBiz",
     title: "FluxiBiz - Run your whole business from one screen",
     description:
       "The all-in-one point-of-sale, inventory, commerce, and business management platform for growing teams.",
     images: [
       {
-        url: "/desktop-view.png",
-        width: 1200,
-        height: 630,
+        url: absoluteUrl("/thumbnail/thumbnail1.png?v=2"),
+        width: 1536,
+        height: 1024,
         alt: "FluxiBiz Business Platform Preview",
       },
     ],
@@ -81,7 +90,7 @@ export const metadata: Metadata = {
     title: "FluxiBiz - Run your whole business from one screen",
     description:
       "The all-in-one point-of-sale, inventory, commerce, and business management platform for growing teams.",
-    images: ["/desktop-view.png"],
+    images: [absoluteUrl("/thumbnail/thumbnail1.png?v=2")],
     creator: "@FluxiBiz",
   },
 };
@@ -93,8 +102,17 @@ interface RootLayoutProps {
 export default async function RootLayout({
   children,
 }: Readonly<RootLayoutProps>) {
-  // Reads "en" or "km" from src/i18n/request.ts
   const locale = await getLocale();
+  ReactDOM.preconnect("https://fonts.googleapis.com");
+  ReactDOM.preconnect("https://fonts.gstatic.com", { crossOrigin: "anonymous" });
+
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "FluxiBiz",
+    url: STORE_URL,
+    logo: absoluteUrl("/favicon.png?v=2"),
+  };
 
   return (
     <html
@@ -107,7 +125,11 @@ export default async function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <NextIntlClientProvider>
           <NetworkStatusBanner />
           <StoreProvider>
@@ -117,20 +139,20 @@ export default async function RootLayout({
                 defaultTheme="light"
                 enableSystem
               >
-                <Navbar />
+                
 
-                <main className="flex-1">
+                <LayoutShell>
                   <ConnectionProvider>
-                   
+
                     <OfflineGate>
                       {children}
                     </OfflineGate>
-                   
-                  </ConnectionProvider>
-                 
-                </main>
 
-                <Footer />
+                  </ConnectionProvider>
+
+                </LayoutShell>
+
+                
 
                 <Toaster
                   position="top-right"

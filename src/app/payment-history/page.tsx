@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import PaymentHistoryComponent from "@/components/payment-history/payment-history-component";
 import StoreNavbar from "@/components/store/store-component/navbar";
+import { NOINDEX } from "@/lib/seo";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Payment History - FluxiBiz",
   description: "View your receipts and past transactions across all stores.",
+  robots: NOINDEX,
 };
 
 export default function PaymentHistoryPage() {

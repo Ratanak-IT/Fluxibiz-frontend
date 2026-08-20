@@ -267,13 +267,13 @@ export default function NavbarAfterLoginComponent({
 
         {/* Desktop actions */}
         <div className="hidden items-center gap-4 lg:flex">
-          <ThemeToggle />
+          <ThemeToggle variant="after-login" />
 
           <LanguageSwitcherButtonComponent
             variant="after-login"
           />
 
-          <StyledCartDrawer />
+          <CartDrawer variant="after-login" />
 
           <UserDropdown
             user={user}
@@ -284,6 +284,9 @@ export default function NavbarAfterLoginComponent({
 
         {/* Mobile actions */}
         <div className="flex items-center gap-1 lg:hidden">
+          <ThemeToggle variant="after-login" />
+          <CartDrawer variant="after-login" />
+
           <Sheet
             open={mobileNavOpen}
             onOpenChange={setMobileNavOpen}
@@ -296,7 +299,7 @@ export default function NavbarAfterLoginComponent({
                   variant="ghost"
                   size="icon"
                   className="
-                    size-9
+                    size-10
                     shrink-0
                     !bg-transparent
                     p-0
@@ -307,8 +310,6 @@ export default function NavbarAfterLoginComponent({
                     hover:text-primary
                     focus-visible:!bg-transparent
                     active:!bg-transparent
-
-                    sm:size-10
 
                     dark:!bg-transparent
                     dark:text-white
@@ -323,7 +324,7 @@ export default function NavbarAfterLoginComponent({
                 />
               }
             >
-              <Menu className="size-5 sm:size-6" />
+              <Menu className="size-6" />
             </SheetTrigger>
 
             <SheetContent
@@ -409,19 +410,8 @@ export default function NavbarAfterLoginComponent({
                 </SheetHeader>
 
                 {/* Theme */}
-                <div
-                  className="
-                    flex
-                    h-11
-                    shrink-0
-                    items-center
-                    justify-start
-                    px-3
-                  "
-                >
-                  <div className="grid size-10 shrink-0 place-items-center">
-                    <ThemeToggle mobile />
-                  </div>
+                <div className="h-11 w-full shrink-0">
+                  <ThemeToggle mobile showLabel variant="after-login" />
                 </div>
 
                 {/* User information */}
@@ -674,54 +664,7 @@ export default function NavbarAfterLoginComponent({
   );
 }
 
-/**
- * Same cart style for desktop, tablet, and phone:
- * - 48px button
- * - 28px icon
- * - transparent background in every state
- * - secondary icon stroke on hover
- */
-function StyledCartDrawer() {
-  return (
-    <div
-      className="
-        group
-        grid
-        size-12
-        shrink-0
-        place-items-center
 
-        [&_button]:size-12
-        [&_button]:min-h-12
-        [&_button]:min-w-12
-        [&_button]:rounded-full
-        [&_button]:!bg-transparent
-        [&_button]:p-0
-        [&_button]:text-[#4b5563]
-        [&_button]:shadow-none
-
-        [&_button:hover]:!bg-transparent
-        [&_button:focus-visible]:!bg-transparent
-        [&_button:active]:!bg-transparent
-
-        [&_svg]:size-7
-        [&_svg]:stroke-current
-        [&_svg]:transition-colors
-        [&_svg]:duration-200
-
-        hover:[&_svg]:stroke-secondary
-
-        dark:[&_button]:!bg-transparent
-        dark:[&_button]:text-white
-        dark:[&_button:hover]:!bg-transparent
-        dark:[&_button:focus-visible]:!bg-transparent
-        dark:[&_button:active]:!bg-transparent
-      "
-    >
-      <CartDrawer />
-    </div>
-  );
-}
 
 function UserDropdown({
   user,
@@ -768,7 +711,7 @@ function UserDropdown({
       >
         <Avatar
           className="
-            size-11
+            size-10
             border
             border-[#e5e7eb]
             transition-colors

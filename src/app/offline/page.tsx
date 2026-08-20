@@ -1,6 +1,13 @@
 
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import { NO_INTERNET_IMAGE_BASE64 } from '@/components/offline/no-internet-base64';
+import { NOINDEX } from '@/lib/seo';
+
+export const metadata: Metadata = {
+  title: 'No Internet Connection',
+  robots: NOINDEX,
+};
 
 export default function OfflinePage() {
   return (

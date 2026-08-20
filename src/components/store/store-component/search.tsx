@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { Clock, Loader2, Search, SearchX, X } from "lucide-react"
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog"
@@ -290,7 +291,7 @@ const SearchDrawer = ({
               ) : results.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 no-scrollbar xl:max-h-80 xl:overflow-y-auto">
                   {results.map((store) => (
-                    <DialogClose key={store.id}>
+                    <DialogClose key={store.id} className="w-full text-left">
                       <Link
                         href={`/store/${store.slug || store.id}`}
                         onClick={() => addRecent(currentValue)}
@@ -302,6 +303,7 @@ const SearchDrawer = ({
                           rounded-xl
                           px-3.5
                           py-2.5
+                          text-left
                           text-foreground
                           dark:text-[#f3f7f4]
                           transition-colors
@@ -310,9 +312,12 @@ const SearchDrawer = ({
                         "
                       >
                         {store.image ? (
-                          <img
+                          <Image
                             src={store.image}
                             alt={store.name}
+                            width={48}
+                            height={48}
+                            unoptimized
                             className="h-12 w-12 shrink-0 rounded-full object-cover"
                           />
                         ) : (
@@ -320,10 +325,10 @@ const SearchDrawer = ({
                             {store.name?.charAt(0)}
                           </div>
                         )}
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate font-semibold text-base dark:text-[#f3f7f4]">{store.name}</p>
+                        <div className="min-w-0 flex-1 text-left">
+                          <p className="truncate text-left font-semibold text-base dark:text-[#f3f7f4]">{store.name}</p>
                           {store.category && (
-                            <p className="truncate text-xs sm:text-sm text-muted-foreground dark:text-[#a7b4ad]">
+                            <p className="truncate text-left text-xs sm:text-sm text-muted-foreground dark:text-[#a7b4ad]">
                               {store.category}
                             </p>
                           )}

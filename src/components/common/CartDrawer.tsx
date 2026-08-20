@@ -42,6 +42,7 @@ import {
     isCartLineOutOfStock,
     apiErrorMessage,
     formatStockErrorMessage,
+    billedUnitPrice,
     type CartLine,
     type StoreCart,
 } from "@/lib/type/cartType";
@@ -56,6 +57,7 @@ type CartDrawerProps = {
     iconClassName?: string;
     iconSize?: number;
     iconTrigger?: boolean;
+    variant?: "before-login" | "after-login";
 };
 
 export default function CartDrawer({
@@ -63,8 +65,8 @@ export default function CartDrawer({
     triggerClassName,
     buttonClassName,
     iconClassName,
-    iconSize = 25,
-
+    iconSize = 24,
+    variant = "after-login",
 }: CartDrawerProps) {
     const t = useTranslations("Cart");
     const [open, setOpen] = useState(false);
@@ -73,20 +75,38 @@ export default function CartDrawer({
     const { data: cart, isLoading } = useGetCartQuery(undefined, { skip: !isAuthenticated });
 
     const totalItems = cart?.totalItems ?? 0;
+    const isAfterLogin = variant === "after-login";
 
     const triggerElement = children ? (
         children as React.ReactElement
     ) : (
         <Button
+            type="button"
             variant="ghost"
             size="icon"
-            className={`relative rounded-full ${buttonClassName ?? ""}`}
+            className={cn(
+                "group relative size-10 min-h-10 min-w-10 shrink-0 rounded-full !bg-transparent p-0 text-[#4b5563] shadow-none hover:!bg-transparent focus-visible:!bg-transparent active:!bg-transparent dark:!bg-transparent dark:text-white dark:hover:!bg-transparent",
+                isAfterLogin ? "hover:text-secondary" : "hover:text-primary",
+                buttonClassName
+            )}
             aria-label={`Shopping cart with ${totalItems} items`}
         >
-            <ShoppingCart size={iconSize} className={iconClassName} />
+            <span
+                aria-hidden="true"
+                className="relative grid size-6 shrink-0 place-items-center"
+            >
+                <ShoppingCart
+                    className={cn(
+                        "size-6 stroke-current transition-colors duration-200",
+                        isAfterLogin ? "group-hover:stroke-secondary" : "group-hover:stroke-primary",
+                        iconClassName
+                    )}
+                    strokeWidth={2}
+                />
+            </span>
 
             {totalItems > 0 && (
-                <span className="absolute right-0 top-0.5 flex min-w-4.5 h-4.5 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold leading-none text-white shadow-xs">
+                <span className="absolute -right-0.5 -top-0.5 flex min-w-5 h-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[11px] font-bold leading-none text-white shadow-sm ring-2 ring-white dark:ring-background">
                     {totalItems > 99 ? "99+" : totalItems}
                 </span>
             )}
@@ -372,7 +392,8 @@ function LineRow({
             });
     };
 
-    const currentSubtotal = line.unitPrice * pendingQty;
+    // Extras included: they are billed with the line, so they show with it.
+    const currentSubtotal = billedUnitPrice(line) * pendingQty;
 
     return (
         <div

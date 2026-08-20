@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 
+import Image from 'next/image'
 import { motion } from 'motion/react'
 
 import { Carousel, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
@@ -41,15 +42,12 @@ const DEFAULT_IMAGES = [
   }
 ]
 
-const THETA = 10 // rotateY per step (deg) – flat "peeking" look, not a tight cylinder
-const AUTO_PLAY_MS = 1500 // how long each slide stays active before advancing
-const SIDE_HEIGHT_BOOST_RATIO = 0.14 // scales with card height instead of a fixed 60px
+const THETA = 10 
+const AUTO_PLAY_MS = 1500 
+const SIDE_HEIGHT_BOOST_RATIO = 0.14 
 
 const SPRING = { type: 'spring' as const, stiffness: 280, damping: 26, mass: 0.85 }
 
-// Responsive dimension hook — desktop values are IDENTICAL to your original
-// module constants (800 / 442 / 300 / 32), so desktop shape is unchanged.
-// Only phone/tablet get their own sizes so the card actually fits those screens.
 function useResponsiveDims() {
   const [dims, setDims] = React.useState({
     CARD_WIDTH: 800,
@@ -68,7 +66,7 @@ function useResponsiveDims() {
 
         setDims({
           CARD_WIDTH: cardW,
-          CARD_HEIGHT: Math.round(cardW * 0.55), // same ~1.8:1 ratio as desktop (800/442)
+          CARD_HEIGHT: Math.round(cardW * 0.55),
           X_STEP: cardW * 0.42,
           RADIUS: 20
         })
@@ -76,12 +74,11 @@ function useResponsiveDims() {
         // tablet
         setDims({
           CARD_WIDTH: 520,
-          CARD_HEIGHT: 287, // same ~1.8:1 ratio as desktop
+          CARD_HEIGHT: 287, 
           X_STEP: 220,
           RADIUS: 26
         })
       } else {
-        // desktop — untouched, matches your original constants exactly
         setDims({
           CARD_WIDTH: 800,
           CARD_HEIGHT: 442,
@@ -194,13 +191,18 @@ const BannerCarousel = () => {
                 animate={{ height: cardHeight(offset) }}
                 transition={SPRING}
               >
-                {/* Banner — back to plain object-cover, same as your original */}
-                <img
+                {/* Banner — the active (offset 0) slide is the LCP candidate on
+                    this page, so it alone gets priority + eager loading;
+                    every other slide stays lazy. */}
+                <Image
                   src={slide.image}
-                  alt={slide.title}
-                  className='absolute inset-0 size-full object-cover object-center'
+                  alt={slide.title || 'FluxiBiz storefront banner'}
+                  fill
+                  sizes='(max-width: 640px) 78vw, (max-width: 1024px) 520px, 800px'
+                  className='object-cover object-center'
                   draggable={false}
-                  loading='lazy'
+                  priority={offset === 0}
+                  loading={offset === 0 ? undefined : 'lazy'}
                 />
 
                 <div className='absolute inset-0 to-transparent' />

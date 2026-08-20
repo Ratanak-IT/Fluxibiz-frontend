@@ -6,7 +6,16 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
-import { ItemAttribute, StorefrontItemResponse, ItemVariant, primaryItemImage } from "@/lib/type/storeType";
+import {
+  StorefrontItemResponse,
+  ItemVariant,
+  ItemUomConversion,
+  primaryItemImage,
+  isVariantSelectable,
+  sellableAddOns,
+  type ChannelSchedule,
+} from "@/lib/type/storeType";
+import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
 import { useAuth } from "@/features/auth/useAuth";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
 import {formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
@@ -19,6 +28,10 @@ interface ProductDetailProps {
   storeName?: string;
   currency?: string;
   isLoading?: boolean;
+  /** Whether the online store is taking orders right now. */
+  isStoreOpen?: boolean;
+  /** The hours the shop set for its Online Store, when it set any. */
+  onlineHours?: ChannelSchedule | null;
 }
 
 const EMPTY_ATTRIBUTES: ItemAttribute[] = [];
@@ -29,14 +42,22 @@ export default function ProductDetail({
   storeName,
   currency,
   isLoading = false,
+  isStoreOpen = true,
+  onlineHours,
 }: ProductDetailProps) {
   const t = useTranslations("Store");
   const tCart = useTranslations("Cart");
   const { isAuthenticated, status: authStatus, login } = useAuth();
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
+  const todayHours = useTodayHoursLabel(onlineHours);
 
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
+  /** null is the item itself — one of its base unit, rather than a pack. */
+  const [selectedPack, setSelectedPack] = useState<ItemUomConversion | null>(null);
+  /** The extras ticked, by id. Nothing is ticked to start with: an extra is
+      something the shopper asks for, never something they have to untick. */
+  const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
 
   const variants = useMemo<ItemVariant[]>(() => item?.variants ?? [], [item]);
@@ -44,19 +65,34 @@ export default function ProductDetail({
 
   useEffect(() => {
     if (variants.length > 0) {
-      setSelectedVariant(variants[0]);
+      // Land on something the shopper can actually buy. Defaulting to the
+      // first option put them on a sold-out size with the button greyed out
+      // and no hint that another size was in stock.
+      setSelectedVariant(variants.find(isVariantSelectable) ?? variants[0]);
     } else {
       setSelectedVariant(null);
     }
 
+    // Keyed by the stored value, not the label: that is the identity the
+    // chips compare against and the only thing the API accepts. Seeding it
+    // with the label meant the pre-selected chip never showed as active
+    // whenever a value had one.
     const initialAttrs: Record<string, string> = {};
-    attributes.forEach((attr) => {
-      const firstVal = attr.values?.[0];
-      if (firstVal) {
-        initialAttrs[attr.name] = firstVal.label || firstVal.value;
-      }
-    });
+    attributes
+      .filter((attr) => (attr.placement ?? "OPTION") === "OPTION")
+      .forEach((attr) => {
+        const firstVal =
+          attr.values?.find((value) => value.available !== false) ??
+          attr.values?.[0];
+        if (firstVal) {
+          initialAttrs[attr.name] = firstVal.value;
+        }
+      });
     setSelectedAttributes(initialAttrs);
+    // A pack belongs to the option it was declared for, so a new item starts
+    // back at the single.
+    setSelectedPack(null);
+    setSelectedAddOnIds([]);
     setQuantity(1);
   }, [item, variants, attributes]);
 
@@ -158,10 +194,32 @@ export default function ProductDetail({
       return;
     }
 
+    // The basket refuses an out-of-hours add anyway; saying so here costs a
+    // shopper nothing and spares them a request that was never going to work.
+    if (!isStoreOpen) {
+      toast.error(
+        todayHours
+          ? `${t("detail.storeClosed")} — ${todayHours}`
+          : t("detail.storeClosed"),
+      );
+      return;
+    }
+
     if (!isAuthenticated && authStatus !== "loading") {
       login();
       return;
     }
+
+    // Priced from the item's own library, and only the ones it still sells:
+    // the server checks the same thing, so a stale tick is refused rather
+    // than billed.
+    const extras = sellableAddOns(item).filter((addOn) =>
+      selectedAddOnIds.includes(addOn.id),
+    );
+    const extrasPerUnit = extras.reduce(
+      (total, addOn) => total + Number(addOn.price ?? 0),
+      0,
+    );
 
     try {
       await addToCartMutation({
@@ -169,11 +227,31 @@ export default function ProductDetail({
         itemId: item.id,
         quantity,
         variantId: selectedVariant?.id,
+        // Which unit is being bought. Absent means one of the base unit —
+        // a pack is priced in its own right, so the server needs to know.
+        unitId: selectedPack?.unit?.id,
+        // What the shopper actually picked. These used to be collected and
+        // then dropped on the floor: the basket had no field for them, so a
+        // drink ordered at 50% sugar reached the counter saying nothing.
+        selections: Object.entries(selectedAttributes).map(
+          ([attributeName, value]) => ({ attributeName, value }),
+        ),
+        // The extras ticked. Only ids travel — the shop's prices are the
+        // shop's to state, and a browser does not get to name them.
+        addOnIds: extras.map((addOn) => addOn.id),
         itemDetails: {
           name: item.name,
-          price: selectedVariant?.price ?? item.price,
+          price:
+            Number(
+              selectedPack?.price ?? selectedVariant?.price ?? item.price ?? 0,
+            ) + extrasPerUnit,
           imageUrl: primaryItemImage(item),
           currency: currency,
+          addOns: extras.map((addOn) => ({
+            addOnId: addOn.id,
+            name: addOn.name,
+            unitPrice: Number(addOn.price ?? 0),
+          })),
         },
       }).unwrap();
 
@@ -193,23 +271,27 @@ export default function ProductDetail({
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 my-6 sm:my-8">
-      <div className="w-full overflow-hidden rounded-2xl bg-white shadow-xs border border-neutral-100 dark:border-neutral-800 dark:bg-card">
-        <ProductStorefrontUI
-          item={item}
-          currency={currency}
-          storeSlug={storeSlug}
-          storeName={storeName}
-          onAddToCart={handleAddToCart}
-          isAddingToCart={isAdding}
-          quantity={quantity}
-          setQuantity={setQuantity}
-          selectedVariant={selectedVariant}
-          setSelectedVariant={setSelectedVariant}
-          selectedAttributes={selectedAttributes}
-          setSelectedAttributes={setSelectedAttributes}
-        />
-      </div>
+    <div className="mx-auto max-w-5xl bg-[#f7f8f7] dark:bg-[#121620] max-sm:dark:bg-background sm:rounded-2xl sm:my-8 overflow-hidden shadow-sm border border-neutral-100 dark:border-neutral-800">
+      <ProductStorefrontUI
+        item={item}
+        currency={currency}
+        storeSlug={storeSlug}
+        storeName={storeName}
+        onAddToCart={handleAddToCart}
+        isAddingToCart={isAdding}
+        quantity={quantity}
+        setQuantity={setQuantity}
+        selectedVariant={selectedVariant}
+        setSelectedVariant={setSelectedVariant}
+        selectedAttributes={selectedAttributes}
+        setSelectedAttributes={setSelectedAttributes}
+        selectedPack={selectedPack}
+        setSelectedPack={setSelectedPack}
+        selectedAddOnIds={selectedAddOnIds}
+        setSelectedAddOnIds={setSelectedAddOnIds}
+        isStoreOpen={isStoreOpen}
+        onlineHours={onlineHours}
+      />
     </div>
   );
 }

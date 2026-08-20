@@ -742,7 +742,28 @@
       "backToStore": "ត្រឡប់ទៅហាង",
       "menu": "មុខម្ហូប",
       "storeLogo": "រូបសញ្ញាហាង",
-      "productImage": "រូបភាពផលិតផល"
+      "productImage": "រូបភាពផលិតផល",
+      "openToday": "ថ្ងៃនេះបើក {hours}",
+      "closedToday": "ថ្ងៃនេះបិទ",
+      "allHours": "ម៉ោងទាំងអស់",
+      "days": {
+        "MON": "ច័ន្ទ",
+        "TUE": "អង្គារ",
+        "WED": "ពុធ",
+        "THU": "ព្រហស្បតិ៍",
+        "FRI": "សុក្រ",
+        "SAT": "សៅរ៍",
+        "SUN": "អាទិត្យ"
+      },
+      "daysShort": {
+        "MON": "ច័ន្ទ",
+        "TUE": "អង្គារ",
+        "WED": "ពុធ",
+        "THU": "ព្រហ.",
+        "FRI": "សុក្រ",
+        "SAT": "សៅរ៍",
+        "SUN": "អាទិត្យ"
+      }
     },
     "listing": {
       "noStoresFound": "រកមិនឃើញហាង",
@@ -822,7 +843,16 @@
       "product": "ផលិតផល",
       "optionNumber": "ជម្រើសទី {number}",
       "notAvailableForOrdering": "ផលិតផលនេះមិនទាន់អាចបញ្ជាទិញបានទេ។",
-      "outOfStock": "អស់ពីស្តុក"
+      "outOfStock": "អស់ពីស្តុក",
+      "priceNotSet": "មិនទាន់កំណត់តម្លៃ",
+      "soldAs": "លក់ជា",
+      "holds": "មាន {count} {unit}",
+      "onlyLeft": "នៅសល់តែ {count}",
+      "countLeft": "នៅសល់ {count}",
+      "colour": "ពណ៌",
+      "extras": "ការបន្ថែម",
+      "includingExtras": "រួមបញ្ចូល {amount} សម្រាប់ការបន្ថែម",
+      "storeClosed": "បិទនៅពេលនេះ"
     },
     "carousel": {
       "viewSlide": "មើល {title}",

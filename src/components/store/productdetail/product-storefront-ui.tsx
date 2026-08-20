@@ -4,21 +4,26 @@ import { useState, useMemo } from "react";
 import {
     Check,
     ChevronLeft,
+    Clock,
     ImageOff,
     Minus,
     Plus,
     ShoppingBag,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { attributeIcon } from "@/lib/api/attribute-icons";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/store/productdetail/product";
-import { StorefrontItemResponse, primaryItemImage, itemImageUrl, ItemAttributeValue, ItemAttribute, DescriptionBlockResponse } from "@/lib/type/storeType";
+import { StorefrontItemResponse, primaryItemImage, itemImageUrl, ItemAttributeValue, ItemAttribute, ItemVariant, ItemUomConversion, DescriptionBlockResponse, remainingStock, isVariantSelectable, sellableAddOns, type ChannelSchedule } from "@/lib/type/storeType";
+import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
+import { resolveMediaUrl } from "@/lib/type/cartType";
 import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
-// We extract displayOf for options
+const LOW_STOCK_THRESHOLD = 10;
+
 function displayOf(value: ItemAttributeValue) {
     return value.label || value.value;
 }
@@ -37,6 +42,12 @@ export function ProductStorefrontUI({
     setSelectedVariant,
     selectedAttributes,
     setSelectedAttributes,
+    selectedPack,
+    setSelectedPack,
+    selectedAddOnIds,
+    setSelectedAddOnIds,
+    isStoreOpen = true,
+    onlineHours,
     hideAddToCart = false,
 }: {
     item: StorefrontItemResponse;
@@ -48,16 +59,92 @@ export function ProductStorefrontUI({
     isAddingToCart?: boolean;
     quantity: number;
     setQuantity: React.Dispatch<React.SetStateAction<number>>;
-    selectedVariant: any;
-    setSelectedVariant: any;
+    selectedVariant: ItemVariant | null;
+    setSelectedVariant: React.Dispatch<React.SetStateAction<ItemVariant | null>>;
     selectedAttributes: Record<string, string>;
     setSelectedAttributes: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+    selectedPack: ItemUomConversion | null;
+    setSelectedPack: React.Dispatch<React.SetStateAction<ItemUomConversion | null>>;
+    selectedAddOnIds?: string[];
+    setSelectedAddOnIds?: React.Dispatch<React.SetStateAction<string[]>>;
+    isStoreOpen?: boolean;
+    onlineHours?: ChannelSchedule | null;
     hideAddToCart?: boolean;
 }) {
     const t = useTranslations("Store");
+    const todayHours = useTodayHoursLabel(onlineHours);
     const attributes = item.attributes || [];
-    const variants = item.variants || [];
-    const outOfStock = isItemOutOfStock(item);
+    const variants = useMemo(() => item.variants || [], [item.variants]);
+    const itemColors = useMemo(() => item.colors || [], [item.colors]);
+
+    const pickedSize = selectedVariant?.optionName || selectedVariant?.name || "";
+
+    const sizes = useMemo(() => {
+        const rows: { name: string; variant: ItemVariant }[] = [];
+        const seen = new Set<string>();
+
+        for (const variant of variants) {
+            const name = (variant.optionName || variant.name || "").trim();
+            const key = name.toLowerCase();
+
+            if (!name || seen.has(key)) continue;
+
+            seen.add(key);
+            rows.push({ name, variant });
+        }
+
+        return rows;
+    }, [variants]);
+
+    const colorsOnOffer = useMemo(() => {
+        if (!pickedSize) return [];
+
+        return variants
+            .filter(
+                (variant) =>
+                    (variant.optionName || variant.name || "").trim().toLowerCase() ===
+                        pickedSize.trim().toLowerCase() && variant.colorValue,
+            )
+            .map((variant) => ({
+                variant,
+                color: itemColors.find(
+                    (color) => color.value === variant.colorValue,
+                ),
+            }))
+            .filter((row) => row.color);
+    }, [variants, itemColors, pickedSize]);
+
+    const pickSize = (name: string) => {
+        const ofSize = variants.filter(
+            (variant) =>
+                (variant.optionName || variant.name || "").trim().toLowerCase() ===
+                name.trim().toLowerCase(),
+        );
+
+        const sameColour = ofSize.find(
+            (variant) => variant.colorValue === selectedVariant?.colorValue,
+        );
+
+        setSelectedVariant(
+            sameColour ?? ofSize.find(isVariantSelectable) ?? ofSize[0] ?? null,
+        );
+        setSelectedPack(null);
+    };
+    const remaining = remainingStock(
+        variants.length > 0 ? selectedVariant : item,
+    );
+    const outOfStock =
+        (variants.length > 0
+            ? !isVariantSelectable(selectedVariant)
+            : isItemOutOfStock(item)) ||
+        (remaining !== null &&
+            selectedPack !== null &&
+            remaining < (Number(selectedPack.factor) || 1));
+
+    const packFactor = selectedPack ? Number(selectedPack.factor) || 1 : 1;
+    const maxQuantity =
+        remaining === null ? null : Math.floor(remaining / packFactor);
+    const atStockCeiling = maxQuantity !== null && quantity >= maxQuantity;
 
     const options = attributes.filter(
         (attribute) =>
@@ -79,33 +166,85 @@ export function ProductStorefrontUI({
     const [imageIndex, setImageIndex] = useState(0);
     const [switched, setSwitched] = useState<Record<string, boolean>>({});
 
-    const activePrice = selectedVariant?.price !== undefined ? Number(selectedVariant.price) : Number(item.price || 0);
+    const selectedVariantId = selectedVariant?.id ?? null;
+    const selectedVariantImage = selectedVariant?.imageUrl ?? null;
+
+    const packs = useMemo(() => {
+        const all = item.uomConversions ?? [];
+        return all
+            .filter((pack) => pack.unit?.name && pack.price !== null && pack.price !== undefined)
+            .filter((pack) =>
+                selectedVariantId
+                    ? pack.variantId === selectedVariantId
+                    : !pack.variantId,
+            );
+    }, [item.uomConversions, selectedVariantId]);
+
+    const unitWord = (item.unit?.name || "unit").trim().toLowerCase();
+    const singleLabel = selectedVariant?.name
+        ? `One ${selectedVariant.name}`
+        : `One ${unitWord}`;
+
+    const singlePrice =
+        selectedVariant?.price !== undefined && selectedVariant?.price !== null
+            ? Number(selectedVariant.price)
+            : item.price === undefined || item.price === null
+                ? undefined
+                : Number(item.price);
+
+    const activePrice = selectedPack ? Number(selectedPack.price) : singlePrice;
+    const addOns = useMemo(() => sellableAddOns(item), [item]);
+    const ticked = useMemo(
+        () => addOns.filter((addOn) => (selectedAddOnIds ?? []).includes(addOn.id)),
+        [addOns, selectedAddOnIds],
+    );
+    const addOnsPerUnit = ticked.reduce(
+        (total, addOn) => total + Number(addOn.price ?? 0),
+        0,
+    );
+    const billedPrice =
+        activePrice === undefined ? undefined : activePrice + addOnsPerUnit;
+
     const compareAt = item.compareAtPrice ? Number(item.compareAtPrice) : 0;
     const discount =
-        compareAt && compareAt > activePrice
+        compareAt && activePrice !== undefined && compareAt > activePrice
             ? Math.round(((compareAt - activePrice) / compareAt) * 100)
             : 0;
 
-    // Resolve images
     const images = useMemo(() => {
-        if (item.images && item.images.length > 0) {
-            const list: string[] = [];
-            const sorted = [...item.images].sort(
-                (a, b) => (a.position ?? 0) - (b.position ?? 0)
-            );
-            sorted.forEach((img) => {
-                const url = itemImageUrl(img);
-                if (url) list.push(url);
-            });
-            if (list.length > 0) return list;
-        }
-        const prim = primaryItemImage(item);
-        if (prim) return [prim];
-        return [];
-    }, [item]);
+        const gallery: string[] = [];
 
-    // find variant index based on selectedVariant
-    const variantIndex = variants.findIndex(v => v.id === selectedVariant?.id);
+        const push = (url: string | null) => {
+            if (url && !gallery.includes(url)) gallery.push(url);
+        };
+
+        const sorted = [...(item.images ?? [])].sort(
+            (a, b) => (a.position ?? 0) - (b.position ?? 0),
+        );
+        sorted.forEach((img) => push(itemImageUrl(img)));
+
+        if (gallery.length === 0) push(primaryItemImage(item));
+        itemColors.forEach((color) => push(resolveMediaUrl(color.imageUrl)));
+        variants.forEach((option) => push(resolveMediaUrl(option.imageUrl)));
+
+        return gallery;
+    }, [item, variants, itemColors]);
+
+    const chosenImage =
+        resolveMediaUrl(
+            itemColors.find(
+                (color) => color.value === selectedVariant?.colorValue,
+            )?.imageUrl,
+        ) ?? resolveMediaUrl(selectedVariantImage);
+
+    const [shownChoice, setShownChoice] = useState<string | null>(null);
+
+    if (chosenImage && chosenImage !== shownChoice) {
+        setShownChoice(chosenImage);
+        const position = images.indexOf(chosenImage);
+        if (position >= 0) setImageIndex(position);
+    }
+
 
     return (
         <div className={cn(onClose ? "max-h-[90vh] overflow-y-auto scrollbar-none" : "w-full md:max-h-[90vh] md:overflow-y-auto scrollbar-none max-md:max-h-none max-md:overflow-visible")}>
@@ -152,10 +291,33 @@ export function ProductStorefrontUI({
                         </div>
                     )}
 
+                    {!isStoreOpen && (
+                        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-400 text-sm flex items-center gap-2">
+                            <Clock className="size-4 shrink-0" />
+                            <span className="font-bold">
+                                {t("detail.storeClosed")}
+                            </span>
+                            {todayHours ? <span>· {todayHours}</span> : null}
+                        </div>
+                    )}
+
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-2xl font-bold text-danger">
-                            {formatPrice(activePrice, currency)}
-                        </span>
+                        {billedPrice === undefined ? (
+                            <span className="text-base font-semibold text-[#657064] dark:text-[#94a3b8]">
+                                {t("detail.priceNotSet")}
+                            </span>
+                        ) : (
+                            <span className="text-2xl font-bold text-danger">
+                                {formatPrice(billedPrice, currency)}
+                            </span>
+                        )}
+                        {addOnsPerUnit > 0 ? (
+                            <span className="text-sm text-[#657064] dark:text-[#94a3b8]">
+                                {t("detail.includingExtras", {
+                                    amount: formatPrice(addOnsPerUnit, currency),
+                                })}
+                            </span>
+                        ) : null}
                         {discount ? (
                             <>
                                 <span className="text-sm text-[#7b857a] dark:text-[#94a3b8] line-through">
@@ -166,7 +328,11 @@ export function ProductStorefrontUI({
                                 </span>
                             </>
                         ) : null}
-                        {item.unit?.name ? (
+                        {selectedPack?.unit?.name ? (
+                            <span className="text-sm text-[#657064] dark:text-[#94a3b8]">
+                                per {selectedPack.unit.name}
+                            </span>
+                        ) : item.unit?.name ? (
                             <span className="text-sm text-[#657064] dark:text-[#94a3b8]">
                                 per {item.unit.name}
                             </span>
@@ -183,25 +349,122 @@ export function ProductStorefrontUI({
                         </p>
                     )}
 
-                    {variants.length > 0 ? (
+                    {sizes.length > 0 ? (
                         <OptionRow
-                            label="Option"
-                            value={selectedVariant?.name || selectedVariant?.title || "—"}
+                            label={t("detail.option")}
+                            value={pickedSize || "—"}
                         >
-                            {variants.map((option, index) => (
+                            {sizes.map(({ name, variant }) => (
                                 <Chip
-                                    key={`${option.name}-${index}`}
-                                    active={index === variantIndex}
-                                    onClick={() => setSelectedVariant(option)}
+                                    key={name}
+                                    active={
+                                        name.trim().toLowerCase() ===
+                                        pickedSize.trim().toLowerCase()
+                                    }
+                                    disabled={
+                                        !variants.some(
+                                            (row) =>
+                                                (row.optionName || row.name || "")
+                                                    .trim()
+                                                    .toLowerCase() ===
+                                                    name.trim().toLowerCase() &&
+                                                isVariantSelectable(row),
+                                        )
+                                    }
+                                    onClick={() => pickSize(name)}
                                 >
-                                    <span>{option.name || option.title}</span>
-                                    {option.price === undefined ? null : (
+                                    <span>{name}</span>
+                                    {variant.price === undefined ? null : (
                                         <span className="mt-0.5 block text-xs text-[#7b857a] dark:text-[#94a3b8]">
-                                            {formatPrice(Number(option.price), currency)}
+                                            {formatPrice(Number(variant.price), currency)}
                                         </span>
                                     )}
                                 </Chip>
                             ))}
+                        </OptionRow>
+                    ) : null}
+
+                    {colorsOnOffer.length > 0 ? (
+                        <OptionRow
+                            label={t("detail.colour")}
+                            value={selectedVariant?.colorValue || "—"}
+                        >
+                            {colorsOnOffer.map(({ variant, color }) => {
+                                const left = remainingStock(variant);
+
+                                return (
+                                    <Swatch
+                                        key={color!.value}
+                                        name={
+                                            left !== null && left <= 0
+                                                ? `${color!.value} — ${t("detail.outOfStock")}`
+                                                : color!.value
+                                        }
+                                        colorHex={color!.colorHex}
+                                        active={
+                                            selectedVariant?.colorValue === color!.value
+                                        }
+                                        disabled={!isVariantSelectable(variant)}
+                                        onClick={() => {
+                                            setSelectedVariant(variant);
+                                            setSelectedPack(null);
+                                        }}
+                                    />
+                                );
+                            })}
+                        </OptionRow>
+                    ) : null}
+
+                    {packs.length > 0 ? (
+                        <OptionRow
+                            label={t("detail.soldAs")}
+                            value={selectedPack?.unit?.name || singleLabel}
+                        >
+                            <Chip
+                                active={!selectedPack}
+                                onClick={() => {
+                                    setSelectedPack(null);
+                                    setQuantity(1);
+                                }}
+                            >
+                                <span>{singleLabel}</span>
+                                <span className="mt-0.5 block text-xs text-[#7b857a] dark:text-[#94a3b8]">
+                                    {singlePrice === undefined
+                                        ? t("detail.priceNotSet")
+                                        : formatPrice(singlePrice, currency)}
+                                </span>
+                            </Chip>
+                            {packs.map((row) => {
+                                const factor = Number(row.factor) || 1;
+                                const packSoldOut =
+                                    remaining !== null && remaining < factor;
+
+                                return (
+                                    <Chip
+                                        key={row.id}
+                                        active={selectedPack?.id === row.id}
+                                        disabled={packSoldOut}
+                                        onClick={() => {
+                                            setSelectedPack(row);
+                                            setQuantity(1);
+                                        }}
+                                    >
+                                        <span>{row.unit?.name}</span>
+                                        <span className="mt-0.5 block text-xs text-[#7b857a] dark:text-[#94a3b8]">
+                                            {t("detail.holds", {
+                                                count: factor,
+                                                unit:
+                                                    factor === 1
+                                                        ? unitWord
+                                                        : `${unitWord}s`,
+                                            })}
+                                        </span>
+                                        <span className="mt-0.5 block text-xs text-[#7b857a] dark:text-[#94a3b8]">
+                                            {formatPrice(Number(row.price), currency)}
+                                        </span>
+                                    </Chip>
+                                );
+                            })}
                         </OptionRow>
                     ) : null}
 
@@ -216,20 +479,7 @@ export function ProductStorefrontUI({
                                 label={attribute.name}
                                 value={chosen ? displayOf(chosen) : "—"}
                             >
-                                {attribute.values.map((value) =>
-                                    attribute.type === "COLOR" ? (
-                                        <Swatch
-                                            key={value.value}
-                                            value={value}
-                                            active={selectedAttributes[attribute.name] === value.value}
-                                            onClick={() =>
-                                                setSelectedAttributes((current) => ({
-                                                    ...current,
-                                                    [attribute.name]: value.value,
-                                                }))
-                                            }
-                                        />
-                                    ) : (
+                                {attribute.values.map((value) => (
                                         <Chip
                                             key={value.value}
                                             active={selectedAttributes[attribute.name] === value.value}
@@ -243,11 +493,58 @@ export function ProductStorefrontUI({
                                         >
                                             {displayOf(value)}
                                         </Chip>
-                                    ),
-                                )}
+                                ))}
                             </OptionRow>
                         );
                     })}
+
+                    {addOns.length > 0 && setSelectedAddOnIds ? (
+                        <div>
+                            <p className="text-xs text-[#657064] dark:text-[#94a3b8]">
+                                {t("detail.extras")}
+                            </p>
+                            <div className="mt-2 flex flex-col gap-2">
+                                {addOns.map((addOn) => {
+                                    const isTicked = (selectedAddOnIds ?? []).includes(
+                                        addOn.id,
+                                    );
+
+                                    return (
+                                        <label
+                                            key={addOn.id}
+                                            className={cn(
+                                                "flex cursor-pointer items-center justify-between gap-3 rounded-lg border px-4 py-2.5 text-sm transition-colors",
+                                                isTicked
+                                                    ? "border-primary bg-primary/5 font-medium text-primary"
+                                                    : "border-[#e8e8e8] dark:border-[#2a3042] bg-white dark:bg-[#1e2330] text-[#1a222b] dark:text-[#f8fafc] hover:border-[#cfd6cc] dark:hover:border-[#384252]",
+                                            )}
+                                        >
+                                            <span className="flex items-center gap-2.5">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isTicked}
+                                                    onChange={(event) =>
+                                                        setSelectedAddOnIds((current) =>
+                                                            event.target.checked
+                                                                ? [...current, addOn.id]
+                                                                : current.filter(
+                                                                      (id) => id !== addOn.id,
+                                                                  ),
+                                                        )
+                                                    }
+                                                    className="size-4 accent-primary"
+                                                />
+                                                <span>{addOn.name}</span>
+                                            </span>
+                                            <span className="shrink-0 text-xs text-[#7b857a] dark:text-[#94a3b8]">
+                                                + {formatPrice(Number(addOn.price), currency)}
+                                            </span>
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ) : null}
 
                     {toggles.map((attribute) => (
                         <label
@@ -290,25 +587,46 @@ export function ProductStorefrontUI({
                                 <button
                                     type="button"
                                     aria-label="Increase quantity"
-                                    disabled={outOfStock}
-                                    onClick={() => setQuantity((current) => current + 1)}
-                                    className={cn("text-primary cursor-pointer", outOfStock && "opacity-40 cursor-not-allowed")}
+                                    disabled={outOfStock || atStockCeiling}
+                                    onClick={() =>
+                                        setQuantity((current) =>
+                                            maxQuantity === null
+                                                ? current + 1
+                                                : Math.min(maxQuantity, current + 1),
+                                        )
+                                    }
+                                    className={cn(
+                                        "text-primary cursor-pointer",
+                                        (outOfStock || atStockCeiling) && "opacity-40 cursor-not-allowed",
+                                    )}
                                 >
                                     <Plus className="size-4" />
                                 </button>
                             </div>
 
+                            {!outOfStock && remaining !== null && remaining <= LOW_STOCK_THRESHOLD ? (
+                                <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                                    {t("detail.onlyLeft", { count: remaining })}
+                                </p>
+                            ) : null}
+
                             <button
                                 type="button"
                                 onClick={onAddToCart}
-                                disabled={isAddingToCart || outOfStock}
+                                disabled={isAddingToCart || outOfStock || !isStoreOpen}
                                 className={cn(
                                     "flex h-12 items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-white shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
-                                    outOfStock && "bg-neutral-300 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-300 dark:hover:bg-neutral-800 cursor-not-allowed shadow-none"
+                                    (outOfStock || !isStoreOpen) && "bg-neutral-300 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-300 dark:hover:bg-neutral-800 cursor-not-allowed shadow-none"
                                 )}
                             >
-                                <ShoppingBag className="size-4" />
-                                {outOfStock ? (t("detail.outOfStock") || "Out of Stock") : isAddingToCart ? (t("detail.adding") || "Adding...") : (t("detail.add") || "Add to Cart")}
+                                {isStoreOpen ? (
+                                    <ShoppingBag className="size-4" />
+                                ) : (
+                                    <Clock className="size-4" />
+                                )}
+                                {!isStoreOpen
+                                    ? t("detail.storeClosed")
+                                    : outOfStock ? (t("detail.outOfStock") || "Out of Stock") : isAddingToCart ? (t("detail.adding") || "Adding...") : (t("detail.add") || "Add to Cart")}
                             </button>
                         </>
                     )}
@@ -452,21 +770,26 @@ function Gallery({
                                 : "opacity-70 hover:opacity-100",
                         )}
                     >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                             src={image}
-                            alt=""
-                            className={cn("size-full object-cover", outOfStock && "filter blur-[1.5px]")}
+                            alt={name ? `${name} — photo ${position + 1}` : `Product photo ${position + 1}`}
+                            fill
+                            unoptimized
+                            sizes="56px"
+                            className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
                         />
                     </button>
                 ))}
             </div>
             <div className="relative aspect-square flex-1 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-[#f8faf8] dark:bg-card shadow-xs">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                     src={active}
-                    alt={name || "Item image"}
-                    className={cn("size-full object-cover transition-all duration-300", outOfStock && "filter blur-[1.5px]")}
+                    alt={name || "Product image"}
+                    fill
+                    unoptimized
+                    priority
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                    className={cn("object-cover transition-all duration-300", outOfStock && "filter blur-[1.5px]")}
                 />
             </div>
         </div>
@@ -525,24 +848,26 @@ function Chip({
 }
 
 function Swatch({
-    value,
+    name,
+    colorHex,
     active,
+    disabled,
     onClick,
 }: {
-    value: ItemAttributeValue;
+    name: string;
+    colorHex?: string | null;
     active: boolean;
+    disabled?: boolean;
     onClick: () => void;
 }) {
-    const disabled = value.available === false;
-
     return (
         <button
             type="button"
             onClick={onClick}
             disabled={disabled}
             aria-pressed={active}
-            aria-label={value.label || value.value}
-            title={value.label || value.value}
+            aria-label={name}
+            title={name}
             className={cn(
                 "cursor-pointer grid size-9 place-items-center rounded-full border-2 transition-colors",
                 active ? "border-primary" : "border-transparent",
@@ -551,7 +876,7 @@ function Swatch({
         >
             <span
                 className="size-7 rounded-full ring-1 ring-black/10"
-                style={{ backgroundColor: value.colorHex || "#d9d9d9" }}
+                style={{ backgroundColor: colorHex || "#d9d9d9" }}
             />
         </button>
     );
