@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { permanentRedirect, RedirectType } from "next/navigation";
 import { STORE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function LandingPage() {
-  redirect("/store");
+  permanentRedirect("/store", RedirectType.replace);
 }
