@@ -96,9 +96,8 @@ export default function MessengerCheckoutPage({
 
   const handlePayWithAba = () => {
     setStep("PROCESSING");
-    const link = orderData?.abapayDeeplink || orderData?.bakongDeepLink;
-    if (link) {
-      window.location.href = link;
+    if (orderData?.abapayDeeplink) {
+      window.location.href = orderData.abapayDeeplink;
     }
   };
 
@@ -235,7 +234,8 @@ export default function MessengerCheckoutPage({
 
           <button
             onClick={handlePayWithBakong}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 py-3.5 text-base font-bold text-white shadow-lg shadow-red-600/30 active:scale-[0.98] transition-all hover:bg-red-700"
+            disabled={!orderData?.bakongDeepLink}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 py-3.5 text-base font-bold text-white shadow-lg shadow-red-600/30 active:scale-[0.98] transition-all hover:bg-red-700 disabled:opacity-40"
           >
             <ExternalLink className="h-5 w-5" />
             ទូទាត់តាម Bakong App
@@ -243,7 +243,7 @@ export default function MessengerCheckoutPage({
 
           <button
             onClick={handlePayWithAba}
-            disabled={!orderData?.abapayDeeplink && !orderData?.bakongDeepLink}
+            disabled={!orderData?.abapayDeeplink}
             className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 py-3.5 text-base font-bold text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-700 disabled:opacity-40"
           >
             <ExternalLink className="h-5 w-5" />
