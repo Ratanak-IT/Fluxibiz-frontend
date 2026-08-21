@@ -62,7 +62,7 @@ export default function MessengerCheckoutPage({
     async function fetchOrderDetails() {
       try {
         const apiBase =
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+          process.env.NEXT_PUBLIC_API_URL;
         const res = await fetch(
           `${apiBase}/api/v1/public/orders/${orderId}/status`,
         );
@@ -249,6 +249,18 @@ export default function MessengerCheckoutPage({
             <ExternalLink className="h-5 w-5" />
             ទូទាត់តាម ABA Pay
           </button>
+
+          {(orderData?.bakongDeepLink || orderData?.abapayDeeplink) && (
+            <p className="mt-3 text-center text-xs leading-relaxed text-slate-400">
+              បើចុចប៊ូតុងខាងលើមិនចេញ App សូមចុច{" "}
+              <span className="font-semibold text-slate-500">⋮</span> ខាងលើកែវ
+              រួចជ្រើសរើស{" "}
+              <span className="font-semibold text-slate-500">
+                &ldquo;បើកជាមួយកម្មវិធីរុករក&rdquo;
+              </span>{" "}
+              ឬ scan QR ខាងលើដោយផ្ទាល់តាម App
+            </p>
+          )}
         </div>
       )}
 
