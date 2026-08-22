@@ -7,8 +7,12 @@ import {
   CheckCircle2,
   Loader2,
   QrCode,
-  ExternalLink,
   ShieldCheck,
+  CreditCard,
+  Smartphone,
+  Wallet,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -32,7 +36,7 @@ export default function MessengerCheckoutPage({
 }: {
   params: Promise<{ businessId: string }>;
 }) {
-  const { businessId } = use(params);
+  use(params);
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
 
@@ -41,7 +45,6 @@ export default function MessengerCheckoutPage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 💡 ប្រកាស Function សម្រាប់បិទ Webview នៅខាងលើ មុន useEffect
   const closeMessengerWebview = useCallback(() => {
     if (typeof window !== "undefined" && (window as any).MessengerExtensions) {
       (window as any).MessengerExtensions.requestCloseBrowser(
@@ -51,7 +54,6 @@ export default function MessengerCheckoutPage({
     }
   }, []);
 
-  // 1. ទាញយកទិន្នន័យ Order & KHQR
   useEffect(() => {
     if (!orderId) {
       setError("មិនមានទិន្នន័យលេខបញ្ជាទិញ (Order ID missing)");
@@ -61,8 +63,12 @@ export default function MessengerCheckoutPage({
 
     async function fetchOrderDetails() {
       try {
-        const apiBase =
-          process.env.NEXT_PUBLIC_API_URL;
+        const rawApiBase =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+        const apiBase = rawApiBase.startsWith("http")
+          ? rawApiBase
+          : `http://${rawApiBase}`;
+
         const res = await fetch(
           `${apiBase}/api/v1/public/orders/${orderId}/status`,
         );
@@ -86,7 +92,24 @@ export default function MessengerCheckoutPage({
     fetchOrderDetails();
   }, [orderId]);
 
-  // 2. ពេលចុច "Pay via Bakong App" (App-to-App)
+  const handlePayWithAba = () => {
+    setStep("PROCESSING");
+    if (orderData?.abapayDeeplink) {
+      window.location.href = orderData.abapayDeeplink;
+    } else if (orderData?.qrPayload) {
+      window.location.href = `abamobile://qr?data=${encodeURIComponent(orderData.qrPayload)}`;
+    }
+  };
+
+  const handlePayWithAcleda = () => {
+    setStep("PROCESSING");
+    if (orderData?.bakongDeepLink) {
+      window.location.href = orderData.bakongDeepLink;
+    } else if (orderData?.qrPayload) {
+      window.location.href = `acledamobile://qr?data=${encodeURIComponent(orderData.qrPayload)}`;
+    }
+  };
+
   const handlePayWithBakong = () => {
     setStep("PROCESSING");
     if (orderData?.bakongDeepLink) {
@@ -94,18 +117,15 @@ export default function MessengerCheckoutPage({
     }
   };
 
-  const handlePayWithAba = () => {
-    setStep("PROCESSING");
-    if (orderData?.abapayDeeplink) {
-      window.location.href = orderData.abapayDeeplink;
-    }
-  };
-
-  // 3. Polling ឆែកមើល Status ពេលកំពុង PROCESSING
   useEffect(() => {
     if (step !== "PROCESSING" || !orderId) return;
 
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const rawApiBase =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const apiBase = rawApiBase.startsWith("http")
+      ? rawApiBase
+      : `http://${rawApiBase}`;
+
     const interval = setInterval(async () => {
       try {
         const res = await fetch(
@@ -126,7 +146,6 @@ export default function MessengerCheckoutPage({
     return () => clearInterval(interval);
   }, [step, orderId]);
 
-  // 4. បិទ Messenger Webview ស្វ័យប្រវត្តិ ពេល DONE ក្រោយ ២ វិនាទី
   useEffect(() => {
     if (step === "DONE") {
       const timer = setTimeout(() => {
@@ -148,13 +167,15 @@ export default function MessengerCheckoutPage({
   if (error || !orderData) {
     return (
       <div className="flex h-screen flex-col items-center justify-center p-6 text-center bg-white">
+        <AlertCircle className="h-10 w-10 text-red-500 mb-3" />
         <p className="text-sm font-semibold text-red-600">
           {error || "Something went wrong"}
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-4 rounded-xl bg-slate-900 px-5 py-2 text-xs font-medium text-white"
+          className="mt-4 flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-medium text-white shadow-sm"
         >
+          <RefreshCw className="h-4 w-4" />
           ព្យាយាមម្តងទៀត
         </button>
       </div>
@@ -163,13 +184,12 @@ export default function MessengerCheckoutPage({
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 p-4 font-sans text-slate-900">
-      {/* SDK សម្រាប់បិទ Webview */}
       <Script
         src="https://connect.facebook.net/en_US/messenger.Extensions.js"
         strategy="lazyOnload"
       />
 
-      {/* 📍 Progress Bar Step Indicator */}
+      {/* Step Indicator Bar */}
       <div className="mb-4 flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-3 shadow-sm">
         <StepBadge
           active={step === "PAYMENT"}
@@ -197,7 +217,7 @@ export default function MessengerCheckoutPage({
         />
       </div>
 
-      {/* 1️⃣ STEP 1: PAYMENT */}
+      {/* STEP 1: PAYMENT */}
       {step === "PAYMENT" && (
         <div className="flex flex-1 flex-col justify-between rounded-3xl border border-slate-100 bg-white p-6 text-center shadow-sm">
           <div>
@@ -212,7 +232,7 @@ export default function MessengerCheckoutPage({
               {orderData.currency !== "USD" ? orderData.currency : ""}
             </p>
 
-            {/* KHQR Code Display */}
+            {/* KHQR Code Frame */}
             <div className="my-4 flex justify-center">
               <div className="rounded-2xl border-2 border-emerald-500/20 bg-white p-3 shadow-inner">
                 {orderData.qrImageUri ? (
@@ -232,39 +252,46 @@ export default function MessengerCheckoutPage({
             </div>
           </div>
 
-          <button
-            onClick={handlePayWithBakong}
-            disabled={!orderData?.bakongDeepLink}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 py-3.5 text-base font-bold text-white shadow-lg shadow-red-600/30 active:scale-[0.98] transition-all hover:bg-red-700 disabled:opacity-40"
-          >
-            <ExternalLink className="h-5 w-5" />
-            ទូទាត់តាម Bakong App
-          </button>
+          {/* Payment App Action Buttons */}
+          <div className="flex flex-col gap-2.5">
+            {/* ABA Pay Button */}
+            <button
+              onClick={handlePayWithAba}
+              disabled={!orderData?.qrPayload && !orderData?.abapayDeeplink}
+              className="flex w-full items-center justify-center gap-3 rounded-2xl bg-[#003B4A] py-3.5 text-base font-bold text-white shadow-md active:scale-[0.98] transition-all hover:bg-[#002d38] disabled:opacity-40"
+            >
+              <Smartphone className="h-5 w-5 text-cyan-300" />
+              <span>ABA Pay</span>
+            </button>
 
-          <button
-            onClick={handlePayWithAba}
-            disabled={!orderData?.abapayDeeplink}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 py-3.5 text-base font-bold text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-700 disabled:opacity-40"
-          >
-            <ExternalLink className="h-5 w-5" />
-            ទូទាត់តាម ABA Pay
-          </button>
+            {/* ACLEDA Pay Button */}
+            <button
+              onClick={handlePayWithAcleda}
+              disabled={!orderData?.bakongDeepLink && !orderData?.qrPayload}
+              className="flex w-full items-center justify-center gap-3 rounded-2xl bg-[#0F265C] py-3.5 text-base font-bold text-white shadow-md active:scale-[0.98] transition-all hover:bg-[#0b1b42] disabled:opacity-40"
+            >
+              <CreditCard className="h-5 w-5 text-amber-400" />
+              <span>ACLEDA Pay</span>
+            </button>
 
-          {(orderData?.bakongDeepLink || orderData?.abapayDeeplink) && (
-            <p className="mt-3 text-center text-xs leading-relaxed text-slate-400">
-              បើចុចប៊ូតុងខាងលើមិនចេញ App សូមចុច{" "}
-              <span className="font-semibold text-slate-500">⋮</span> ខាងលើកែវ
-              រួចជ្រើសរើស{" "}
-              <span className="font-semibold text-slate-500">
-                &ldquo;បើកជាមួយកម្មវិធីរុករក&rdquo;
-              </span>{" "}
-              ឬ scan QR ខាងលើដោយផ្ទាល់តាម App
-            </p>
-          )}
+            {/* Bakong Pay Button */}
+            <button
+              onClick={handlePayWithBakong}
+              disabled={!orderData?.bakongDeepLink}
+              className="flex w-full items-center justify-center gap-3 rounded-2xl bg-red-600 py-3.5 text-base font-bold text-white shadow-md active:scale-[0.98] transition-all hover:bg-red-700 disabled:opacity-40"
+            >
+              <Wallet className="h-5 w-5 text-red-100" />
+              <span>Bakong Pay</span>
+            </button>
+          </div>
+
+          <p className="mt-4 text-center text-xs leading-relaxed text-slate-400">
+            បើចុចប៊ូតុងខាងលើមិនចេញ App សូមស្កេន QR ខាងលើដោយផ្ទាល់តាម App ធនាគារ
+          </p>
         </div>
       )}
 
-      {/* 2️⃣ STEP 2: PROCESSING */}
+      {/* STEP 2: PROCESSING */}
       {step === "PROCESSING" && (
         <div className="flex flex-1 flex-col items-center justify-center rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-sm">
           <div className="relative mb-6">
@@ -282,7 +309,7 @@ export default function MessengerCheckoutPage({
         </div>
       )}
 
-      {/* 3️⃣ STEP 3: DONE */}
+      {/* STEP 3: DONE */}
       {step === "DONE" && (
         <div className="flex flex-1 flex-col items-center justify-center rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-sm">
           <div className="mb-6 flex h-20 w-20 animate-bounce items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
