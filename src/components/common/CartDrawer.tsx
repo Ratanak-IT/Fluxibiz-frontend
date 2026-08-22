@@ -51,13 +51,14 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 type CartDrawerProps = {
-    children?: ReactNode;
+    children?: ReactNode | ((state: { open: boolean }) => ReactNode);
     triggerClassName?: string;
     buttonClassName?: string;
     iconClassName?: string;
     iconSize?: number;
     iconTrigger?: boolean;
     variant?: "before-login" | "after-login";
+    onOpenChange?: (open: boolean) => void;
 };
 
 export default function CartDrawer({
@@ -67,6 +68,7 @@ export default function CartDrawer({
     iconClassName,
     iconSize = 24,
     variant = "after-login",
+    onOpenChange,
 }: CartDrawerProps) {
     const t = useTranslations("Cart");
     const [open, setOpen] = useState(false);
@@ -77,7 +79,14 @@ export default function CartDrawer({
     const totalItems = cart?.totalItems ?? 0;
     const isAfterLogin = variant === "after-login";
 
-    const triggerElement = children ? (
+    const handleOpenChange = (value: boolean) => {
+        setOpen(value);
+        onOpenChange?.(value);
+    };
+
+    const triggerElement = typeof children === "function" ? (
+        (children as (state: { open: boolean }) => ReactNode)({ open }) as React.ReactElement
+    ) : children ? (
         children as React.ReactElement
     ) : (
         <Button
@@ -114,7 +123,7 @@ export default function CartDrawer({
     );
 
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={open} onOpenChange={handleOpenChange}>
             <SheetTrigger render={triggerElement} className={triggerClassName} />
 
             <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">

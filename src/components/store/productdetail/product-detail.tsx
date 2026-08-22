@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ChevronLeft,
+  Clock,
   Minus,
   Plus,
   ShoppingBag,
@@ -23,7 +24,9 @@ import {
   ItemVariant,
   primaryItemImage,
   itemImageUrl,
+  type ChannelSchedule,
 } from "@/lib/type/storeType";
+import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
 
 import { useAuth } from "@/features/auth/useAuth";
 
@@ -31,18 +34,25 @@ interface ProductDetailProps {
   item?: StorefrontItemResponse;
   storeSlug?: string;
   storeName?: string;
+  currency?: string;
   isLoading?: boolean;
+  isStoreOpen?: boolean;
+  onlineHours?: ChannelSchedule | null;
 }
 
 export default function ProductDetail({
   item,
   storeSlug,
   storeName,
+  currency,
   isLoading = false,
+  isStoreOpen = true,
+  onlineHours,
 }: ProductDetailProps) {
   const t = useTranslations("Store");
   const { isAuthenticated, login } = useAuth();
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
+  const todayHours = useTodayHoursLabel(onlineHours);
 
   const [activeImg, setActiveImg] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
@@ -154,6 +164,17 @@ export default function ProductDetail({
       return;
     }
 
+    // The basket refuses an out-of-hours add anyway; saying so here spares a
+    // request that was never going to work.
+    if (!isStoreOpen) {
+      toast.error(
+        todayHours
+          ? `${t("detail.storeClosed")} — ${todayHours}`
+          : t("detail.storeClosed")
+      );
+      return;
+    }
+
     setAddError(null);
     setJustAdded(true);
     toast.success(t("messages.addedToCart", { quantity, name }));
@@ -255,7 +276,7 @@ export default function ProductDetail({
 
           <div className="flex flex-wrap items-center gap-3">
             <div className="text-2xl font-bold text-[#00932A] sm:text-3xl">
-              {formatPrice(unitPrice)}
+              {formatPrice(unitPrice, currency)}
             </div>
           </div>
 
@@ -263,6 +284,14 @@ export default function ProductDetail({
             <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
               {description}
             </p>
+          )}
+
+          {!isStoreOpen && (
+            <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-400">
+              <Clock className="h-4 w-4 shrink-0" />
+              <span className="font-bold">{t("detail.storeClosed")}</span>
+              {todayHours ? <span>· {todayHours}</span> : null}
+            </div>
           )}
 
           {/* Variants Selection */}
@@ -289,7 +318,7 @@ export default function ProductDetail({
                       <span>{vName}</span>
                       {v.price !== undefined && (
                         <span className="text-xs opacity-80">
-                          {formatPrice(v.price)}
+                          {formatPrice(v.price, currency)}
                         </span>
                       )}
                     </button>
@@ -381,20 +410,25 @@ export default function ProductDetail({
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={isAdding || justAdded}
-            className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#00932A] text-base font-semibold text-white shadow-md transition-all hover:bg-[#007d24] active:scale-[0.99] disabled:opacity-60"
+            disabled={isAdding || justAdded || !isStoreOpen}
+            className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#00932A] text-base font-semibold text-white shadow-md transition-all hover:bg-[#007d24] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:opacity-100 dark:disabled:bg-neutral-800"
           >
             {justAdded ? (
               <>
                 <Check className="h-5 w-5" />
                 {t("detail.addedToCart")}
               </>
+            ) : !isStoreOpen ? (
+              <>
+                <Clock className="h-5 w-5" />
+                {t("detail.storeClosed")}
+              </>
             ) : (
               <>
                 <ShoppingBag className="h-5 w-5" />
                 {isAdding
                   ? t("detail.adding")
-                  : `${t("detail.addToCart")} · ${formatPrice(unitPrice * quantity)}`}
+                  : `${t("detail.addToCart")} · ${formatPrice(unitPrice * quantity, currency)}`}
               </>
             )}
           </button>
