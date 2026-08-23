@@ -116,7 +116,7 @@ export default function SearchFilterBar({
             type="button"
             onClick={() => onSearchChange("")}
             aria-label={t("clearSearch")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-xs text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-xs text-neutral-400 hover:text-neutral-600 dark:hover:text-card"
           >
             ✕
           </button>
@@ -154,26 +154,14 @@ export default function SearchFilterBar({
           onSelect={onSortByChange}
         />
 
-        {/* Reset / Filter button */}
-        {hasActiveFilters ? (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onReset}
-            className="h-11 shrink-0 rounded-full border-0 bg-red-50 px-4 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100 sm:px-5 sm:text-sm dark:bg-red-950/40 dark:text-red-400"
-          >
-            {t("resetFilters")}
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-11 shrink-0 rounded-full border border-primary/40 bg-white px-4 text-xs font-medium text-neutral-800 hover:border-primary hover:bg-neutral-50 sm:px-5 sm:text-sm dark:border-primary/50 dark:bg-card dark:text-neutral-200 dark:hover:bg-muted"
-          >
-            <ListFilter className="mr-1.5 h-4 w-4 text-primary" />
-            {t("filter")}
-          </Button>
-        )}
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-11 shrink-0 rounded-full border border-primary/40 bg-white px-4 text-xs font-medium text-neutral-800 hover:border-primary hover:bg-neutral-50 sm:px-5 sm:text-sm dark:border-primary/50 dark:bg-card dark:text-neutral-200 dark:hover:bg-muted"
+        >
+          <ListFilter className="mr-1.5 h-4 w-4 text-primary" />
+          {t("filter")}
+        </Button>
       </div>
     </div>
   );

@@ -33,8 +33,11 @@ export interface PaymentStatus {
     paidAt: string | null;
 }
 
+export type PaymentMethodType = "KHQR" | "PAY_LATER" | "CASH";
+
 export interface CreateCheckoutPayload {
     businessId: string;
+    paymentMethod?: PaymentMethodType | string;
     note?: string;
 }
 

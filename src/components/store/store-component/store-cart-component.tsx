@@ -121,7 +121,7 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
       <CardContent className="space-y-1 p-1 mt-2">
         <h3
           className="
-            text-lg font-semibold 
+            text-[16px] font-semibold 
             leading-tight 
             text-foreground
             min-h-[1.5rem]
@@ -133,12 +133,10 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
         <p
           className="
             line-clamp-2 
-            text-sm 
+            text-[14px] 
             text-muted-foreground
             min-h-[2.5rem]
-            dark:text-neutral-400
-        "
-        >
+            dark:text-neutral-400  " >
           {description || "\u00A0"}
         </p>
         <div className="space-y-1">
@@ -159,7 +157,7 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
                     dark:text-primary
                 "
             />
-            <span className="line-clamp-1">{displayLocation || "\u00A0"}</span>
+            <span className="line-clamp-1  text-[14px]">{displayLocation || "\u00A0"}</span>
           </div>
           <div
             className="
