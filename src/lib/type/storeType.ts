@@ -62,6 +62,12 @@ export interface PublicStoreDetailResponse {
     phoneNumber: string | null;
     address: string | null;
     cityOrProvince: string | null;
+    provinceName?: string | null;
+    districtName?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    /** Straight-line distance from the shopper's position; null unless they shared it. */
+    distanceKm?: number | null;
     googleMap: string | null;
     website: string | null;
     storefrontUrl: string | null;

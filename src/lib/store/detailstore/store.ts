@@ -18,6 +18,8 @@ export interface StoreCardData {
   isOpen?: boolean
   /** The hours the shop set for its Online Store, when it set any. */
   onlineHours?: ChannelSchedule | null
+  /** Straight-line distance from the shopper's position; null/undefined unless they shared it. */
+  distanceKm?: number | null
 }
 
 export const mockStore: StoreCardData = {

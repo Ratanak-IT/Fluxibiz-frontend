@@ -164,8 +164,19 @@ export const storeCateApi = createApi({
             providesTags: ["PublicStore"],
         }),
 
-        getPublicStore: builder.query<PublicStoreDetailResponse, string>({
-            query: (slug) => `/public/stores/${slug}`,
+        getPublicStore: builder.query<
+            PublicStoreDetailResponse,
+            string | { slug: string; lat?: number; lng?: number }
+        >({
+            query: (arg) => {
+                const { slug, lat, lng } = typeof arg === "string" ? { slug: arg } : arg;
+                const params: Record<string, number> = {};
+                if (lat !== undefined && lng !== undefined) {
+                    params.lat = lat;
+                    params.lng = lng;
+                }
+                return { url: `/public/stores/${slug}`, params };
+            },
             providesTags: ["PublicStore"],
         }),
 

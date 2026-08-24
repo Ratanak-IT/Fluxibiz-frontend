@@ -140,8 +140,9 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
     <CardTitle
       className="
         truncate
-        text-[16px]
+        text-base
         font-semibold
+        leading-tight
         text-card-foreground
         dark:text-white
       "
@@ -155,7 +156,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
       className="
         overflow-hidden
         whitespace-nowrap
-        text-[14px]
+        text-sm
         text-muted-foreground
         dark:text-neutral-400
       "
@@ -180,7 +181,6 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
             min-w-0
             overflow-hidden
             whitespace-nowrap
-            text-[14px]
             text-left
             text-primary
             hover:underline
@@ -205,7 +205,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
         </span>
       )}
       {distanceLabel && (
-        <span className="ml-auto shrink-0 whitespace-nowrap text-[12px] font-medium text-primary">
+        <span className="ml-auto shrink-0 whitespace-nowrap text-xs font-medium text-primary">
           {t("distanceAway", { distance: distanceLabel })}
         </span>
       )}
