@@ -34,6 +34,12 @@ interface StoreFilterComponentProps {
   onLocationsChange?: (locations: string[]) => void;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
+  /**
+   * Called after Reset clears search/category/location — forces the store
+   * list's own query to refetch explicitly rather than relying solely on
+   * the state clear to be picked up as an arg change on its own.
+   */
+  onResetFilters?: () => void;
 }
 
 const VISIBLE_COUNT = 5;
@@ -45,6 +51,7 @@ export default function StoreFilterComponent({
   onLocationsChange,
   searchValue,
   onSearchChange,
+  onResetFilters,
 }: StoreFilterComponentProps) {
   const t = useTranslations("Store.filters");
   const [showMore, setShowMore] = useState(false);
@@ -117,6 +124,7 @@ export default function StoreFilterComponent({
     handleSearchChange("");
     onSelectedChange?.([]);
     onLocationsChange?.([]);
+    onResetFilters?.();
   };
 
   const loadingLocations = isLoadingProvinces;
