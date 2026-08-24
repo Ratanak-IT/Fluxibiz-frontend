@@ -4,7 +4,7 @@ import { Card } from "../../ui/card";
 import { Clock, ImageOff, MapPin } from "lucide-react";
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import { StoreCardSkeleton } from "@/components/common/Skeletons";
-import { formatStoreTime } from "@/lib/type/storeType";
+import { formatDistance, formatStoreTime } from "@/lib/type/storeType";
 import StoreHours from "./store-hours";
 
 interface StoreCardComponentProps {
@@ -18,6 +18,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
   }
 
   const imageUrl = store.image?.trim() ? store.image : null;
+  const distanceLabel = formatDistance(store.distanceKm);
 
   return (
     <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
@@ -87,6 +88,12 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                   </span>
                 )}
               </div>
+
+              {distanceLabel && (
+                <span className="shrink-0 whitespace-nowrap text-xs font-medium text-primary">
+                  {t("distanceAway", { distance: distanceLabel })}
+                </span>
+              )}
 
               {/* What the online store keeps, where the shop set it — the
                   shopfront's own times say nothing about the web, and are

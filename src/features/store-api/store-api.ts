@@ -33,10 +33,17 @@ function buildStoresRequest(
     };
 
     if (categoryId) params.categoryId = categoryId;
-    if (query.cityOrProvince?.trim()) {
+    if (query.province) {
+        params.province = query.province;
+    } else if (query.cityOrProvince?.trim()) {
         params.cityOrProvince = query.cityOrProvince.trim();
     }
+    if (query.district) params.district = query.district;
     if (query.keyword?.trim()) params.keyword = query.keyword.trim();
+    if (query.lat !== undefined && query.lng !== undefined) {
+        params.lat = query.lat;
+        params.lng = query.lng;
+    }
 
     return { url: "/public/stores", params };
 }
@@ -146,14 +153,30 @@ export const storeCateApi = createApi({
             providesTags: ["BusinessCategory"],
         }),
 
+        /** Distinct province names actually used by listed stores — self-populating, nothing seeded. */
+        getProvinces: builder.query<string[], void>({
+            query: () => "/public/stores/provinces",
+        }),
+
         getPublicStores: builder.query<PublicStorePage, PublicStoreQuery>({
             queryFn: async (query, _api, _extra, fetchWithBQ) =>
                 fetchMergedStores(query, fetchWithBQ),
             providesTags: ["PublicStore"],
         }),
 
-        getPublicStore: builder.query<PublicStoreDetailResponse, string>({
-            query: (slug) => `/public/stores/${slug}`,
+        getPublicStore: builder.query<
+            PublicStoreDetailResponse,
+            string | { slug: string; lat?: number; lng?: number }
+        >({
+            query: (arg) => {
+                const { slug, lat, lng } = typeof arg === "string" ? { slug: arg } : arg;
+                const params: Record<string, number> = {};
+                if (lat !== undefined && lng !== undefined) {
+                    params.lat = lat;
+                    params.lng = lng;
+                }
+                return { url: `/public/stores/${slug}`, params };
+            },
             providesTags: ["PublicStore"],
         }),
 
@@ -164,13 +187,23 @@ export const storeCateApi = createApi({
 
         getRecommendedStores: builder.query<
             PublicStorePage,
-            { categoryId?: string; page?: number; size?: number } | void
+            {
+                categoryId?: string;
+                page?: number;
+                size?: number;
+                lat?: number;
+                lng?: number;
+            } | void
         >({
             query: (params) => {
                 const searchParams: Record<string, string | number> = {};
                 if (params?.categoryId) searchParams.categoryId = params.categoryId;
                 if (params?.page !== undefined) searchParams.page = params.page;
                 if (params?.size !== undefined) searchParams.size = params.size;
+                if (params?.lat !== undefined && params?.lng !== undefined) {
+                    searchParams.lat = params.lat;
+                    searchParams.lng = params.lng;
+                }
                 return {
                     url: "/public/stores/recommended",
                     params: searchParams,
@@ -183,6 +216,7 @@ export const storeCateApi = createApi({
 
 export const {
     useGetBusinessCategoryQuery,
+    useGetProvincesQuery,
     useGetPublicStoresQuery,
     useGetPublicStoreQuery,
     useGetPublicStoreItemsQuery,

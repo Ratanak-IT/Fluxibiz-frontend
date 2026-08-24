@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
-import type { Store } from "@/lib/type/storeType";
+import { formatDistance, type Store } from "@/lib/type/storeType";
 
 export type { Store } from "@/lib/type/storeType";
 
@@ -27,7 +27,9 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
     image,
     discountLabel,
     isOpen,
+    distanceKm,
   } = store;
+  const distanceLabel = formatDistance(distanceKm);
 
   const { data: storeDetail } = useGetPublicStoreQuery(store.slug || store.id, {
     skip: Boolean(address),
@@ -121,8 +123,8 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
       <CardContent className="space-y-1 p-1 mt-2">
         <h3
           className="
-            text-[16px] font-semibold 
-            leading-tight 
+            text-lg font-semibold
+            leading-tight
             text-foreground
             min-h-[1.5rem]
             dark:text-white
@@ -132,11 +134,13 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
         </h3>
         <p
           className="
-            line-clamp-2 
-            text-[14px] 
+            line-clamp-2
+            text-sm
             text-muted-foreground
             min-h-[2.5rem]
-            dark:text-neutral-400  " >
+            dark:text-neutral-400
+        "
+        >
           {description || "\u00A0"}
         </p>
         <div className="space-y-1">
@@ -157,7 +161,12 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
                     dark:text-primary
                 "
             />
-            <span className="line-clamp-1  text-[14px]">{displayLocation || "\u00A0"}</span>
+            <span className="line-clamp-1 min-w-0 flex-1">{displayLocation || "\u00A0"}</span>
+            {distanceLabel && (
+              <span className="shrink-0 whitespace-nowrap text-xs font-medium text-primary">
+                {t("common.distanceAway", { distance: distanceLabel })}
+              </span>
+            )}
           </div>
           <div
             className="
