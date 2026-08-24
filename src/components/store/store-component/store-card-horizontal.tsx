@@ -137,7 +137,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
     <CardTitle
       className="
         truncate
-        text-[16px]
+        text-[18px]
         font-semibold
         text-card-foreground
         dark:text-white
@@ -152,7 +152,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
       className="
         overflow-hidden
         whitespace-nowrap
-        text-[14px]
+        text-[15px]
         text-muted-foreground
         dark:text-neutral-400
       "
@@ -177,7 +177,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
             min-w-0
             overflow-hidden
             whitespace-nowrap
-            text-[14px]
+            text-[15px]
             text-left
             text-primary
             hover:underline
@@ -193,6 +193,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
             min-w-0
             overflow-hidden
             whitespace-nowrap
+            text-[15px]
             text-muted-foreground
             dark:text-neutral-400
           "

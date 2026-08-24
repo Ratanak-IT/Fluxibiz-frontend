@@ -49,7 +49,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
           <div className="flex flex-1 flex-col justify-between p-4 sm:px-6 sm:py-3.5">
             {/* 1. Top Section: Category & Promotion */}
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-[12px] font-medium text-muted-foreground sm:text-sm">
+              <span className="text-[16px] font-medium text-muted-foreground">
                 {store.category}
               </span>
 
@@ -68,7 +68,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
             </div>
 
             {/* 3. Bottom Section: Location & Operating Hours */}
-            <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground sm:gap-6 sm:text-sm">
+            <div className="mt-4 md:mt-0 flex flex-wrap items-center gap-4 text-xs text-muted-foreground sm:gap-6 sm:text-sm">
               <div className="flex min-w-0 items-center gap-1.5">
                 <MapPin className="h-4 w-4 shrink-0 text-primary" />
                 {store.googleMap ? (
@@ -76,13 +76,13 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                     href={store.googleMap}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="truncate text-[12px] text-primary hover:underline"
+                    className="truncate text-[14px] text-primary hover:underline"
                     title={store.address || store.location}
                   >
                     {store.address || store.location}
                   </a>
                 ) : (
-                  <span className="truncate text-[12px]" title={store.address || store.location}>
+                  <span className="truncate text-[14px]" title={store.address || store.location}>
                     {store.address || store.location}
                   </span>
                 )}
@@ -113,7 +113,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
       </Card>
 
       {store.description && (
-        <div className="mt-4 text-[14px] text-muted-foreground">
+        <div className="mt-4 text-[15px] text-muted-foreground">
           {store.description}
         </div>
       )}

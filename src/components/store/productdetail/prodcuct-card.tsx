@@ -40,10 +40,8 @@ export function ProductCard({ item }: ProductCardProps) {
             <CardTitle
               className="
                 truncate 
-                text-sm font-bold 
-                text-foreground
-
-                sm:text-xl " >
+                text-[17px] font-bold 
+                text-foreground" >
               {item.name}
             </CardTitle>
             <p
@@ -55,9 +53,8 @@ export function ProductCard({ item }: ProductCardProps) {
             <CardDescription
               className="
                 line-clamp-2 
-                text-xs 
-                text-muted-foreground
-                sm:text-sm" >
+                text-[14px] 
+                text-muted-foreground" >
               {item.description}
             </CardDescription>
 
@@ -66,9 +63,8 @@ export function ProductCard({ item }: ProductCardProps) {
           <div className="flex items-center gap-2">
             <span
               className="
-                text-xs font-semibold 
-                text-brand
-                sm:text-sm" >
+                text-[13px] font-semibold 
+                text-brand" >
               {item.category}
             </span>
             {outOfStock && (
