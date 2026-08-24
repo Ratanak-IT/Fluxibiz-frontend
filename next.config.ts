@@ -45,8 +45,13 @@ const securityHeaders = [
   },
   {
     key: "Permissions-Policy",
+    // geolocation=(self) — not (): an empty allowlist blocks the API even
+    // for the site's own pages, which is what silently broke the /store
+    // distance feature. (self) keeps the actual intent of this header —
+    // deny it to any embedded third-party content — without taking out
+    // first-party use.
     value:
-      "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+      "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
   },
 ];
 

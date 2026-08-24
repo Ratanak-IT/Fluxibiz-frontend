@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, Loader2, Search, SlidersHorizontal, X } from "lucide-react";
 
@@ -21,18 +21,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   useGetBusinessCategoryQuery,
-  useGetPublicStoresQuery,
+  useGetProvincesQuery,
 } from "@/features/store-api/store-api";
 import SearchDrawer from "./search";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
-import type { PublicStore } from "@/lib/type/storeType";
 
 interface StoreFilterComponentProps {
   selected?: string[];
   onSelectedChange?: (selected: string[]) => void;
+  /** The one selected province's id — a store belongs to exactly one, so this isn't multi-select. */
   selectedLocations?: string[];
   onLocationsChange?: (locations: string[]) => void;
-  availableLocations?: string[];
   searchValue?: string;
   onSearchChange?: (value: string) => void;
 }
@@ -44,7 +43,6 @@ export default function StoreFilterComponent({
   onSelectedChange,
   selectedLocations = [],
   onLocationsChange,
-  availableLocations,
   searchValue,
   onSearchChange,
 }: StoreFilterComponentProps) {
@@ -55,9 +53,6 @@ export default function StoreFilterComponent({
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [localSearchValue, setLocalSearchValue] = useState("");
 
-  const [apiLocations, setApiLocations] = useState<string[]>([]);
-  const [isFetchingLocations, setIsFetchingLocations] = useState(false);
-
   const {
     data: category = [],
     isLoading,
@@ -66,83 +61,11 @@ export default function StoreFilterComponent({
   } = useGetBusinessCategoryQuery();
 
   const {
-    data: storesData,
-    isLoading: isLoadingStores,
-    isError: isErrorStores,
-    refetch: refetchStores,
-  } = useGetPublicStoresQuery({ size: 100 });
-
-  useEffect(() => {
-    if (availableLocations && availableLocations.length > 0) {
-      setApiLocations(availableLocations);
-      return;
-    }
-
-    const stores = storesData?.content ?? [];
-    if (stores.length === 0) return;
-
-    let isMounted = true;
-    setIsFetchingLocations(true);
-
-    async function loadStoreLocations() {
-      const set = new Set<string>();
-
-      // 1. Collect non-empty cityOrProvince / address from store list items
-      for (const store of stores) {
-        if (store.cityOrProvince?.trim()) set.add(store.cityOrProvince.trim());
-        if (store.address?.trim()) set.add(store.address.trim());
-      }
-
-      // 2. Fetch store details for stores without address in summary list
-      const missingDetailStores = stores.filter(
-        (s) => !s.cityOrProvince?.trim() && !s.address?.trim() && (s.slug || s.id),
-      );
-
-      if (missingDetailStores.length > 0) {
-        await Promise.all(
-          missingDetailStores.map(async (store) => {
-            try {
-              const res = await fetch(`/api/v1/public/stores/${store.slug || store.id}`);
-              if (res.ok) {
-                const detail = await res.json();
-                const locStr = detail.cityOrProvince?.trim() || detail.address?.trim();
-                if (locStr) {
-                  set.add(locStr);
-                }
-              }
-            } catch {
-              // Ignore single store fetch failure
-            }
-          }),
-        );
-      }
-
-      // 3. Process comma-separated locations for district/city parts
-      const finalSet = new Set<string>();
-      for (const item of set) {
-        finalSet.add(item);
-        if (item.includes(",")) {
-          const parts = item.split(",").map((p) => p.trim()).filter(Boolean);
-          for (const p of parts) {
-            if (p.length >= 3 && !/^\d+$/.test(p) && !/^no\.\d+/i.test(p)) {
-              finalSet.add(p);
-            }
-          }
-        }
-      }
-
-      if (isMounted) {
-        setApiLocations(Array.from(finalSet).sort());
-        setIsFetchingLocations(false);
-      }
-    }
-
-    loadStoreLocations();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [storesData, availableLocations]);
+    data: apiLocations = [],
+    isLoading: isLoadingProvinces,
+    isError: isErrorProvinces,
+    refetch: refetchProvinces,
+  } = useGetProvincesQuery();
 
   const currentSearchValue = searchValue ?? localSearchValue;
 
@@ -176,10 +99,11 @@ export default function StoreFilterComponent({
     onSelectedChange?.(nextSelected);
   };
 
-  const toggleLocation = (loc: string) => {
-    const nextLocations = selectedLocations.includes(loc)
-      ? selectedLocations.filter((item) => item !== loc)
-      : [...selectedLocations, loc];
+  // A store belongs to exactly one province, so picking a new one replaces
+  // the last pick rather than adding to it — the checkbox look stays, the
+  // behavior underneath is a radio group.
+  const toggleLocation = (id: string) => {
+    const nextLocations = selectedLocations.includes(id) ? [] : [id];
     onLocationsChange?.(nextLocations);
   };
 
@@ -197,7 +121,7 @@ export default function StoreFilterComponent({
     onLocationsChange?.([]);
   };
 
-  const loadingLocations = isLoadingStores || isFetchingLocations;
+  const loadingLocations = isLoadingProvinces;
 
   const renderLocationItemsOnly = () => (
     <>
@@ -208,15 +132,15 @@ export default function StoreFilterComponent({
         </div>
       )}
 
-      {isErrorStores && !loadingLocations && (
+      {isErrorProvinces && !loadingLocations && (
         <ApiErrorFallback
           variant="compact"
           title={t("cannotLoadLocations")}
-          onRetry={() => refetchStores()}
+          onRetry={() => refetchProvinces()}
         />
       )}
 
-      {!loadingLocations && !isErrorStores && (
+      {!loadingLocations && !isErrorProvinces && (
         <>
           {apiLocations.length === 0 ? (
             <p className="text-xs text-muted-foreground py-1">{t("noLocationsFound")}</p>

@@ -30,6 +30,7 @@ import {
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import ProductList from "@/components/store/detailstore/product-list";
 import { formatPrice } from "@/lib/store/productdetail/product";
+import { useShopperLocation } from "@/lib/hooks/useShopperLocation";
 
 function toMenuItem(
   item: StorefrontItemResponse,
@@ -77,11 +78,12 @@ export default function StoreDetail({
 }) {
   const t = useTranslations("Store");
   const { slug } = use(params);
+  const { coords } = useShopperLocation();
   const {
     data: storeDetail,
     isLoading: isLoadingStore,
     isError: isStoreError,
-  } = useGetPublicStoreQuery(slug);
+  } = useGetPublicStoreQuery({ slug, lat: coords?.lat, lng: coords?.lng });
   const { data: storeItems = [], isLoading: isLoadingItems } =
     useGetPublicStoreItemsQuery(slug);
 
@@ -204,6 +206,7 @@ export default function StoreDetail({
         discountLabel: storeDetail.discountLabel,
         isOpen: storefrontOpen,
         onlineHours: storeDetail.onlineHours,
+        distanceKm: storeDetail.distanceKm,
       }
     : undefined;
 
