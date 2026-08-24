@@ -16,10 +16,6 @@ const DEFAULT_STORE_IMAGE = "/image/card/defaultstore.png";
 const DESCRIPTION_MAX_LENGTH = 18;
 const ADDRESS_MAX_LENGTH = 20;
 
-/**
- * Shorten long text and add "..."
- * Array.from() handles Khmer Unicode characters better.
- */
 const shortenText = (
   text: string | null | undefined,
   maxLength: number,
@@ -206,11 +202,11 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
           {shortenText(finalAddress, ADDRESS_MAX_LENGTH, t("noLocation"))}
         </span>
       )}
-      {distanceLabel && (
+      {/* {distanceLabel && (
         <span className="ml-auto shrink-0 whitespace-nowrap text-xs font-medium text-primary">
           {t("distanceAway", { distance: distanceLabel })}
         </span>
-      )}
+      )} */}
     </div>
   </div>
 </Card>
