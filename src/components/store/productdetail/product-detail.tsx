@@ -1,25 +1,34 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+
 import { useState, useMemo, useEffect } from "react";
-import { ChevronLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
+import {
+  ChevronLeft,
+  Clock,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Check,
+  ImageOff,
+} from "lucide-react";
 import { toast } from "sonner";
+
+import { formatPrice } from "@/lib/store/productdetail/product";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
 import {
   StorefrontItemResponse,
   ItemVariant,
-  ItemUomConversion,
   primaryItemImage,
-  isVariantSelectable,
-  sellableAddOns,
+  itemImageUrl,
   type ChannelSchedule,
 } from "@/lib/type/storeType";
 import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
+
 import { useAuth } from "@/features/auth/useAuth";
-import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
-import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
-import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
 interface ProductDetailProps {
   item?: StorefrontItemResponse;
@@ -27,9 +36,7 @@ interface ProductDetailProps {
   storeName?: string;
   currency?: string;
   isLoading?: boolean;
-  /** Whether the online store is taking orders right now. */
   isStoreOpen?: boolean;
-  /** The hours the shop set for its Online Store, when it set any. */
   onlineHours?: ChannelSchedule | null;
 }
 
@@ -43,65 +50,71 @@ export default function ProductDetail({
   onlineHours,
 }: ProductDetailProps) {
   const t = useTranslations("Store");
-  const tCart = useTranslations("Cart");
-  const { isAuthenticated, status: authStatus, login } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
   const todayHours = useTodayHoursLabel(onlineHours);
 
+  const [activeImg, setActiveImg] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
-  /** null is the item itself — one of its base unit, rather than a pack. */
-  const [selectedPack, setSelectedPack] = useState<ItemUomConversion | null>(null);
-  /** The extras ticked, by id. Nothing is ticked to start with: an extra is
-      something the shopper asks for, never something they have to untick. */
-  const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
+  const [justAdded, setJustAdded] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
 
-  const variants = useMemo<ItemVariant[]>(() => item?.variants ?? [], [item]);
-  const attributes = useMemo(() => {
-    if (Array.isArray(item?.attributes)) {
+  // Extract all images from real item
+  const productImages = useMemo(() => {
+    if (item?.images && item.images.length > 0) {
+      const list: string[] = [];
+      const sorted = [...item.images].sort(
+        (a, b) => (a.position ?? 0) - (b.position ?? 0)
+      );
+      sorted.forEach((img) => {
+        const url = itemImageUrl(img);
+        if (url) list.push(url);
+      });
+      if (list.length > 0) return list;
+    }
+    const prim = primaryItemImage(item);
+    if (prim) return [prim];
+    return [];
+  }, [item]);
+
+  // Extract variants
+  const variants: ItemVariant[] = useMemo(() => item?.variants ?? [], [item]);
+
+  // Extract attributes
+  const attributes: Record<string, unknown> = useMemo(() => {
+    if (item?.attributes && typeof item.attributes === "object") {
       return item.attributes;
     }
-    return [];
-  }, [item?.attributes]);
+    return {};
+  }, [item]);
 
   useEffect(() => {
     if (variants.length > 0) {
-      // Land on something the shopper can actually buy. Defaulting to the
-      // first option put them on a sold-out size with the button greyed out
-      // and no hint that another size was in stock.
-      setSelectedVariant(variants.find(isVariantSelectable) ?? variants[0]);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSelectedVariant(variants[0]);
     } else {
       setSelectedVariant(null);
     }
 
-    // Keyed by the stored value, not the label: that is the identity the
-    // chips compare against and the only thing the API accepts. Seeding it
-    // with the label meant the pre-selected chip never showed as active
-    // whenever a value had one.
     const initialAttrs: Record<string, string> = {};
-    attributes
-      .filter((attr) => (attr.placement ?? "OPTION") === "OPTION")
-      .forEach((attr) => {
-        const firstVal =
-          attr.values?.find((value) => value.available !== false) ??
-          attr.values?.[0];
-        if (firstVal) {
-          initialAttrs[attr.name] = firstVal.value;
-        }
-      });
+    Object.entries(attributes).forEach(([key, val]) => {
+      if (Array.isArray(val) && val.length > 0) {
+        initialAttrs[key] = String(val[0]);
+      } else if (typeof val === "string" || typeof val === "number") {
+        initialAttrs[key] = String(val);
+      }
+    });
     setSelectedAttributes(initialAttrs);
-    // A pack belongs to the option it was declared for, so a new item starts
-    // back at the single.
-    setSelectedPack(null);
-    setSelectedAddOnIds([]);
+    setActiveImg(0);
     setQuantity(1);
   }, [item, variants, attributes]);
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 my-6 sm:my-8">
-        <div className="h-96 w-full animate-pulse rounded-2xl bg-neutral-100 dark:bg-card" />
+      <div className="mx-auto my-10 max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="h-96 w-full animate-pulse rounded-2xl bg-neutral-100 dark:bg-neutral-800" />
       </div>
     );
   }
@@ -125,110 +138,308 @@ export default function ProductDetail({
     );
   }
 
+  const name = item.name || t("detail.product");
+  const categoryName = item.itemGroup?.name || null;
+  const description = item.description || "";
+
+  const basePrice =
+    selectedVariant?.price !== undefined
+      ? Number(selectedVariant.price)
+      : item.price !== undefined && item.price !== null
+        ? Number(item.price)
+        : 0;
+
+  const unitPrice = basePrice;
+  const currentMainImage = productImages[activeImg] || productImages[0] || null;
+
   async function handleAddToCart() {
     if (!item?.businessId || !item?.id) {
       toast.error(t("errors.itemUnavailable"));
       return;
     }
 
-    // The basket refuses an out-of-hours add anyway; saying so here costs a
-    // shopper nothing and spares them a request that was never going to work.
-    if (!isStoreOpen) {
-      toast.error(
-        todayHours
-          ? `${t("detail.storeClosed")} — ${todayHours}`
-          : t("detail.storeClosed"),
-      );
-      return;
-    }
-
-    if (!isAuthenticated && authStatus !== "loading") {
+    if (!isAuthenticated) {
+      toast.error(t("errors.signInRequired"));
       login();
       return;
     }
 
-    // Priced from the item's own library, and only the ones it still sells:
-    // the server checks the same thing, so a stale tick is refused rather
-    // than billed.
-    const extras = sellableAddOns(item).filter((addOn) =>
-      selectedAddOnIds.includes(addOn.id),
-    );
-    const extrasPerUnit = extras.reduce(
-      (total, addOn) => total + Number(addOn.price ?? 0),
-      0,
-    );
+    // The basket refuses an out-of-hours add anyway; saying so here spares a
+    // request that was never going to work.
+    if (!isStoreOpen) {
+      toast.error(
+        todayHours
+          ? `${t("detail.storeClosed")} — ${todayHours}`
+          : t("detail.storeClosed")
+      );
+      return;
+    }
+
+    setAddError(null);
+    setJustAdded(true);
+    toast.success(t("messages.addedToCart", { quantity, name }));
+    setTimeout(() => setJustAdded(false), 2000);
 
     try {
       await addToCartMutation({
         businessId: item.businessId,
         itemId: item.id,
-        quantity,
         variantId: selectedVariant?.id,
-        // Which unit is being bought. Absent means one of the base unit —
-        // a pack is priced in its own right, so the server needs to know.
-        unitId: selectedPack?.unit?.id,
-        // What the shopper actually picked. These used to be collected and
-        // then dropped on the floor: the basket had no field for them, so a
-        // drink ordered at 50% sugar reached the counter saying nothing.
-        selections: Object.entries(selectedAttributes).map(
-          ([attributeName, value]) => ({ attributeName, value }),
-        ),
-        // The extras ticked. Only ids travel — the shop's prices are the
-        // shop's to state, and a browser does not get to name them.
-        addOnIds: extras.map((addOn) => addOn.id),
+        quantity,
         itemDetails: {
-          name: item.name,
-          price:
-            Number(
-              selectedPack?.price ?? selectedVariant?.price ?? item.price ?? 0,
-            ) + extrasPerUnit,
-          imageUrl: primaryItemImage(item),
-          currency: currency,
-          addOns: extras.map((addOn) => ({
-            addOnId: addOn.id,
-            name: addOn.name,
-            unitPrice: Number(addOn.price ?? 0),
-          })),
+          name,
+          price: unitPrice,
+          imageUrl: currentMainImage,
+          storeName: storeName ?? item.businessName ?? t("common.store"),
         },
       }).unwrap();
-
-      toast.success(tCart("addedToCart"));
     } catch (err: any) {
-      if (isUnauthorized(err)) {
-        login();
-      } else {
-        const msg = formatStockErrorMessage(err, item?.name);
-        const lower = msg.toLowerCase();
-        if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
-          if (item?.id) markItemOutOfStock(item.id);
-        }
-        toast.error(msg);
-      }
+      console.error("Failed to add to cart", err);
+      setJustAdded(false);
+      const msg = err?.data?.message || err?.data?.error || t("errors.addToCartFailed");
+      setAddError(msg);
+      toast.error(msg);
     }
   }
 
   return (
-    <div className="mx-auto max-w-5xl bg-[#f7f8f7] dark:bg-[#121620] max-sm:dark:bg-background sm:rounded-2xl sm:my-8 overflow-hidden shadow-sm border border-neutral-100 dark:border-neutral-800">
-      <ProductStorefrontUI
-        item={item}
-        currency={currency}
-        storeSlug={storeSlug}
-        storeName={storeName}
-        onAddToCart={handleAddToCart}
-        isAddingToCart={isAdding}
-        quantity={quantity}
-        setQuantity={setQuantity}
-        selectedVariant={selectedVariant}
-        setSelectedVariant={setSelectedVariant}
-        selectedAttributes={selectedAttributes}
-        setSelectedAttributes={setSelectedAttributes}
-        selectedPack={selectedPack}
-        setSelectedPack={setSelectedPack}
-        selectedAddOnIds={selectedAddOnIds}
-        setSelectedAddOnIds={setSelectedAddOnIds}
-        isStoreOpen={isStoreOpen}
-        onlineHours={onlineHours}
-      />
+    <div className="mx-auto my-10 max-w-7xl px-4 text-foreground transition-colors sm:px-6 lg:px-8">
+      {/* Breadcrumb Navigation */}
+      <div className="mb-6 flex items-center justify-between">
+        <Link href={storeSlug ? `/store/${storeSlug}` : "/store"}>
+          <button className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground">
+            <ChevronLeft className="h-4 w-4" />
+            {storeName ? `${t("common.store")} / ${storeName}` : t("common.store")} / {name}
+          </button>
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[auto_1fr] lg:gap-10">
+        {/* Image Gallery */}
+        <div className="flex flex-col-reverse gap-3 sm:flex-row">
+          {productImages.length > 1 && (
+            <div className="flex flex-row gap-3 overflow-x-auto pb-2 sm:flex-col sm:overflow-x-visible sm:pb-0">
+              {productImages.map((src, i) => (
+                <button
+                  key={`${src}-${i}`}
+                  onClick={() => setActiveImg(i)}
+                  className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 bg-muted transition-all ${
+                    i === activeImg
+                      ? "border-[#00932A] ring-2 ring-[#00932A]/20"
+                      : "border-transparent hover:border-neutral-300 dark:hover:border-neutral-700"
+                  }`}
+                >
+                  <Image
+                    src={src}
+                    alt={t("detail.thumbnailAlt", { name, number: i + 1 })}
+                    width={64}
+                    height={64}
+                    unoptimized
+                    className="h-full w-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Main Image */}
+          <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-2xl bg-neutral-100 sm:h-128 sm:w-128 md:h-140 md:w-140 lg:h-154.5 lg:w-146 dark:bg-card">
+            {currentMainImage ? (
+              <Image
+                key={currentMainImage}
+                src={currentMainImage}
+                alt={name}
+                width={584}
+                height={618}
+                unoptimized
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-neutral-400">
+                <ImageOff className="h-12 w-12" />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Product Info */}
+        <div className="flex flex-col justify-start space-y-5">
+          {categoryName && (
+            <div>
+              <span className="rounded-full bg-[#00932A]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#00932A]">
+                {categoryName}
+              </span>
+            </div>
+          )}
+
+          <h1 className="text-2xl font-bold sm:text-3xl lg:text-4xl">{name}</h1>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="text-2xl font-bold text-[#00932A] sm:text-3xl">
+              {formatPrice(unitPrice, currency)}
+            </div>
+          </div>
+
+          {description && (
+            <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+              {description}
+            </p>
+          )}
+
+          {!isStoreOpen && (
+            <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-400">
+              <Clock className="h-4 w-4 shrink-0" />
+              <span className="font-bold">{t("detail.storeClosed")}</span>
+              {todayHours ? <span>· {todayHours}</span> : null}
+            </div>
+          )}
+
+          {/* Variants Selection */}
+          {variants.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-muted-foreground">
+                Options / Variants:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {variants.map((v) => {
+                  const isSel = selectedVariant?.id === v.id;
+                  const vName = v.variantName || v.name || v.title || t("detail.option");
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => setSelectedVariant(v)}
+                      className={`flex flex-col items-center rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
+                        isSel
+                          ? "border-[#00932A] bg-[#00932A]/10 text-[#00932A] shadow-sm"
+                          : "border-gray-200 bg-card text-foreground hover:border-gray-300 dark:border-neutral-800"
+                      }`}
+                    >
+                      <span>{vName}</span>
+                      {v.price !== undefined && (
+                        <span className="text-xs opacity-80">
+                          {formatPrice(v.price, currency)}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Attributes Selection */}
+          {Object.keys(attributes).length > 0 && (
+            <div className="space-y-4">
+              {Object.entries(attributes).map(([attrKey, attrVal]) => {
+                const options: string[] = Array.isArray(attrVal)
+                  ? attrVal.map(String)
+                  : typeof attrVal === "string" || typeof attrVal === "number"
+                    ? [String(attrVal)]
+                    : [];
+
+                if (options.length === 0) return null;
+
+                const currentSelected = selectedAttributes[attrKey] || options[0];
+
+                return (
+                  <div key={attrKey} className="space-y-2">
+                    <p className="text-sm font-semibold text-muted-foreground">
+                      {attrKey}:{" "}
+                      <span className="font-bold text-foreground">
+                        {currentSelected}
+                      </span>
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {options.map((opt) => {
+                        const isSelected = currentSelected === opt;
+                        return (
+                          <button
+                            key={opt}
+                            type="button"
+                            onClick={() =>
+                              setSelectedAttributes((prev) => ({
+                                ...prev,
+                                [attrKey]: opt,
+                              }))
+                            }
+                            className={`min-w-16 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
+                              isSelected
+                                ? "border-[#00932A] bg-[#00932A]/10 text-[#00932A] shadow-sm"
+                                : "border-gray-200 bg-card text-foreground hover:border-gray-300 dark:border-neutral-800"
+                            }`}
+                          >
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Quantity Selector */}
+          <div className="flex items-center gap-4 pt-2">
+            <span className="text-sm font-semibold text-muted-foreground">{t("detail.quantity")}</span>
+            <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-neutral-50 px-3 py-1 dark:border-neutral-800 dark:bg-neutral-900">
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                className="flex h-8 w-8 items-center justify-center text-neutral-600 hover:text-red-500 disabled:opacity-40"
+                disabled={quantity <= 1}
+              >
+                <Minus className="h-4 w-4" />
+              </button>
+
+              <span className="w-8 text-center font-bold">{quantity}</span>
+
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => q + 1)}
+                className="flex h-8 w-8 items-center justify-center text-neutral-600 hover:text-[#00932A]"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Add to Cart Button */}
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={isAdding || justAdded || !isStoreOpen}
+            className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#00932A] text-base font-semibold text-white shadow-md transition-all hover:bg-[#007d24] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:opacity-100 dark:disabled:bg-neutral-800"
+          >
+            {justAdded ? (
+              <>
+                <Check className="h-5 w-5" />
+                {t("detail.addedToCart")}
+              </>
+            ) : !isStoreOpen ? (
+              <>
+                <Clock className="h-5 w-5" />
+                {t("detail.storeClosed")}
+              </>
+            ) : (
+              <>
+                <ShoppingBag className="h-5 w-5" />
+                {isAdding
+                  ? t("detail.adding")
+                  : `${t("detail.addToCart")} · ${formatPrice(unitPrice * quantity, currency)}`}
+              </>
+            )}
+          </button>
+
+          {addError && (
+            <p className="text-sm text-destructive" role="alert">
+              {addError}
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

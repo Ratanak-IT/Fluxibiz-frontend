@@ -451,15 +451,6 @@ export default function StoreFilterComponent({
               </div>
 
               <div className="max-h-[70vh] space-y-6 overflow-y-auto overflow-x-hidden p-4 pt-0 sm:p-5 sm:pt-0">
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={handleResetFilters}
-                    className="mb-2 mt-3 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
-                  >
-                    {t("resetFilters")}
-                  </button>
-                )}
                 {renderCategoryFilters()}
                 {renderLocationFilters()}
               </div>
@@ -480,15 +471,6 @@ export default function StoreFilterComponent({
           {/* 2. Filters Title + Reset button */}
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-xl font-bold text-foreground hover:text-primary transition-colors cursor-default">{t("title")}</h2>
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="shrink-0 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
-              >
-                {t("resetFilters")}
-              </button>
-            )}
           </div>
         </div>
 

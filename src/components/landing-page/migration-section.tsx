@@ -187,7 +187,7 @@ function MigrationCard({
             </span>
           </div>
 
-          <p className="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="mt-6 text-xs font-bold uppercase tracking-[0.10em] text-muted-foreground">
             {eyebrow}
           </p>
 

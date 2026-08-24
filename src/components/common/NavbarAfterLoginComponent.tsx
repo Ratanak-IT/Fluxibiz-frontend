@@ -430,11 +430,23 @@ export default function NavbarAfterLoginComponent({
                     px-3
                     py-2
                     transition-colors
+<<<<<<< HEAD
+                    hover:bg-[#e5e7eb]
+                    focus-visible:outline-none
+                    focus-visible:ring-2
+                    focus-visible:ring-primary
+                    focus-visible:ring-offset-2
+
+                    dark:bg-white/5
+                    dark:hover:bg-white/10
+                    dark:focus-visible:ring-offset-background
+=======
 
                     hover:bg-[#e5e7eb]
 
                     dark:bg-white/5
                     dark:hover:bg-white/10
+>>>>>>> 8a4fd6b49e7963aa43f4d0fd743fd62a004f9401
                   "
                 >
                   <Avatar
@@ -446,9 +458,7 @@ export default function NavbarAfterLoginComponent({
                       transition-colors
                       group-hover:border-primary
 
-                      dark:border-white/10
-                    "
-                  >
+                      dark:border-white/10 " >
                     {avatarSrc ? (
                       <AvatarImage
                         src={avatarSrc}
@@ -614,40 +624,7 @@ export default function NavbarAfterLoginComponent({
                   {t("account.paymentHistory")}
                 </Link>
 
-                {/* Settings */}
-                <Link
-                  href="/settings"
-                  onClick={() =>
-                    setMobileNavOpen(false)
-                  }
-                  className="
-                    group
-                    flex
-                    h-11
-                    w-full
-                    items-center
-                    gap-3
-                    rounded-lg
-                    px-3
-                    text-base
-                    font-bold
-                    text-[#374151]
-                    transition-colors
 
-                    hover:bg-[#f3f4f6]
-                    hover:text-primary
-
-                    [&_svg]:text-current
-                    [&_svg]:transition-colors
-
-                    dark:text-white
-                    dark:hover:bg-white/5
-                    dark:hover:text-primary
-                  "
-                >
-                  <Settings className="size-5 shrink-0 text-current" />
-                  {t("account.settings")}
-                </Link>
 
                 {/* Logout */}
                 <button
@@ -848,32 +825,7 @@ function UserDropdown({
             {t("account.paymentHistory")}
           </DropdownMenuItem>
 
-          <DropdownMenuItem
-            render={<Link href="/settings" />}
-            className="
-              group
-              cursor-pointer
-              gap-2.5
-              text-[#1f2937]
 
-              focus:bg-[#f3f4f6]
-              focus:text-primary
-              data-[highlighted]:bg-[#f3f4f6]
-              data-[highlighted]:text-primary
-
-              [&_svg]:text-current
-              [&_svg]:transition-colors
-
-              dark:text-white
-              dark:focus:bg-white/5
-              dark:focus:text-primary
-              dark:data-[highlighted]:bg-white/5
-              dark:data-[highlighted]:text-primary
-            "
-          >
-            <Settings className="size-[17px] text-current" />
-            {t("account.settings")}
-          </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator className="bg-[#e5e7eb] dark:bg-white/10" />

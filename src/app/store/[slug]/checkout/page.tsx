@@ -4,7 +4,8 @@ import { useTranslations } from "next-intl";
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, Loader2, Store, TriangleAlert } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Banknote, ChevronLeft, Loader2, QrCode, Store, TriangleAlert } from "lucide-react";
 
 import { toast } from "sonner";
 import KhqrPaymentComponent from "@/components/checkout/khqr-payment-component";
@@ -19,6 +20,7 @@ import { formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
+    type PaymentMethodType,
 } from "@/lib/type/checkoutType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
@@ -30,6 +32,7 @@ export default function CheckoutPage({
     params: Promise<{ slug: string }>;
 }) {
   const t = useTranslations("Checkout");
+    const router = useRouter();
     const { slug } = use(params);
 
     const { data: cart, isLoading: cartLoading } = useGetCartQuery();
@@ -47,6 +50,7 @@ export default function CheckoutPage({
     const [cancelledOrderId, setCancelledOrderId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [paid, setPaid] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("KHQR");
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
@@ -76,7 +80,16 @@ export default function CheckoutPage({
         try {
             const created = await createCheckout({
                 businessId: store.businessId,
+                paymentMethod,
             }).unwrap();
+
+            if (paymentMethod === "PAY_LATER" || !created.qr) {
+                toast.success(t("orderPlacedToast"));
+                if (created.orderId) {
+                    router.push(`/receipt/${created.orderId}`);
+                    return;
+                }
+            }
 
             setSession(created);
         } catch (err) {
@@ -201,33 +214,98 @@ export default function CheckoutPage({
             )}
 
             {!session && store && (
-                <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
-                    <div className="flex flex-col gap-4">
-                        {store.items.map((line) => (
-                            <div
-                                key={line.cartItemId}
-                                className="flex items-center justify-between text-base"
-                            >
-                                <span className="text-neutral-700 dark:text-card-foreground">
-                                    {line.name} × {line.quantity}
-                                </span>
+                <div className="space-y-6">
+                    {/* Order summary card */}
+                    <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
+                        <div className="flex flex-col gap-4">
+                            {store.items.map((line) => (
+                                <div
+                                    key={line.cartItemId}
+                                    className="flex items-center justify-between text-base"
+                                >
+                                    <span className="text-neutral-700 dark:text-card-foreground">
+                                        {line.name} × {line.quantity}
+                                    </span>
 
-                                <span className="font-semibold text-neutral-900 dark:text-card-foreground">
-                                    {formatMoney(line.subtotal, currency)}
-                                </span>
-                            </div>
-                        ))}
-                        
+                                    <span className="font-semibold text-neutral-900 dark:text-card-foreground">
+                                        {formatMoney(line.subtotal, currency)}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-border">
+                            <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
+                                {t("total")}
+                            </span>
+
+                            <span className="text-2xl font-bold text-green-600 dark:text-primary">
+                                {formatMoney(store.subtotal, currency)}
+                            </span>
+                        </div>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-border">
-                        <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
-                            {t("total")}
-                        </span>
+                    {/* Payment Method Selector */}
+                    <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
+                        <h2 className="text-base font-bold text-neutral-900 dark:text-card-foreground mb-4">
+                            {t("paymentMethod")}
+                        </h2>
 
-                        <span className="text-2xl font-bold text-green-600 dark:text-primary">
-                            {formatMoney(store.subtotal, currency)}
-                        </span>
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            {/* KHQR Option */}
+                            <button
+                                type="button"
+                                onClick={() => setPaymentMethod("KHQR")}
+                                className={`flex items-start gap-3.5 rounded-xl border p-4 text-left transition-all ${
+                                    paymentMethod === "KHQR"
+                                        ? "border-green-600 bg-green-50/50 shadow-xs ring-1 ring-green-600 dark:border-primary dark:bg-primary/10 dark:ring-primary"
+                                        : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700"
+                                }`}
+                            >
+                                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
+                                    paymentMethod === "KHQR"
+                                        ? "bg-green-600 text-white dark:bg-primary dark:text-primary-foreground"
+                                        : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
+                                }`}>
+                                    <QrCode className="h-5 w-5" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-bold text-neutral-900 dark:text-card-foreground">
+                                        {t("payWithKhqr")}
+                                    </p>
+                                    <p className="mt-0.5 text-xs text-neutral-500 dark:text-muted-foreground">
+                                        {t("payWithKhqrDesc")}
+                                    </p>
+                                </div>
+                            </button>
+
+                            {/* Pay Later Option */}
+                            <button
+                                type="button"
+                                onClick={() => setPaymentMethod("PAY_LATER")}
+                                className={`flex items-start gap-3.5 rounded-xl border p-4 text-left transition-all ${
+                                    paymentMethod === "PAY_LATER"
+                                        ? "border-green-600 bg-green-50/50 shadow-xs ring-1 ring-green-600 dark:border-primary dark:bg-primary/10 dark:ring-primary"
+                                        : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700"
+                                }`}
+                            >
+                                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
+                                    paymentMethod === "PAY_LATER"
+                                        ? "bg-green-600 text-white dark:bg-primary dark:text-primary-foreground"
+                                        : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
+                                }`}>
+                                    <Banknote className="h-5 w-5" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-bold text-neutral-900 dark:text-card-foreground">
+                                        {t("payLater")}
+                                    </p>
+                                    <p className="mt-0.5 text-xs text-neutral-500 dark:text-muted-foreground">
+                                        {t("payLaterDesc")}
+                                    </p>
+                                </div>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -240,7 +318,7 @@ export default function CheckoutPage({
                 />
             )}
 
-            {/* Pay */}
+            {/* Submit Button */}
             {!session && (
                 <Button
                     onClick={startPayment}
@@ -252,7 +330,9 @@ export default function CheckoutPage({
                     )}
                     {store?.open === false
                         ? t("shopClosed")
-                        : t("payWithBakong", { amount: formatMoney(store?.subtotal ?? 0, currency) })}
+                        : paymentMethod === "PAY_LATER"
+                        ? `${t("placeOrder")} (${formatMoney(store?.subtotal ?? 0, currency)})`
+                        : `${t("payWithKhqr")} (${formatMoney(store?.subtotal ?? 0, currency)})`}
                 </Button>
             )}
 

@@ -49,12 +49,12 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
           <div className="flex flex-1 flex-col justify-between p-4 sm:px-6 sm:py-3.5">
             {/* 1. Top Section: Category & Promotion */}
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs font-medium text-muted-foreground sm:text-sm">
+              <span className="text-[12px] font-medium text-muted-foreground sm:text-sm">
                 {store.category}
               </span>
 
               {store.discountLabel && (
-                <div className="rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-xs font-bold text-red-600 dark:bg-red-500/20 dark:text-red-400">
+                <div className="rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-[12px] font-bold text-red-600 dark:bg-red-500/20 dark:text-red-400">
                   🏷️ PROMOTION: {store.discountLabel}
                 </div>
               )}
@@ -62,7 +62,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
 
             {/* 2. Middle Section: Store Name */}
             <div className="my-1">
-              <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl md:text-3xl">
+              <h1 className="text-[16px] font-bold tracking-tight text-foreground sm:text-2xl md:text-3xl">
                 {store.name}
               </h1>
             </div>
@@ -76,13 +76,13 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                     href={store.googleMap}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="truncate text-primary hover:underline"
+                    className="truncate text-[12px] text-primary hover:underline"
                     title={store.address || store.location}
                   >
                     {store.address || store.location}
                   </a>
                 ) : (
-                  <span className="truncate" title={store.address || store.location}>
+                  <span className="truncate text-[12px]" title={store.address || store.location}>
                     {store.address || store.location}
                   </span>
                 )}
@@ -113,7 +113,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
       </Card>
 
       {store.description && (
-        <div className="mt-4 text-xs text-muted-foreground sm:text-sm">
+        <div className="mt-4 text-[14px] text-muted-foreground">
           {store.description}
         </div>
       )}
