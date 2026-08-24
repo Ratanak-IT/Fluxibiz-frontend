@@ -34,6 +34,12 @@ interface StoreFilterComponentProps {
   onLocationsChange?: (locations: string[]) => void;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
+  /**
+   * Called after Reset clears search/category/location — forces the store
+   * list's own query to refetch explicitly rather than relying solely on
+   * the state clear to be picked up as an arg change on its own.
+   */
+  onResetFilters?: () => void;
 }
 
 const VISIBLE_COUNT = 5;
@@ -45,6 +51,7 @@ export default function StoreFilterComponent({
   onLocationsChange,
   searchValue,
   onSearchChange,
+  onResetFilters,
 }: StoreFilterComponentProps) {
   const t = useTranslations("Store.filters");
   const [showMore, setShowMore] = useState(false);
@@ -99,9 +106,7 @@ export default function StoreFilterComponent({
     onSelectedChange?.(nextSelected);
   };
 
-  // A store belongs to exactly one province, so picking a new one replaces
-  // the last pick rather than adding to it — the checkbox look stays, the
-  // behavior underneath is a radio group.
+
   const toggleLocation = (id: string) => {
     const nextLocations = selectedLocations.includes(id) ? [] : [id];
     onLocationsChange?.(nextLocations);
@@ -119,6 +124,7 @@ export default function StoreFilterComponent({
     handleSearchChange("");
     onSelectedChange?.([]);
     onLocationsChange?.([]);
+    onResetFilters?.();
   };
 
   const loadingLocations = isLoadingProvinces;
@@ -394,16 +400,12 @@ export default function StoreFilterComponent({
         </div>
       </div>
 
-      {/* Desktop Sidebar Layout with Primary Colored Search Icon & Text Hover Effects */}
       <div className="hidden w-full max-w-[420px] xl:block xl:min-w-[340px]">
-        {/* Top Sticky Header (Search Icon + Filters Title) */}
         <div className="sticky top-0 z-30 bg-background pt-1 pb-4 space-y-4">
-          {/* 1. Search Icon */}
           <div>
             <SearchDrawer value={currentSearchValue} onChange={handleSearchChange} />
           </div>
 
-          {/* 2. Filters Title + Reset button */}
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-xl font-bold text-foreground hover:text-primary transition-colors cursor-default">{t("title")}</h2>
             {hasActiveFilters && (
