@@ -57,7 +57,12 @@ async function enrichStoresWithDetails(
     if (!stores || stores.length === 0) return [];
     return Promise.all(
         stores.map(async (store) => {
-            if ((store.cityOrProvince && store.address) || !store.slug) {
+            // `address` is what the card actually shows; `cityOrProvince` is
+            // deprecated and null for every business created since location
+            // moved to the map picker, so requiring both here meant this
+            // fired for every store, every time — an extra full detail fetch
+            // per card, on every listing render.
+            if (store.address || !store.slug) {
                 return store;
             }
             try {

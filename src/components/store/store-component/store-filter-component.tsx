@@ -362,16 +362,27 @@ export default function StoreFilterComponent({
                 <div className="min-w-0">
                   <DrawerTitle className="text-xl font-bold text-foreground truncate hover:text-primary transition-colors">{t("title")}</DrawerTitle>
                 </div>
-                <DrawerClose
-                  render={
+                <div className="flex shrink-0 items-center gap-2">
+                  {hasActiveFilters && (
                     <button
                       type="button"
-                      className="shrink-0 rounded-full border border-primary/40 bg-transparent px-3 py-2 text-sm font-medium text-primary transition hover:bg-primary/5 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-primary/50"
+                      onClick={handleResetFilters}
+                      className="rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-primary"
                     >
-                      {t("close")}
+                      {t("resetFilters")}
                     </button>
-                  }
-                />
+                  )}
+                  <DrawerClose
+                    render={
+                      <button
+                        type="button"
+                        className="shrink-0 rounded-full border border-primary/40 bg-transparent px-3 py-2 text-sm font-medium text-primary transition hover:bg-primary/5 focus-visible:ring-1 focus-visible:ring-primary/20 dark:border-primary/50"
+                      >
+                        {t("close")}
+                      </button>
+                    }
+                  />
+                </div>
               </div>
 
               <div className="max-h-[70vh] space-y-6 overflow-y-auto overflow-x-hidden p-4 pt-0 sm:p-5 sm:pt-0">
@@ -395,6 +406,15 @@ export default function StoreFilterComponent({
           {/* 2. Filters Title + Reset button */}
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-xl font-bold text-foreground hover:text-primary transition-colors cursor-default">{t("title")}</h2>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="shrink-0 text-sm font-medium text-muted-foreground transition hover:text-primary"
+              >
+                {t("resetFilters")}
+              </button>
+            )}
           </div>
         </div>
 

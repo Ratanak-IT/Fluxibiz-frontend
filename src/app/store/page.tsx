@@ -155,7 +155,14 @@ function RecommendedSection({
   const rawRecStores = recData?.content ?? [];
   const rawPublicStores = publicData?.content ?? [];
   const rawStores = rawRecStores.length > 0 ? rawRecStores : rawPublicStores;
-  const isLoading = isLoadingRec && isLoadingPublic;
+  // Same reasoning as the main listing: only the true first-load gap (no
+  // data has ever arrived) should show the skeleton. RTK Query keeps the
+  // previous `data` visible through a coords-driven refetch on its own, so
+  // gating on `isFetching` too — as this used to — blanked the section on
+  // every refetch, which is what read as "jumping."
+  const recSettled = !isLoadingRec && recData !== undefined;
+  const publicSettled = !isLoadingPublic && publicData !== undefined;
+  const isLoading = !recSettled && !publicSettled;
 
   const storesToDisplay = useMemo(() => {
     return rawStores
@@ -342,6 +349,17 @@ export default function HomePage() {
     lng: coords?.lng,
   });
 
+  // `coords` starts null and flips to a real position once geolocation
+  // resolves — a genuinely new query-cache key, not just a refetch of the
+  // same one. RTK Query keeps showing the last-loaded `data` while that new
+  // key fetches in the background (by design, to avoid exactly this kind of
+  // flash), so this only needs to catch the one real gap: no data has ever
+  // arrived yet. Adding `isFetching` here — true on *every* refetch,
+  // including a plain category/location change — was overcorrecting: it
+  // blanked the whole grid to a skeleton on every filter change and on the
+  // coords-driven refetch, which is what read as "jumping."
+  const isStoresSettling = isLoadingPublic || filteredStoresData === undefined;
+
   const rawPublicStores = filteredStoresData?.content ?? [];
 
   const filteredStores = useMemo(() => {
@@ -388,7 +406,7 @@ export default function HomePage() {
           />
           <StoresByCategorySection
             stores={filteredStores}
-            isLoading={isLoadingPublic}
+            isLoading={isStoresSettling}
           />
         </div>
       </div>
