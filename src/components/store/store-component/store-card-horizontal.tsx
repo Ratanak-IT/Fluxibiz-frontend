@@ -7,6 +7,7 @@ import { MapPin } from "lucide-react";
 
 import { Card, CardTitle } from "@/components/ui/card";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
+import { formatDistance } from "@/lib/type/storeType";
 
 import type { StoreCardComponentProps } from "./store-cart-component";
 
@@ -48,7 +49,9 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
     googleMap,
     image,
     discountLabel,
+    distanceKm,
   } = store;
+  const distanceLabel = formatDistance(distanceKm);
 
   const [imgSrc, setImgSrc] = useState(
     image?.trim() ? image : DEFAULT_STORE_IMAGE,
@@ -199,6 +202,11 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
           title={finalAddress}
         >
           {shortenText(finalAddress, ADDRESS_MAX_LENGTH, t("noLocation"))}
+        </span>
+      )}
+      {distanceLabel && (
+        <span className="ml-auto shrink-0 whitespace-nowrap text-[12px] font-medium text-primary">
+          {t("distanceAway", { distance: distanceLabel })}
         </span>
       )}
     </div>

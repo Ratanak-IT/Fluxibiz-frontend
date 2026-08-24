@@ -738,6 +738,7 @@
       "openAllDay": "Open 24/7",
       "noInformation": "No information",
       "noLocation": "No location",
+      "distanceAway": "{distance} away",
       "viewAll": "View All",
       "backToStore": "Back to Store",
       "menu": "Menu",

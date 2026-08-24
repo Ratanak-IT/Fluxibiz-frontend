@@ -18,6 +18,7 @@ import {
   StoreRowSkeleton,
 } from "@/components/common/Skeletons";
 import StoreFilterComponent from "@/components/store/store-component/store-filter-component";
+import { useShopperLocation } from "@/lib/hooks/useShopperLocation";
 
 function SectionHeader({ title }: { title: string }) {
   return (
@@ -131,17 +132,25 @@ function StoreRow({ items }: { items: Store[] }) {
 }
 
 function RecommendedSection({
-  selectedLocations = [],
+  selectedProvinceName,
   searchValue = "",
+  coords,
 }: {
-  selectedLocations?: string[];
+  selectedProvinceName?: string;
   searchValue?: string;
+  coords?: { lat: number; lng: number } | null;
 }) {
   const t = useTranslations("Store.common");
-  const { data: recData, isLoading: isLoadingRec } =
-    useGetRecommendedStoresQuery({ size: 10 });
-  const { data: publicData, isLoading: isLoadingPublic } =
-    useGetPublicStoresQuery({ size: 10 });
+  const { data: recData, isLoading: isLoadingRec } = useGetRecommendedStoresQuery({
+    size: 10,
+    lat: coords?.lat,
+    lng: coords?.lng,
+  });
+  const { data: publicData, isLoading: isLoadingPublic } = useGetPublicStoresQuery({
+    size: 10,
+    lat: coords?.lat,
+    lng: coords?.lng,
+  });
 
   const rawRecStores = recData?.content ?? [];
   const rawPublicStores = publicData?.content ?? [];
@@ -151,12 +160,11 @@ function RecommendedSection({
   const storesToDisplay = useMemo(() => {
     return rawStores
       .filter((store) => {
-        if (selectedLocations.length > 0) {
-          const storeText = `${store.cityOrProvince ?? ""} ${store.address ?? ""} ${store.name ?? ""} ${store.about ?? ""}`.toLowerCase();
-          const matchesLoc = selectedLocations.some((loc) =>
-            storeText.includes(loc.toLowerCase()),
-          );
-          if (!matchesLoc) return false;
+        // The "recommended" endpoint doesn't take a province filter, so this
+        // stays a client-side match — but against the geocoded provinceName
+        // now, not a free-text guess.
+        if (selectedProvinceName && store.provinceName !== selectedProvinceName) {
+          return false;
         }
 
         if (searchValue.trim()) {
@@ -168,7 +176,7 @@ function RecommendedSection({
         return true;
       })
       .map(toStoreCard);
-  }, [rawStores, selectedLocations, searchValue]);
+  }, [rawStores, selectedProvinceName, searchValue]);
 
   if (isLoading && storesToDisplay.length === 0) {
     return (
@@ -261,14 +269,17 @@ function StoresByCategorySection({
 }
 
 function PromotionsSection({
-  selectedLocations = [],
+  selectedProvinceName,
   searchValue = "",
 }: {
-  selectedLocations?: string[];
+  selectedProvinceName?: string;
   searchValue?: string;
 }) {
   const t = useTranslations("Store.common");
-  const { data, isLoading } = useGetPublicStoresQuery({ size: 50 });
+  const { data, isLoading } = useGetPublicStoresQuery({
+    size: 50,
+    province: selectedProvinceName,
+  });
   const rawStores = data?.content ?? [];
 
   const promoStores = useMemo(() => {
@@ -276,14 +287,6 @@ function PromotionsSection({
       .filter((store) => {
         if (!Boolean(store.discountLabel || store.promotionLabel || store.promotion)) {
           return false;
-        }
-
-        if (selectedLocations.length > 0) {
-          const storeText = `${store.cityOrProvince ?? ""} ${store.address ?? ""} ${store.name ?? ""} ${store.about ?? ""}`.toLowerCase();
-          const matchesLoc = selectedLocations.some((loc) =>
-            storeText.includes(loc.toLowerCase()),
-          );
-          if (!matchesLoc) return false;
         }
 
         if (searchValue.trim()) {
@@ -295,7 +298,7 @@ function PromotionsSection({
         return true;
       })
       .map(toStoreCard);
-  }, [rawStores, selectedLocations, searchValue]);
+  }, [rawStores, searchValue]);
 
   if (isLoading) {
     return (
@@ -320,26 +323,29 @@ function PromotionsSection({
 
 export default function HomePage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  // Holds at most one province name — a store belongs to exactly one
+  // province, so this is a single-select even though the filter UI still
+  // renders checkboxes (see store-filter-component's toggleLocation). The
+  // name itself is the value: provinces come from /public/stores/provinces,
+  // a plain distinct list of what's actually geocoded onto real stores.
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
+  const selectedProvinceName = selectedLocations[0];
+
+  const { coords } = useShopperLocation();
 
   const { data: filteredStoresData, isLoading: isLoadingPublic } = useGetPublicStoresQuery({
     size: 100,
     categoryIds: selectedCategories.length > 0 ? selectedCategories : undefined,
+    province: selectedProvinceName,
+    lat: coords?.lat,
+    lng: coords?.lng,
   });
 
   const rawPublicStores = filteredStoresData?.content ?? [];
 
   const filteredStores = useMemo(() => {
     return rawPublicStores.filter((store) => {
-      if (selectedLocations.length > 0) {
-        const storeText = `${store.cityOrProvince ?? ""} ${store.address ?? ""} ${store.name ?? ""} ${store.about ?? ""}`.toLowerCase();
-        const matchesLoc = selectedLocations.some((loc) =>
-          storeText.includes(loc.toLowerCase()),
-        );
-        if (!matchesLoc) return false;
-      }
-
       if (searchValue.trim()) {
         const term = searchValue.trim().toLowerCase();
         const storeText = `${store.name ?? ""} ${store.category?.name ?? ""} ${store.cityOrProvince ?? ""} ${store.address ?? ""} ${store.about ?? ""}`.toLowerCase();
@@ -348,7 +354,7 @@ export default function HomePage() {
 
       return true;
     });
-  }, [rawPublicStores, selectedLocations, searchValue]);
+  }, [rawPublicStores, searchValue]);
 
   return (
     <div className="mx-auto max-w-362.5 space-y-6 px-4 pt-2 pb-6 sm:space-y-10 sm:pt-6 sm:py-6">
@@ -372,11 +378,12 @@ export default function HomePage() {
 
         <div className="min-w-0 flex-1 space-y-10">
           <RecommendedSection
-            selectedLocations={selectedLocations}
+            selectedProvinceName={selectedProvinceName}
             searchValue={searchValue}
+            coords={coords}
           />
           <PromotionsSection
-            selectedLocations={selectedLocations}
+            selectedProvinceName={selectedProvinceName}
             searchValue={searchValue}
           />
           <StoresByCategorySection

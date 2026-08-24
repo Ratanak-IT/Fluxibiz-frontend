@@ -31,6 +31,11 @@ export interface PublicStore {
     thumbnail: string | null;
     about: string | null;
     cityOrProvince: string | null;
+    provinceName?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    /** Straight-line distance from the shopper's position; null unless they shared it. */
+    distanceKm?: number | null;
     address: string | null;
     googleMap: string | null;
     storefrontUrl: string | null;
@@ -361,6 +366,12 @@ export interface PublicStorePage {
 export interface PublicStoreQuery {
     categoryIds?: string[];
     cityOrProvince?: string;
+    /** A province name as returned by /public/stores/provinces — geocoded text, not an id. */
+    province?: string;
+    district?: string;
+    /** Shopper's own position — when both are present, results sort nearest-first. */
+    lat?: number;
+    lng?: number;
     keyword?: string;
     page?: number;
     size?: number;
@@ -382,6 +393,7 @@ export interface Store {
     closeTime?: string | null;
     isOpen?: boolean;
     discountLabel?: string;
+    distanceKm?: number | null;
 }
 
 export function isStoreOpenNow(
@@ -458,7 +470,19 @@ export function toStoreCard(store: PublicStore): Store {
         closeTime: closeTime ?? undefined,
         isOpen: computedOpen,
         discountLabel,
+        distanceKm: store.distanceKm ?? null,
     };
+}
+
+/** "850 m away" under a kilometer, "4.2 km away" past it — never claiming false precision. */
+export function formatDistance(distanceKm?: number | null): string | null {
+    if (distanceKm === null || distanceKm === undefined || !Number.isFinite(distanceKm)) {
+        return null;
+    }
+    if (distanceKm < 1) {
+        return `${Math.round(distanceKm * 1000)} m`;
+    }
+    return `${distanceKm.toFixed(1)} km`;
 }
 
 export interface ItemImage {
