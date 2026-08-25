@@ -341,13 +341,32 @@ export default function HomePage() {
 
   const { coords } = useShopperLocation();
 
-  const { data: filteredStoresData, isLoading: isLoadingPublic } = useGetPublicStoresQuery({
+  const {
+    data: filteredStoresData,
+    isLoading: isLoadingPublic,
+    refetch: refetchPublicStores,
+  } = useGetPublicStoresQuery({
     size: 100,
     categoryIds: selectedCategories.length > 0 ? selectedCategories : undefined,
     province: selectedProvinceName,
     lat: coords?.lat,
     lng: coords?.lng,
   });
+
+  // Reset calls this to force an explicit refetch as a safety net. Doing it
+  // synchronously in the click handler would refetch using the *pre-reset*
+  // args — React batches the state clear, so the hook hasn't re-subscribed
+  // to the new (unfiltered) cache key yet at that point. Bumping a signal
+  // and refetching from an effect instead means it fires after the reset
+  // has already committed and this hook has already re-run with the new
+  // args, so `refetchPublicStores` here is bound to the correct query.
+  const [resetSignal, setResetSignal] = useState(0);
+  useEffect(() => {
+    if (resetSignal > 0) {
+      void refetchPublicStores();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetSignal]);
 
   // `coords` starts null and flips to a real position once geolocation
   // resolves — a genuinely new query-cache key, not just a refetch of the
@@ -389,6 +408,7 @@ export default function HomePage() {
                 onLocationsChange={setSelectedLocations}
                 searchValue={searchValue}
                 onSearchChange={setSearchValue}
+                onResetFilters={() => setResetSignal((n) => n + 1)}
               />
             </div>
           </div>
