@@ -102,12 +102,12 @@ export default function HeroSection({
           overflow-hidden
           px-6
           pb-0
-          pt-6
+          pt-2
           font-googlesans
           text-ink
           antialiased
           sm:px-10
-          sm:pt-8
+          sm:pt-4
           lg:pt-10
           ${className}
         `}

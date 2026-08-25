@@ -45,27 +45,27 @@ const partners = [
     darkSrc: istadDarkMode,
     alt: "ISTAD",
     className:
-      "w-full max-w-[130px] sm:max-w-[160px] md:max-w-[140px] lg:max-w-[160px]",
+      "w-full max-w-[140px] sm:max-w-[160px] md:max-w-[150px] lg:max-w-[160px]",
     imageClassName:
-      "sm:-translate-x-[6px] md:translate-x-0 lg:translate-x-0",
+      "translate-x-0 md:translate-x-0 lg:translate-x-0",
   },
   {
     lightSrc: mptcLogo,
     darkSrc: mptcDarkMode,
     alt: "Ministry of Post and Telecommunications",
     className:
-      "w-full max-w-[270px] sm:max-w-[320px] md:max-w-[230px] lg:max-w-[320px]",
+      "w-full max-w-[280px] sm:max-w-[340px] md:max-w-[290px] lg:max-w-[360px]",
     imageClassName:
-      "sm:-translate-x-[6px] md:translate-x-0 lg:translate-x-0",
+      "-translate-x-[7px] sm:-translate-x-[6px] md:translate-x-0 lg:translate-x-0",
   },
   {
     lightSrc: cbrdFundLogo,
     darkSrc: cbrdDarkMode,
     alt: "CBRD Fund",
     className:
-      "w-full max-w-[130px] sm:max-w-[165px] md:max-w-[110px] lg:max-w-[165px]",
+      "w-full max-w-[140px] sm:max-w-[165px] md:max-w-[150px] lg:max-w-[165px]",
     imageClassName:
-      "sm:-translate-x-[6px] md:translate-x-0 lg:translate-x-0",
+      "translate-x-0 md:translate-x-0 lg:translate-x-0",
   },
 ];
 
@@ -548,7 +548,8 @@ export default function Footer() {
               mx-auto
               flex
 
-              w-[220px]
+              w-full
+              max-w-[290px]
               flex-col
               items-start
               gap-y-7
@@ -588,8 +589,10 @@ export default function Footer() {
                 <Image
                   src={partner.lightSrc}
                   alt={partner.alt}
-                  width={200}
-                  height={64}
+                  width={300}
+                  height={80}
+                  quality={100}
+                  priority
                   className={`
                     block
                     !h-full
@@ -609,8 +612,10 @@ export default function Footer() {
                 <Image
                   src={partner.darkSrc}
                   alt={partner.alt}
-                  width={200}
-                  height={64}
+                  width={300}
+                  height={80}
+                  quality={100}
+                  priority
                   className={`
                     hidden
                     !h-full

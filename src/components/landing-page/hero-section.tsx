@@ -303,14 +303,14 @@ export function HeroSection() {
 
     return (
         <section
-            className="relative overflow-hidden pb-32 pt-14 md:pb-44 md:pt-20"
+            className="relative overflow-hidden pb-20 pt-4 sm:pt-6 md:pt-8 lg:pt-16 md:pb-36"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
         >
             <FloatingDots containerRef={dotsRef} />
 
-            <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-16 px-5 md:px-8 lg:grid-cols-[1.05fr_1fr]">
-                <div className="py-8 relative">
+            <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-10 md:gap-14 px-5 md:px-8 lg:grid-cols-[1.05fr_1fr]">
+                <div className="py-2 sm:py-4 md:py-6 lg:py-8 relative">
                     {/* <Badge className="gap-2 rounded-full bg-brand-soft py-1 pl-1 pr-3 text-brand-ink hover:bg-brand-soft">
                         <span className="rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                             News
