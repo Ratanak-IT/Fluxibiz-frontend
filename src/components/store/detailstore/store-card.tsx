@@ -23,7 +23,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
   return (
     <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
       <Card className="overflow-hidden bg-card p-0">
-        <div className="flex flex-col sm:h-44 md:flex-row">
+        <div className="flex flex-col sm:h-auto md:h-44 md:flex-row">
           <div className="relative flex h-56 w-full shrink-0 items-center justify-center p-3.5 sm:h-44 sm:w-44 md:w-48">
             <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-white p-2 dark:bg-card">
               {imageUrl ? (
@@ -46,11 +46,11 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
             </div>
           </div>
 
-          {/* Content — 3 Vertical Sections: Top, Middle, Bottom */}
-          <div className="flex flex-1 flex-col justify-between p-4 sm:px-6 sm:py-3.5">
-            {/* 1. Top Section: Category & Promotion */}
+          {/* Content — 4 Vertical Sections with Equal Spacing */}
+          <div className="flex flex-1 flex-col justify-start gap-3 p-4 sm:px-6 sm:py-3.5 md:justify-between md:gap-0">
+            {/* 1. Category & Promotion */}
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-[16px] font-medium text-muted-foreground">
+              <span className="text-[15px] sm:text-[16px] font-medium text-muted-foreground leading-tight">
                 {store.category}
               </span>
 
@@ -61,29 +61,29 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
               )}
             </div>
 
-            {/* 2. Middle Section: Store Name */}
-            <div className="my-1">
-              <h1 className="text-[16px] font-bold tracking-tight text-foreground sm:text-2xl md:text-3xl">
+            {/* 2. Store Name */}
+            <div className="flex items-center">
+              <h1 className="text-[19px] font-bold leading-tight tracking-tight text-foreground sm:text-2xl md:text-3xl">
                 {store.name}
               </h1>
             </div>
 
-            {/* 3. Bottom Section: Location & Operating Hours */}
-            <div className="mt-4 md:mt-0 flex flex-wrap items-center gap-4 text-xs text-muted-foreground sm:gap-6 sm:text-sm">
-              <div className="flex min-w-0 items-center gap-1.5">
+            {/* 3. Location */}
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:text-sm">
+              <div className="flex min-w-0 items-center gap-1.5 flex-1">
                 <MapPin className="h-4 w-4 shrink-0 text-primary" />
                 {store.googleMap ? (
                   <a
                     href={store.googleMap}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="truncate text-[14px] text-primary hover:underline"
+                    className="text-[15px] text-primary hover:underline leading-tight break-words"
                     title={store.address || store.location}
                   >
                     {store.address || store.location}
                   </a>
                 ) : (
-                  <span className="truncate text-[14px]" title={store.address || store.location}>
+                  <span className="text-[15px] leading-tight break-words" title={store.address || store.location}>
                     {store.address || store.location}
                   </span>
                 )}
@@ -94,10 +94,10 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                   {t("distanceAway", { distance: distanceLabel })}
                 </span>
               )}
+            </div>
 
-              {/* What the online store keeps, where the shop set it — the
-                  shopfront's own times say nothing about the web, and are
-                  only fallen back on when no web hours were set. */}
+            {/* 4. Operating Hours / Open 24/7 */}
+            <div className="flex items-center text-xs text-muted-foreground sm:text-sm">
               {store.onlineHours ? (
                 <StoreHours
                   onlineHours={store.onlineHours}
@@ -107,7 +107,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
               ) : (
                 <div className="flex shrink-0 items-center gap-1.5">
                   <Clock className="h-4 w-4 shrink-0 text-primary" />
-                  <span>
+                  <span className="leading-tight">
                     {store.openTime && store.closeTime
                       ? `${formatStoreTime(store.openTime)} – ${formatStoreTime(store.closeTime)}`
                       : store.hours || t("openAllDay")}
@@ -120,7 +120,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
       </Card>
 
       {store.description && (
-        <div className="mt-4 text-[15px] text-muted-foreground">
+        <div className="mt-4 text-[14px] sm:text-[15px] text-muted-foreground">
           {store.description}
         </div>
       )}
