@@ -5,6 +5,7 @@ import Image from "next/image";
 import { User as UserIcon } from "lucide-react";
 
 import { useUpdateMyProfileMutation } from "@/features/auth/telegramWebAppApi";
+import { profileErrorMessage } from "@/lib/tma/profileErrorMessage";
 
 const GENDER_OPTIONS = [
   { value: "Male", label: "Male" },
@@ -89,14 +90,7 @@ export function CompleteProfileScreen({
         address: trimmed.address,
       });
     } catch (cause) {
-      // Temporary diagnostics — Telegram's mobile clients have no devtools,
-      // so surfacing the actual status/body is the only way to see why the
-      // save was rejected (validation vs. network vs. something else).
-      const detail =
-        cause && typeof cause === "object"
-          ? JSON.stringify(cause).slice(0, 300)
-          : String(cause);
-      setError(`Couldn't save your info.\n\n[debug] ${detail}`);
+      setError(profileErrorMessage(cause, "Couldn't save your info — check your connection and try again."));
     }
   }
 

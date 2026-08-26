@@ -6,6 +6,7 @@ import { User as UserIcon } from "lucide-react";
 
 import { getTmaSession, updateTmaSession, type TmaSession } from "@/lib/tma/tmaSession";
 import { useUpdateMyProfileMutation } from "@/features/auth/telegramWebAppApi";
+import { profileErrorMessage } from "@/lib/tma/profileErrorMessage";
 
 const GENDER_OPTIONS = [
   { value: "Male", label: "Male" },
@@ -89,11 +90,7 @@ export default function TmaMePage() {
       });
       setSaved(true);
     } catch (cause) {
-      const detail =
-        cause && typeof cause === "object"
-          ? JSON.stringify(cause).slice(0, 300)
-          : String(cause);
-      setError(`Couldn't save your info.\n\n[debug] ${detail}`);
+      setError(profileErrorMessage(cause, "Couldn't save your info — check your connection and try again."));
     }
   }
 
