@@ -80,7 +80,14 @@ export default function CheckoutPage({
         try {
             const created = await createCheckout({
                 businessId: store.businessId,
-                paymentMethod,
+                // The backend's PaymentMethodType enum has no KHQR constant
+                // — it calls the same thing DIGITAL (see
+                // StorefrontCheckoutServiceImpl, which literally labels
+                // DIGITAL as "Bakong KHQR"). Sending "KHQR" as-is fails
+                // Jackson enum deserialization with a generic "Request
+                // body is invalid or malformed" 400, before any checkout
+                // logic even runs.
+                paymentMethod: paymentMethod === "KHQR" ? "DIGITAL" : paymentMethod,
             }).unwrap();
 
             if (paymentMethod === "PAY_LATER" || !created.qr) {
