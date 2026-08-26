@@ -153,7 +153,7 @@ export default function TelegramWebAppProvider({
   }
 
   return (
-    <div className="tma-standalone-mode min-h-screen bg-background pb-16">
+    <div className="tma-standalone-mode min-h-screen bg-background pb-24">
       {store && (
         <TmaNavbar
           businessName={store.name || store.displayName || ""}

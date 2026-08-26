@@ -27,22 +27,26 @@ export function TmaBottomTabBar({ slug }: { slug: string }) {
   };
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t border-border bg-background pb-[env(safe-area-inset-bottom)]">
-      {tabs.map(({ key, label, icon: Icon, href }) => {
-        const active = isActive(href);
-        return (
-          <Link
-            key={key}
-            href={href}
-            className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 text-xs font-medium transition-colors ${
-              active ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            <Icon className={`size-5 ${active ? "text-primary" : "text-muted-foreground"}`} />
-            {label}
-          </Link>
-        );
-      })}
+    <nav className="fixed inset-x-0 bottom-0 z-40 pb-[max(0.75rem,env(safe-area-inset-bottom))] px-3">
+      <div className="mx-auto flex max-w-md items-center justify-between gap-1 rounded-2xl border border-border/60 bg-background/95 p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.12)] backdrop-blur-md dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+        {tabs.map(({ key, label, icon: Icon, href }) => {
+          const active = isActive(href);
+          return (
+            <Link
+              key={key}
+              href={href}
+              className={`flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl py-2 text-[11px] font-semibold transition-all ${
+                active
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground active:bg-muted"
+              }`}
+            >
+              <Icon className={`size-5 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} />
+              {label}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }
