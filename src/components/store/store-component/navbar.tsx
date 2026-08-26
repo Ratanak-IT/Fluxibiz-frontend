@@ -7,9 +7,11 @@ import { Home, ShoppingCart, History, User } from "lucide-react";
 import CartDrawer from "@/components/common/CartDrawer";
 import { useGetCartQuery } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
+import { useIsTma } from "@/lib/tma/useIsTma";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const isTma = useIsTma();
 
   const navItems = [
     { label: "Home", icon: Home, path: "/store" },
@@ -28,6 +30,17 @@ export default function Navbar() {
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const isCartActive = isCartOpen || pathname === "/cart";
+
+  // This is the regular site's mobile bottom nav (links to /store,
+  // /user-profile — real Keycloak-gated pages). It used to bleed into TMA
+  // pages too since /store/[slug] nests under /store/layout.tsx, which
+  // rendered it unconditionally — clicking its "Profile" icon was sending
+  // Telegram shoppers to a real Keycloak login page instead of the Mini
+  // App's own TmaBottomTabBar "Me" tab. The Mini App has its own bottom
+  // nav; this one has no place there.
+  if (isTma) {
+    return null;
+  }
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-[60] p-3 lg:hidden">
