@@ -406,19 +406,21 @@ function LineRow({
 
     return (
         <div
-            style={{ width: "319.72px", height: "77.99px" }}
-            className={cn("flex items-center gap-3 rounded-lg bg-background p-2 border border-neutral-100/80 dark:border-neutral-800/60 dark:bg-background relative box-border overflow-hidden shrink-0", outOfStock && "opacity-90")}
+            className={cn(
+                "relative flex w-full h-auto min-h-[90px] items-start gap-3 rounded-xl bg-background p-3 border border-neutral-100/80 dark:border-neutral-800/60 dark:bg-background shrink-0 transition-all",
+                outOfStock && "opacity-90"
+            )}
         >
             <div
                 onClick={handleNavigate}
-                className={cn("relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-card", productHref && "cursor-pointer")}
+                className={cn("relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-card", productHref && "cursor-pointer")}
             >
                 {imageUrl ? (
                     <Image
                         src={imageUrl}
                         alt={line.name}
-                        width={56}
-                        height={56}
+                        width={64}
+                        height={64}
                         className={cn("h-full w-full object-cover", outOfStock && "filter blur-[1.5px]")}
                     />
                 ) : (
@@ -428,7 +430,7 @@ function LineRow({
                 )}
             </div>
 
-            <div className="min-w-0 flex-1 flex flex-col justify-center">
+            <div className="min-w-0 flex-1 flex flex-col justify-start">
                 <div onClick={handleNavigate} className={cn(productHref && "cursor-pointer")}>
                     <div className="flex items-center gap-1.5">
                         <p className="truncate text-sm font-semibold text-neutral-900 dark:text-card-foreground">
@@ -449,12 +451,12 @@ function LineRow({
                 </div>
 
                 {line.badges.length > 0 && (
-                    <div className="mt-0.5 flex flex-nowrap gap-1 overflow-hidden">
+                    <div className="mt-1 flex flex-wrap gap-1">
                         {line.badges.map((badge, index) => (
                             <Badge
                                 key={index}
                                 variant="secondary"
-                                className="shrink-0 rounded-full border border-green-200 bg-green-50 px-2 py-0 text-[10px] font-medium text-green-700 hover:bg-green-50 dark:border-primary/30 dark:bg-primary/15 dark:text-primary"
+                                className="shrink-0 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-[11px] font-medium text-green-700 hover:bg-green-50 dark:border-primary/30 dark:bg-primary/15 dark:text-primary"
                             >
                                 {badge}
                             </Badge>
@@ -462,34 +464,36 @@ function LineRow({
                     </div>
                 )}
 
-                <div className="mt-1 flex items-center gap-3">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleDecrease}
-                        disabled={busy}
-                        className="h-5 w-5 border-0 text-red-500 hover:bg-red-50 dark:bg-card dark:text-red-400"
-                        aria-label="Decrease quantity"
-                    >
-                        <Minus className="h-3 w-3 text-red-500 dark:text-red-400" />
-                    </Button>
+                <div className="mt-2.5 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleDecrease}
+                            disabled={busy}
+                            className="h-6 w-6 border-0 text-red-500 hover:bg-red-50 dark:bg-card dark:text-red-400"
+                            aria-label="Decrease quantity"
+                        >
+                            <Minus className="h-3.5 w-3.5 text-red-500 dark:text-red-400" />
+                        </Button>
 
-                    <span className="w-4 text-center text-sm font-medium dark:text-card-foreground">
-                        {pendingQty}
-                    </span>
+                        <span className="w-4 text-center text-sm font-semibold dark:text-card-foreground">
+                            {pendingQty}
+                        </span>
 
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={handleIncrease}
-                        disabled={busy || outOfStock}
-                        className="h-5 w-5 text-green-600 dark:border-border dark:bg-card dark:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
-                        aria-label="Increase quantity"
-                    >
-                        <Plus className="h-3 w-3" />
-                    </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={handleIncrease}
+                            disabled={busy || outOfStock}
+                            className="h-6 w-6 text-green-600 dark:border-border dark:bg-card dark:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Increase quantity"
+                        >
+                            <Plus className="h-3.5 w-3.5" />
+                        </Button>
+                    </div>
 
-                    <span className="ml-auto whitespace-nowrap text-sm font-semibold text-red-500 dark:text-destructive">
+                    <span className="whitespace-nowrap text-sm font-bold text-red-500 dark:text-destructive">
                         {formatMoney(currentSubtotal, currency)}
                     </span>
                 </div>

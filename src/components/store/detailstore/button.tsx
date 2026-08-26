@@ -43,8 +43,10 @@ function FilterDropdown({ label, value, options, onSelect }: FilterDropdownProps
         <ChevronDown className="ml-1.5 h-3.5 w-3.5 opacity-60 sm:h-4 sm:w-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent
+        side="bottom"
         align="start"
-        className="w-auto min-w-[180px] whitespace-nowrap rounded-2xl border border-neutral-100/80 bg-white p-1.5 shadow-xl dark:border-neutral-800 dark:bg-neutral-900"
+        sideOffset={6}
+        className="w-auto min-w-[180px] max-h-[300px] overflow-y-auto whitespace-nowrap rounded-2xl border border-neutral-100/80 bg-white p-1.5 shadow-xl dark:border-neutral-800 dark:bg-neutral-900 scrollbar-none"
       >
         {options.map((option) => {
           const active = option === value;

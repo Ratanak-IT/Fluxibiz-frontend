@@ -161,7 +161,7 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
                     dark:text-primary
                 "
             />
-            <span className="line-clamp-1 min-w-0 flex-1 text-[15px]">{displayLocation || "\u00A0"}</span>
+            <span className="min-w-0 flex-1 truncate text-[15px] text-primary dark:text-primary" title={displayLocation}>{displayLocation || "\u00A0"}</span>
             {distanceLabel && (
               <span className="shrink-0 whitespace-nowrap text-xs font-medium text-primary">
                 {t("common.distanceAway", { distance: distanceLabel })}
