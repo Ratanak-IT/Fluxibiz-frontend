@@ -88,8 +88,15 @@ export function CompleteProfileScreen({
         phoneNumber: trimmed.phoneNumber,
         address: trimmed.address,
       });
-    } catch {
-      setError("Couldn't save your info — check your connection and try again.");
+    } catch (cause) {
+      // Temporary diagnostics — Telegram's mobile clients have no devtools,
+      // so surfacing the actual status/body is the only way to see why the
+      // save was rejected (validation vs. network vs. something else).
+      const detail =
+        cause && typeof cause === "object"
+          ? JSON.stringify(cause).slice(0, 300)
+          : String(cause);
+      setError(`Couldn't save your info.\n\n[debug] ${detail}`);
     }
   }
 
@@ -202,7 +209,7 @@ export function CompleteProfileScreen({
           />
         </div>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <p className="whitespace-pre-wrap text-sm text-destructive">{error}</p>}
 
         <button
           type="submit"

@@ -88,8 +88,12 @@ export default function TmaMePage() {
         address: trimmed.address,
       });
       setSaved(true);
-    } catch {
-      setError("Couldn't save your info — check your connection and try again.");
+    } catch (cause) {
+      const detail =
+        cause && typeof cause === "object"
+          ? JSON.stringify(cause).slice(0, 300)
+          : String(cause);
+      setError(`Couldn't save your info.\n\n[debug] ${detail}`);
     }
   }
 
@@ -214,7 +218,7 @@ export default function TmaMePage() {
           />
         </div>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <p className="whitespace-pre-wrap text-sm text-destructive">{error}</p>}
         {saved && !error && <p className="text-sm text-primary">Saved.</p>}
 
         <button
