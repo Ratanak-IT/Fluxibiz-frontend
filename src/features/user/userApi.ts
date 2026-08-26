@@ -1,15 +1,17 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import type { AuthState } from "@/features/auth/authSlice";
+import { applyTmaAuthHeader, hasTmaSessionToken } from "@/lib/tma/tmaAuthHeader";
 import type { UserProfileResponse } from "@/lib/type/authType";
 
 const rawBaseQuery = fetchBaseQuery({
     baseUrl: "/api/v1",
+    prepareHeaders: applyTmaAuthHeader,
 });
 
 const baseQuery: typeof rawBaseQuery = async (args, api, extraOptions) => {
     const state = api.getState() as { auth: AuthState };
-    const hasToken = state.auth.status === "authenticated";
+    const hasToken = state.auth.status === "authenticated" || hasTmaSessionToken();
 
     const urlStr = typeof args === "string" ? args : args.url;
     const method = (typeof args === "object" ? args.method : "GET") || "GET";

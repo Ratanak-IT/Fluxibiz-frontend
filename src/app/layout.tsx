@@ -2,6 +2,7 @@ import LayoutShell from "@/components/tma/LayoutShell";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import ReactDOM from "react-dom";
+import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
@@ -126,6 +127,14 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
+        {/* Defines window.Telegram.WebApp — TelegramWebAppProvider reads
+            initData from it to verify a Mini App shopper. Without this,
+            the Mini App always looks "opened outside Telegram" even when
+            launched from the bot's own menu button. */}
+        <Script
+          src="https://telegram.org/js/telegram-web-app.js"
+          strategy="beforeInteractive"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

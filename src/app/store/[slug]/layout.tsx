@@ -225,7 +225,7 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
       )}
-      <Suspense fallback={null}><TelegramWebAppProvider>{children}</TelegramWebAppProvider></Suspense>
+      <Suspense fallback={null}><TelegramWebAppProvider slug={slug}>{children}</TelegramWebAppProvider></Suspense>
     </>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -22,11 +22,23 @@ import { Input } from "@/components/ui/input";
 import { useGetOrderHistoryQuery } from "@/features/checkout/checkoutApi";
 import { formatMoney, resolveMediaUrl } from "@/lib/type/cartType";
 import type { OrderStatus, StorefrontOrder } from "@/lib/type/checkoutType";
+import { useIsTma } from "@/lib/tma/useIsTma";
+import { getTmaSession } from "@/lib/tma/tmaSession";
 
 export default function PaymentHistoryComponent() {
   const t = useTranslations("PaymentHistory");
   const locale = useLocale();
+  const isTma = useIsTma();
+  const [tmaStoreHref, setTmaStoreHref] = useState<string | null>(null);
   const { data: orders = [], isLoading, isError, refetch } = useGetOrderHistoryQuery();
+
+  useEffect(() => {
+    const slug = getTmaSession()?.businessSlug;
+    if (slug) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTmaStoreHref(`/store/${slug}?tma=true`);
+    }
+  }, []);
 
   const [activeTab, setActiveTab] = useState<"ALL" | OrderStatus>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -78,12 +90,26 @@ export default function PaymentHistoryComponent() {
             </p>
           </div>
 
-          <Link href="/store">
-            <Button className="gap-2 rounded-full bg-[#00932A] font-bold text-white shadow-sm hover:bg-[#007d24]">
-              <ShoppingBag className="h-4 w-4" />
-              {t("exploreStores")}
-            </Button>
-          </Link>
+          {/* Inside the Mini App there is no general store directory to
+              browse — this goes back to this business's own storefront
+              instead of the site-wide /store listing outside its bot. */}
+          {isTma ? (
+            tmaStoreHref && (
+              <Link href={tmaStoreHref}>
+                <Button className="gap-2 rounded-full bg-[#00932A] font-bold text-white shadow-sm hover:bg-[#007d24]">
+                  <ShoppingBag className="h-4 w-4" />
+                  {t("backToStore")}
+                </Button>
+              </Link>
+            )
+          ) : (
+            <Link href="/store">
+              <Button className="gap-2 rounded-full bg-[#00932A] font-bold text-white shadow-sm hover:bg-[#007d24]">
+                <ShoppingBag className="h-4 w-4" />
+                {t("exploreStores")}
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Search & Filter Controls */}
@@ -170,11 +196,21 @@ export default function PaymentHistoryComponent() {
                 : t("noTransactions")}
             </p>
 
-            <Link href="/store" className="mt-6 inline-block">
-              <Button className="rounded-full bg-[#00932A] px-6 text-xs font-bold text-white hover:bg-[#007d24]">
-                {t("startShopping")}
-              </Button>
-            </Link>
+            {isTma ? (
+              tmaStoreHref && (
+                <Link href={tmaStoreHref} className="mt-6 inline-block">
+                  <Button className="rounded-full bg-[#00932A] px-6 text-xs font-bold text-white hover:bg-[#007d24]">
+                    {t("backToStore")}
+                  </Button>
+                </Link>
+              )
+            ) : (
+              <Link href="/store" className="mt-6 inline-block">
+                <Button className="rounded-full bg-[#00932A] px-6 text-xs font-bold text-white hover:bg-[#007d24]">
+                  {t("startShopping")}
+                </Button>
+              </Link>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
