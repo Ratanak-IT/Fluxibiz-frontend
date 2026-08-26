@@ -75,9 +75,20 @@ export default function TelegramWebAppProvider({
 
     const initData = window.Telegram?.WebApp?.initData;
     if (!initData) {
+      // Temporary diagnostics appended to the message itself — Telegram's
+      // mobile clients have no devtools, so this is the only way to see
+      // *why* initData came back empty (script never loaded vs. genuinely
+      // opened outside Telegram vs. some other WebApp field being blank).
+      const diag = [
+        `telegram=${typeof window.Telegram}`,
+        `webApp=${typeof window.Telegram?.WebApp}`,
+        `platform=${window.Telegram?.WebApp?.platform ?? "n/a"}`,
+        `version=${window.Telegram?.WebApp?.version ?? "n/a"}`,
+        `hash=${window.location.hash ? "present" : "empty"}`,
+      ].join(" | ");
       setAuthState({
         status: "error",
-        message: "Open this from the shop's Telegram bot to sign in.",
+        message: `Open this from the shop's Telegram bot to sign in.\n\n[debug] ${diag}`,
       });
       return;
     }
@@ -131,7 +142,7 @@ export default function TelegramWebAppProvider({
 
   if (authState.status === "error") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background px-6 text-center text-sm text-muted-foreground">
+      <div className="flex min-h-screen items-center justify-center whitespace-pre-wrap wrap-break-word bg-background px-6 text-center text-sm text-muted-foreground">
         {authState.message}
       </div>
     );
