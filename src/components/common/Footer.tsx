@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { House, Mail, Phone } from "lucide-react";
 import { FaTelegramPlane } from "react-icons/fa";
 import { FaFacebookF } from "react-icons/fa6";
+import { useIsTma } from "@/lib/tma/useIsTma";
 
 // Light mode logos
 import cbrdFundLogo from "../../../public/image/footer/cbrd-fund.png";
@@ -71,6 +72,13 @@ const partners = [
 
 export default function Footer() {
   const t = useTranslations("Footer");
+  const isTma = useIsTma();
+
+  // Same reasoning as Navbar: the Mini App has its own bottom tab bar and
+  // no cross-site navigation, so the site-wide footer has no place here.
+  if (isTma) {
+    return null;
+  }
 
   return (
     <footer
