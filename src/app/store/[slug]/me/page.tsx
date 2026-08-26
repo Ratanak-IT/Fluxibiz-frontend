@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { User as UserIcon } from "lucide-react";
+import Link from "next/link";
+import { ChevronRight, Receipt, User as UserIcon } from "lucide-react";
 
 import { getTmaSession, updateTmaSession, type TmaSession } from "@/lib/tma/tmaSession";
 import { useUpdateMyProfileMutation } from "@/features/auth/telegramWebAppApi";
@@ -126,6 +127,17 @@ export default function TmaMePage() {
           <p className="text-xs text-muted-foreground">Signed in with Telegram</p>
         </div>
       </div>
+
+      <Link
+        href="/payment-history?tma=true"
+        className="flex items-center justify-between rounded-xl border border-input bg-background px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+      >
+        <span className="flex items-center gap-2.5">
+          <Receipt className="size-4.5 text-muted-foreground" />
+          Payment History
+        </span>
+        <ChevronRight className="size-4 text-muted-foreground" />
+      </Link>
 
       <form onSubmit={handleSave} className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
