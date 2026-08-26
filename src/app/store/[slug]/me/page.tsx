@@ -129,7 +129,7 @@ export default function TmaMePage() {
       </div>
 
       <Link
-        href="/payment-history?tma=true"
+        href={`/store/${session.businessSlug}/history?tma=true`}
         className="flex items-center justify-between rounded-xl border border-input bg-background px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
       >
         <span className="flex items-center gap-2.5">
