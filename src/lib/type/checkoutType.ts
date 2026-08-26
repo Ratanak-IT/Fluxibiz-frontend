@@ -46,6 +46,7 @@ export interface StorefrontOrderItem {
     itemName: string;
     quantity: number;
     unitPrice: number;
+    discountAmount?: number;
     lineTotal: number;
     /** Options this line was ordered with, already rendered — "Sugar Level: 50%". */
     selections?: string[];
@@ -68,6 +69,7 @@ export interface StorefrontOrder {
     paymentMethod: string;
     subtotal: number;
     discountAmount: number;
+    discountLabel?: string | null;
     total: number;
     currency: string;
     itemCount: number;

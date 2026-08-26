@@ -295,6 +295,11 @@ export default function ReceiptComponent({
                     ) : null}
                     <p className="text-xs text-neutral-400">
                       {formatMoney(item.unitPrice, order.currency)} ea
+                      {item.discountAmount && item.discountAmount > 0 ? (
+                        <span className="ml-1.5 font-bold text-emerald-600 dark:text-emerald-400">
+                          (-{formatMoney(item.discountAmount, order.currency)})
+                        </span>
+                      ) : null}
                     </p>
                   </div>
 
@@ -321,9 +326,14 @@ export default function ReceiptComponent({
             </div>
 
             {order.discountAmount > 0 && (
-              <div className="flex justify-between text-xs text-emerald-600">
-                <BiLabel en="Discount" km="បញ្ចុះតម្លៃ" />
-                <span className="font-medium">
+              <div className="flex justify-between items-center text-xs text-emerald-600 dark:text-emerald-400">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <BiLabel en="Discount" km="បញ្ចុះតម្លៃ" />
+                  <span className="rounded-md bg-emerald-100 dark:bg-emerald-950/60 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                    {order.discountLabel || (order.subtotal > 0 ? `${Math.round((order.discountAmount / order.subtotal) * 100)}% OFF` : "Savings")}
+                  </span>
+                </div>
+                <span className="font-semibold">
                   -{formatMoney(order.discountAmount, order.currency)}
                 </span>
               </div>

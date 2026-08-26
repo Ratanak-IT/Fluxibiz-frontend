@@ -108,8 +108,11 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
   {/* Store logo */}
   <div className="relative size-20 shrink-0 overflow-hidden rounded-xl">
     {discountLabel && (
-      <div className="absolute left-1 top-1 z-10 rounded-md bg-red-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white shadow-xs">
-        {discountLabel}
+      <div 
+        title={discountLabel}
+        className="absolute left-1 top-1 z-10 max-w-[70px] truncate rounded-md bg-red-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white shadow-xs"
+      >
+        <span className="truncate">{discountLabel}</span>
       </div>
     )}
 
