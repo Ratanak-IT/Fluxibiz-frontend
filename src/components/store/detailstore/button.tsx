@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, ChevronDown, ListFilter } from "lucide-react";
+import { Search, ChevronDown, RotateCcw } from "lucide-react";
 
 interface FilterDropdownProps {
   label: string;
@@ -43,8 +43,10 @@ function FilterDropdown({ label, value, options, onSelect }: FilterDropdownProps
         <ChevronDown className="ml-1.5 h-3.5 w-3.5 opacity-60 sm:h-4 sm:w-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent
+        side="bottom"
         align="start"
-        className="w-auto min-w-[180px] whitespace-nowrap rounded-2xl border border-neutral-100/80 bg-white p-1.5 shadow-xl dark:border-neutral-800 dark:bg-neutral-900"
+        sideOffset={6}
+        className="w-auto min-w-[180px] max-h-[300px] overflow-y-auto whitespace-nowrap rounded-2xl border border-neutral-100/80 bg-white p-1.5 shadow-xl dark:border-neutral-800 dark:bg-neutral-900 scrollbar-none"
       >
         {options.map((option) => {
           const active = option === value;
@@ -157,10 +159,16 @@ export default function SearchFilterBar({
         <Button
           type="button"
           variant="ghost"
-          className="h-11 shrink-0 rounded-full border border-primary/40 bg-white px-4 text-xs font-medium text-neutral-800 hover:border-primary hover:bg-neutral-50 sm:px-5 sm:text-sm dark:border-primary/50 dark:bg-card dark:text-neutral-200 dark:hover:bg-muted"
+          onClick={onReset}
+          disabled={!hasActiveFilters}
+          className={`h-11 shrink-0 rounded-full border px-4 text-xs font-medium transition-all sm:px-5 sm:text-sm ${
+            hasActiveFilters
+              ? "border-primary bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer dark:border-primary dark:bg-primary/20 dark:text-primary dark:hover:bg-primary/30"
+              : "border-primary/40 bg-white text-neutral-400 opacity-60 cursor-not-allowed dark:border-primary/50 dark:bg-card dark:text-neutral-500"
+          }`}
         >
-          <ListFilter className="mr-1.5 h-4 w-4 text-primary" />
-          {t("filter")}
+          <RotateCcw className="mr-1.5 h-4 w-4" />
+          {t("resetFilters")}
         </Button>
       </div>
     </div>

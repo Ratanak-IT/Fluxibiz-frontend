@@ -2,6 +2,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { FaGithub, FaTelegram, FaLinkedin } from "react-icons/fa6";
 
 export type MemberType = {
   image: string;
@@ -137,56 +138,82 @@ export default function TeamCard({
 
 
         {/* Socials */}
-        <div className="mt-7 flex gap-4">
-            {[
-                {
-                    icon: "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/715dc708-6ded-45d2-8907-7cce89a5db00",
-                    link: github,
-                    alt: "GitHub",
-                },
-                {
-                    icon: "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/d2547c56-1452-40d7-bfdc-26be83174eed",
-                    link: telegram,
-                    alt: "Telegram",
-                },
-                {
-                    icon: "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/37ee4b26-eb61-4205-9712-7ca4d6d43e45",
-                    link: linkedin,
-                    alt: "LinkedIn",
-                },
-            ].map(({ icon, link, alt }) => (
-                <Button
-                    key={alt}
-                    variant="outline"
-                    size="icon"
-                    className="
-                        rounded-full 
-                        border border-border
-                        bg-background
-                        hover:bg-gray/80
-                    "
-                    disabled={!link}
-                >
-                    <a
-                        href={link || "#"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Image
-                            src={icon}
-                            width={20}
-                            height={20}
-                            alt={alt}
-                            style={{
-                                borderRadius: 9999,
-                                width: 20,
-                                height: 20,
-                                objectFit: "cover",
-                            }}
-                        />
-                    </a>
-                </Button>
-            ))}
+        <div className="mt-7 flex items-center justify-center gap-4">
+          {/* GitHub */}
+          {(() => {
+            const targetUrl = github && github.trim() !== "" ? github : "#";
+            return (
+              <a
+                href={targetUrl}
+                target={targetUrl !== "#" ? "_blank" : undefined}
+                rel={targetUrl !== "#" ? "noopener noreferrer" : undefined}
+                aria-label="GitHub"
+                className="
+                  group/social flex items-center justify-center
+                  w-10 h-10 rounded-full
+                  bg-slate-100 border border-slate-200
+                  dark:bg-slate-800 dark:border-slate-700
+                  text-[#181717] dark:text-gray-200
+                  hover:bg-[#181717] hover:border-[#181717] hover:text-white
+                  dark:hover:bg-[#181717] dark:hover:text-white
+                  transition-all duration-300 hover:scale-110 hover:shadow-md
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
+                "
+              >
+                <FaGithub className="w-5 h-5 transition-transform duration-300 group-hover/social:scale-110" />
+              </a>
+            );
+          })()}
+
+          {/* Telegram */}
+          {(() => {
+            const targetUrl = telegram && telegram.trim() !== "" ? telegram : "#";
+            return (
+              <a
+                href={targetUrl}
+                target={targetUrl !== "#" ? "_blank" : undefined}
+                rel={targetUrl !== "#" ? "noopener noreferrer" : undefined}
+                aria-label="Telegram"
+                className="
+                  group/social relative flex items-center justify-center
+                  w-10 h-10 rounded-full
+                  bg-slate-100 border border-slate-200
+                  dark:bg-slate-800 dark:border-slate-700
+                  hover:bg-[#24A1DE] hover:border-[#24A1DE]
+                  transition-all duration-300 hover:scale-110 hover:shadow-md
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
+                "
+              >
+                <span className="absolute size-4.5 rounded-full bg-white transition-opacity duration-300 group-hover/social:opacity-0" />
+                <FaTelegram className="relative z-10 w-5 h-5 text-[#24A1DE] group-hover/social:text-white transition-all duration-300 group-hover/social:scale-110" />
+              </a>
+            );
+          })()}
+
+          {/* LinkedIn */}
+          {(() => {
+            const targetUrl = linkedin && linkedin.trim() !== "" ? linkedin : "#";
+            return (
+              <a
+                href={targetUrl}
+                target={targetUrl !== "#" ? "_blank" : undefined}
+                rel={targetUrl !== "#" ? "noopener noreferrer" : undefined}
+                aria-label="LinkedIn"
+                className="
+                  group/social relative flex items-center justify-center
+                  w-10 h-10 rounded-full
+                  bg-slate-100 border border-slate-200
+                  dark:bg-slate-800 dark:border-slate-700
+                  hover:bg-[#0077B5] hover:border-[#0077B5]
+                  transition-all duration-300 hover:scale-110 hover:shadow-md
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
+                "
+              >
+                <span className="absolute size-4.5 rounded-full bg-white transition-opacity duration-300 group-hover/social:opacity-0" />
+                <FaLinkedin className="relative z-10 w-5 h-5 text-[#0077B5] group-hover/social:text-white transition-all duration-300 group-hover/social:scale-110" />
+              </a>
+            );
+          })()}
         </div>
 
     </section>

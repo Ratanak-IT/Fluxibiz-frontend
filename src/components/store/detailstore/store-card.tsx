@@ -1,7 +1,8 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Card } from "../../ui/card";
-import { Clock, ImageOff, MapPin } from "lucide-react";
+import { Clock, ImageOff, MapPin, Phone } from "lucide-react";
+import { FaFacebookF } from "react-icons/fa6";
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import { StoreCardSkeleton } from "@/components/common/Skeletons";
 import { formatDistance, formatStoreTime } from "@/lib/type/storeType";
@@ -23,8 +24,8 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
   return (
     <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
       <Card className="overflow-hidden bg-card p-0">
-        <div className="flex flex-col sm:h-44 md:flex-row">
-          <div className="relative flex h-56 w-full shrink-0 items-center justify-center p-3.5 sm:h-44 sm:w-44 md:w-48">
+        <div className="flex flex-col sm:h-auto md:h-48 md:flex-row">
+          <div className="relative flex h-60 w-full shrink-0 items-center justify-center p-3.5 sm:h-48 sm:w-48 md:h-48 md:w-52">
             <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-white p-2 dark:bg-card">
               {imageUrl ? (
                 <div className="relative h-full w-full overflow-hidden rounded-md">
@@ -46,11 +47,11 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
             </div>
           </div>
 
-          {/* Content — 3 Vertical Sections: Top, Middle, Bottom */}
-          <div className="flex flex-1 flex-col justify-between p-4 sm:px-6 sm:py-3.5">
-            {/* 1. Top Section: Category & Promotion */}
+          {/* Content — 4 Vertical Sections with Equal Spacing */}
+          <div className="flex flex-1 flex-col justify-start gap-2.5 p-3.5 sm:px-6 sm:py-3.5 md:justify-between md:gap-0 min-w-0">
+            {/* 1. Category & Promotion */}
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-[12px] font-medium text-muted-foreground sm:text-sm">
+              <span className="text-[14px] sm:text-[16px] font-medium text-muted-foreground leading-tight">
                 {store.category}
               </span>
 
@@ -61,56 +62,92 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
               )}
             </div>
 
-            {/* 2. Middle Section: Store Name */}
-            <div className="my-1">
-              <h1 className="text-[16px] font-bold tracking-tight text-foreground sm:text-2xl md:text-3xl">
+            {/* 2. Store Name */}
+            <div className="flex items-center">
+              <h1 className="text-[19px] font-bold leading-tight tracking-tight text-foreground sm:text-2xl md:text-3xl">
                 {store.name}
               </h1>
             </div>
 
-            {/* 3. Bottom Section: Location & Operating Hours */}
-            <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground sm:gap-6 sm:text-sm">
-              <div className="flex min-w-0 items-center gap-1.5">
-                <MapPin className="h-4 w-4 shrink-0 text-primary" />
-                {store.googleMap ? (
-                  <a
-                    href={store.googleMap}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="truncate text-[12px] text-primary hover:underline"
-                    title={store.address || store.location}
-                  >
-                    {store.address || store.location}
-                  </a>
-                ) : (
-                  <span className="truncate text-[12px]" title={store.address || store.location}>
+            {/* 3. Location */}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground sm:text-sm min-w-0">
+              {store.googleMap ? (
+                <a
+                  href={store.googleMap}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/loc flex min-w-0 flex-1 items-center gap-1.5 text-[14px] sm:text-[16px] text-muted-foreground transition-colors hover:text-primary hover:underline leading-tight"
+                  title={store.address || store.location}
+                >
+                  <MapPin className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover/loc:text-primary" />
+                  <span className="min-w-0 flex-1 truncate">
                     {store.address || store.location}
                   </span>
+                </a>
+              ) : (
+                <div className="flex min-w-0 flex-1 items-center gap-1.5">
+                  <MapPin className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span className="min-w-0 flex-1 truncate text-[14px] sm:text-[16px] text-muted-foreground leading-tight" title={store.address || store.location}>
+                    {store.address || store.location}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* 4. Phone Number & Facebook Link */}
+            {(store.phoneNumber || store.facebookUrl) && (
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground sm:text-sm">
+                {store.phoneNumber && (
+                  <a
+                    href={`tel:${store.phoneNumber}`}
+                    className="group/phone flex shrink-0 items-center gap-1.5 text-[14px] sm:text-[15px] font-medium text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    <Phone className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover/phone:text-primary" />
+                    <span>{store.phoneNumber}</span>
+                  </a>
+                )}
+                {store.phoneNumber && store.facebookUrl && (
+                  <span className="text-muted-foreground/40">·</span>
+                )}
+                {store.facebookUrl && (
+                  <a
+                    href={store.facebookUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex shrink-0 items-center gap-1.5 text-[14px] sm:text-[15px] font-semibold text-[#1877F2] hover:underline"
+                    title={store.facebookName || "Facebook Page"}
+                  >
+                    <FaFacebookF className="h-3.5 w-3.5 shrink-0 text-[#1877F2]" />
+                    <span>{store.facebookName || "Facebook Page"}</span>
+                  </a>
                 )}
               </div>
+            )}
 
-              {distanceLabel && (
-                <span className="shrink-0 whitespace-nowrap text-xs font-medium text-primary">
-                  {t("distanceAway", { distance: distanceLabel })}
-                </span>
-              )}
-
-              {/* What the online store keeps, where the shop set it — the
-                  shopfront's own times say nothing about the web, and are
-                  only fallen back on when no web hours were set. */}
+            {/* 5. Operating Hours / Open 24/7 & Distance Away */}
+            <div className="flex flex-wrap items-center gap-2 text-xs text-primary font-medium sm:text-sm">
               {store.onlineHours ? (
                 <StoreHours
                   onlineHours={store.onlineHours}
                   isOpen={store.isOpen}
-                  className="shrink-0"
+                  className="shrink-0 text-primary"
                 />
               ) : (
-                <div className="flex shrink-0 items-center gap-1.5">
+                <div className="flex shrink-0 items-center gap-1.5 text-primary">
                   <Clock className="h-4 w-4 shrink-0 text-primary" />
-                  <span>
+                  <span className="leading-tight font-medium text-primary">
                     {store.openTime && store.closeTime
                       ? `${formatStoreTime(store.openTime)} – ${formatStoreTime(store.closeTime)}`
                       : store.hours || t("openAllDay")}
+                  </span>
+                </div>
+              )}
+
+              {distanceLabel && (
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-muted-foreground/60">·</span>
+                  <span className="font-medium text-primary">
+                    {t("distanceAway", { distance: distanceLabel })}
                   </span>
                 </div>
               )}
@@ -120,7 +157,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
       </Card>
 
       {store.description && (
-        <div className="mt-4 text-[14px] text-muted-foreground">
+        <div className="mt-4 text-[14px] sm:text-[15px] text-muted-foreground">
           {store.description}
         </div>
       )}

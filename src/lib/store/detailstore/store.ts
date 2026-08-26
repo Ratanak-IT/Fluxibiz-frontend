@@ -10,6 +10,9 @@ export interface StoreCardData {
   location: string
   address?: string | null
   googleMap?: string | null
+  phoneNumber?: string | null
+  facebookUrl?: string | null
+  facebookName?: string | null
   hours: string
   openTime?: string | null
   closeTime?: string | null
