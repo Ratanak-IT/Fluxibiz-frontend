@@ -100,6 +100,7 @@ export default function TelegramWebAppProvider({
           token: result.token,
           refreshToken: result.refreshToken,
           businessId: result.businessId,
+          businessSlug: result.businessSlug,
           customerId: result.customerId,
           fullName: result.fullName,
           photoUrl: result.photoUrl,
@@ -169,6 +170,7 @@ export default function TelegramWebAppProvider({
     <div className="tma-standalone-mode min-h-screen bg-background pb-24">
       {store && (
         <TmaNavbar
+          slug={slug}
           businessName={store.name || store.displayName || ""}
           businessLogo={store.logo}
         />

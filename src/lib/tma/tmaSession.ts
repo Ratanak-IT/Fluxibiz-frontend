@@ -14,6 +14,7 @@ export interface TmaSession {
   token: string;
   refreshToken: string;
   businessId: string;
+  businessSlug: string;
   customerId: string;
   fullName: string;
   photoUrl?: string;
