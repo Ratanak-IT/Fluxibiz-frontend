@@ -29,6 +29,7 @@ import {
 } from "@/lib/type/cartType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { cn } from "@/lib/utils";
+import { useIsTma } from "@/lib/tma/useIsTma";
 
 interface CartSidebarProps {
   slug?: string;
@@ -38,6 +39,7 @@ interface CartSidebarProps {
 
 export default function CartSidebar({ slug, businessId, storeCurrency }: CartSidebarProps) {
   const t = useTranslations("Cart");
+  const isTma = useIsTma();
   const { isAuthenticated, status: authStatus, login } = useAuth();
 
   const { data: cart, isLoading, isFetching } = useGetCartQuery(undefined, {
@@ -127,7 +129,13 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
           )}
 
           <Link
-            href={slug ? `/cart?shop=${encodeURIComponent(slug)}` : "/cart"}
+            href={
+              isTma && slug
+                ? `/store/${slug}/cart?tma=true`
+                : slug
+                  ? `/cart?shop=${encodeURIComponent(slug)}`
+                  : "/cart"
+            }
             className="inline-block text-sm font-medium text-primary hover:underline"
           >
             {t("seeSummary")}
@@ -135,7 +143,7 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
 
           {canCheckout ? (
             <Link
-              href={`/store/${slug}/checkout`}
+              href={isTma ? `/store/${slug}/checkout?tma=true` : `/store/${slug}/checkout`}
               className="flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-bold text-white transition-colors hover:bg-primary/90"
             >
               {t("reviewPayment")}

@@ -25,6 +25,7 @@ import {
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
+import { useIsTma } from "@/lib/tma/useIsTma";
 
 export default function CheckoutPage({
     params,
@@ -34,6 +35,7 @@ export default function CheckoutPage({
   const t = useTranslations("Checkout");
     const router = useRouter();
     const { slug } = use(params);
+    const isTma = useIsTma();
 
     const { data: cart, isLoading: cartLoading } = useGetCartQuery();
     const { data: publicStore } = useGetPublicStoreQuery(slug, { skip: !slug });
@@ -54,7 +56,11 @@ export default function CheckoutPage({
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
-    const backToCart = `/cart?shop=${encodeURIComponent(slug)}`;
+    // The general /cart page has no TMA chrome (no TmaNavbar/TmaBottomTabBar
+    // — it isn't nested under /store/[slug]) and stranding a Telegram
+    // shopper there was exactly the "sometimes lands on /store" complaint.
+    const backToCart = isTma ? `/store/${slug}/cart?tma=true` : `/cart?shop=${encodeURIComponent(slug)}`;
+    const keepShoppingHref = isTma ? `/store/${slug}?tma=true` : "/store";
 
     const pending = active?.hasPendingCheckout ? active.checkout : null;
     const pendingIsThisStore = pending?.storeSlug === slug;
@@ -364,7 +370,7 @@ export default function CheckoutPage({
 
             {paid && (
                 <div className="mt-6">
-                    <Link href="/store" className="block w-full">
+                    <Link href={keepShoppingHref} className="block w-full">
                         <Button
                             variant="outline"
                             className="h-12 w-full rounded-full border-primary bg-white text-base font-semibold text-primary transition-colors hover:bg-primary/5 dark:bg-transparent dark:text-primary dark:hover:bg-primary/10"

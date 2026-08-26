@@ -8,6 +8,7 @@ import { ChevronLeft } from "lucide-react";
 
 import CartList from "@/components/cart/cart-list-component";
 import CartSkeletonComponent from "@/components/cart/cart-skeleton-component";
+import { useIsTma } from "@/lib/tma/useIsTma";
 
 export default function StoreCartPage({
     params,
@@ -16,6 +17,7 @@ export default function StoreCartPage({
 }) {
   const t = useTranslations("Cart");
     const { slug } = use(params);
+    const isTma = useIsTma();
 
     return (
         <div className="mx-auto min-h-screen max-w-362.5 dark:bg-background">
@@ -25,7 +27,7 @@ export default function StoreCartPage({
                         {t("title")}
                     </h1>
 
-                    <Link href={`/store/${slug}`}>
+                    <Link href={isTma ? `/store/${slug}?tma=true` : `/store/${slug}`}>
                         <button
                             type="button"
                             className="flex items-center gap-1 text-xs font-medium text-primary hover:underline sm:text-sm"
