@@ -31,6 +31,7 @@ import { StoreCardData } from "@/lib/store/detailstore/store";
 import ProductList from "@/components/store/detailstore/product-list";
 import { formatPrice } from "@/lib/store/productdetail/product";
 import { useShopperLocation } from "@/lib/hooks/useShopperLocation";
+import { useIsTma } from "@/lib/tma/useIsTma";
 
 function toMenuItem(
   item: StorefrontItemResponse,
@@ -79,6 +80,7 @@ export default function StoreDetail({
   const t = useTranslations("Store");
   const { slug } = use(params);
   const { coords } = useShopperLocation();
+  const isTma = useIsTma();
   const {
     data: storeDetail,
     isLoading: isLoadingStore,
@@ -230,15 +232,20 @@ export default function StoreDetail({
 
   return (
     <div className="mx-auto max-w-362.5 space-y-10 py-6 px-4 sm:px-10 dark:bg-background">
-      <div className="mb-4 flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-20">
-        <Link
-          href="/store"
-          className="flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-50"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          {t("common.store")}
-        </Link>
-      </div>
+      {/* The Mini App is scoped to this one business's own Telegram bot —
+          a way back to the general store directory makes no sense there,
+          same reasoning as hiding the site-wide Navbar/Footer in TMA mode. */}
+      {!isTma && (
+        <div className="mb-4 flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-20">
+          <Link
+            href="/store"
+            className="flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-50"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            {t("common.store")}
+          </Link>
+        </div>
+      )}
 
       {isLoading ? (
         <StorePageSkeleton />
@@ -281,7 +288,7 @@ export default function StoreDetail({
             </div>
           ) : null}
 
-          <div className="px-4 sm:px-6 md:px-12 lg:px-20">
+          <div id="categories" className="scroll-mt-20 px-4 sm:px-6 md:px-12 lg:px-20">
             <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
               <div className="min-w-0 space-y-2">
                 {hasFilteredItems ? (

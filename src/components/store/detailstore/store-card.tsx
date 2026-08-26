@@ -77,27 +77,21 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                     href={store.googleMap}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[15px] text-primary hover:underline leading-tight break-words"
+                    className="text-[16px] text-primary hover:underline leading-tight break-words"
                     title={store.address || store.location}
                   >
                     {store.address || store.location}
                   </a>
                 ) : (
-                  <span className="text-[15px] leading-tight break-words" title={store.address || store.location}>
+                  <span className="text-[16px] leading-tight break-words" title={store.address || store.location}>
                     {store.address || store.location}
                   </span>
                 )}
               </div>
-
-              {distanceLabel && (
-                <span className="shrink-0 whitespace-nowrap text-xs font-medium text-primary">
-                  {t("distanceAway", { distance: distanceLabel })}
-                </span>
-              )}
             </div>
 
-            {/* 4. Operating Hours / Open 24/7 */}
-            <div className="flex items-center text-xs text-muted-foreground sm:text-sm">
+            {/* 4. Operating Hours / Open 24/7 & Distance Away */}
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:text-sm">
               {store.onlineHours ? (
                 <StoreHours
                   onlineHours={store.onlineHours}
@@ -111,6 +105,15 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                     {store.openTime && store.closeTime
                       ? `${formatStoreTime(store.openTime)} – ${formatStoreTime(store.closeTime)}`
                       : store.hours || t("openAllDay")}
+                  </span>
+                </div>
+              )}
+
+              {distanceLabel && (
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-muted-foreground/60">·</span>
+                  <span className="font-medium text-primary">
+                    {t("distanceAway", { distance: distanceLabel })}
                   </span>
                 </div>
               )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -13,12 +13,26 @@ import {
 import { cartApi } from "@/features/cart/cartApi";
 import { userApi } from "@/features/user/userApi";
 import { clearClientCookies } from "@/lib/auth/keycloak";
+import { hasTmaSessionToken } from "@/lib/tma/tmaAuthHeader";
 
 export function useAuth() {
     const dispatch = useAppDispatch();
     const user = useAppSelector(selectUser);
-    const status = useAppSelector(selectAuthStatus);
-    const isAuthenticated = useAppSelector(selectIsAuthenticated);
+    const reduxStatus = useAppSelector(selectAuthStatus);
+    const reduxIsAuthenticated = useAppSelector(selectIsAuthenticated);
+
+    // A Telegram Mini App shopper is authenticated via a bearer token in
+    // sessionStorage, never the httpOnly cookie the normal OAuth login sets
+    // — so the regular session check always comes back unauthenticated for
+    // them. Read on mount only (client-only value, same pattern as
+    // useIsTma) to avoid a hydration mismatch.
+    const [tmaAuthenticated, setTmaAuthenticated] = useState(false);
+    useEffect(() => {
+        setTmaAuthenticated(hasTmaSessionToken());
+    }, []);
+
+    const isAuthenticated = reduxIsAuthenticated || tmaAuthenticated;
+    const status = tmaAuthenticated ? "authenticated" : reduxStatus;
 
     const pathname = usePathname() || "/";
 
