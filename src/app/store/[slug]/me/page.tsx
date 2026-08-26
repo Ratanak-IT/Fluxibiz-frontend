@@ -7,14 +7,31 @@ import { User as UserIcon } from "lucide-react";
 import { getTmaSession, updateTmaSession, type TmaSession } from "@/lib/tma/tmaSession";
 import { useUpdateMyProfileMutation } from "@/features/auth/telegramWebAppApi";
 
+const GENDER_OPTIONS = [
+  { value: "Male", label: "Male" },
+  { value: "Female", label: "Female" },
+  { value: "Other", label: "Other" },
+];
+
+function splitName(fullName: string): { firstName: string; lastName: string } {
+  const trimmed = fullName.trim();
+  const spaceIndex = trimmed.indexOf(" ");
+  if (spaceIndex === -1) return { firstName: trimmed, lastName: "" };
+  return { firstName: trimmed.slice(0, spaceIndex), lastName: trimmed.slice(spaceIndex + 1) };
+}
+
 /**
- * The Mini App's "Me" tab — Telegram identity is read-only (comes from
- * Telegram, not something the customer sets here); phone/address are the
- * same fields CompleteProfileScreen first collected, editable any time
- * (they might type it wrong once, or move).
+ * The Mini App's "Me" tab — everything CompleteProfileScreen first
+ * collected (name, email, gender, phone, address), editable any time
+ * (they might type it wrong once, move, or change their mind). Telegram's
+ * avatar stays read-only since it isn't something set here.
  */
 export default function TmaMePage() {
   const [session, setSession] = useState<TmaSession | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [saved, setSaved] = useState(false);
@@ -25,6 +42,11 @@ export default function TmaMePage() {
     const current = getTmaSession();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSession(current);
+    const { firstName: fn, lastName: ln } = splitName(current?.fullName ?? "");
+    setFirstName(fn);
+    setLastName(ln);
+    setEmail(current?.email ?? "");
+    setGender(current?.gender ?? "");
     setPhoneNumber(current?.phoneNumber ?? "");
     setAddress(current?.address ?? "");
   }, []);
@@ -35,20 +57,36 @@ export default function TmaMePage() {
     setError(null);
     setSaved(false);
 
-    const trimmedPhone = phoneNumber.trim();
-    const trimmedAddress = address.trim();
-    if (!trimmedPhone || !trimmedAddress) {
-      setError("Phone number and address are both required.");
+    const trimmed = {
+      email: email.trim(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      gender,
+      phoneNumber: phoneNumber.trim(),
+      address: address.trim(),
+    };
+
+    if (
+      !trimmed.email ||
+      !trimmed.firstName ||
+      !trimmed.lastName ||
+      !trimmed.gender ||
+      !trimmed.phoneNumber ||
+      !trimmed.address
+    ) {
+      setError("Please fill in every field.");
       return;
     }
 
     try {
-      await updateMyProfile({
-        businessId: session.businessId,
-        phoneNumber: trimmedPhone,
-        address: trimmedAddress,
-      }).unwrap();
-      updateTmaSession({ phoneNumber: trimmedPhone, address: trimmedAddress });
+      const result = await updateMyProfile({ businessId: session.businessId, ...trimmed }).unwrap();
+      updateTmaSession({
+        fullName: result.fullName,
+        email: trimmed.email,
+        gender: trimmed.gender,
+        phoneNumber: trimmed.phoneNumber,
+        address: trimmed.address,
+      });
       setSaved(true);
     } catch {
       setError("Couldn't save your info — check your connection and try again.");
@@ -89,6 +127,66 @@ export default function TmaMePage() {
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-4">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="firstName" className="text-sm font-medium text-foreground">
+              First name
+            </label>
+            <input
+              id="firstName"
+              value={firstName}
+              onChange={(event) => setFirstName(event.target.value)}
+              className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="lastName" className="text-sm font-medium text-foreground">
+              Last name
+            </label>
+            <input
+              id="lastName"
+              value={lastName}
+              onChange={(event) => setLastName(event.target.value)}
+              className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="email" className="text-sm font-medium text-foreground">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            inputMode="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium text-foreground">Gender</span>
+          <div className="flex gap-2">
+            {GENDER_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setGender(option.value)}
+                className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
+                  gender === option.value
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-input bg-background text-foreground"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="flex flex-col gap-1.5">
           <label htmlFor="phoneNumber" className="text-sm font-medium text-foreground">
             Phone number

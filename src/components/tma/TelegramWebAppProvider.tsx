@@ -104,6 +104,8 @@ export default function TelegramWebAppProvider({
           fullName: result.fullName,
           photoUrl: result.photoUrl,
           phoneNumber: result.phoneNumber,
+          email: result.email,
+          gender: result.gender,
           address: result.address,
         });
 

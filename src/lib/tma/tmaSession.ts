@@ -18,6 +18,8 @@ export interface TmaSession {
   fullName: string;
   photoUrl?: string;
   phoneNumber?: string;
+  email?: string;
+  gender?: string;
   address?: string;
 }
 

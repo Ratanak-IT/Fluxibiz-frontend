@@ -22,19 +22,26 @@ export interface TelegramWebAppAuthResponse {
   photoUrl?: string;
   phoneNumber?: string;
   email?: string;
+  gender?: string;
   address?: string;
-  /** False until both phoneNumber and address are set — gates the "complete your profile" screen. */
+  /** False until email, gender, phoneNumber and address are all set — gates the "complete your profile" screen. */
   profileComplete: boolean;
 }
 
 export interface UpdateMyProfileRequest {
   businessId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
   phoneNumber: string;
   address: string;
 }
 
 export interface UpdateMyProfileResponse {
   fullName: string;
+  email: string;
+  gender: string;
   phoneNumber: string;
   address: string;
   profileComplete: boolean;

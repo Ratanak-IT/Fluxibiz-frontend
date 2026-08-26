@@ -6,11 +6,26 @@ import { User as UserIcon } from "lucide-react";
 
 import { useUpdateMyProfileMutation } from "@/features/auth/telegramWebAppApi";
 
+const GENDER_OPTIONS = [
+  { value: "Male", label: "Male" },
+  { value: "Female", label: "Female" },
+  { value: "Other", label: "Other" },
+];
+
+/** Best-effort split of Telegram's single display name into first/last, just to pre-fill — both stay editable. */
+function splitName(fullName: string): { firstName: string; lastName: string } {
+  const trimmed = fullName.trim();
+  const spaceIndex = trimmed.indexOf(" ");
+  if (spaceIndex === -1) return { firstName: trimmed, lastName: "" };
+  return { firstName: trimmed.slice(0, spaceIndex), lastName: trimmed.slice(spaceIndex + 1) };
+}
+
 /**
  * Shown once, right after first login, blocking the shop until the customer
- * gives a phone number and delivery address — nothing here comes from
- * Telegram automatically. Name/avatar are read-only (from Telegram); phone
- * and address are plain manual fields.
+ * fills in everything the store needs to actually serve them — Telegram
+ * only ever gives a name and a photo, never email, gender, phone, or an
+ * address. Name is pre-filled from Telegram as a starting point but stays
+ * editable, same as everything else here.
  */
 export function CompleteProfileScreen({
   businessId,
@@ -23,8 +38,18 @@ export function CompleteProfileScreen({
   businessName: string;
   fullName: string;
   photoUrl?: string | null;
-  onComplete: (data: { phoneNumber: string; address: string }) => void;
+  onComplete: (data: {
+    email: string;
+    gender: string;
+    phoneNumber: string;
+    address: string;
+  }) => void;
 }) {
+  const initialName = splitName(fullName);
+  const [firstName, setFirstName] = useState(initialName.firstName);
+  const [lastName, setLastName] = useState(initialName.lastName);
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -34,16 +59,35 @@ export function CompleteProfileScreen({
     event.preventDefault();
     setError(null);
 
-    const trimmedPhone = phoneNumber.trim();
-    const trimmedAddress = address.trim();
-    if (!trimmedPhone || !trimmedAddress) {
-      setError("Phone number and address are both required.");
+    const trimmed = {
+      email: email.trim(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      gender,
+      phoneNumber: phoneNumber.trim(),
+      address: address.trim(),
+    };
+
+    if (
+      !trimmed.email ||
+      !trimmed.firstName ||
+      !trimmed.lastName ||
+      !trimmed.gender ||
+      !trimmed.phoneNumber ||
+      !trimmed.address
+    ) {
+      setError("Please fill in every field before continuing.");
       return;
     }
 
     try {
-      await updateMyProfile({ businessId, phoneNumber: trimmedPhone, address: trimmedAddress }).unwrap();
-      onComplete({ phoneNumber: trimmedPhone, address: trimmedAddress });
+      await updateMyProfile({ businessId, ...trimmed }).unwrap();
+      onComplete({
+        email: trimmed.email,
+        gender: trimmed.gender,
+        phoneNumber: trimmed.phoneNumber,
+        address: trimmed.address,
+      });
     } catch {
       setError("Couldn't save your info — check your connection and try again.");
     }
@@ -68,6 +112,67 @@ export function CompleteProfileScreen({
       </div>
 
       <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="firstName" className="text-sm font-medium text-foreground">
+              First name
+            </label>
+            <input
+              id="firstName"
+              value={firstName}
+              onChange={(event) => setFirstName(event.target.value)}
+              className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="lastName" className="text-sm font-medium text-foreground">
+              Last name
+            </label>
+            <input
+              id="lastName"
+              value={lastName}
+              onChange={(event) => setLastName(event.target.value)}
+              className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="email" className="text-sm font-medium text-foreground">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            inputMode="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="you@example.com"
+            className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium text-foreground">Gender</span>
+          <div className="flex gap-2">
+            {GENDER_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setGender(option.value)}
+                className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
+                  gender === option.value
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-input bg-background text-foreground"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="flex flex-col gap-1.5">
           <label htmlFor="phoneNumber" className="text-sm font-medium text-foreground">
             Phone number
