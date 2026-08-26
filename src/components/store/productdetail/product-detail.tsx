@@ -214,9 +214,9 @@ export default function ProductDetail({
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[auto_1fr] lg:gap-10">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-8 lg:grid-cols-[auto_1fr] lg:gap-10">
         {/* Image Gallery */}
-        <div className="flex flex-col-reverse gap-3 sm:flex-row">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row items-start">
           {productImages.length > 1 && (
             <div className="flex flex-row gap-3 overflow-x-auto pb-2 sm:flex-col sm:overflow-x-visible sm:pb-0">
               {productImages.map((src, i) => (
@@ -243,7 +243,7 @@ export default function ProductDetail({
           )}
 
           {/* Main Image */}
-          <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-2xl bg-neutral-100 sm:h-128 sm:w-128 md:h-140 md:w-140 lg:h-154.5 lg:w-146 dark:bg-card">
+          <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-neutral-100 dark:bg-card max-w-full lg:h-154.5 lg:w-146">
             {currentMainImage ? (
               <Image
                 key={currentMainImage}

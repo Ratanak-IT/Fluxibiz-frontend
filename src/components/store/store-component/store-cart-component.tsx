@@ -123,8 +123,8 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
       <CardContent className="space-y-1 p-1 mt-2">
         <h3
           className="
-            text-lg font-semibold
-            leading-tight
+            text-[18px] font-semibold 
+            leading-tight 
             text-foreground
             min-h-[1.5rem]
             dark:text-white
@@ -134,8 +134,8 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
         </h3>
         <p
           className="
-            line-clamp-2
-            text-sm
+            line-clamp-2 
+            text-[15px] 
             text-muted-foreground
             min-h-[2.5rem]
             dark:text-neutral-400
@@ -161,7 +161,7 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
                     dark:text-primary
                 "
             />
-            <span className="line-clamp-1 min-w-0 flex-1">{displayLocation || "\u00A0"}</span>
+            <span className="min-w-0 flex-1 truncate text-[15px] text-primary dark:text-primary" title={displayLocation}>{displayLocation || "\u00A0"}</span>
             {distanceLabel && (
               <span className="shrink-0 whitespace-nowrap text-xs font-medium text-primary">
                 {t("common.distanceAway", { distance: distanceLabel })}

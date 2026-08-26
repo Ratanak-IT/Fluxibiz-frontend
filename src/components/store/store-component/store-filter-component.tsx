@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, Loader2, Search, SlidersHorizontal, X } from "lucide-react";
 
@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import {
   useGetBusinessCategoryQuery,
   useGetProvincesQuery,
+  useGetPublicStoresQuery,
 } from "@/features/store-api/store-api";
 import SearchDrawer from "./search";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
@@ -84,20 +85,48 @@ export default function StoreFilterComponent({
     setLocalSearchValue(value);
   };
 
-  const allTypes = category.flatMap((categoryItem) =>
-    categoryItem.subCategories && categoryItem.subCategories.length > 0
-      ? categoryItem.subCategories
-      : [
-        {
-          id: categoryItem.id,
-          name: categoryItem.name,
-          slug: categoryItem.slug,
-        },
-      ],
-  );
+  const { data: storesData } = useGetPublicStoresQuery({ size: 100 });
+  const publicStores = storesData?.content ?? [];
 
-  const visibleTypes = allTypes.slice(0, VISIBLE_COUNT);
-  const extraTypes = allTypes.slice(VISIBLE_COUNT);
+  const allTypes = useMemo(() => {
+    return category.flatMap((categoryItem) =>
+      categoryItem.subCategories && categoryItem.subCategories.length > 0
+        ? categoryItem.subCategories
+        : [
+            {
+              id: categoryItem.id,
+              name: categoryItem.name,
+              slug: categoryItem.slug,
+            },
+          ],
+    );
+  }, [category]);
+
+  const activeTypes = useMemo(() => {
+    if (!publicStores.length) return allTypes;
+
+    const activeCategoryIds = new Set<string>();
+    const activeCategoryNames = new Set<string>();
+
+    publicStores.forEach((store) => {
+      if (store.category?.id) activeCategoryIds.add(store.category.id);
+      if (store.category?.name) activeCategoryNames.add(store.category.name.trim().toLowerCase());
+    });
+
+    if (activeCategoryIds.size === 0 && activeCategoryNames.size === 0) {
+      return allTypes;
+    }
+
+    return allTypes.filter((type) => {
+      return (
+        activeCategoryIds.has(type.id) ||
+        activeCategoryNames.has(type.name.trim().toLowerCase())
+      );
+    });
+  }, [allTypes, publicStores]);
+
+  const visibleTypes = activeTypes.slice(0, VISIBLE_COUNT);
+  const extraTypes = activeTypes.slice(VISIBLE_COUNT);
 
   const toggleCategory = (id: string) => {
     const nextSelected = selected.includes(id)

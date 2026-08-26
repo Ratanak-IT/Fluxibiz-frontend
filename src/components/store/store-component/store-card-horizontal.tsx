@@ -14,7 +14,7 @@ import type { StoreCardComponentProps } from "./store-cart-component";
 const DEFAULT_STORE_IMAGE = "/image/card/defaultstore.png";
 
 const DESCRIPTION_MAX_LENGTH = 18;
-const ADDRESS_MAX_LENGTH = 20;
+const ADDRESS_MAX_LENGTH = 10;
 
 const shortenText = (
   text: string | null | undefined,
@@ -136,7 +136,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
     <CardTitle
       className="
         truncate
-        text-base
+        text-[18px]
         font-semibold
         leading-tight
         text-card-foreground
@@ -152,7 +152,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
       className="
         overflow-hidden
         whitespace-nowrap
-        text-sm
+        text-[15px]
         text-muted-foreground
         dark:text-neutral-400
       "
@@ -162,7 +162,7 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
     </p>
 
     {/* Short location */}
-    <div className="flex min-w-0 items-center gap-1 text-sm">
+    <div className="flex min-w-0 items-center gap-1.5 text-sm">
       <MapPin className="size-4 shrink-0 text-primary" />
 
       {finalGoogleMap ? (
@@ -175,9 +175,10 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
           }}
           className="
             min-w-0
-            overflow-hidden
-            whitespace-nowrap
+            flex-1
+            truncate
             text-left
+            text-[15px]
             text-primary
             hover:underline
             dark:text-primary
@@ -190,21 +191,22 @@ const StoreCardHorizontal = ({ store }: StoreCardComponentProps) => {
         <span
           className="
             min-w-0
-            overflow-hidden
-            whitespace-nowrap
-            text-muted-foreground
-            dark:text-neutral-400
+            flex-1
+            truncate
+            text-[15px]
+            text-primary
+            dark:text-primary
           "
           title={finalAddress}
         >
           {shortenText(finalAddress, ADDRESS_MAX_LENGTH, t("noLocation"))}
         </span>
       )}
-      {/* {distanceLabel && (
+      {distanceLabel && (
         <span className="ml-auto shrink-0 whitespace-nowrap text-xs font-medium text-primary">
           {t("distanceAway", { distance: distanceLabel })}
         </span>
-      )} */}
+      )}
     </div>
   </div>
 </Card>

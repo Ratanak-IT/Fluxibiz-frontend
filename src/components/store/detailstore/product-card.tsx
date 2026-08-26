@@ -52,10 +52,10 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
           outOfStock && "opacity-90"
         )}
       >
-        <div className="flex h-full min-h-25 @xs:min-h-30">
-          <div className={cn("flex min-w-0 flex-1 flex-col justify-between p-2.5 pr-2 @xs:p-3", outOfStock && "filter blur-[0.5px]")}>
-            <CardHeader className="gap-0.5 p-0">
-              <CardTitle className="truncate text-xs font-bold text-text @xs:text-sm @sm:text-base dark:text-text">
+        <div className="flex h-28 @xs:h-32 items-center justify-between">
+          <div className={cn("flex min-w-0 flex-1 flex-col justify-between h-full p-2.5 pr-2 @xs:p-3", outOfStock && "filter blur-[0.5px]")}>
+            <CardHeader className="gap-0.5 p-0 min-w-0">
+              <CardTitle className="truncate text-[16px] @xs:text-[17px] font-bold text-text dark:text-text">
                 {item.name}
               </CardTitle>
               <div className="flex items-center gap-2">
@@ -79,13 +79,15 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                   </p>
                 )}
               </div>
-              <CardDescription className="line-clamp-2 text-[12px] text-neutral-500 @xs:text-[11px] @sm:text-xs dark:text-neutral-400">
-                {item.description}
-              </CardDescription>
+              {item.description ? (
+                <CardDescription className="truncate text-[13px] text-neutral-500 dark:text-neutral-400">
+                  {item.description}
+                </CardDescription>
+              ) : null}
             </CardHeader>
 
             <div className="mt-1 flex flex-wrap items-center gap-1.5">
-              <span className="text-[10px] font-bold text-primary @xs:text-[11px] @sm:text-xs dark:text-primary">
+              <span className="text-[13px] font-bold text-primary dark:text-primary">
                 {item.category}
               </span>
               {outOfStock ? (
