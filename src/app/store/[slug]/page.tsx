@@ -459,7 +459,7 @@ export default function StoreDetail({
           title={t("detail.couldNotLoadStore")}
           description={t("detail.checkStoreAddressOrConnection")}
           onRetry={() => window.location.reload()}
-          backHref="/store"
+          backHref={isMiniAppMode ? undefined : "/store"}
         />
       ) : (
         <>
