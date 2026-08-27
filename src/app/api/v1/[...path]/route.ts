@@ -34,6 +34,13 @@ async function proxyHandler(
     }
   });
 
+  // ngrok's free-tier interstitial ("You are about to visit...") intercepts
+  // any request that looks like a browser navigation and would otherwise
+  // return its warning HTML instead of the backend's real JSON — this header
+  // tells ngrok to skip it. Harmless outside of ngrok (the real backend just
+  // ignores an extra header it doesn't recognise).
+  headers.set("ngrok-skip-browser-warning", "true");
+
   if (!headers.has("authorization")) {
     const rawToken = req.cookies.get("kc_at")?.value;
     if (rawToken && rawToken.trim()) {

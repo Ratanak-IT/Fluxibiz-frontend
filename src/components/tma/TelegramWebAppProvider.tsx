@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import { useAuthenticateTelegramWebAppMutation } from "@/features/auth/telegramWebAppApi";
-import { getTmaSession, setTmaSession, updateTmaSession } from "@/lib/tma/tmaSession";
+import { setTmaSession, updateTmaSession } from "@/lib/tma/tmaSession";
 import { TmaNavbar } from "@/components/tma/TmaNavbar";
 import { TmaBottomTabBar } from "@/components/tma/TmaBottomTabBar";
 import { CompleteProfileScreen } from "@/components/tma/CompleteProfileScreen";
@@ -66,13 +66,14 @@ export default function TelegramWebAppProvider({
   useEffect(() => {
     if (!isTma || !store) return;
 
-    const existing = getTmaSession();
-    if (existing && existing.businessId === store.id) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setAuthState({ status: "ready" });
-      return;
-    }
-
+    // Always re-authenticate rather than trusting a cached session token:
+    // `authenticate()` is what links this Telegram identity to a Customer
+    // row on the backend (`linkChannelIdentity`), and that link is what lets
+    // an order be tagged TELEGRAM instead of WEB at checkout. Skipping this
+    // call whenever a cached session already matched this business meant a
+    // shopper whose very first Mini App open (for any reason) didn't create
+    // that link would never get another chance to — every checkout after
+    // that silently fell back to WEB forever, with no way to self-heal.
     const initData = window.Telegram?.WebApp?.initData;
     if (!initData) {
       // Temporary diagnostics appended to the message itself — Telegram's
