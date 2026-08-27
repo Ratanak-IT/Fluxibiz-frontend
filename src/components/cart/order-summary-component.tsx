@@ -7,25 +7,36 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
-import { formatMoney, type StoreCart } from "@/lib/type/cartType";
+import { formatMoney, extractCartLinePrices, type StoreCart } from "@/lib/type/cartType";
 
 export default function OrderSummaryComponent({
     store,
     currency,
+    storeItems = [],
 }: {
     store: StoreCart;
     currency?: string;
+    storeItems?: any[];
 }) {
     const t = useTranslations("Cart");
     const activeCurrency = currency || store.currency;
     const discount = store.items.reduce((acc, item) => {
-        const raw = item as any;
-        if (raw.compareAtPrice && Number(raw.compareAtPrice) > Number(item.unitPrice)) {
-            return acc + (Number(raw.compareAtPrice) - Number(item.unitPrice)) * item.quantity;
+        const catalogItem = storeItems.find((i: any) => i.id === item.itemId || i.slug === item.itemId);
+        const prices = extractCartLinePrices(item, catalogItem);
+        if (prices.hasDiscount) {
+            return acc + (prices.compareAtPrice - prices.unitPrice) * item.quantity;
         }
         return acc;
     }, 0);
-    const total = Math.max(0, store.subtotal - discount);
+
+    const storeSubtotal = store.items.reduce((acc, item) => {
+        const catalogItem = storeItems.find((i: any) => i.id === item.itemId || i.slug === item.itemId);
+        const prices = extractCartLinePrices(item, catalogItem);
+        return acc + prices.subtotal;
+    }, 0);
+
+    const originalSubtotal = storeSubtotal + discount;
+    const total = storeSubtotal;
 
     const { data: active } = useGetActiveCheckoutQuery();
 
@@ -56,14 +67,14 @@ export default function OrderSummaryComponent({
                 <div className="flex items-center justify-between">
                     <span>{t("subtotal")}</span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
-                        {formatMoney(store.subtotal, activeCurrency)}
+                        {formatMoney(originalSubtotal, activeCurrency)}
                     </span>
                 </div>
 
                 <div className="flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-border">
                     <span>{t("discount")}</span>
-                    <span className="font-bold text-neutral-900 dark:text-card-foreground">
-                        {formatMoney(discount, activeCurrency)}
+                    <span className="font-bold text-red-500 dark:text-destructive">
+                        -{formatMoney(discount, activeCurrency)}
                     </span>
                 </div>
 

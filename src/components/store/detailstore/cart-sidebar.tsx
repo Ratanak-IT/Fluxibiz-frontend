@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 
 import Image from "next/image";
@@ -17,13 +18,17 @@ import {
   useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
+import { useGetPublicStoreItemsQuery } from "@/features/store-api/store-api";
 import {
   formatMoney,
   resolveMediaUrl,
   isCartLineOutOfStock,
+  isCartLineAtStockCeiling,
+  getCartLineStock,
   apiErrorMessage,
   formatStockErrorMessage,
   billedUnitPrice,
+  extractCartLinePrices,
   type CartLine,
   type StoreCart,
 } from "@/lib/type/cartType";
@@ -49,7 +54,18 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
   );
 
   const lines = storeCart?.items ?? [];
-  const subtotal = storeCart?.subtotal ?? 0;
+  const activeSlug = slug || storeCart?.slug || "";
+  const { data: storeItems = [] } = useGetPublicStoreItemsQuery(activeSlug, { skip: !activeSlug });
+
+  const effectiveSubtotal = useMemo(() => {
+    return lines.reduce((acc, line) => {
+      const catalogItem = storeItems.find((i: any) => i.id === line.itemId || i.slug === line.itemId);
+      const prices = extractCartLinePrices(line, catalogItem);
+      const extraPerUnit = line.unitPriceWithAddOns ? Math.max(0, line.unitPriceWithAddOns - line.unitPrice) : 0;
+      return acc + (prices.unitPrice + extraPerUnit) * line.quantity;
+    }, 0);
+  }, [lines, storeItems]);
+
   const currency = storeCurrency || storeCart?.currency || "USD";
   const itemCount = storeCart?.itemCount ?? 0;
   const otherShops = (cart?.storeCount ?? 0) - (storeCart ? 1 : 0);
@@ -116,7 +132,7 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
           <div className="flex items-center justify-between text-sm">
             <span className="text-neutral-500 dark:text-neutral-400">{t("total")}</span>
             <span className="font-semibold text-neutral-900 dark:text-neutral-50">
-              {formatMoney(subtotal, currency)}
+              {formatMoney(effectiveSubtotal, currency)}
             </span>
           </div>
 
@@ -169,6 +185,8 @@ function CartSidebarLine({
   const busy = isUpdating || isRemoving;
   const imageUrl = resolveMediaUrl(line.imageUrl);
   const outOfStock = isCartLineOutOfStock(line);
+  const atStockCeiling = isCartLineAtStockCeiling(line);
+  const stockLimit = getCartLineStock(line);
 
   const decrease = () => {
     if (line.quantity <= 1) {
@@ -191,6 +209,10 @@ function CartSidebarLine({
   };
 
   const increase = () => {
+    if (atStockCeiling && stockLimit !== null) {
+      toast.error(`Only ${stockLimit} item(s) available in stock`);
+      return;
+    }
     const nextQty = line.quantity + 1;
     updateItem({ cartItemId: line.cartItemId, quantity: nextQty })
       .unwrap()
@@ -214,14 +236,17 @@ function CartSidebarLine({
   const slug = typeof params?.slug === "string" ? params.slug : "";
   const productHref = slug && line.itemId ? `/store/${slug}/product/${line.itemId}` : null;
 
+  const { data: storeItems = [] } = useGetPublicStoreItemsQuery(slug, { skip: !slug });
+  const catalogItem = storeItems.find((i: any) => i.id === line.itemId || i.slug === line.itemId);
+
   const handleNavigate = () => {
     if (productHref) {
       router.push(productHref);
     }
   };
 
-  // Extras included: they are billed with the line, so they show with it.
-  const currentSubtotal = billedUnitPrice(line) * line.quantity;
+  const { unitPrice: effectiveUnitPrice, hasDiscount, compareAtSubtotal } = extractCartLinePrices(line, catalogItem);
+  const currentSubtotal = (billedUnitPrice(line) - line.unitPrice + effectiveUnitPrice) * line.quantity;
 
   return (
     <div className={cn("flex w-full items-center gap-3 rounded-xl bg-neutral-50 p-2.5 dark:bg-muted/40 relative", outOfStock && "opacity-90")}>
@@ -269,9 +294,9 @@ function CartSidebarLine({
             onClick={decrease}
             disabled={busy}
             aria-label={t("decreaseQuantity")}
-            className="flex h-6 w-6 items-center justify-center rounded-full border-0 text-red-500 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-red-200 dark:border-red-900/40 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
           >
-            <Minus className="h-3 w-3 text-red-500 dark:text-red-400" />
+            <Minus className="h-3 w-3 text-red-500" />
           </button>
 
           <span className="w-4 text-center text-xs font-semibold tabular-nums">
@@ -281,16 +306,23 @@ function CartSidebarLine({
           <button
             type="button"
             onClick={increase}
-            disabled={busy || outOfStock}
+            disabled={busy || outOfStock || atStockCeiling}
             aria-label={t("increaseQuantity")}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-primary transition-colors hover:bg-primary/10 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-green-200 dark:border-green-900/40 text-[#00932A] transition-colors hover:bg-green-50 dark:hover:bg-green-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
           >
-            <Plus className="h-3 w-3" />
+            <Plus className="h-3 w-3 text-[#00932A]" />
           </button>
 
-          <span className="ml-auto text-sm font-semibold text-red-500 dark:text-destructive">
-            {formatMoney(currentSubtotal, currency)}
-          </span>
+          <div className="ml-auto flex items-center gap-1.5">
+            {hasDiscount && (
+              <span className="text-[11px] text-neutral-400 line-through">
+                {formatMoney(compareAtSubtotal, currency)}
+              </span>
+            )}
+            <span className="text-sm font-semibold text-red-500 dark:text-destructive">
+              {formatMoney(currentSubtotal, currency)}
+            </span>
+          </div>
         </div>
       </div>
 

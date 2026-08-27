@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Banknote, ChevronLeft, Loader2, QrCode, Store, TriangleAlert } from "lucide-react";
@@ -16,14 +16,14 @@ import {
     useCreateCheckoutMutation,
     useGetActiveCheckoutQuery,
 } from "@/features/checkout/checkoutApi";
-import { formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
+import { formatMoney, formatStockErrorMessage, extractCartLinePrices } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
     type PaymentMethodType,
 } from "@/lib/type/checkoutType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
-import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
+import { useGetPublicStoreQuery, useGetPublicStoreItemsQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 
 export default function CheckoutPage({
@@ -53,6 +53,25 @@ export default function CheckoutPage({
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("KHQR");
 
     const store = cart?.stores.find((s) => s.slug === slug);
+    const { data: storeItems = [] } = useGetPublicStoreItemsQuery(slug, { skip: !slug });
+
+    const effectiveSubtotal = useMemo(() => {
+        if (!store?.items) return 0;
+        return store.items.reduce((acc, line) => {
+            const catalogItem = storeItems.find((i: any) => i.id === line.itemId || i.slug === line.itemId);
+            const prices = extractCartLinePrices(line, catalogItem);
+            const extraPerUnit = line.unitPriceWithAddOns ? Math.max(0, line.unitPriceWithAddOns - line.unitPrice) : 0;
+            return acc + (prices.unitPrice + extraPerUnit) * line.quantity;
+        }, 0);
+    }, [store?.items, storeItems]);
+
+    const effectiveSession = useMemo(() => {
+        if (!session) return null;
+        return {
+            ...session,
+            total: effectiveSubtotal > 0 ? effectiveSubtotal : session.total,
+        };
+    }, [session, effectiveSubtotal]);
 
     const backToCart = `/cart?shop=${encodeURIComponent(slug)}`;
 
@@ -225,20 +244,33 @@ export default function CheckoutPage({
                     {/* Order summary card */}
                     <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
                         <div className="flex flex-col gap-4">
-                            {store.items.map((line) => (
-                                <div
-                                    key={line.cartItemId}
-                                    className="flex items-center justify-between text-base"
-                                >
-                                    <span className="text-neutral-700 dark:text-card-foreground">
-                                        {line.name} × {line.quantity}
-                                    </span>
+                            {store.items.map((line) => {
+                                const catalogItem = storeItems.find((i: any) => i.id === line.itemId || i.slug === line.itemId);
+                                const prices = extractCartLinePrices(line, catalogItem);
+                                const extraPerUnit = line.unitPriceWithAddOns ? Math.max(0, line.unitPriceWithAddOns - line.unitPrice) : 0;
+                                const lineSubtotal = (prices.unitPrice + extraPerUnit) * line.quantity;
+                                return (
+                                    <div
+                                        key={line.cartItemId}
+                                        className="flex items-center justify-between text-base"
+                                    >
+                                        <span className="text-neutral-700 dark:text-card-foreground">
+                                            {line.name} × {line.quantity}
+                                        </span>
 
-                                    <span className="font-semibold text-neutral-900 dark:text-card-foreground">
-                                        {formatMoney(line.subtotal, currency)}
-                                    </span>
-                                </div>
-                            ))}
+                                        <div className="flex items-center gap-2">
+                                            {prices.hasDiscount && (
+                                                <span className="text-xs text-neutral-400 line-through">
+                                                    {formatMoney(prices.compareAtSubtotal, currency)}
+                                                </span>
+                                            )}
+                                            <span className="font-semibold text-neutral-900 dark:text-card-foreground">
+                                                {formatMoney(lineSubtotal, currency)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
 
                         <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-border">
@@ -246,8 +278,8 @@ export default function CheckoutPage({
                                 {t("total")}
                             </span>
 
-                            <span className="text-2xl font-bold text-green-600 dark:text-primary">
-                                {formatMoney(store.subtotal, currency)}
+                            <span className="text-2xl font-bold text-[#00932A] dark:text-primary">
+                                {formatMoney(effectiveSubtotal, currency)}
                             </span>
                         </div>
                     </div>
@@ -314,39 +346,28 @@ export default function CheckoutPage({
                             </button>
                         </div>
                     </div>
+
+                    <Button
+                        onClick={startPayment}
+                        disabled={creating || !!blockedBy || store?.open === false}
+                        className="mt-6 h-12 w-full rounded-full bg-[#00932A] text-base font-bold text-white hover:bg-[#007a22] disabled:bg-neutral-300 disabled:text-neutral-500"
+                    >
+                        {creating && (
+                            <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
+                        )}
+                        {store?.open === false
+                            ? t("shopClosed")
+                            : paymentMethod === "PAY_LATER"
+                            ? `${t("placeOrder")} (${formatMoney(effectiveSubtotal, currency)})`
+                            : `${t("payWithKhqr")} (${formatMoney(effectiveSubtotal, currency)})`}
+                    </Button>
                 </div>
             )}
 
-            {error && (
-                <ApiErrorFallback
-                    variant="compact"
-                    title={error}
-                    className="mt-4"
-                />
-            )}
-
-            {/* Submit Button */}
-            {!session && (
-                <Button
-                    onClick={startPayment}
-                    disabled={creating || !!blockedBy || store?.open === false}
-                    className="mt-6 h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white hover:bg-green-700 disabled:bg-neutral-300 disabled:text-neutral-500 dark:bg-primary dark:text-primary-foreground"
-                >
-                    {creating && (
-                        <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
-                    )}
-                    {store?.open === false
-                        ? t("shopClosed")
-                        : paymentMethod === "PAY_LATER"
-                        ? `${t("placeOrder")} (${formatMoney(store?.subtotal ?? 0, currency)})`
-                        : `${t("payWithKhqr")} (${formatMoney(store?.subtotal ?? 0, currency)})`}
-                </Button>
-            )}
-
-            {session && (
+            {effectiveSession && (
                 <div className="mt-8">
                     <KhqrPaymentComponent
-                        session={session}
+                        session={effectiveSession}
                         overrideCurrency={currency}
                         regenerating={creating}
                         onPaid={() => setPaid(true)}

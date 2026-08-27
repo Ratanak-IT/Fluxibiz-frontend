@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
     Check,
     ChevronLeft,
@@ -17,7 +17,7 @@ import { useTranslations } from "next-intl";
 import { attributeIcon } from "@/lib/api/attribute-icons";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/store/productdetail/product";
-import { StorefrontItemResponse, primaryItemImage, itemImageUrl, ItemAttributeValue, ItemAttribute, ItemVariant, ItemUomConversion, DescriptionBlockResponse, remainingStock, isVariantSelectable, sellableAddOns, type ChannelSchedule } from "@/lib/type/storeType";
+import { StorefrontItemResponse, primaryItemImage, itemImageUrl, ItemAttributeValue, ItemAttribute, ItemVariant, ItemUomConversion, DescriptionBlockResponse, remainingStock, isVariantSelectable, sellableAddOns, resolveItemPrices, type ChannelSchedule } from "@/lib/type/storeType";
 import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
@@ -146,6 +146,12 @@ export function ProductStorefrontUI({
         remaining === null ? null : Math.floor(remaining / packFactor);
     const atStockCeiling = maxQuantity !== null && quantity >= maxQuantity;
 
+    useEffect(() => {
+        if (maxQuantity !== null && maxQuantity > 0 && quantity > maxQuantity) {
+            setQuantity(maxQuantity);
+        }
+    }, [maxQuantity, quantity, setQuantity]);
+
     const options = attributes.filter(
         (attribute) =>
             attribute.placement === "OPTION" &&
@@ -185,14 +191,10 @@ export function ProductStorefrontUI({
         ? `One ${selectedVariant.name}`
         : `One ${unitWord}`;
 
-    const singlePrice =
-        selectedVariant?.price !== undefined && selectedVariant?.price !== null
-            ? Number(selectedVariant.price)
-            : item.price === undefined || item.price === null
-                ? undefined
-                : Number(item.price);
+    const { sellingPrice, compareAtPrice: resolvedCompareAt, hasDiscount, discountPercent } = resolveItemPrices(item, selectedVariant);
 
-    const activePrice = selectedPack ? Number(selectedPack.price) : singlePrice;
+    const singlePrice = selectedPack ? Number(selectedPack.price) : sellingPrice;
+    const activePrice = singlePrice;
     const addOns = useMemo(() => sellableAddOns(item), [item]);
     const ticked = useMemo(
         () => addOns.filter((addOn) => (selectedAddOnIds ?? []).includes(addOn.id)),
@@ -205,11 +207,8 @@ export function ProductStorefrontUI({
     const billedPrice =
         activePrice === undefined ? undefined : activePrice + addOnsPerUnit;
 
-    const compareAt = item.compareAtPrice ? Number(item.compareAtPrice) : 0;
-    const discount =
-        compareAt && activePrice !== undefined && compareAt > activePrice
-            ? Math.round(((compareAt - activePrice) / compareAt) * 100)
-            : 0;
+    const compareAt = resolvedCompareAt ?? 0;
+    const discount = hasDiscount ? (discountPercent ?? 0) : 0;
 
     const images = useMemo(() => {
         const gallery: string[] = [];
@@ -575,11 +574,11 @@ export function ProductStorefrontUI({
                                 <button
                                     type="button"
                                     aria-label="Decrease quantity"
-                                    disabled={outOfStock}
+                                    disabled={outOfStock || quantity <= 1}
                                     onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                                    className={cn("text-red-500 dark:text-red-400 hover:text-red-600 transition-colors cursor-pointer", outOfStock && "opacity-40 cursor-not-allowed")}
+                                    className={cn("text-red-500 hover:text-red-600 transition-colors cursor-pointer", (outOfStock || quantity <= 1) && "opacity-40 pointer-events-auto cursor-not-allowed")}
                                 >
-                                    <Minus className="size-4" />
+                                    <Minus className="size-4 text-red-500" />
                                 </button>
                                 <span className="min-w-6 text-center text-sm font-medium">
                                     {quantity}
@@ -596,11 +595,11 @@ export function ProductStorefrontUI({
                                         )
                                     }
                                     className={cn(
-                                        "text-primary cursor-pointer",
-                                        (outOfStock || atStockCeiling) && "opacity-40 cursor-not-allowed",
+                                        "text-[#00932A] hover:text-[#007d24] transition-colors cursor-pointer",
+                                        (outOfStock || atStockCeiling) && "opacity-40 pointer-events-auto cursor-not-allowed",
                                     )}
                                 >
-                                    <Plus className="size-4" />
+                                    <Plus className="size-4 text-[#00932A]" />
                                 </button>
                             </div>
 

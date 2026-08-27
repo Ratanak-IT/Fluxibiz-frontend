@@ -24,8 +24,12 @@ import {
   ItemVariant,
   primaryItemImage,
   itemImageUrl,
+  remainingStock,
+  isVariantSelectable,
+  resolveItemPrices,
   type ChannelSchedule,
 } from "@/lib/type/storeType";
+import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
 
 import { useAuth } from "@/features/auth/useAuth";
@@ -82,6 +86,27 @@ export default function ProductDetail({
   // Extract variants
   const variants: ItemVariant[] = useMemo(() => item?.variants ?? [], [item]);
 
+  // Calculate stock details
+  const remaining = remainingStock(
+    variants.length > 0 ? selectedVariant : item
+  );
+
+  const outOfStock =
+    (variants.length > 0
+      ? !isVariantSelectable(selectedVariant)
+      : isItemOutOfStock(item)) ||
+    (remaining !== null && remaining <= 0);
+
+  const maxQuantity = remaining === null ? null : Math.max(0, remaining);
+  const atStockCeiling = maxQuantity !== null && quantity >= maxQuantity;
+
+  // Auto-clamp quantity if stock ceiling changes or decreases
+  useEffect(() => {
+    if (maxQuantity !== null && maxQuantity > 0 && quantity > maxQuantity) {
+      setQuantity(maxQuantity);
+    }
+  }, [maxQuantity, quantity]);
+
   // Extract attributes
   const attributes: Record<string, unknown> = useMemo(() => {
     if (item?.attributes && typeof item.attributes === "object") {
@@ -93,7 +118,8 @@ export default function ProductDetail({
   useEffect(() => {
     if (variants.length > 0) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedVariant(variants[0]);
+      const buyable = variants.find(isVariantSelectable) ?? variants[0];
+      setSelectedVariant(buyable);
     } else {
       setSelectedVariant(null);
     }
@@ -142,19 +168,23 @@ export default function ProductDetail({
   const categoryName = item.itemGroup?.name || null;
   const description = item.description || "";
 
-  const basePrice =
-    selectedVariant?.price !== undefined
-      ? Number(selectedVariant.price)
-      : item.price !== undefined && item.price !== null
-        ? Number(item.price)
-        : 0;
-
-  const unitPrice = basePrice;
+  const { sellingPrice, compareAtPrice: resolvedCompareAt, hasDiscount, discountPercent } = resolveItemPrices(item, selectedVariant);
+  const unitPrice = sellingPrice;
   const currentMainImage = productImages[activeImg] || productImages[0] || null;
 
   async function handleAddToCart() {
     if (!item?.businessId || !item?.id) {
       toast.error(t("errors.itemUnavailable"));
+      return;
+    }
+
+    if (outOfStock) {
+      toast.error(t("detail.outOfStock") || "Product is out of stock");
+      return;
+    }
+
+    if (maxQuantity !== null && quantity > maxQuantity) {
+      toast.error(`Only ${maxQuantity} item(s) left in stock`);
       return;
     }
 
@@ -189,6 +219,7 @@ export default function ProductDetail({
         itemDetails: {
           name,
           price: unitPrice,
+          compareAtPrice: hasDiscount ? resolvedCompareAt : undefined,
           imageUrl: currentMainImage,
           storeName: storeName ?? item.businessName ?? t("common.store"),
         },
@@ -278,11 +309,34 @@ export default function ProductDetail({
             <div className="text-2xl font-bold text-[#00932A] sm:text-3xl">
               {formatPrice(unitPrice, currency)}
             </div>
+            {hasDiscount && resolvedCompareAt && (
+              <div className="text-lg font-medium text-neutral-400 line-through sm:text-xl">
+                {formatPrice(resolvedCompareAt, currency)}
+              </div>
+            )}
+            {hasDiscount && Boolean(discountPercent) && (
+              <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-600 dark:bg-red-950/40 dark:text-red-400">
+                {discountPercent}% OFF
+              </span>
+            )}
           </div>
 
           {description && (
             <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
               {description}
+            </p>
+          )}
+
+          {outOfStock && (
+            <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 font-bold dark:border-red-800/60 dark:bg-red-950/40 dark:text-red-400">
+              <span>⚠️</span>
+              <span>{t("detail.outOfStock") || "Out of Stock"}</span>
+            </div>
+          )}
+
+          {!outOfStock && remaining !== null && remaining <= 10 && (
+            <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
+              {t("detail.onlyLeft", { count: remaining })}
             </p>
           )}
 
@@ -304,21 +358,34 @@ export default function ProductDetail({
                 {variants.map((v) => {
                   const isSel = selectedVariant?.id === v.id;
                   const vName = v.variantName || v.name || v.title || t("detail.option");
+                  const selectable = isVariantSelectable(v);
                   return (
                     <button
                       key={v.id}
                       type="button"
-                      onClick={() => setSelectedVariant(v)}
+                      disabled={!selectable}
+                      onClick={() => {
+                        setSelectedVariant(v);
+                        const vStock = remainingStock(v);
+                        if (vStock !== null && vStock > 0 && quantity > vStock) {
+                          setQuantity(vStock);
+                        }
+                      }}
                       className={`flex flex-col items-center rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
                         isSel
                           ? "border-[#00932A] bg-[#00932A]/10 text-[#00932A] shadow-sm"
                           : "border-gray-200 bg-card text-foreground hover:border-gray-300 dark:border-neutral-800"
-                      }`}
+                      } ${!selectable ? "opacity-50 cursor-not-allowed bg-neutral-100 dark:bg-neutral-800" : "cursor-pointer"}`}
                     >
                       <span>{vName}</span>
                       {v.price !== undefined && (
                         <span className="text-xs opacity-80">
                           {formatPrice(v.price, currency)}
+                        </span>
+                      )}
+                      {!selectable && (
+                        <span className="text-[10px] font-bold text-red-500">
+                          {t("detail.outOfStock") || "Out of Stock"}
                         </span>
                       )}
                     </button>
@@ -387,21 +454,28 @@ export default function ProductDetail({
             <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-neutral-50 px-3 py-1 dark:border-neutral-800 dark:bg-neutral-900">
               <button
                 type="button"
+                aria-label="Decrease quantity"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="flex h-8 w-8 items-center justify-center text-neutral-600 hover:text-red-500 disabled:opacity-40"
-                disabled={quantity <= 1}
+                className="flex h-8 w-8 items-center justify-center text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-full transition-colors disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
+                disabled={outOfStock || quantity <= 1}
               >
-                <Minus className="h-4 w-4" />
+                <Minus className="h-4 w-4 text-red-500" />
               </button>
 
               <span className="w-8 text-center font-bold">{quantity}</span>
 
               <button
                 type="button"
-                onClick={() => setQuantity((q) => q + 1)}
-                className="flex h-8 w-8 items-center justify-center text-neutral-600 hover:text-[#00932A]"
+                aria-label="Increase quantity"
+                onClick={() =>
+                  setQuantity((q) =>
+                    maxQuantity === null ? q + 1 : Math.min(maxQuantity, q + 1)
+                  )
+                }
+                className="flex h-8 w-8 items-center justify-center text-[#00932A] hover:text-[#007d24] hover:bg-green-50 dark:hover:bg-green-950/40 rounded-full transition-colors disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
+                disabled={outOfStock || atStockCeiling}
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4 text-[#00932A]" />
               </button>
             </div>
           </div>
@@ -410,8 +484,8 @@ export default function ProductDetail({
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={isAdding || justAdded || !isStoreOpen}
-            className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#00932A] text-base font-semibold text-white shadow-md transition-all hover:bg-[#007d24] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:opacity-100 dark:disabled:bg-neutral-800"
+            disabled={isAdding || justAdded || !isStoreOpen || outOfStock}
+            className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#00932A] text-base font-semibold text-white shadow-md transition-all hover:bg-[#007d24] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:opacity-100 dark:disabled:bg-neutral-800 cursor-pointer"
           >
             {justAdded ? (
               <>
@@ -423,6 +497,8 @@ export default function ProductDetail({
                 <Clock className="h-5 w-5" />
                 {t("detail.storeClosed")}
               </>
+            ) : outOfStock ? (
+              t("detail.outOfStock") || "Out of Stock"
             ) : (
               <>
                 <ShoppingBag className="h-5 w-5" />

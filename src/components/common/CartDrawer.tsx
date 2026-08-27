@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, useMemo, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -34,15 +34,18 @@ import {
     useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
 import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
-import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
+import { useGetPublicStoreQuery, useGetPublicStoreItemsQuery } from "@/features/store-api/store-api";
 import { useAuth } from "@/features/auth/useAuth";
 import {
     formatMoney,
     resolveMediaUrl,
     isCartLineOutOfStock,
+    isCartLineAtStockCeiling,
+    getCartLineStock,
     apiErrorMessage,
     formatStockErrorMessage,
     billedUnitPrice,
+    extractCartLinePrices,
     type CartLine,
     type StoreCart,
 } from "@/lib/type/cartType";
@@ -189,6 +192,17 @@ function StoreSection({
     const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
     const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
 
+    const { data: storeItems = [] } = useGetPublicStoreItemsQuery(store.slug, { skip: !store.slug });
+
+    const effectiveSubtotal = useMemo(() => {
+        return store.items.reduce((acc, line) => {
+            const catalogItem = storeItems.find((i: any) => i.id === line.itemId || i.slug === line.itemId);
+            const prices = extractCartLinePrices(line, catalogItem);
+            const extraPerUnit = line.unitPriceWithAddOns ? Math.max(0, line.unitPriceWithAddOns - line.unitPrice) : 0;
+            return acc + (prices.unitPrice + extraPerUnit) * line.quantity;
+        }, 0);
+    }, [store.items, storeItems]);
+
     const logoUrl = resolveMediaUrl(store.logo);
 
     return (
@@ -263,7 +277,7 @@ function StoreSection({
                 </span>
 
                 <span className="text-base font-bold text-green-600 dark:text-primary">
-                    {formatMoney(store.subtotal, effectiveCurrency)}
+                    {formatMoney(effectiveSubtotal, effectiveCurrency)}
                 </span>
             </div>
 
@@ -346,13 +360,14 @@ function LineRow({
     const [pendingQty, setPendingQty] = useState(line.quantity);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPendingQty(line.quantity);
     }, [line.quantity]);
 
     const imageUrl = resolveMediaUrl(line.imageUrl);
     const busy = isUpdating || isRemoving;
     const outOfStock = isCartLineOutOfStock(line);
+    const atStockCeiling = isCartLineAtStockCeiling(line);
+    const stockLimit = getCartLineStock(line);
 
     const productHref = storeSlug && line.itemId ? `/store/${storeSlug}/product/${line.itemId}` : null;
 
@@ -381,6 +396,10 @@ function LineRow({
     };
 
     const handleIncrease = () => {
+        if (atStockCeiling && stockLimit !== null) {
+            toast.error(`Only ${stockLimit} item(s) available in stock`);
+            return;
+        }
         const nextQty = pendingQty + 1;
         setPendingQty(nextQty);
         updateItem({ cartItemId: line.cartItemId, quantity: nextQty })
@@ -401,8 +420,11 @@ function LineRow({
             });
     };
 
-    // Extras included: they are billed with the line, so they show with it.
-    const currentSubtotal = billedUnitPrice(line) * pendingQty;
+    const { data: storeItems = [] } = useGetPublicStoreItemsQuery(storeSlug ?? "", { skip: !storeSlug });
+    const catalogItem = storeItems.find((i: any) => i.id === line.itemId || i.slug === line.itemId);
+
+    const { unitPrice: effectiveUnitPrice, hasDiscount, compareAtSubtotal } = extractCartLinePrices(line, catalogItem);
+    const currentSubtotal = (billedUnitPrice(line) - line.unitPrice + effectiveUnitPrice) * pendingQty;
 
     return (
         <div
@@ -419,9 +441,10 @@ function LineRow({
                     <Image
                         src={imageUrl}
                         alt={line.name}
-                        width={64}
-                        height={64}
-                        className={cn("h-full w-full object-cover", outOfStock && "filter blur-[1.5px]")}
+                        fill
+                        unoptimized
+                        sizes="64px"
+                        className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
                     />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center">
@@ -430,51 +453,39 @@ function LineRow({
                 )}
             </div>
 
-            <div className="min-w-0 flex-1 flex flex-col justify-start">
-                <div onClick={handleNavigate} className={cn(productHref && "cursor-pointer")}>
-                    <div className="flex items-center gap-1.5">
-                        <p className="truncate text-sm font-semibold text-neutral-900 dark:text-card-foreground">
-                            {line.name}
+            <div className="flex flex-1 flex-col justify-between self-stretch min-w-0">
+                <div onClick={handleNavigate} className={cn("min-w-0 pr-4", productHref && "cursor-pointer")}>
+                    <p className={cn("truncate text-sm font-bold text-foreground", productHref && "hover:underline")}>
+                        {line.name}
+                    </p>
+                    {line.badges.length > 0 && (
+                        <p className="truncate text-xs text-muted-foreground mt-0.5">
+                            {line.badges.join(" · ")}
                         </p>
-                        {outOfStock && (
-                            <span className="text-[10px] font-bold text-red-600 dark:text-red-500 shrink-0">
-                                • {tStore("detail.outOfStock") || "Out of Stock"}
-                            </span>
-                        )}
-                    </div>
-
-                    {line.description && (
-                        <p className="line-clamp-1 text-xs text-neutral-500 dark:text-muted-foreground">
-                            {line.description}
+                    )}
+                    {outOfStock && (
+                        <span className="text-[10px] font-bold text-red-600 dark:text-red-500">
+                            • {tStore("detail.outOfStock") || "Out of Stock"}
+                        </span>
+                    )}
+                    {!outOfStock && stockLimit !== null && stockLimit <= 10 && (
+                        <p className="text-[11px] font-medium text-amber-600 dark:text-amber-400 mt-0.5">
+                            {tStore("detail.onlyLeft", { count: stockLimit })}
                         </p>
                     )}
                 </div>
 
-                {line.badges.length > 0 && (
-                    <div className="mt-1 flex flex-wrap gap-1">
-                        {line.badges.map((badge, index) => (
-                            <Badge
-                                key={index}
-                                variant="secondary"
-                                className="shrink-0 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-[11px] font-medium text-green-700 hover:bg-green-50 dark:border-primary/30 dark:bg-primary/15 dark:text-primary"
-                            >
-                                {badge}
-                            </Badge>
-                        ))}
-                    </div>
-                )}
-
-                <div className="mt-2.5 flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center gap-2">
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={handleDecrease}
                             disabled={busy}
-                            className="h-6 w-6 border-0 text-red-500 hover:bg-red-50 dark:bg-card dark:text-red-400"
+                            className="h-6 w-6 border-0 text-red-500 hover:bg-red-50 hover:text-red-600 dark:bg-transparent dark:text-red-500 dark:hover:bg-red-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
                             aria-label="Decrease quantity"
                         >
-                            <Minus className="h-3.5 w-3.5 text-red-500 dark:text-red-400" />
+                            <Minus className="h-3.5 w-3.5 text-red-500" />
                         </Button>
 
                         <span className="w-4 text-center text-sm font-semibold dark:text-card-foreground">
@@ -485,17 +496,24 @@ function LineRow({
                             variant="outline"
                             size="icon"
                             onClick={handleIncrease}
-                            disabled={busy || outOfStock}
-                            className="h-6 w-6 text-green-600 dark:border-border dark:bg-card dark:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
+                            disabled={busy || outOfStock || atStockCeiling}
+                            className="h-6 w-6 border border-green-200 text-[#00932A] hover:bg-green-50 dark:border-green-900/50 dark:bg-transparent dark:text-[#00932A] dark:hover:bg-green-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
                             aria-label="Increase quantity"
                         >
-                            <Plus className="h-3.5 w-3.5" />
+                            <Plus className="h-3.5 w-3.5 text-[#00932A]" />
                         </Button>
                     </div>
 
-                    <span className="whitespace-nowrap text-sm font-bold text-red-500 dark:text-destructive">
-                        {formatMoney(currentSubtotal, currency)}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                        {hasDiscount && (
+                            <span className="text-xs text-neutral-400 line-through">
+                                {formatMoney(compareAtSubtotal, currency)}
+                            </span>
+                        )}
+                        <span className="whitespace-nowrap text-sm font-bold text-red-500 dark:text-destructive">
+                            {formatMoney(currentSubtotal, currency)}
+                        </span>
+                    </div>
                 </div>
             </div>
 
