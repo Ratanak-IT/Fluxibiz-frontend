@@ -22,13 +22,13 @@ import { Input } from "@/components/ui/input";
 import { useGetOrderHistoryQuery } from "@/features/checkout/checkoutApi";
 import { formatMoney, resolveMediaUrl } from "@/lib/type/cartType";
 import type { OrderStatus, StorefrontOrder } from "@/lib/type/checkoutType";
-import { useIsTma } from "@/lib/tma/useIsTma";
+import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 import { getTmaSession } from "@/lib/tma/tmaSession";
 
 export default function PaymentHistoryComponent() {
   const t = useTranslations("PaymentHistory");
   const locale = useLocale();
-  const isTma = useIsTma();
+  const { isMiniApp: isTma, queryParam } = useMiniAppMode();
   const [tmaStoreHref, setTmaStoreHref] = useState<string | null>(null);
   const { data: orders = [], isLoading, isError, refetch } = useGetOrderHistoryQuery();
 
@@ -36,9 +36,9 @@ export default function PaymentHistoryComponent() {
     const slug = getTmaSession()?.businessSlug;
     if (slug) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTmaStoreHref(`/store/${slug}?tma=true`);
+      setTmaStoreHref(`/store/${slug}?${queryParam}`);
     }
-  }, []);
+  }, [queryParam]);
 
   const [activeTab, setActiveTab] = useState<"ALL" | OrderStatus>("ALL");
   const [searchQuery, setSearchQuery] = useState("");

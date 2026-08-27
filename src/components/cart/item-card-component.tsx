@@ -99,7 +99,7 @@ export default function ItemCardComponent({
                                 line={line}
                                 busy={busy}
                                 onRemove={() => removeItem(line.cartItemId)}
-                                className="sm:hidden shrink-0 -mr-1 -mt-1 h-7 w-7"
+                                className="sm:hidden shrink-0 h-8 w-8"
                             />
                         </div>
                     </CardHeader>
@@ -119,7 +119,13 @@ export default function ItemCardComponent({
                     )}
 
                     <div className="mt-2 flex items-center justify-between gap-2 sm:hidden">
-                        <Stepper line={line} busy={busy} outOfStock={outOfStock} onChange={updateItem} />
+                        <Stepper
+                            line={line}
+                            busy={busy}
+                            outOfStock={outOfStock}
+                            onChange={updateItem}
+                            onRemove={() => removeItem(line.cartItemId)}
+                        />
 
                         <span className="whitespace-nowrap text-base font-semibold text-red-500 dark:text-destructive">
                             {formatMoney(line.subtotal, currency)}
@@ -153,15 +159,27 @@ function Stepper({
     busy,
     outOfStock,
     onChange,
+    onRemove,
 }: {
     line: CartLine;
     busy: boolean;
     outOfStock?: boolean;
     onChange: (args: { cartItemId: string; quantity: number }) => any;
+    onRemove?: () => { unwrap: () => Promise<unknown> };
 }) {
     const t = useTranslations("Cart");
 
     const handleDecrease = () => {
+        // Pressing "-" at 1 removes the line — the same behavior the
+        // sidebar's mini-cart already has, and the more expected one
+        // (the X button doing this is easy to miss, especially on the
+        // narrow mobile-only layout this stepper renders in).
+        if (line.quantity <= 1 && onRemove) {
+            onRemove().unwrap().catch((err: unknown) => {
+                toast.error(apiErrorMessage(err, "Failed to remove item"));
+            });
+            return;
+        }
         const nextQty = Math.max(1, line.quantity - 1);
         const res = onChange({ cartItemId: line.cartItemId, quantity: nextQty });
         if (res && typeof res.unwrap === "function") {
