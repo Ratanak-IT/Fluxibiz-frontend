@@ -75,6 +75,7 @@ export interface StorefrontOrder {
     discountLabel?: string | null;
     taxRate?: number;
     taxAmount?: number;
+    taxInclusionType?: "INCLUSIVE" | "EXCLUSIVE" | string | null;
     /** What to call it on the receipt — "VAT", "GST" — set by the business, defaults to "Tax". */
     taxLabel?: string | null;
     total: number;

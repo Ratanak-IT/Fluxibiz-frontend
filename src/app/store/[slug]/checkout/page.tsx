@@ -62,7 +62,10 @@ export default function CheckoutPage({
         publicStore?.taxInclusionType,
         publicStore?.taxEnabled,
     );
-    const taxLabel = publicStore?.taxLabel || t("tax");
+    const isTaxInclusive = publicStore?.taxInclusionType === "INCLUSIVE";
+    const taxRate = publicStore?.taxRate ?? 0;
+    const isTaxActive = Boolean(publicStore?.taxEnabled) && taxAmount > 0;
+    const effectiveTaxName = publicStore?.taxLabel?.trim() || "VAT";
 
     const backToCart = `/cart?shop=${encodeURIComponent(slug)}`;
 
@@ -268,10 +271,23 @@ export default function CheckoutPage({
                                 </div>
                             )}
 
-                            {taxAmount > 0 && (
+                            {isTaxActive && !isTaxInclusive && (
                                 <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
-                                    <span>{taxLabel}</span>
+                                    <span>
+                                        {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
+                                    </span>
                                     <span className="font-medium text-neutral-900 dark:text-card-foreground">
+                                        +{formatMoney(taxAmount, currency)}
+                                    </span>
+                                </div>
+                            )}
+
+                            {isTaxActive && isTaxInclusive && (
+                                <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-muted-foreground">
+                                    <span>
+                                        {effectiveTaxName} {taxRate > 0 ? `(${taxRate}% Incl.)` : "(Incl.)"}
+                                    </span>
+                                    <span className="font-medium text-neutral-700 dark:text-neutral-300">
                                         {formatMoney(taxAmount, currency)}
                                     </span>
                                 </div>
@@ -286,6 +302,12 @@ export default function CheckoutPage({
                                     {formatMoney(payableTotal, currency)}
                                 </span>
                             </div>
+
+                            {isTaxActive && isTaxInclusive && (
+                                <p className="text-right text-[11px] font-medium text-neutral-400 dark:text-muted-foreground italic">
+                                    * Prices include {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
+                                </p>
+                            )}
                         </div>
                     </div>
 

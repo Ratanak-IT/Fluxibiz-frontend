@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, ReactNode } from "react";
@@ -367,6 +368,7 @@ function LineRow({
 
     const handleDecrease = () => {
         if (pendingQty <= 1) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             removeItem(line.cartItemId).unwrap().catch((err: any) => {
                 toast.error(apiErrorMessage(err, "Failed to remove item"));
             });
@@ -468,7 +470,7 @@ function LineRow({
 
                 {freeUnits > 0 ? (
                     <p className="mt-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                        🎁 {freeUnits} FREE
+                        {freeUnits} FREE
                     </p>
                 ) : line.discountAmount && line.discountAmount > 0 ? (
                     <p className="mt-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">

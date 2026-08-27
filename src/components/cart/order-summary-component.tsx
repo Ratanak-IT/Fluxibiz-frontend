@@ -30,7 +30,10 @@ export default function OrderSummaryComponent({
         publicStore?.taxInclusionType,
         publicStore?.taxEnabled,
     );
-    const taxLabel = publicStore?.taxLabel || t("tax");
+    const isTaxInclusive = publicStore?.taxInclusionType === "INCLUSIVE";
+    const taxRate = publicStore?.taxRate ?? 0;
+    const isTaxActive = Boolean(publicStore?.taxEnabled) && taxAmount > 0;
+    const effectiveTaxName = publicStore?.taxLabel?.trim() || "VAT";
 
     const { data: active } = useGetActiveCheckoutQuery();
 
@@ -79,10 +82,23 @@ export default function OrderSummaryComponent({
                     </span>
                 </div>
 
-                {taxAmount > 0 && (
+                {isTaxActive && !isTaxInclusive && (
                     <div className="flex items-center justify-between">
-                        <span>{taxLabel}</span>
+                        <span>
+                            {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
+                        </span>
                         <span className="font-bold text-neutral-900 dark:text-card-foreground">
+                            +{formatMoney(taxAmount, activeCurrency)}
+                        </span>
+                    </div>
+                )}
+
+                {isTaxActive && isTaxInclusive && (
+                    <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-muted-foreground">
+                        <span>
+                            {effectiveTaxName} {taxRate > 0 ? `(${taxRate}% Incl.)` : "(Incl.)"}
+                        </span>
+                        <span className="font-semibold text-neutral-700 dark:text-neutral-300">
                             {formatMoney(taxAmount, activeCurrency)}
                         </span>
                     </div>
@@ -97,6 +113,12 @@ export default function OrderSummaryComponent({
                         {formatMoney(total, activeCurrency)}
                     </span>
                 </div>
+
+                {isTaxActive && isTaxInclusive && (
+                    <p className="mt-1 text-right text-[11px] font-medium text-neutral-400 dark:text-muted-foreground italic">
+                        * Prices include {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
+                    </p>
+                )}
             </CardContent>
 
             <div className="mt-6 flex flex-col gap-3">
