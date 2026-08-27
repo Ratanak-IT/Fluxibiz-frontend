@@ -108,10 +108,11 @@ export function UserRegisterForm() {
 
   return (
     <form
+      noValidate
       className="grid gap-3.5 font-body text-foreground dark:text-white"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
+      <div className="grid items-start gap-3.5 sm:grid-cols-2 sm:gap-4">
         <Controller
           name="firstName"
           control={control}
@@ -172,7 +173,7 @@ export function UserRegisterForm() {
         )}
       />
 
-      <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
+      <div className="grid items-start gap-3.5 sm:grid-cols-2 sm:gap-4">
         <Controller
           name="password"
           control={control}
@@ -210,7 +211,6 @@ export function UserRegisterForm() {
         )}
       >
         <Checkbox
-          required
           className={cn(
             "size-[18px] rounded-[2px]",
             "border-gray-400",

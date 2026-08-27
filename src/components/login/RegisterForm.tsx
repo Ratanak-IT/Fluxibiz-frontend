@@ -14,8 +14,6 @@ import {
   userRegisterSchema,
   type UserRegisterFormData,
 } from "@/lib/validations/authSchema";
-import { AuthErrorBanner } from "./AuthErrorBanner";
-import type { FieldErrors } from "react-hook-form";
 
 export type RegisterFieldProps = React.ComponentProps<typeof Input> & {
   label: string;
@@ -48,8 +46,7 @@ export function RegisterField({
       <label
         htmlFor={id}
         className={cn(
-          "grid font-body",
-          density === "figma" ? "gap-[10px]" : "gap-2.5",
+          "grid font-body gap-1.5",
         )}
       >
         <span
@@ -69,23 +66,23 @@ export function RegisterField({
           <Input
             id={id}
             className={cn(
-              "border-input bg-white text-[#636b74] shadow-none",
-              "placeholder:text-[#636b74]",
+              "font-body border-input bg-white text-[#636b74] shadow-none",
+              "placeholder:font-body placeholder:text-[#636b74] placeholder:text-[16px]",
               "transition-colors",
-              "focus-visible:ring-2",
+              "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30",
               "dark:border-gray-400",
               "dark:bg-background",
               "dark:text-white",
               "dark:caret-white",
-              "dark:placeholder:text-white",
-              "dark:focus-visible:border-gray-400",
-              "dark:focus-visible:ring-gray-400/30",
+              "dark:placeholder:text-gray-400",
+              "dark:focus-visible:border-primary dark:focus-visible:ring-primary/30",
+              Boolean(props.value) && !error && "border-primary dark:border-primary",
               density === "figma"
-                ? "h-[47px] rounded-[12px] px-5 py-2.5 text-base"
-                : "h-11 rounded-[11px] px-[18px] py-2 text-[15px]",
+                ? "h-[48px] rounded-[12px] px-5 py-2.5 text-[16px]"
+                : "h-11 rounded-[11px] px-[18px] py-2 text-[16px]",
               isPassword && "pr-12",
               error &&
-                "border-red-500 focus-visible:border-red-500 focus-visible:ring-2 focus-visible:ring-red-500/30 dark:border-red-500 dark:focus-visible:border-red-500 dark:focus-visible:ring-red-500/30",
+              "border-red-500 focus-visible:border-red-500 focus-visible:ring-2 focus-visible:ring-red-500/30 dark:border-red-500 dark:focus-visible:border-red-500 dark:focus-visible:ring-red-500/30",
               className,
             )}
             {...props}
@@ -145,7 +142,6 @@ export function RegisterForm({
   const fieldsT = useTranslations("Register.fields");
   const formT = useTranslations("Register.form");
   const { login, loginHref } = useAuth();
-  const [formError, setFormError] = useState<string | null>(null);
 
   const {
     control,
@@ -169,10 +165,11 @@ export function RegisterForm({
 
   return (
     <form
+      noValidate
       className="grid gap-3.5 font-body text-foreground dark:text-white"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="grid gap-5 sm:grid-cols-2 sm:gap-[19px]">
+      <div className="grid items-start gap-5 sm:grid-cols-2 sm:gap-[19px]">
         <Controller
           name="firstName"
           control={control}
