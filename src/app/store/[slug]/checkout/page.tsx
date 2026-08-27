@@ -16,7 +16,7 @@ import {
     useCreateCheckoutMutation,
     useGetActiveCheckoutQuery,
 } from "@/features/checkout/checkoutApi";
-import { formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
+import { computeTax, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
@@ -53,6 +53,16 @@ export default function CheckoutPage({
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("KHQR");
 
     const store = cart?.stores.find((s) => s.slug === slug);
+
+    const discount = store?.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0) ?? 0;
+    const netAmount = Math.max(0, (store?.subtotal ?? 0) - discount);
+    const { taxAmount, total: payableTotal } = computeTax(
+        netAmount,
+        publicStore?.taxRate,
+        publicStore?.taxInclusionType,
+        publicStore?.taxEnabled,
+    );
+    const taxLabel = publicStore?.taxLabel || t("tax");
 
     const backToCart = `/cart?shop=${encodeURIComponent(slug)}`;
 
@@ -234,14 +244,41 @@ export default function CheckoutPage({
                             ))}
                         </div>
 
-                        <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-border">
-                            <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
-                                {t("total")}
-                            </span>
+                        <div className="mt-4 space-y-2 border-t border-neutral-100 pt-4 dark:border-border">
+                            <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
+                                <span>{t("subtotal")}</span>
+                                <span className="font-medium text-neutral-900 dark:text-card-foreground">
+                                    {formatMoney(store.subtotal, currency)}
+                                </span>
+                            </div>
 
-                            <span className="text-2xl font-bold text-green-600 dark:text-primary">
-                                {formatMoney(store.subtotal, currency)}
-                            </span>
+                            {discount > 0 && (
+                                <div className="flex items-center justify-between text-sm text-emerald-600 dark:text-emerald-400">
+                                    <span>{t("discount")}</span>
+                                    <span className="font-medium">
+                                        -{formatMoney(discount, currency)}
+                                    </span>
+                                </div>
+                            )}
+
+                            {taxAmount > 0 && (
+                                <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
+                                    <span>{taxLabel}</span>
+                                    <span className="font-medium text-neutral-900 dark:text-card-foreground">
+                                        {formatMoney(taxAmount, currency)}
+                                    </span>
+                                </div>
+                            )}
+
+                            <div className="flex items-center justify-between pt-1">
+                                <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
+                                    {t("total")}
+                                </span>
+
+                                <span className="text-2xl font-bold text-green-600 dark:text-primary">
+                                    {formatMoney(payableTotal, currency)}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -331,8 +368,8 @@ export default function CheckoutPage({
                     {store?.open === false
                         ? t("shopClosed")
                         : paymentMethod === "PAY_LATER"
-                        ? `${t("placeOrder")} (${formatMoney(store?.subtotal ?? 0, currency)})`
-                        : `${t("payWithKhqr")} (${formatMoney(store?.subtotal ?? 0, currency)})`}
+                        ? `${t("placeOrder")} (${formatMoney(payableTotal, currency)})`
+                        : `${t("payWithKhqr")} (${formatMoney(payableTotal, currency)})`}
                 </Button>
             )}
 

@@ -43,6 +43,7 @@ import {
     apiErrorMessage,
     formatStockErrorMessage,
     billedUnitPrice,
+    freeUnitsOnLine,
     type CartLine,
     type StoreCart,
 } from "@/lib/type/cartType";
@@ -355,6 +356,7 @@ function LineRow({
     const outOfStock = isCartLineOutOfStock(line);
 
     const productHref = storeSlug && line.itemId ? `/store/${storeSlug}/product/${line.itemId}` : null;
+    const freeUnits = freeUnitsOnLine(line);
 
     const handleNavigate = () => {
         if (productHref) {
@@ -461,6 +463,16 @@ function LineRow({
                         ))}
                     </div>
                 )}
+
+                {freeUnits > 0 ? (
+                    <p className="mt-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                        🎁 {freeUnits} FREE
+                    </p>
+                ) : line.discountAmount && line.discountAmount > 0 ? (
+                    <p className="mt-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        -{formatMoney(line.discountAmount, currency)}
+                    </p>
+                ) : null}
 
                 <div className="mt-1 flex items-center gap-3">
                     <Button

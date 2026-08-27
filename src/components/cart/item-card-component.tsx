@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 
-import { formatMoney, resolveMediaUrl, isCartLineOutOfStock, apiErrorMessage, formatStockErrorMessage, type CartLine } from "@/lib/type/cartType";
+import { formatMoney, resolveMediaUrl, isCartLineOutOfStock, apiErrorMessage, formatStockErrorMessage, freeUnitsOnLine, type CartLine } from "@/lib/type/cartType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { toast } from "sonner";
 import {
@@ -37,6 +37,7 @@ export default function ItemCardComponent({
     const outOfStock = isCartLineOutOfStock(line);
 
     const productHref = storeSlug && line.itemId ? `/store/${storeSlug}/product/${line.itemId}` : null;
+    const freeUnits = freeUnitsOnLine(line);
 
     const handleNavigate = () => {
         if (productHref) {
@@ -117,6 +118,17 @@ export default function ItemCardComponent({
                             ))}
                         </div>
                     )}
+
+                    {freeUnits > 0 ? (
+                        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                            🎁 {freeUnits} FREE{line.discountLabel ? ` · ${line.discountLabel}` : ""}
+                        </p>
+                    ) : line.discountAmount && line.discountAmount > 0 ? (
+                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                            {line.discountLabel ? `${line.discountLabel} · ` : ""}
+                            -{formatMoney(line.discountAmount, currency)}
+                        </p>
+                    ) : null}
 
                     <div className="mt-2 flex items-center justify-between gap-2 sm:hidden">
                         <Stepper line={line} busy={busy} outOfStock={outOfStock} onChange={updateItem} />

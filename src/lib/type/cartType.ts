@@ -41,6 +41,19 @@ export interface CartLine {
     available?: boolean | null;
     status?: string | null;
     stock?: number | null;
+    /** What this line's units would cost before any promotion. Present only once the store's cart endpoint reports it. */
+    compareAtPrice?: number | null;
+    /** Total knocked off this whole line by an active promotion — a line total, not a per-unit amount. */
+    discountAmount?: number | null;
+    /** Human label for the promotion applied to this line, e.g. "Buy 2 Get 1 Free" or "10% OFF". */
+    discountLabel?: string | null;
+    /** Units within this line's quantity given free by a Buy X Get Y promotion. */
+    freeQuantity?: number | null;
+}
+
+/** Units on this line given away free by a Buy X Get Y promotion, if the backend reported any. */
+export function freeUnitsOnLine(line: { freeQuantity?: number | null }): number {
+    return line.freeQuantity && line.freeQuantity > 0 ? line.freeQuantity : 0;
 }
 
 /**
@@ -183,6 +196,35 @@ export function formatMoney(amount: number, currency = "USD", exchangeRate = 400
         return `${Math.round(finalAmount).toLocaleString("en-US")} ៛`;
     }
     return `$${amount.toFixed(2)}`;
+}
+
+/**
+ * Mirrors the backend's TaxCalculator exactly (see `TaxCalculator.java`), so
+ * the cart and checkout never quote a number the real order wouldn't also
+ * charge.
+ *
+ * @param netAmount the amount tax applies to — subtotal after discount, never before it
+ */
+export function computeTax(
+    netAmount: number,
+    rate: number | null | undefined,
+    inclusionType: "EXCLUSIVE" | "INCLUSIVE" | null | undefined,
+    enabled: boolean | null | undefined,
+): { taxAmount: number; total: number } {
+    const round2 = (value: number) => Math.round(value * 100) / 100;
+    const net = Math.max(netAmount, 0);
+
+    if (!enabled || !rate || !Number.isFinite(rate) || rate <= 0) {
+        return { taxAmount: 0, total: round2(net) };
+    }
+
+    if (inclusionType === "INCLUSIVE") {
+        const pretax = net / (1 + rate / 100);
+        return { taxAmount: round2(net - pretax), total: round2(net) };
+    }
+
+    const taxAmount = round2(net * (rate / 100));
+    return { taxAmount, total: round2(net + taxAmount) };
 }
 
 export function resolveMediaUrl(keyOrUrl: string | null | undefined): string | null {

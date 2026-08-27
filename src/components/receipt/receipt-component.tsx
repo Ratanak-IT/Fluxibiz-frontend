@@ -295,12 +295,16 @@ export default function ReceiptComponent({
                     ) : null}
                     <p className="text-xs text-neutral-400">
                       {formatMoney(item.unitPrice, order.currency)} ea
-                      {item.discountAmount && item.discountAmount > 0 ? (
-                        <span className="ml-1.5 font-bold text-emerald-600 dark:text-emerald-400">
-                          (-{formatMoney(item.discountAmount, order.currency)})
-                        </span>
-                      ) : null}
                     </p>
+                    {item.freeQuantity && item.freeQuantity > 0 ? (
+                      <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        🎁 {item.freeQuantity} FREE
+                      </p>
+                    ) : item.discountAmount && item.discountAmount > 0 ? (
+                      <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        Line discount -{formatMoney(item.discountAmount, order.currency)}
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className="flex gap-6">
@@ -338,6 +342,15 @@ export default function ReceiptComponent({
                 </span>
               </div>
             )}
+
+            {order.taxAmount && order.taxAmount > 0 ? (
+              <div className="flex justify-between text-xs text-neutral-500 dark:text-muted-foreground">
+                <BiLabel en={order.taxLabel || "Tax"} km="ពន្ធ" />
+                <span className="font-medium text-neutral-900 dark:text-foreground">
+                  {formatMoney(order.taxAmount, order.currency)}
+                </span>
+              </div>
+            ) : null}
           </div>
 
           {/* Total Box */}

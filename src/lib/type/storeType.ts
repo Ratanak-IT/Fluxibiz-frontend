@@ -97,6 +97,12 @@ export interface PublicStoreDetailResponse {
     openNow?: boolean | null;
     /** What it is open for today — "open today 08:00–17:00", "closed today". */
     hoursToday?: string | null;
+    /** The store's single tax rule — same one applied on every channel. */
+    taxEnabled?: boolean | null;
+    taxRate?: number | null;
+    taxInclusionType?: "EXCLUSIVE" | "INCLUSIVE" | null;
+    /** What to call it on screen — "VAT", "GST" — defaults to "Tax". */
+    taxLabel?: string | null;
 }
 
 /** {@code HH:MM}, 24-hour. */

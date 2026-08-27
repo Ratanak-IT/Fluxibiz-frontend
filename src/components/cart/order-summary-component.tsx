@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
-import { formatMoney, type StoreCart } from "@/lib/type/cartType";
+import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
+import { computeTax, formatMoney, type StoreCart } from "@/lib/type/cartType";
 
 export default function OrderSummaryComponent({
     store,
@@ -18,14 +19,18 @@ export default function OrderSummaryComponent({
 }) {
     const t = useTranslations("Cart");
     const activeCurrency = currency || store.currency;
-    const discount = store.items.reduce((acc, item) => {
-        const raw = item as any;
-        if (raw.compareAtPrice && Number(raw.compareAtPrice) > Number(item.unitPrice)) {
-            return acc + (Number(raw.compareAtPrice) - Number(item.unitPrice)) * item.quantity;
-        }
-        return acc;
-    }, 0);
-    const total = Math.max(0, store.subtotal - discount);
+    const discount = store.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0);
+    const netAmount = Math.max(0, store.subtotal - discount);
+    const freeItemCount = store.items.reduce((acc, item) => acc + (item.freeQuantity ?? 0), 0);
+
+    const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
+    const { taxAmount, total } = computeTax(
+        netAmount,
+        publicStore?.taxRate,
+        publicStore?.taxInclusionType,
+        publicStore?.taxEnabled,
+    );
+    const taxLabel = publicStore?.taxLabel || t("tax");
 
     const { data: active } = useGetActiveCheckoutQuery();
 
@@ -61,11 +66,27 @@ export default function OrderSummaryComponent({
                 </div>
 
                 <div className="flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-border">
-                    <span>{t("discount")}</span>
+                    <span className="flex items-center gap-1.5">
+                        {t("discount")}
+                        {freeItemCount > 0 && (
+                            <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                                🎁 {freeItemCount} FREE
+                            </span>
+                        )}
+                    </span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
-                        {formatMoney(discount, activeCurrency)}
+                        {discount > 0 ? `-${formatMoney(discount, activeCurrency)}` : formatMoney(0, activeCurrency)}
                     </span>
                 </div>
+
+                {taxAmount > 0 && (
+                    <div className="flex items-center justify-between">
+                        <span>{taxLabel}</span>
+                        <span className="font-bold text-neutral-900 dark:text-card-foreground">
+                            {formatMoney(taxAmount, activeCurrency)}
+                        </span>
+                    </div>
+                )}
 
                 <div className="flex items-center justify-between pt-2">
                     <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
