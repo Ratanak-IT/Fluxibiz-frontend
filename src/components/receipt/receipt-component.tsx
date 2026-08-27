@@ -93,6 +93,12 @@ export default function ReceiptComponent({
   // full unless it was placed Pay Later, in which case nothing has been collected.
   const amountPaid = isPaid ? order.total : 0;
   const balanceDue = Math.max(order.total - amountPaid, 0);
+  const isTaxInclusive = order.taxInclusionType === "INCLUSIVE";
+  const taxAmount = order.taxAmount ?? 0;
+  const taxRate = order.taxRate ?? 0;
+  const isTaxActive = taxAmount > 0;
+  const effectiveTaxName = order.taxLabel?.trim() || "VAT";
+  const afterDiscount = Math.max(0, order.subtotal - (order.discountAmount ?? 0));
 
   const formattedDate = order.createdDate
     ? new Date(order.createdDate).toLocaleDateString("en-US", {
@@ -302,6 +308,15 @@ export default function ReceiptComponent({
                     <p className="text-xs text-neutral-400">
                       {formatMoney(item.unitPrice, order.currency)} ea
                     </p>
+                    {item.freeQuantity && item.freeQuantity > 0 ? (
+                      <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        🎁 {item.freeQuantity} FREE
+                      </p>
+                    ) : item.discountAmount && item.discountAmount > 0 ? (
+                      <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        Line discount -{formatMoney(item.discountAmount, order.currency)}
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className="flex gap-6">
@@ -320,17 +335,43 @@ export default function ReceiptComponent({
           {/* Pricing Summary Breakdown */}
           <div className="space-y-2 border-t border-dashed border-neutral-200 pt-4 dark:border-border">
             <div className="flex justify-between text-xs text-neutral-500 dark:text-muted-foreground">
-              <BiLabel en="Subtotal" km="សរុបបណ្ដោះអាសន្ន" />
+              <BiLabel en="Subtotal" km="សរុបដើម" />
               <span className="font-medium text-neutral-900 dark:text-foreground">
                 {formatMoney(order.subtotal, order.currency)}
               </span>
             </div>
 
             {order.discountAmount > 0 && (
-              <div className="flex justify-between text-xs text-emerald-600">
-                <BiLabel en="Discount" km="បញ្ចុះតម្លៃ" />
-                <span className="font-medium">
+              <div className="flex justify-between items-center text-xs text-emerald-600 dark:text-emerald-400">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <BiLabel en="Discount" km="បញ្ចុះតម្លៃ" />
+                  <span className="rounded-md bg-emerald-100 dark:bg-emerald-950/60 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                    {order.discountLabel || (order.subtotal > 0 ? `${Math.round((order.discountAmount / order.subtotal) * 100)}% OFF` : "Savings")}
+                  </span>
+                </div>
+                <span className="font-semibold">
                   -{formatMoney(order.discountAmount, order.currency)}
+                </span>
+              </div>
+            )}
+
+            {isTaxActive && !isTaxInclusive && (
+              <div className="flex justify-between text-xs text-neutral-500 dark:text-muted-foreground">
+                <BiLabel en="Amount Excl. Tax" km="សរុបមិនទាន់គិតអាករ" />
+                <span className="font-medium text-neutral-900 dark:text-foreground">
+                  {formatMoney(afterDiscount, order.currency)}
+                </span>
+              </div>
+            )}
+
+            {isTaxActive && !isTaxInclusive && (
+              <div className="flex justify-between items-center text-xs text-emerald-700 dark:text-emerald-400 font-medium">
+                <BiLabel
+                  en={`+ ${effectiveTaxName}${taxRate > 0 ? ` (${taxRate}%)` : ""}`}
+                  km="អាករ"
+                />
+                <span className="font-bold">
+                  +{formatMoney(taxAmount, order.currency)}
                 </span>
               </div>
             )}
@@ -355,6 +396,13 @@ export default function ReceiptComponent({
               {formatMoney(order.total, order.currency)}
             </span>
           </div>
+
+          {/* Inclusive Tax Notice */}
+          {isTaxActive && isTaxInclusive && (
+            <p className="mt-2 text-center text-[11px] font-medium text-neutral-500 dark:text-muted-foreground italic">
+              * Product prices include {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""} · តម្លៃរួមបញ្ចូលអាកររួចជាស្រេច
+            </p>
+          )}
 
           {/* Amount Paid / Balance Due */}
           <div className="mt-4 space-y-1.5 text-xs">

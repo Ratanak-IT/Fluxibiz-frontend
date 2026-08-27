@@ -324,9 +324,13 @@ export function ProductStorefrontUI({
                                     {formatPrice(compareAt, currency)}
                                 </span>
                                 <span className="rounded-full bg-[#d14341]/10 dark:bg-[#f87171]/20 px-2 py-0.5 text-xs font-semibold text-[#d14341] dark:text-[#f87171]">
-                                    {discount}% OFF
+                                    {item.badge || `${discount}% OFF`}
                                 </span>
                             </>
+                        ) : item.badge ? (
+                            <span className="rounded-full bg-[#d14341]/10 dark:bg-[#f87171]/20 px-2 py-0.5 text-xs font-semibold text-[#d14341] dark:text-[#f87171]">
+                                {item.badge}
+                            </span>
                         ) : null}
                         {selectedPack?.unit?.name ? (
                             <span className="text-sm text-[#657064] dark:text-[#94a3b8]">

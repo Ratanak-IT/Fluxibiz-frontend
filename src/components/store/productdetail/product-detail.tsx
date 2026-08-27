@@ -278,6 +278,16 @@ export default function ProductDetail({
             <div className="text-2xl font-bold text-[#00932A] sm:text-3xl">
               {formatPrice(unitPrice, currency)}
             </div>
+            {item.compareAtPrice && Number(item.compareAtPrice) > unitPrice && (
+              <span className="text-base text-neutral-400 line-through">
+                {formatPrice(Number(item.compareAtPrice), currency)}
+              </span>
+            )}
+            {item.badge && (
+              <span className="rounded-full bg-red-500/10 px-2.5 py-0.5 text-xs font-bold text-red-600 dark:bg-red-500/20 dark:text-red-400">
+                {item.badge}
+              </span>
+            )}
           </div>
 
           {description && (

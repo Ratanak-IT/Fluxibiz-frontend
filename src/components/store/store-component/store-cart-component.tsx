@@ -72,39 +72,25 @@ export function StoreCardComponent({ store }: StoreCardComponentProps) {
         )}
         {discountLabel && (
           <div
+            title={discountLabel}
             className="
-          absolute top-2 left-2 
-       bg-red-500 
-          z-10 flex flex-col 
-          h-12 w-12 
-          items-center justify-center 
-          text-center leading-none 
-          rounded-full
-          text-white
-          border-2 border-dashed 
-          border-input
-          bg-accent shadow-xs p-0.5
-          dark:bg-red-500 dark:border-foreground/80 dark:text-white
-        "
+              absolute top-2 left-2 
+              bg-red-500 
+              z-10 flex 
+              h-12 w-12 
+              items-center justify-center 
+              text-center leading-none 
+              rounded-full
+              text-white
+              border-2 border-dashed 
+              border-input
+              shadow-xs p-1
+              dark:bg-red-500 dark:border-foreground/80 dark:text-white
+            "
           >
-            {discountLabel.includes(" ") ? (
-              discountLabel.split(" ").map((part, idx) => (
-                <span
-                  key={idx}
-                  className={
-                    idx === 0
-                      ? "text-[11px] font-extrabold leading-tight tracking-tight"
-                      : "text-[9px] font-bold opacity-90 leading-tight uppercase"
-                  }
-                >
-                  {part}
-                </span>
-              ))
-            ) : (
-              <span className="text-[11px] font-extrabold leading-tight">
-                {discountLabel}
-              </span>
-            )}
+            <span className="text-[9px] font-black uppercase leading-tight line-clamp-2 break-words text-center">
+              {discountLabel}
+            </span>
           </div>
         )}
         <div

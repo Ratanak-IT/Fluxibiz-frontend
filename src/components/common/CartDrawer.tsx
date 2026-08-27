@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, ReactNode } from "react";
@@ -43,6 +44,7 @@ import {
     apiErrorMessage,
     formatStockErrorMessage,
     billedUnitPrice,
+    freeUnitsOnLine,
     type CartLine,
     type StoreCart,
 } from "@/lib/type/cartType";
@@ -355,6 +357,7 @@ function LineRow({
     const outOfStock = isCartLineOutOfStock(line);
 
     const productHref = storeSlug && line.itemId ? `/store/${storeSlug}/product/${line.itemId}` : null;
+    const freeUnits = freeUnitsOnLine(line);
 
     const handleNavigate = () => {
         if (productHref) {
@@ -365,6 +368,7 @@ function LineRow({
 
     const handleDecrease = () => {
         if (pendingQty <= 1) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             removeItem(line.cartItemId).unwrap().catch((err: any) => {
                 toast.error(apiErrorMessage(err, "Failed to remove item"));
             });
@@ -463,6 +467,16 @@ function LineRow({
                         ))}
                     </div>
                 )}
+
+                {freeUnits > 0 ? (
+                    <p className="mt-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                        {freeUnits} FREE
+                    </p>
+                ) : line.discountAmount && line.discountAmount > 0 ? (
+                    <p className="mt-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        -{formatMoney(line.discountAmount, currency)}
+                    </p>
+                ) : null}
 
                 <div className="mt-2.5 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">

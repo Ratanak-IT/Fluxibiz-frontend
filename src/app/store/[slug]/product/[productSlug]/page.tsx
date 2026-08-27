@@ -44,6 +44,11 @@ function toMenuItem(item: StorefrontItemResponse, currency?: string): MenuItemDa
       !hasOwnPrice && range && range.max > range.min
         ? String(range.max)
         : undefined,
+    compareAtPrice:
+      item.compareAtPrice !== undefined && item.compareAtPrice !== null
+        ? String(item.compareAtPrice)
+        : undefined,
+    badge: item.badge,
     currency: currency,
     description: item.description ?? "",
     category: item.itemGroup?.name ?? "Menu",

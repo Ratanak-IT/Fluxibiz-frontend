@@ -46,6 +46,10 @@ export interface StorefrontOrderItem {
     itemName: string;
     quantity: number;
     unitPrice: number;
+    /** Total knocked off this whole line by an active promotion — a line total, not a per-unit amount. */
+    discountAmount?: number;
+    /** Units within this line's quantity given free by a Buy X Get Y promotion, when the backend reports it. */
+    freeQuantity?: number;
     lineTotal: number;
     /** Options this line was ordered with, already rendered — "Sugar Level: 50%". */
     selections?: string[];
@@ -68,6 +72,12 @@ export interface StorefrontOrder {
     paymentMethod: string;
     subtotal: number;
     discountAmount: number;
+    discountLabel?: string | null;
+    taxRate?: number;
+    taxAmount?: number;
+    taxInclusionType?: "INCLUSIVE" | "EXCLUSIVE" | string | null;
+    /** What to call it on the receipt — "VAT", "GST" — set by the business, defaults to "Tax". */
+    taxLabel?: string | null;
     total: number;
     currency: string;
     itemCount: number;

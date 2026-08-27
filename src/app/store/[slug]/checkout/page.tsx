@@ -16,7 +16,7 @@ import {
     useCreateCheckoutMutation,
     useGetActiveCheckoutQuery,
 } from "@/features/checkout/checkoutApi";
-import { formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
+import { computeTax, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
@@ -238,14 +238,60 @@ export default function CheckoutPage({
                             ))}
                         </div>
 
-                        <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-border">
-                            <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
-                                {t("total")}
-                            </span>
+                        <div className="mt-4 space-y-2 border-t border-neutral-100 pt-4 dark:border-border">
+                            <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
+                                <span>{t("subtotal")}</span>
+                                <span className="font-medium text-neutral-900 dark:text-card-foreground">
+                                    {formatMoney(store.subtotal, currency)}
+                                </span>
+                            </div>
 
-                            <span className="text-2xl font-bold text-green-600 dark:text-primary">
-                                {formatMoney(store.subtotal, currency)}
-                            </span>
+                            {discount > 0 && (
+                                <div className="flex items-center justify-between text-sm text-emerald-600 dark:text-emerald-400">
+                                    <span>{t("discount")}</span>
+                                    <span className="font-medium">
+                                        -{formatMoney(discount, currency)}
+                                    </span>
+                                </div>
+                            )}
+
+                            {isTaxActive && !isTaxInclusive && (
+                                <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
+                                    <span>
+                                        {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
+                                    </span>
+                                    <span className="font-medium text-neutral-900 dark:text-card-foreground">
+                                        +{formatMoney(taxAmount, currency)}
+                                    </span>
+                                </div>
+                            )}
+
+                            {isTaxActive && isTaxInclusive && (
+                                <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-muted-foreground">
+                                    <span>
+                                        {effectiveTaxName} {taxRate > 0 ? `(${taxRate}% Incl.)` : "(Incl.)"}
+                                    </span>
+                                    <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                                        {formatMoney(taxAmount, currency)}
+                                    </span>
+                                </div>
+                            )}
+
+                            <div className="flex items-center justify-between pt-1">
+                                <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
+                                    {t("total")}
+                                </span>
+
+                                <span className="text-2xl font-bold text-green-600 dark:text-primary">
+                                    {formatMoney(payableTotal, currency)}
+                                </span>
+                            </div>
+
+                            {isTaxActive && isTaxInclusive && (
+                                <p className="text-right text-[11px] font-medium text-neutral-400 dark:text-muted-foreground italic">
+                                    * Prices include {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -335,8 +381,8 @@ export default function CheckoutPage({
                     {store?.open === false
                         ? t("shopClosed")
                         : paymentMethod === "PAY_LATER"
-                        ? `${t("placeOrder")} (${formatMoney(store?.subtotal ?? 0, currency)})`
-                        : `${t("payWithKhqr")} (${formatMoney(store?.subtotal ?? 0, currency)})`}
+                        ? `${t("placeOrder")} (${formatMoney(payableTotal, currency)})`
+                        : `${t("payWithKhqr")} (${formatMoney(payableTotal, currency)})`}
                 </Button>
             )}
 
