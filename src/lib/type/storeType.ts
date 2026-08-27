@@ -75,6 +75,18 @@ export interface PublicStoreDetailResponse {
     displayCurrency: string;
     category: BusinessSubCategory | null;
     socialLinks: Record<string, string>[] | null;
+    facebookPageName?: string | null;
+    facebookPageUrl?: string | null;
+    facebookName?: string | null;
+    facebookUrl?: string | null;
+    facebook?: string | null;
+    facebookPage?: {
+        name?: string | null;
+        pageName?: string | null;
+        url?: string | null;
+        link?: string | null;
+        id?: string | null;
+    } | null;
     isClosed?: boolean | null;
     openTime?: string | null;
     closeTime?: string | null;

@@ -44,11 +44,11 @@ export default function MentorsSection() {
           </h2>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-7xl grid-cols-1 justify-items-center gap-18 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-6xl grid-cols-1 justify-items-center gap-8 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
           {team.map((member) => (
             <div
               key={member.nameKey}
-              className="w-full max-w-md"
+              className="w-full max-w-sm"
             >
               <TeamCard
                 image={member.avatar}

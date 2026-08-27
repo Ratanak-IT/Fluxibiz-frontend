@@ -16,6 +16,7 @@ import ApiErrorFallback from "@/components/common/api-error-fallback";
 import {
   useGetPublicStoreQuery,
   useGetPublicStoreItemsQuery,
+  useGetFacebookSocialSettingsQuery,
 } from "@/features/store-api/store-api";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 
@@ -31,6 +32,7 @@ import { StoreCardData } from "@/lib/store/detailstore/store";
 import ProductList from "@/components/store/detailstore/product-list";
 import { formatPrice } from "@/lib/store/productdetail/product";
 import { useShopperLocation } from "@/lib/hooks/useShopperLocation";
+import { useIsTma } from "@/lib/tma/useIsTma";
 
 function toMenuItem(
   item: StorefrontItemResponse,
@@ -79,6 +81,7 @@ export default function StoreDetail({
   const t = useTranslations("Store");
   const { slug } = use(params);
   const { coords } = useShopperLocation();
+  const isTma = useIsTma();
   const {
     data: storeDetail,
     isLoading: isLoadingStore,
@@ -190,6 +193,204 @@ export default function StoreDetail({
   const storefrontOpen = isStorefrontOpen(storeDetail);
   const todayHours = useTodayHoursLabel(storeDetail?.onlineHours);
 
+  const { data: facebookSettings } = useGetFacebookSocialSettingsQuery(
+    storeDetail?.id || slug,
+    { skip: !slug }
+  );
+
+  const facebookInfo = useMemo(() => {
+    const parseFbSlug = (urlStr?: string): string => {
+      if (!urlStr) return "Facebook Page";
+      try {
+        const parsed = new URL(urlStr.startsWith("http") ? urlStr : `https://${urlStr}`);
+        const pathname = parsed.pathname.replace(/\/$/, "");
+        const parts = pathname.split("/").filter(Boolean);
+        if (parts.length > 0) {
+          const last = parts[parts.length - 1];
+          if (last && !last.includes("profile.php") && last !== "pages") {
+            return decodeURIComponent(last);
+          }
+        }
+      } catch {
+        // fallback
+      }
+      return "Facebook Page";
+    };
+
+    // 0. Check response from /businesses/social-settings/facebook endpoint
+    if (facebookSettings) {
+      const fs = facebookSettings as any;
+      const fsName =
+        fs.pageName ||
+        fs.page_name ||
+        fs.name ||
+        fs.facebookPageName ||
+        fs.facebook_page_name ||
+        fs.title;
+      const fsUrl =
+        fs.pageUrl ||
+        fs.page_url ||
+        fs.url ||
+        fs.link ||
+        fs.facebookPageUrl ||
+        fs.facebook_page_url;
+
+      if (fsName || fsUrl) {
+        const finalUrl = fsUrl || `https://facebook.com/${encodeURIComponent(fsName || "")}`;
+        const finalName = fsName || parseFbSlug(finalUrl);
+        return { url: finalUrl, name: finalName };
+      }
+    }
+
+    if (!storeDetail) return null;
+    const sd = storeDetail as any;
+
+    // 1. Direct top-level connected Facebook properties & sub-objects
+    const connectedName =
+      sd.facebookPageName ||
+      sd.facebook_page_name ||
+      sd.facebookName ||
+      sd.facebook_name ||
+      sd.linkedFacebookPage ||
+      sd.linked_facebook_page ||
+      sd.linkedFacebookPageName ||
+      sd.linked_facebook_page_name ||
+      sd.facebookPageTitle ||
+      sd.facebook_page_title ||
+      sd.facebookPage?.name ||
+      sd.facebookPage?.pageName ||
+      sd.facebookPage?.page_name ||
+      sd.facebookPage?.title ||
+      sd.facebook_page?.name ||
+      sd.facebook_page?.page_name ||
+      sd.facebook_page?.title ||
+      sd.facebookIntegration?.pageName ||
+      sd.facebookIntegration?.page_name ||
+      sd.facebookIntegration?.name ||
+      sd.facebook_integration?.pageName ||
+      sd.facebook_integration?.page_name ||
+      sd.facebook_integration?.name ||
+      sd.facebookDetails?.name ||
+      sd.facebookDetails?.pageName ||
+      sd.facebook_details?.name ||
+      sd.facebook_details?.page_name ||
+      sd.messengerPage?.name ||
+      sd.messenger_page?.name;
+
+    const connectedUrl =
+      sd.facebookPageUrl ||
+      sd.facebook_page_url ||
+      sd.facebookUrl ||
+      sd.facebook_url ||
+      sd.linkedFacebookPageUrl ||
+      sd.linked_facebook_page_url ||
+      sd.facebookPage?.url ||
+      sd.facebookPage?.link ||
+      sd.facebook_page?.url ||
+      sd.facebook_page?.link ||
+      sd.facebookIntegration?.url ||
+      sd.facebookIntegration?.link ||
+      sd.facebook_integration?.url ||
+      sd.facebook_integration?.link;
+
+    if (connectedName || connectedUrl) {
+      const finalUrl =
+        connectedUrl ||
+        (sd.website && sd.website.toLowerCase().includes("facebook.com")
+          ? sd.website
+          : `https://facebook.com/${encodeURIComponent(connectedName || "")}`);
+      const finalName = connectedName || parseFbSlug(finalUrl);
+      return { url: finalUrl, name: finalName };
+    }
+
+    // 2. integrations array
+    if (Array.isArray(sd.integrations)) {
+      for (const item of sd.integrations) {
+        if (typeof item === "object" && item !== null) {
+          const type = (item.type || item.platform || item.provider || "").toLowerCase();
+          if (type.includes("facebook") || type.includes("messenger")) {
+            const name = item.pageName || item.page_name || item.name || item.title || item.label;
+            const url = item.url || item.link || item.facebookUrl;
+            if (name || url) {
+              const finalUrl = url || `https://facebook.com/${encodeURIComponent(name || "")}`;
+              const finalName = name || parseFbSlug(finalUrl);
+              return { url: finalUrl, name: finalName };
+            }
+          }
+        }
+      }
+    }
+
+    // 3. socialLinks array or object
+    const social = sd.socialLinks;
+    if (social) {
+      if (Array.isArray(social)) {
+        for (const item of social) {
+          if (typeof item === "object" && item !== null) {
+            const url = item.url || item.facebook || item.link || item.href || item.facebookUrl || item.facebook_url;
+            const name = item.name || item.pageName || item.page_name || item.title || item.label || item.facebookPageName || item.facebook_page_name;
+
+            if (url && String(url).toLowerCase().includes("facebook.com")) {
+              return {
+                url: String(url),
+                name: name ? String(name) : parseFbSlug(String(url)),
+              };
+            }
+
+            if (name && (item.platform?.toLowerCase() === "facebook" || item.type?.toLowerCase() === "facebook")) {
+              return {
+                url: url ? String(url) : `https://facebook.com/${encodeURIComponent(name)}`,
+                name: String(name),
+              };
+            }
+
+            for (const [key, val] of Object.entries(item)) {
+              if (
+                key.toLowerCase().includes("facebook") &&
+                typeof val === "string" &&
+                val.trim()
+              ) {
+                const isUrl = val.toLowerCase().includes("facebook.com");
+                return {
+                  url: isUrl ? val : `https://facebook.com/${encodeURIComponent(val)}`,
+                  name: name ? String(name) : isUrl ? parseFbSlug(val) : val,
+                };
+              }
+            }
+          }
+        }
+      } else if (typeof social === "object") {
+        const url = social.facebook || social.facebookUrl || social.url;
+        const name = social.facebookPageName || social.facebookName || social.name || social.pageName;
+        if (url || name) {
+          const finalUrl = url || `https://facebook.com/${encodeURIComponent(name)}`;
+          const finalName = name || parseFbSlug(finalUrl);
+          return { url: finalUrl, name: finalName };
+        }
+      }
+    }
+
+    // 4. Website
+    if (sd.website && sd.website.toLowerCase().includes("facebook.com")) {
+      return {
+        url: sd.website,
+        name: parseFbSlug(sd.website),
+      };
+    }
+
+    // 5. facebook string field
+    if (typeof sd.facebook === "string" && sd.facebook.trim()) {
+      const fbVal = sd.facebook.trim();
+      const isUrl = fbVal.toLowerCase().includes("facebook.com");
+      return {
+        url: isUrl ? fbVal : `https://facebook.com/${encodeURIComponent(fbVal)}`,
+        name: isUrl ? parseFbSlug(fbVal) : fbVal,
+      };
+    }
+
+    return null;
+  }, [storeDetail, facebookSettings]);
+
   const storeData: StoreCardData | undefined = storeDetail
     ? {
         id: storeDetail.id,
@@ -199,6 +400,9 @@ export default function StoreDetail({
         location: storeDetail.cityOrProvince ?? t("common.noLocation"),
         address: storeDetail.address ?? storeDetail.cityOrProvince ?? t("common.noLocation"),
         googleMap: storeDetail.googleMap,
+        phoneNumber: storeDetail.phoneNumber,
+        facebookUrl: facebookInfo?.url ?? null,
+        facebookName: facebookInfo?.name ?? null,
         hours: operatingHours,
         openTime: storeDetail.openTime ?? undefined,
         closeTime: storeDetail.closeTime ?? undefined,
@@ -230,15 +434,20 @@ export default function StoreDetail({
 
   return (
     <div className="mx-auto max-w-362.5 space-y-10 py-6 px-4 sm:px-10 dark:bg-background">
-      <div className="mb-4 flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-20">
-        <Link
-          href="/store"
-          className="flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-50"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          {t("common.store")}
-        </Link>
-      </div>
+      {/* The Mini App is scoped to this one business's own Telegram bot —
+          a way back to the general store directory makes no sense there,
+          same reasoning as hiding the site-wide Navbar/Footer in TMA mode. */}
+      {!isTma && (
+        <div className="mb-4 flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-20">
+          <Link
+            href="/store"
+            className="flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-50"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            {t("common.store")}
+          </Link>
+        </div>
+      )}
 
       {isLoading ? (
         <StorePageSkeleton />
@@ -281,7 +490,7 @@ export default function StoreDetail({
             </div>
           ) : null}
 
-          <div className="px-4 sm:px-6 md:px-12 lg:px-20">
+          <div id="categories" className="scroll-mt-20 px-4 sm:px-6 md:px-12 lg:px-20">
             <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
               <div className="min-w-0 space-y-2">
                 {hasFilteredItems ? (

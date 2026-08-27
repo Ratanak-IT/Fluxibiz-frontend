@@ -46,12 +46,12 @@ export default function ItemCardComponent({
     };
 
     return (
-        <Card className={cn("w-full overflow-hidden rounded-2xl border-0 bg-gray-100 p-0 sm:h-33.5 dark:bg-card relative", outOfStock && "opacity-90")}>
-            <div className="grid h-full grid-cols-[80px_1fr] items-center gap-3.5 p-3.5 sm:grid-cols-[110px_1fr_96px_150px] sm:gap-4 sm:px-4 sm:py-0">
+        <Card className={cn("relative w-full overflow-hidden rounded-2xl border-0 bg-gray-100 p-0 dark:bg-card", outOfStock && "opacity-90")}>
+            <div className="grid h-auto grid-cols-[80px_1fr] items-center gap-3.5 p-3.5 sm:grid-cols-[100px_1fr_96px_150px] sm:gap-4 sm:p-4">
                 {/* Image */}
                 <div
                     onClick={handleNavigate}
-                    className={cn("relative h-20 w-20 overflow-hidden rounded-xl bg-white sm:h-25 sm:w-full shrink-0", productHref && "cursor-pointer")}
+                    className={cn("relative h-20 w-20 overflow-hidden rounded-xl bg-white sm:h-24 sm:w-24 shrink-0", productHref && "cursor-pointer")}
                 >
                     {outOfStock && (
                         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/25 backdrop-blur-[1.5px]">

@@ -2,9 +2,14 @@ import { useTranslations } from "next-intl";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useIsTma } from "@/lib/tma/useIsTma";
 
-export default function EmptyCartComponent() {
+export default function EmptyCartComponent({ shopSlug }: { shopSlug?: string } = {}) {
   const t = useTranslations("Cart");
+    const isTma = useIsTma();
+    // Inside a business's own Mini App there is no general store directory
+    // to browse — send them back to that business's own storefront instead.
+    const browseHref = isTma && shopSlug ? `/store/${shopSlug}?tma=true` : "/store";
     return (
         <div className="flex flex-col items-center justify-center gap-4 rounded-2xl bg-gray-100 py-24 dark:bg-card">
             <ShoppingCart className="h-12 w-12 text-neutral-300 dark:text-muted-foreground" />
@@ -17,7 +22,7 @@ export default function EmptyCartComponent() {
                 {t("emptyDescription")}
             </p>
 
-            <Link href="/store">
+            <Link href={browseHref}>
                 <Button className="mt-2 h-11 rounded-full bg-green-600 px-8 font-semibold text-white hover:bg-green-700 dark:bg-primary dark:hover:bg-primary/90">
                     {t("browseShops")}
                 </Button>

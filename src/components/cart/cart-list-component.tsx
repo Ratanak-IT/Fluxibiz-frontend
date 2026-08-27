@@ -50,7 +50,7 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
     }
 
     if (!cart || cart.stores.length === 0) {
-        return <EmptyCartComponent />;
+        return <EmptyCartComponent shopSlug={slug ?? undefined} />;
     }
 
     const scoped = slug ? cart.stores.find((store) => store.slug === slug) : null;

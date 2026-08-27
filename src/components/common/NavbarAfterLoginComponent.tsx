@@ -430,7 +430,6 @@ export default function NavbarAfterLoginComponent({
                     px-3
                     py-2
                     transition-colors
-<<<<<<< HEAD
                     hover:bg-[#e5e7eb]
                     focus-visible:outline-none
                     focus-visible:ring-2
@@ -440,13 +439,6 @@ export default function NavbarAfterLoginComponent({
                     dark:bg-white/5
                     dark:hover:bg-white/10
                     dark:focus-visible:ring-offset-background
-=======
-
-                    hover:bg-[#e5e7eb]
-
-                    dark:bg-white/5
-                    dark:hover:bg-white/10
->>>>>>> 8a4fd6b49e7963aa43f4d0fd743fd62a004f9401
                   "
                 >
                   <Avatar

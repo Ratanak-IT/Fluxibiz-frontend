@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { cartApi } from "@/features/cart/cartApi";
-import type { AuthState } from "@/features/auth/authSlice";
+import { applyTmaAuthHeader } from "@/lib/tma/tmaAuthHeader";
 import {
     ActiveCheckout,
     CheckoutSession,
@@ -13,6 +13,7 @@ import {
 
 const baseQuery = fetchBaseQuery({
     baseUrl: "/api/v1",
+    prepareHeaders: applyTmaAuthHeader,
 });
 
 export const checkoutApi = createApi({

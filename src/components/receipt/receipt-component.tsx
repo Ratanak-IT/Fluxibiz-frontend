@@ -17,6 +17,7 @@ import { formatMoney, resolveMediaUrl } from "@/lib/type/cartType";
 
 import { useTranslations } from "next-intl";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
+import { useIsTma } from "@/lib/tma/useIsTma";
 
 /** A row/column label shown as "English / Khmer" on one line — this receipt is
  * always bilingual regardless of the site's language toggle, the way a printed
@@ -47,6 +48,7 @@ export default function ReceiptComponent({
   const t = useTranslations("Common");
   const { orderId } = use(params);
   const receiptRef = useRef<HTMLDivElement>(null);
+  const isTma = useIsTma();
 
   const { data: order, isLoading, isError, refetch } = useGetOrderReceiptQuery(orderId);
 
@@ -152,15 +154,19 @@ export default function ReceiptComponent({
           Back to Payment History
         </Link>
 
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={handlePrint}
-            className="h-11 gap-2 rounded-full bg-green-600 px-5 text-sm font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
-          >
-            <Printer className="h-4 w-4" />
-            Print Receipt
-          </Button>
-        </div>
+        {/* window.print() has nothing to do inside Telegram's in-app
+            WebView — there is no printer dialog to open there. */}
+        {!isTma && (
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handlePrint}
+              className="h-11 gap-2 rounded-full bg-green-600 px-5 text-sm font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
+            >
+              <Printer className="h-4 w-4" />
+              Print Receipt
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Main E-Receipt Card */}
