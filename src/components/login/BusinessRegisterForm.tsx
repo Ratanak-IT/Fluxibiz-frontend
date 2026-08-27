@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import { Controller, useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 
@@ -18,6 +19,8 @@ import {
 
 import { RegisterField } from "./RegisterForm";
 
+import { AuthErrorBanner } from "./AuthErrorBanner";
+
 interface BusinessRegisterFormProps {
   userData?: UserRegisterFormData;
   onBack?: () => void;
@@ -28,6 +31,7 @@ interface BusinessRegisterFormProps {
   }) => Promise<void>;
 
   isSubmitting?: boolean;
+  formError?: string | null;
 }
 
 export function BusinessRegisterForm({
@@ -35,6 +39,7 @@ export function BusinessRegisterForm({
   onBack,
   onSubmitFinal,
   isSubmitting = false,
+  formError,
 }: BusinessRegisterFormProps) {
   const t = useTranslations("Register.business");
   const { login, loginHref } = useAuth();

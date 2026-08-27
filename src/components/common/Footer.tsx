@@ -490,8 +490,9 @@ export default function Footer() {
       </ContactLink>
 
       <ContactLink
-        href="mailto:ipos.istad@gmail.com"
-        label="ipos.istad@gmail.com"
+        href="https://mail.google.com/mail/?view=cm&fs=1&to=fluxibizz@gmail.com"
+        label="fluxibizz@gmail.com"
+        external
       >
         <Mail
           aria-hidden="true"
@@ -781,14 +782,19 @@ function ContactLink({
   href,
   label,
   children,
+  external,
 }: {
   href: string;
   label: string;
   children: ReactNode;
+  external?: boolean;
 }) {
+  const isExternal = external ?? href.startsWith("http");
   return (
     <a
       href={href}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
       className="
         flex
         w-fit

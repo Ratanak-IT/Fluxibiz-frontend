@@ -76,7 +76,7 @@ const FEATURES: Feature[] = [
   },
 ];
 
-const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const EASE: [number, number, number, number] = [0.2, 1, 0.3, 1];
 
 /* -------------------------------------------------------------------------- */
 /*  helpers                                                                    */
@@ -117,9 +117,9 @@ function CharSwap({
   revealed,
   active,
   reduced,
-  step = 18,
+  step = 12,
   baseDelay = 0,
-  duration = 560,
+  duration = 350,
   className = '',
   swapClassName = 'text-brand',
 }: {
@@ -255,7 +255,7 @@ function MaskedWords({
               show: {
                 y: '0%',
                 opacity: 1,
-                transition: { duration: 0.85, ease: EASE, delay: delay + i * 0.055 },
+                transition: { duration: 0.45, ease: EASE, delay: delay + i * 0.035 },
               },
             }}
           >
@@ -367,14 +367,15 @@ function FeatureRow({
               revealed={revealed}
               active={isActive}
               reduced={reduced}
-              step={20}
+              step={12}
               baseDelay={rowDelay}
+              duration={350}
             />
           </h3>
 
           {/* description wipes in, then brightens on active */}
           <p
-            className={`m-0 min-w-[180px] flex-[1_1_auto] text-right text-[clamp(0.9rem,1.3vw,1.05rem)] font-medium transition-[clip-path,color,transform] duration-[800ms] ease-hero motion-reduce:transition-none max-[720px]:min-w-0 max-[720px]:text-left ${
+            className={`m-0 min-w-[180px] flex-[1_1_auto] text-right text-[clamp(0.9rem,1.3vw,1.05rem)] font-medium transition-[clip-path,color,transform,opacity] duration-[400ms] ease-hero motion-reduce:transition-none max-[720px]:min-w-0 max-[720px]:text-left ${
               isActive
                 ? 'text-ink'
                 : 'text-[color-mix(in_srgb,var(--ah-ink)_46%,var(--background))] dark:text-[color-mix(in_srgb,var(--ah-ink)_62%,var(--background))]'

@@ -11,7 +11,7 @@ export function ProductPreview() {
                 <div className="flex items-center justify-between border-b border-dashed border-zinc-200 pb-2">
                     <div>
                         <p className="font-mono text-xs font-bold text-zinc-900">
-                            IPOS · #2241
+                            FluxiBiz · #2241
                         </p>
                         <p className="text-[10px] text-zinc-500">
                             Table 04 · 12:41

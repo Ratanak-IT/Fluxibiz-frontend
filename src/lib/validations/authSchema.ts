@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 export const STRICT_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
+export const NAME_REGEX = /^[a-zA-Z\u00C0-\u024F\u1780-\u17FF\s'-]+$/;
+export const PHONE_REGEX = /^\+?[0-9\s-]{8,15}$/;
 
 export function validateEmailFormat(val?: string | null): string | true {
   if (!val || val.trim() === "") return "Email is required";
@@ -47,17 +49,33 @@ export const strictEmailSchema = z.string().superRefine((val, ctx) => {
   }
 });
 
+export const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least 1 uppercase letter")
+  .regex(/[a-z]/, "Password must contain at least 1 lowercase letter")
+  .regex(/[0-9]/, "Password must contain at least 1 number");
+
 export const userRegisterSchema = z
   .object({
-    firstName: z.string().min(2, "First name must be at least 2 characters"),
-    lastName: z.string().min(2, "Last name must be at least 2 characters"),
+    firstName: z
+      .string()
+      .trim()
+      .min(2, "First name must be at least 2 characters")
+      .regex(NAME_REGEX, "First name cannot contain special characters or numbers"),
+    lastName: z
+      .string()
+      .trim()
+      .min(2, "Last name must be at least 2 characters")
+      .regex(NAME_REGEX, "Last name cannot contain special characters or numbers"),
     phone: z
       .string()
+      .trim()
       .min(8, "Phone number must be at least 8 digits")
-      .regex(/^\+?[0-9\s]+$/, "Invalid phone number format"),
+      .regex(PHONE_REGEX, "Invalid phone number format (e.g. 012345678 or +85512345678)"),
     email: strictEmailSchema,
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(8, "Confirm password is required"),
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -67,10 +85,18 @@ export const userRegisterSchema = z
 export type UserRegisterFormData = z.infer<typeof userRegisterSchema>;
 
 export const businessRegisterSchema = z.object({
-  storeName: z.string().min(2, "Store name must be at least 2 characters"),
-  businessType: z.string().min(1, "Please select a business type"),
+  storeName: z
+    .string()
+    .trim()
+    .min(2, "Store name must be at least 2 characters"),
+  businessType: z
+    .string()
+    .min(1, "Please select a business type"),
   businessEmail: strictEmailSchema,
-  businessAddress: z.string().min(3, "Address must be at least 3 characters"),
+  businessAddress: z
+    .string()
+    .trim()
+    .min(3, "Business address must be at least 3 characters"),
   description: z.string().optional(),
 });
 

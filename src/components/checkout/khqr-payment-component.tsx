@@ -291,6 +291,13 @@ export default function KhqrPaymentComponent({
                                     unoptimized
                                     className={cn("h-60 w-60 object-contain", expired && "opacity-15 blur-[3px]")}
                                 />
+
+                                {/* Black Circular Currency Badge Overlay ($ / ៛) */}
+                                {!expired && (
+                                    <div className="absolute top-1/2 left-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black text-white border-2 border-white shadow-md font-extrabold text-sm select-none pointer-events-none">
+                                        {currencySymbol}
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="flex h-60 w-60 items-center justify-center text-sm text-neutral-400">

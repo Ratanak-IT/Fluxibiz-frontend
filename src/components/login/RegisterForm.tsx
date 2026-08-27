@@ -14,14 +14,15 @@ import {
   userRegisterSchema,
   type UserRegisterFormData,
 } from "@/lib/validations/authSchema";
+import { AuthErrorBanner } from "./AuthErrorBanner";
+import type { FieldErrors } from "react-hook-form";
 
-export type RegisterFieldProps =
-  React.ComponentProps<typeof Input> & {
-    label: string;
-    required?: boolean;
-    density?: "compact" | "figma";
-    error?: string;
-  };
+export type RegisterFieldProps = React.ComponentProps<typeof Input> & {
+  label: string;
+  required?: boolean;
+  density?: "compact" | "figma";
+  error?: string;
+};
 
 export function RegisterField({
   label,
@@ -30,8 +31,15 @@ export function RegisterField({
   required = true,
   density = "compact",
   error,
+  isPassword = false,
+  isVisible = false,
+  onToggleVisibility,
   ...props
-}: RegisterFieldProps) {
+}: RegisterFieldProps & {
+  isPassword?: boolean;
+  isVisible?: boolean;
+  onToggleVisibility?: () => void;
+}) {
   const generatedId = useId();
   const id = providedId ?? generatedId;
 
@@ -57,29 +65,47 @@ export function RegisterField({
           ) : null}
         </span>
 
-        <Input
-          id={id}
-          className={cn(
-            "border-input bg-white text-[#636b74] shadow-none",
-            "placeholder:text-[#636b74]",
-            "transition-colors",
-            "focus-visible:ring-2",
-            "dark:border-gray-400",
-            "dark:bg-background",
-            "dark:text-white",
-            "dark:caret-white",
-            "dark:placeholder:text-white",
-            "dark:focus-visible:border-gray-400",
-            "dark:focus-visible:ring-gray-400/30",
-            density === "figma"
-              ? "h-[47px] rounded-[12px] px-5 py-2.5 text-base"
-              : "h-11 rounded-[11px] px-[18px] py-2 text-[15px]",
-            error &&
-              "border-red-500 focus-visible:border-red-500 focus-visible:ring-2 focus-visible:ring-red-500/30 dark:border-red-500 dark:focus-visible:border-red-500 dark:focus-visible:ring-red-500/30",
-            className,
+        <div className="relative flex items-center w-full">
+          <Input
+            id={id}
+            className={cn(
+              "border-input bg-white text-[#636b74] shadow-none",
+              "placeholder:text-[#636b74]",
+              "transition-colors",
+              "focus-visible:ring-2",
+              "dark:border-gray-400",
+              "dark:bg-background",
+              "dark:text-white",
+              "dark:caret-white",
+              "dark:placeholder:text-white",
+              "dark:focus-visible:border-gray-400",
+              "dark:focus-visible:ring-gray-400/30",
+              density === "figma"
+                ? "h-[47px] rounded-[12px] px-5 py-2.5 text-base"
+                : "h-11 rounded-[11px] px-[18px] py-2 text-[15px]",
+              isPassword && "pr-12",
+              error &&
+                "border-red-500 focus-visible:border-red-500 focus-visible:ring-2 focus-visible:ring-red-500/30 dark:border-red-500 dark:focus-visible:border-red-500 dark:focus-visible:ring-red-500/30",
+              className,
+            )}
+            {...props}
+          />
+
+          {isPassword && onToggleVisibility && (
+            <button
+              type="button"
+              onClick={onToggleVisibility}
+              aria-label={isVisible ? "Hide password" : "Show password"}
+              className="absolute right-3.5 flex h-full items-center justify-center text-gray-500 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:text-white"
+            >
+              {isVisible ? (
+                <Eye className="size-5" aria-hidden="true" />
+              ) : (
+                <EyeOff className="size-5" aria-hidden="true" />
+              )}
+            </button>
           )}
-          {...props}
-        />
+        </div>
       </label>
 
       {error && (
@@ -94,43 +120,16 @@ export function RegisterField({
 type PasswordFieldProps = Omit<RegisterFieldProps, "type">;
 
 export function PasswordField(props: PasswordFieldProps) {
-  const t = useTranslations("Register.fields");
   const [isVisible, setIsVisible] = useState(false);
-  const isFigma = props.density === "figma";
 
   return (
-    <div className="relative">
-      <RegisterField
-        {...props}
-        type={isVisible ? "text" : "password"}
-        className={cn("pr-14", props.className)}
-      />
-
-      <button
-        type="button"
-        aria-label={
-          isVisible ? t("hidePassword") : t("showPassword")
-        }
-        aria-pressed={isVisible}
-        onClick={() => setIsVisible((visible) => !visible)}
-        className={cn(
-          "absolute bottom-0 right-0 grid place-items-center",
-          "text-[#030712] transition-colors hover:text-primary",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          "dark:text-white dark:hover:text-primary",
-          isFigma
-            ? "size-[47px] rounded-r-[12px]"
-            : "size-11 rounded-r-[11px]",
-          props.error && "bottom-5",
-        )}
-      >
-        {isVisible ? (
-          <Eye className="size-5" aria-hidden="true" />
-        ) : (
-          <EyeOff className="size-5" aria-hidden="true" />
-        )}
-      </button>
-    </div>
+    <RegisterField
+      {...props}
+      type={isVisible ? "text" : "password"}
+      isPassword
+      isVisible={isVisible}
+      onToggleVisibility={() => setIsVisible((prev) => !prev)}
+    />
   );
 }
 
@@ -146,6 +145,7 @@ export function RegisterForm({
   const fieldsT = useTranslations("Register.fields");
   const formT = useTranslations("Register.form");
   const { login, loginHref } = useAuth();
+  const [formError, setFormError] = useState<string | null>(null);
 
   const {
     control,
