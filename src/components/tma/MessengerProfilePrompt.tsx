@@ -12,43 +12,37 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useUpdateMyPhoneNumberMutation } from "@/features/checkout/checkoutApi";
-import { updateTmaSession } from "@/lib/tma/tmaSession";
+import { useAuthenticateFacebookDeviceMutation, type FacebookWebAppAuthResponse } from "@/features/auth/facebookWebAppApi";
+import { getOrCreateDeviceId } from "@/lib/tma/messengerDeviceStore";
 import { profileErrorMessage } from "@/lib/tma/profileErrorMessage";
 
-/** Best-effort split of one name field into first/last for the backend's separate columns. */
-function splitName(fullName: string): { firstName: string; lastName: string } {
-  const trimmed = fullName.trim();
-  const spaceIndex = trimmed.indexOf(" ");
-  if (spaceIndex === -1) return { firstName: trimmed, lastName: "" };
-  return { firstName: trimmed.slice(0, spaceIndex), lastName: trimmed.slice(spaceIndex + 1) };
-}
-
 /**
- * Messenger's identity is a lot thinner than Telegram's: `getContext()` only
- * ever hands back a psid, and the Graph API name lookup that fills in for it
- * quietly falls back to the literal placeholder "Facebook User" whenever
- * Meta's permissions don't allow reading the real profile — which is common.
- * So unlike Telegram's checkout (phone only), Messenger asks for both name
- * and phone, once, right before the customer can add to cart or pay.
+ * Messenger's identity is a lot thinner than Telegram's: `getContext()` /
+ * `signed_request` turned out to be unreliable in practice (Facebook-side
+ * errors that never resolved), and even when it worked the Graph API name
+ * lookup behind it quietly fell back to the literal placeholder "Facebook
+ * User" whenever Meta's permissions didn't allow reading the real profile —
+ * common. So the Mini App no longer attempts Facebook identity at all: this
+ * asks for name and phone directly, once per device, right before the
+ * customer can add to cart or pay, and registers a fresh session via
+ * `/facebook-webapp/device-auth` (no prior token needed — there isn't one
+ * yet the first time this runs).
  */
 export function MessengerProfilePrompt({
   open,
   businessId,
-  defaultName,
   onSaved,
   onOpenChange,
 }: {
   open: boolean;
   businessId: string;
-  defaultName?: string;
-  onSaved: (data: { fullName: string; phoneNumber: string }) => void;
+  onSaved: (result: FacebookWebAppAuthResponse) => void;
   onOpenChange: (open: boolean) => void;
 }) {
-  const [name, setName] = useState(defaultName && defaultName !== "Facebook User" ? defaultName : "");
+  const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [updateProfile, { isLoading }] = useUpdateMyPhoneNumberMutation();
+  const [authenticateDevice, { isLoading }] = useAuthenticateFacebookDeviceMutation();
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -61,11 +55,14 @@ export function MessengerProfilePrompt({
     }
 
     setError(null);
-    const { firstName, lastName } = splitName(trimmedName);
     try {
-      await updateProfile({ businessId, phoneNumber: trimmedPhone, firstName, lastName }).unwrap();
-      updateTmaSession({ phoneNumber: trimmedPhone, fullName: trimmedName });
-      onSaved({ fullName: trimmedName, phoneNumber: trimmedPhone });
+      const result = await authenticateDevice({
+        businessId,
+        deviceId: getOrCreateDeviceId(),
+        fullName: trimmedName,
+        phoneNumber: trimmedPhone,
+      }).unwrap();
+      onSaved(result);
     } catch (cause) {
       setError(profileErrorMessage(cause, "Couldn't save your info — check your connection and try again."));
     }

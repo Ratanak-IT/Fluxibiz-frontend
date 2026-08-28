@@ -50,7 +50,9 @@ export default function CheckoutPage({
         isLoading: activeLoading,
         refetch: refetchActive,
     } = useGetActiveCheckoutQuery();
-    const { data: myProfile } = useGetMyCustomerProfileQuery();
+    // Messenger has its own gate (MessengerProfileGate, device-based) —
+    // this call would just 401 for a not-yet-registered Messenger visitor.
+    const { data: myProfile } = useGetMyCustomerProfileQuery(undefined, { skip: isMessenger });
 
     const [createCheckout, { isLoading: creating }] = useCreateCheckoutMutation();
     const [cancelCheckout, { isLoading: cancelling }] = useCancelCheckoutMutation();

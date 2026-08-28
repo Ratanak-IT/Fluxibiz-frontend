@@ -7,6 +7,14 @@ export interface FacebookWebAppAuthRequest {
   signedRequest: string;
 }
 
+
+export interface FacebookDeviceAuthRequest {
+  businessId: string;
+  deviceId: string;
+  fullName: string;
+  phoneNumber: string;
+}
+
 export interface FacebookWebAppAuthResponse {
   token: string;
   refreshToken: string;
@@ -16,7 +24,7 @@ export interface FacebookWebAppAuthResponse {
   logoUrl?: string;
   customerId: string;
   globalCustomerId: string;
-  psid: string;
+  externalId: string;
   fullName: string;
   phoneNumber?: string;
   email?: string;
@@ -51,7 +59,21 @@ export const facebookWebAppApi = createApi({
         body,
       }),
     }),
+
+    authenticateFacebookDevice: builder.mutation<
+      FacebookWebAppAuthResponse,
+      FacebookDeviceAuthRequest
+    >({
+      query: (body) => ({
+        url: "/facebook-webapp/device-auth",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useAuthenticateFacebookWebAppMutation } = facebookWebAppApi;
+export const {
+  useAuthenticateFacebookWebAppMutation,
+  useAuthenticateFacebookDeviceMutation,
+} = facebookWebAppApi;

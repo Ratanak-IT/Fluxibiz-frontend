@@ -8,6 +8,8 @@ import { ChevronRight, Receipt, User as UserIcon } from "lucide-react";
 import { getTmaSession, updateTmaSession, type TmaSession } from "@/lib/tma/tmaSession";
 import { useUpdateMyProfileMutation } from "@/features/auth/telegramWebAppApi";
 import { profileErrorMessage } from "@/lib/tma/profileErrorMessage";
+import { useIsMessenger } from "@/lib/tma/useIsMessenger";
+import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 
 const GENDER_OPTIONS = [
   { value: "Male", label: "Male" },
@@ -29,6 +31,8 @@ function splitName(fullName: string): { firstName: string; lastName: string } {
  * avatar stays read-only since it isn't something set here.
  */
 export default function TmaMePage() {
+  const isMessenger = useIsMessenger();
+  const { queryParam } = useMiniAppMode();
   const [session, setSession] = useState<TmaSession | null>(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -124,12 +128,14 @@ export default function TmaMePage() {
         </div>
         <div>
           <p className="text-base font-semibold text-foreground">{session.fullName}</p>
-          <p className="text-xs text-muted-foreground">Signed in with Telegram</p>
+          <p className="text-xs text-muted-foreground">
+            Signed in with {isMessenger ? "Messenger" : "Telegram"}
+          </p>
         </div>
       </div>
 
       <Link
-        href={`/store/${session.businessSlug}/history?tma=true`}
+        href={`/store/${session.businessSlug}/history?${queryParam}`}
         className="flex items-center justify-between rounded-xl border border-input bg-background px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
       >
         <span className="flex items-center gap-2.5">
