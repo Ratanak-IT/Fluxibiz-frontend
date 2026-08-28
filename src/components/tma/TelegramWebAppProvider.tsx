@@ -5,14 +5,12 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import { useAuthenticateTelegramWebAppMutation } from "@/features/auth/telegramWebAppApi";
-import { setTmaSession, updateTmaSession } from "@/lib/tma/tmaSession";
+import { setTmaSession } from "@/lib/tma/tmaSession";
 import { TmaNavbar } from "@/components/tma/TmaNavbar";
 import { TmaBottomTabBar } from "@/components/tma/TmaBottomTabBar";
-import { CompleteProfileScreen } from "@/components/tma/CompleteProfileScreen";
 
 type AuthState =
   | { status: "pending" }
-  | { status: "needs-profile"; businessId: string; businessName: string; fullName: string; photoUrl?: string }
   | { status: "ready" }
   | { status: "error"; message: string };
 
@@ -111,17 +109,7 @@ export default function TelegramWebAppProvider({
           address: result.address,
         });
 
-        if (!result.profileComplete) {
-          setAuthState({
-            status: "needs-profile",
-            businessId: result.businessId,
-            businessName: result.businessName,
-            fullName: result.fullName,
-            photoUrl: result.photoUrl,
-          });
-        } else {
-          setAuthState({ status: "ready" });
-        }
+        setAuthState({ status: "ready" });
       })
       .catch(() => {
         setAuthState({
@@ -149,21 +137,6 @@ export default function TelegramWebAppProvider({
       <div className="flex min-h-screen items-center justify-center whitespace-pre-wrap wrap-break-word bg-background px-6 text-center text-sm text-muted-foreground">
         {authState.message}
       </div>
-    );
-  }
-
-  if (authState.status === "needs-profile") {
-    return (
-      <CompleteProfileScreen
-        businessId={authState.businessId}
-        businessName={authState.businessName}
-        fullName={authState.fullName}
-        photoUrl={authState.photoUrl}
-        onComplete={(data) => {
-          updateTmaSession(data);
-          setAuthState({ status: "ready" });
-        }}
-      />
     );
   }
 

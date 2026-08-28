@@ -26,6 +26,8 @@ import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 import { useIsTma } from "@/lib/tma/useIsTma";
+import { getTmaSession } from "@/lib/tma/tmaSession";
+import { PhoneNumberPrompt } from "@/components/tma/PhoneNumberPrompt";
 
 export default function CheckoutPage({
     params,
@@ -53,6 +55,7 @@ export default function CheckoutPage({
     const [error, setError] = useState<string | null>(null);
     const [paid, setPaid] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("KHQR");
+    const [showPhonePrompt, setShowPhonePrompt] = useState(false);
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
@@ -78,6 +81,14 @@ export default function CheckoutPage({
             setSession(pending);
         }
     }, [pending, pendingIsThisStore, session, cancelledOrderId]);
+
+    const handlePayClick = () => {
+        if (isTma && !getTmaSession()?.phoneNumber) {
+            setShowPhonePrompt(true);
+            return;
+        }
+        startPayment();
+    };
 
     const startPayment = async () => {
         if (!store) return;
@@ -334,7 +345,7 @@ export default function CheckoutPage({
             {/* Submit Button */}
             {!session && (
                 <Button
-                    onClick={startPayment}
+                    onClick={handlePayClick}
                     disabled={creating || !!blockedBy || store?.open === false}
                     className="mt-6 h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white hover:bg-green-700 disabled:bg-neutral-300 disabled:text-neutral-500 dark:bg-primary dark:text-primary-foreground"
                 >
@@ -366,6 +377,18 @@ export default function CheckoutPage({
                         onRegenerate={startPayment}
                     />
                 </div>
+            )}
+
+            {isTma && store && (
+                <PhoneNumberPrompt
+                    open={showPhonePrompt}
+                    businessId={store.businessId}
+                    onOpenChange={setShowPhonePrompt}
+                    onSaved={() => {
+                        setShowPhonePrompt(false);
+                        startPayment();
+                    }}
+                />
             )}
 
             {paid && (
