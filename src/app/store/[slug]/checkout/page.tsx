@@ -27,7 +27,7 @@ import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
-import { useIsMessenger } from "@/lib/tma/useIsMessenger";
+import { useIsMessengerContext } from "@/lib/tma/useIsMessengerContext";
 import { useRequireMessengerProfile } from "@/lib/tma/MessengerProfileGate";
 import { PhoneNumberPrompt } from "@/components/tma/PhoneNumberPrompt";
 
@@ -40,11 +40,11 @@ export default function CheckoutPage({
     const router = useRouter();
     const { slug } = use(params);
     const { isMiniApp, queryParam } = useMiniAppMode();
-    const isMessenger = useIsMessenger();
     const requireMessengerProfile = useRequireMessengerProfile();
 
     const { data: cart, isLoading: cartLoading } = useGetCartQuery();
     const { data: publicStore } = useGetPublicStoreQuery(slug, { skip: !slug });
+    const isMessenger = useIsMessengerContext(publicStore?.id);
     const {
         data: active,
         isLoading: activeLoading,
