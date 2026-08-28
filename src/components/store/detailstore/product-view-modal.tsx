@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
-import { MenuItemData, markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { MenuItemData, markItemOutOfStock, isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import {
   StorefrontItemResponse,
   ItemVariant,
@@ -15,6 +15,8 @@ import {
   isVariantSelectable,
   sellableAddOns,
   isStorefrontOpen,
+  remainingStock,
+  resolveItemPrices,
 } from "@/lib/type/storeType";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import { useTodayHoursLabel } from "./store-hours";
@@ -119,6 +121,28 @@ export default function ProductQuickViewModal({
       return;
     }
 
+    // Check stock availability
+    const remaining = remainingStock(variants.length > 0 ? selectedVariant : product);
+    const packFactor = selectedPack ? Number(selectedPack.factor) || 1 : 1;
+    const maxQuantity = remaining === null ? null : Math.floor(remaining / packFactor);
+    const outOfStock =
+      (variants.length > 0
+        ? !isVariantSelectable(selectedVariant)
+        : isItemOutOfStock(product)) ||
+      (remaining !== null &&
+        selectedPack !== null &&
+        remaining < packFactor);
+
+    if (outOfStock) {
+      toast.error(t("detail.outOfStock") || "Product is out of stock");
+      return;
+    }
+
+    if (maxQuantity !== null && quantity > maxQuantity) {
+      toast.error(`Only ${maxQuantity} item(s) left in stock`);
+      return;
+    }
+
     // Only the ones this item still sells, priced from its own library; the
     // server checks the same thing rather than trusting the tick.
     const extras = sellableAddOns(product).filter((addOn) =>
@@ -128,6 +152,9 @@ export default function ProductQuickViewModal({
       (total, addOn) => total + Number(addOn.price ?? 0),
       0,
     );
+
+    const { sellingPrice, compareAtPrice: resolvedCompareAt, hasDiscount } = resolveItemPrices(product, selectedVariant);
+    const baseUnitPrice = selectedPack ? Number(selectedPack.price) : sellingPrice;
 
     try {
       await addToCartMutation({
@@ -142,10 +169,8 @@ export default function ProductQuickViewModal({
         addOnIds: extras.map((addOn) => addOn.id),
         itemDetails: {
           name: product.name,
-          price:
-            Number(
-              selectedPack?.price ?? selectedVariant?.price ?? product.price ?? 0,
-            ) + extrasPerUnit,
+          price: baseUnitPrice + extrasPerUnit,
+          compareAtPrice: hasDiscount ? resolvedCompareAt : undefined,
           imageUrl: primaryItemImage(product),
           currency: currency || item?.currency,
           addOns: extras.map((addOn) => ({

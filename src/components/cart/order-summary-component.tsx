@@ -13,15 +13,21 @@ import { computeTax, formatMoney, type StoreCart } from "@/lib/type/cartType";
 export default function OrderSummaryComponent({
     store,
     currency,
+    storeItems = [],
 }: {
     store: StoreCart;
     currency?: string;
+    storeItems?: any[];
 }) {
     const t = useTranslations("Cart");
     const activeCurrency = currency || store.currency;
     const discount = store.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0);
     const netAmount = Math.max(0, store.subtotal - discount);
     const freeItemCount = store.items.reduce((acc, item) => acc + (item.freeQuantity ?? 0), 0);
+    // `store.subtotal` is already the pre-discount gross total (netAmount above
+    // is what subtracts the discount from it) — the "subtotal" row shows this
+    // number as-is, with the discount broken out on its own line below.
+    const originalSubtotal = store.subtotal;
 
     const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
     const { taxAmount, total } = computeTax(
@@ -64,7 +70,7 @@ export default function OrderSummaryComponent({
                 <div className="flex items-center justify-between">
                     <span>{t("subtotal")}</span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
-                        {formatMoney(store.subtotal, activeCurrency)}
+                        {formatMoney(originalSubtotal, activeCurrency)}
                     </span>
                 </div>
 

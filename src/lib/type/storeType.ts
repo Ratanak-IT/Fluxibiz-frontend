@@ -805,3 +805,65 @@ export interface ItemResponse {
     images?: ItemImage[];
     status?: string;
 }
+
+/**
+ * Resolves the effective selling price and compare-at price for any product/variant/line item.
+ *
+ * Guarantees:
+ * - `sellingPrice`: Always the lower discount price (e.g. 1.5) when a discount exists.
+ * - `compareAtPrice`: Always the higher original price (e.g. 2.0) when a discount exists, or undefined if no discount.
+ */
+export function resolveItemPrices(
+    item?: {
+        price?: number | string | null;
+        compareAtPrice?: number | string | null;
+        variants?: { price?: number | string | null; compareAtPrice?: number | string | null }[] | null;
+    } | null,
+    selectedVariant?: { price?: number | string | null; compareAtPrice?: number | string | null } | null
+): {
+    sellingPrice: number;
+    compareAtPrice?: number;
+    hasDiscount: boolean;
+    discountPercent?: number;
+} {
+    if (!item) {
+        return { sellingPrice: 0, hasDiscount: false };
+    }
+
+    const rawVariantPrice = selectedVariant?.price !== undefined && selectedVariant?.price !== null && Number(selectedVariant.price) > 0
+        ? Number(selectedVariant.price)
+        : null;
+
+    const rawItemPrice = item.price !== undefined && item.price !== null
+        ? Number(item.price)
+        : 0;
+
+    const basePrice = rawVariantPrice ?? rawItemPrice;
+
+    const rawVariantCompare = selectedVariant?.compareAtPrice !== undefined && selectedVariant?.compareAtPrice !== null && Number(selectedVariant.compareAtPrice) > 0
+        ? Number(selectedVariant.compareAtPrice)
+        : null;
+
+    const rawItemCompare = item.compareAtPrice !== undefined && item.compareAtPrice !== null && Number(item.compareAtPrice) > 0
+        ? Number(item.compareAtPrice)
+        : null;
+
+    const rawCompare = rawVariantCompare ?? rawItemCompare;
+
+    if (rawCompare !== null && rawCompare > 0 && rawCompare !== basePrice) {
+        const sellingPrice = Math.min(basePrice, rawCompare);
+        const compareAtPrice = Math.max(basePrice, rawCompare);
+        const discountPercent = Math.round(((compareAtPrice - sellingPrice) / compareAtPrice) * 100);
+        return {
+            sellingPrice,
+            compareAtPrice,
+            hasDiscount: compareAtPrice > sellingPrice,
+            discountPercent,
+        };
+    }
+
+    return {
+        sellingPrice: basePrice,
+        hasDiscount: false,
+    };
+}

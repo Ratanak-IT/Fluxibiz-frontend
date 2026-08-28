@@ -65,6 +65,26 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      {
+        // The Telegram Mini App and Messenger webview both load these pages
+        // as a business's own storefront — Messenger's Extensions bridge
+        // (MessengerExtensions.getContext(), used to sign a Messenger
+        // shopper in) needs the page framable by Messenger, but the blanket
+        // `X-Frame-Options: DENY` above blocks that silently: the page still
+        // *loads* fine (DENY only stops framing, not top-level navigation),
+        // so this only ever surfaced as getContext() failing with "Messenger
+        // Extensions are not enabled" — nothing about frames. Modern browsers
+        // prefer a CSP `frame-ancestors` over `X-Frame-Options` when both are
+        // present, so this narrows the exception to just these routes
+        // without loosening it site-wide.
+        source: "/store/:path*",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'self' https://*.facebook.com https://*.messenger.com;",
+          },
+        ],
+      },
     ];
   },
 

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Loader2, RefreshCw, ShieldCheck, X } from "lucide-react";
+import { Check, Copy, Download, Loader2, QrCode, RefreshCw, ShieldCheck, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
     checkoutErrorMessage,
     type CheckoutSession,
 } from "@/lib/type/checkoutType";
+import { cn } from "@/lib/utils";
 
 const POLL_INTERVAL_MS = 2000;
 
@@ -59,8 +60,8 @@ export default function KhqrPaymentComponent({
     regenerating: boolean;
     overrideCurrency?: string;
 }) {
-  const t = useTranslations("Checkout");
-  const currency = overrideCurrency || session.currency;
+    const t = useTranslations("Checkout");
+    const currency = overrideCurrency || session.currency;
     const [phase, setPhase] = useState<Phase>("waiting");
     const [remaining, setRemaining] = useState(() => secondsLeft(session.expiresAt));
     const [notice, setNotice] = useState<string | null>(null);
@@ -152,11 +153,28 @@ export default function KhqrPaymentComponent({
         }
     };
 
+    const handleDownloadQr = () => {
+        if (!session.qrImage) return;
+        const link = document.createElement("a");
+        link.href = session.qrImage;
+        link.download = `KHQR_${session.invoiceNumber || "payment"}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success("QR code saved to device");
+    };
+
+    const handleCopyMd5 = () => {
+        const textToCopy = session.md5 || session.invoiceNumber;
+        if (!textToCopy) return;
+        navigator.clipboard.writeText(textToCopy);
+        toast.success("Payment code copied");
+    };
 
     if (phase === "paid") {
         return (
             <div className="rounded-2xl border border-green-200/80 bg-green-50/60 p-7 sm:p-8 text-center dark:border-green-900/60 dark:bg-green-950/30">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-600 shadow-md">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#00932A] shadow-md">
                     <Check className="h-7 w-7 text-white" strokeWidth={3} />
                 </div>
 
@@ -174,7 +192,7 @@ export default function KhqrPaymentComponent({
 
                 <div className="mt-6 flex justify-center">
                     <Link href={`/receipt/${session.orderId}`}>
-                        <Button className="h-11 w-full rounded-full bg-green-600 px-8 font-semibold text-white shadow-sm hover:bg-green-700 sm:w-auto dark:bg-primary dark:text-primary-foreground">
+                        <Button className="h-11 w-full rounded-full bg-[#00932A] px-8 font-semibold text-white shadow-sm hover:bg-[#007a22] sm:w-auto">
                             View E-Receipt
                         </Button>
                     </Link>
@@ -182,7 +200,6 @@ export default function KhqrPaymentComponent({
             </div>
         );
     }
-
 
     if (phase === "cancelled") {
         return (
@@ -198,89 +215,127 @@ export default function KhqrPaymentComponent({
         );
     }
 
-
     const expired = phase === "expired";
-    const totalWindow = 5 * 60;
+    const totalWindow = 3 * 60;
     const progress = Math.min(100, Math.max(0, (remaining / totalWindow) * 100));
 
-    return (
-        <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
-            <div className="flex items-center justify-between gap-3">
-                <div>
-                    <h2 className="text-lg font-bold text-neutral-900 dark:text-card-foreground">
-                        Scan to pay
-                    </h2>
+    const isRiel = currency?.toUpperCase() === "KHR" || currency?.toUpperCase() === "RIEL";
+    const currencySymbol = isRiel ? "៛" : "$";
+    const formattedAmount = isRiel
+        ? Number(session.total).toLocaleString()
+        : Number(session.total).toFixed(2);
 
-                    <p className="mt-1 text-sm text-neutral-500 dark:text-muted-foreground">
-                        {t("bankingAppDescription")}
-                    </p>
+    return (
+        <div className="rounded-3xl border border-neutral-200/80 bg-white p-6 shadow-xl sm:p-7 dark:border-neutral-800 dark:bg-card">
+            {/* Header */}
+            <div className="flex items-center justify-between gap-3 pb-5 border-b border-neutral-100 dark:border-neutral-800/80">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-[#E11B22] dark:bg-red-950/40">
+                        <QrCode className="h-5 w-5" />
+                    </div>
+                    <div>
+                        <h2 className="text-base font-bold text-neutral-900 dark:text-card-foreground">
+                            Scan to pay
+                        </h2>
+                        <p className="text-xs text-neutral-500 dark:text-muted-foreground">
+                            {t("bankingAppDescription")}
+                        </p>
+                    </div>
                 </div>
 
-                <span className="shrink-0 rounded-full bg-neutral-100 px-3 py-1 font-mono text-xs font-semibold text-neutral-600 dark:bg-background dark:text-muted-foreground">
+                <span className="shrink-0 rounded-lg bg-neutral-100 px-3 py-1 font-mono text-xs font-semibold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
                     {session.invoiceNumber}
                 </span>
             </div>
 
-            {/* QR Code Container with official KHQR Red Label */}
+            {/* Official Bakong KHQR Stand Card */}
             <div className="mt-6 flex flex-col items-center">
-                <div className="relative flex flex-col items-center overflow-hidden rounded-2xl bg-white border border-neutral-200/80 p-4 shadow-xs dark:border-neutral-800 dark:bg-background">
-                    {/* Official KHQR Red Badge Header */}
-                    <div className="mb-3 flex w-full items-center justify-center rounded-lg bg-red-600 px-4 py-1.5 shadow-xs">
-                        <span className="font-sans text-xs font-black tracking-widest text-white uppercase">
+                <div className="relative w-full max-w-[320px] overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-xl dark:border-neutral-800 dark:bg-white dark:text-neutral-900">
+                    {/* KHQR Official Red Top Banner */}
+                    <div className="relative flex h-14 w-full items-center justify-center bg-[#E11B22] px-6 rounded-t-2xl">
+                        <span className="font-sans text-xl font-extrabold tracking-widest text-white uppercase">
                             KHQR
                         </span>
                     </div>
 
-                    {session.qrImage ? (
-                        <Image
-                            src={session.qrImage}
-                            alt={t("qrAlt", { amount: formatMoney(session.total, currency), storeName: session.storeName })}
-                            width={240}
-                            height={240}
-                            unoptimized
-                            className={expired ? "opacity-20 blur-[2px]" : ""}
-                        />
-                    ) : (
-                        <div className="flex h-60 w-60 items-center justify-center text-sm text-neutral-400">
-                            No QR available
-                        </div>
-                    )}
+                    {/* Merchant & Amount Info Section */}
+                    <div className="px-6 pt-5 pb-3 bg-white">
+                        <p className="text-xs font-medium text-neutral-500">
+                            {session.storeName}
+                        </p>
 
-                    {expired && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="rounded-full bg-neutral-900/90 px-4 py-2 text-sm font-semibold text-white">
-                                QR expired
+                        <div className="mt-1 flex items-baseline gap-1.5">
+                            <span className="text-3xl font-black text-neutral-900 tracking-tight">
+                                {formattedAmount}
+                            </span>
+                            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                                {currency}
                             </span>
                         </div>
-                    )}
+                    </div>
+
+                    {/* Dashed Separator */}
+                    <div className="px-6 bg-white">
+                        <div className="w-full border-b border-dashed border-neutral-300" />
+                    </div>
+
+                    {/* QR Code Canvas with Sleek Official Center Currency Icon ($ / ៛) */}
+                    <div className="relative flex flex-col items-center bg-white p-6">
+                        {session.qrImage ? (
+                            <div className="relative flex items-center justify-center rounded-xl bg-white p-1">
+                                <Image
+                                    src={session.qrImage}
+                                    alt={t("qrAlt", { amount: formatMoney(session.total, currency), storeName: session.storeName })}
+                                    width={240}
+                                    height={240}
+                                    unoptimized
+                                    className={cn("h-60 w-60 object-contain", expired && "opacity-15 blur-[3px]")}
+                                />
+
+                                {/* Black Circular Currency Badge Overlay ($ / ៛) */}
+                                {!expired && (
+                                    <div className="absolute top-1/2 left-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black text-white border-2 border-white shadow-md font-extrabold text-sm select-none pointer-events-none">
+                                        {currencySymbol}
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="flex h-60 w-60 items-center justify-center text-sm text-neutral-400">
+                                No QR available
+                            </div>
+                        )}
+
+                        {expired && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/85 backdrop-blur-xs">
+                                <span className="rounded-full bg-[#E11B22] px-4 py-1.5 text-xs font-bold text-white shadow-md">
+                                    QR Expired
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
-
-                <p className="mt-5 text-3xl font-bold text-green-600 dark:text-primary">
-                    {formatMoney(session.total, currency)}
-                </p>
-
-                <p className="mt-1 text-sm font-medium text-neutral-500 dark:text-muted-foreground">
-                    {t("payTo", { storeName: session.storeName })}
-                </p>
             </div>
 
-            {/* Timer Status Bar in Accent Red Color */}
+            {/* Live Polling Status & Timer Bar */}
             {!expired && (
                 <div className="mt-6">
-                    <div className="flex items-center justify-between text-xs text-red-500 dark:text-red-400">
-                        <span className="inline-flex items-center gap-1.5 font-medium">
-                            <Loader2 className="h-3.5 w-3.5 animate-spin text-red-500 dark:text-red-400 motion-reduce:animate-none" />
-                            Waiting for Bakong
+                    <div className="flex items-center justify-between text-xs text-neutral-700 dark:text-neutral-300">
+                        <span className="inline-flex items-center gap-2 font-medium">
+                            <span className="relative flex h-2.5 w-2.5">
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#E11B22]"></span>
+                            </span>
+                            Waiting for Bakong payment
                         </span>
 
-                        <span className="font-mono text-xs font-bold tabular-nums">
+                        <span className="font-mono text-xs font-bold tabular-nums text-red-600 dark:text-red-400">
                             {formatCountdown(remaining)}
                         </span>
                     </div>
 
-                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-red-100 dark:bg-red-950/40">
+                    <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
                         <div
-                            className="h-full rounded-full bg-red-500 transition-[width] duration-1000 ease-linear dark:bg-red-500"
+                            className="h-full rounded-full bg-gradient-to-r from-[#E11B22] to-amber-500 transition-[width] duration-1000 ease-linear"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
@@ -288,18 +343,18 @@ export default function KhqrPaymentComponent({
             )}
 
             {notice && (
-                <p className="mt-4 rounded-lg bg-amber-50 px-4 py-3 text-center text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+                <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-center text-xs font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
                     {notice}
                 </p>
             )}
 
-            {/* Actions */}
+            {/* Action Buttons */}
             <div className="mt-6 flex flex-col gap-3">
                 {expired ? (
                     <>
                         <Button
                             onClick={poll}
-                            className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
+                            className="h-12 w-full rounded-full bg-[#00932A] text-base font-bold text-white shadow-md hover:bg-[#007a22] transition-colors"
                         >
                             {t("alreadyPaidCheck")}
                         </Button>
@@ -307,7 +362,7 @@ export default function KhqrPaymentComponent({
                         <Button
                             onClick={onRegenerate}
                             disabled={regenerating}
-                            className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
+                            className="h-12 w-full rounded-full bg-[#00932A] text-base font-bold text-white shadow-md hover:bg-[#007a22] transition-colors"
                         >
                             {regenerating ? (
                                 <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
@@ -320,7 +375,7 @@ export default function KhqrPaymentComponent({
                 ) : (
                     <Button
                         onClick={poll}
-                        className="h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
+                        className="h-12 w-full rounded-full bg-[#00932A] text-base font-bold text-white shadow-md hover:bg-[#007a22] transition-all hover:scale-[1.01]"
                     >
                         {t("paidCheckNow")}
                     </Button>
@@ -330,7 +385,7 @@ export default function KhqrPaymentComponent({
                     variant="ghost"
                     onClick={handleCancel}
                     disabled={cancelling}
-                    className="h-10 w-full rounded-full text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950/20"
+                    className="h-10 w-full rounded-full text-sm font-semibold text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950/20"
                 >
                     {cancelling ? (
                         <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
@@ -341,8 +396,8 @@ export default function KhqrPaymentComponent({
                 </Button>
             </div>
 
-            <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-500 dark:text-muted-foreground">
-                <ShieldCheck className="h-3.5 w-3.5 text-neutral-400" />
+            <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-400 dark:text-neutral-500">
+                <ShieldCheck className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
                 Paid directly {t("payTo", { storeName: session.storeName })} through Bakong
             </p>
         </div>

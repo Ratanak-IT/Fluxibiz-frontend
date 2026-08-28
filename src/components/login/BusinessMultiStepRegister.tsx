@@ -25,8 +25,11 @@ export function BusinessMultiStepRegister() {
 
   const isSubmitting = isRegisteringUser;
 
+  const [formError, setFormError] = useState<string | null>(null);
+
   const handleNextStep = (data: UserRegisterFormData) => {
     setUserData(data);
+    setFormError(null);
     setStep(2);
 
     toast.info(t("businessDetailsInfo"));
@@ -36,6 +39,7 @@ export function BusinessMultiStepRegister() {
     user: UserRegisterFormData;
     business: BusinessRegisterFormData;
   }) => {
+    setFormError(null);
     try {
       const userPayload = {
         username: data.user.email,
@@ -84,6 +88,7 @@ export function BusinessMultiStepRegister() {
         errorMsg = apiError.data.detail;
       }
 
+      setFormError(errorMsg);
       toast.error(errorMsg);
     }
   };
@@ -100,9 +105,13 @@ export function BusinessMultiStepRegister() {
       {step === 2 && (
         <BusinessRegisterForm
           userData={userData}
-          onBack={() => setStep(1)}
+          onBack={() => {
+            setFormError(null);
+            setStep(1);
+          }}
           onSubmitFinal={handleFinalSubmit}
           isSubmitting={isSubmitting}
+          formError={formError}
         />
       )}
     </div>
