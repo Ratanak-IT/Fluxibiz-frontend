@@ -133,7 +133,7 @@ export default function MessengerWebAppProvider({
       (errCode, errMsg) => {
         setAuthState({
           status: "error",
-          message: `Open this from the shop's Messenger bot to sign in.\n\n[debug] getContext failed: ${errCode} ${errMsg}`,
+          message: `Open this from the shop's Messenger bot to sign in.\n\n[debug] getContext failed: ${errCode} ${errMsg}\n[debug] appId=${appId} href=${window.location.href}`,
         });
       }
     );
