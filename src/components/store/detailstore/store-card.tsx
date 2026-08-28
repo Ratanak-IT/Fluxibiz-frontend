@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Card } from "../../ui/card";
 import { Clock, ImageOff, MapPin, Phone } from "lucide-react";
-import { FaFacebookF } from "react-icons/fa6";
+import { TbBrandFacebook } from "react-icons/tb";
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import { StoreCardSkeleton } from "@/components/common/Skeletons";
 import { formatDistance, formatStoreTime } from "@/lib/type/storeType";
@@ -47,7 +47,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
             </div>
           </div>
 
-          {/* Content — 4 Vertical Sections with Equal Spacing */}
+         
           <div className="flex flex-1 flex-col justify-start gap-2.5 p-3.5 sm:px-6 sm:py-3.5 md:justify-between md:gap-0 min-w-0">
             {/* 1. Category & Promotion */}
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -114,10 +114,10 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                     href={store.facebookUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex shrink-0 items-center gap-1.5 text-[14px] sm:text-[15px] font-semibold text-[#1877F2] hover:underline"
+                    className="group/fb flex shrink-0 items-center gap-1.5 text-[14px] sm:text-[15px] font-medium text-muted-foreground transition-colors hover:text-primary"
                     title={store.facebookName || "Facebook Page"}
                   >
-                    <FaFacebookF className="h-3.5 w-3.5 shrink-0 text-[#1877F2]" />
+                    <TbBrandFacebook className="h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover/fb:text-primary" />
                     <span>{store.facebookName || "Facebook Page"}</span>
                   </a>
                 )}
