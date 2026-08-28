@@ -121,7 +121,7 @@ export default function ItemCardComponent({
 
                     {freeUnits > 0 ? (
                         <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                            🎁 {freeUnits} FREE{line.discountLabel ? ` · ${line.discountLabel}` : ""}
+                            {freeUnits} FREE{line.discountLabel ? ` · ${line.discountLabel}` : ""}
                         </p>
                     ) : line.discountAmount && line.discountAmount > 0 ? (
                         <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">

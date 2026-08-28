@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../.."
+		},
+		{
+			"path": "../../../../ipos-backend"
+		},
+		{
+			"path": "../../../../Static-Flow/ipos-business-dashboard"
+		}
+	],
+	"settings": {}
+}

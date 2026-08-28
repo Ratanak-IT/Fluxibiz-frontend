@@ -73,7 +73,7 @@ export default function OrderSummaryComponent({
                         {t("discount")}
                         {freeItemCount > 0 && (
                             <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                                🎁 {freeItemCount} FREE
+                                {freeItemCount} FREE
                             </span>
                         )}
                     </span>
