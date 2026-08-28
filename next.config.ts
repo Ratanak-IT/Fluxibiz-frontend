@@ -28,10 +28,6 @@ const securityHeaders = [
     value: "max-age=63072000; includeSubDomains; preload",
   },
   {
-    key: "X-Frame-Options",
-    value: "DENY",
-  },
-  {
     key: "X-Content-Type-Options",
     value: "nosniff",
   },
@@ -51,6 +47,19 @@ const securityHeaders = [
   },
 ];
 
+// Split out from the shared set above: Messenger genuinely embeds
+// /store/* pages in an iframe from facebook.com (confirmed by the
+// `fb_iframe_origin` param Facebook appends to the URL once it does) to run
+// its Extensions postMessage bridge. `X-Frame-Options: DENY` has no
+// wildcard/allowlist form — it can only ever mean "never frame this page" —
+// so leaving it on `/store/*` alongside a permissive CSP `frame-ancestors`
+// risked the two fighting each other (some engines honor whichever is
+// stricter rather than always preferring CSP as the spec says), which is
+// exactly the kind of thing that would surface as the frame loading but its
+// postMessage handshake failing with an opaque internal error. Every other
+// path keeps DENY.
+const frameOptionsDeny = { key: "X-Frame-Options", value: "DENY" };
+
 const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
@@ -60,6 +69,13 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: securityHeaders,
+      },
+      {
+        // Negative-lookahead matcher: every path except /store and its
+        // subpaths. Keeps the hard DENY everywhere the Telegram/Messenger
+        // Mini App doesn't need to be frameable.
+        source: "/:path((?!store).*)",
+        headers: [frameOptionsDeny],
       },
       {
         source: "/store/:path*",
