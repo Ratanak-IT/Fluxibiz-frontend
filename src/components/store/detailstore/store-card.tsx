@@ -115,10 +115,10 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group/fb flex shrink-0 items-center gap-1.5 text-[14px] sm:text-[15px] font-medium text-muted-foreground transition-colors hover:text-primary"
-                    title={store.facebookName || "Facebook Page"}
+                    title={store.facebookName || store.name || "Facebook Page"}
                   >
                     <TbBrandFacebook className="h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover/fb:text-primary" />
-                    <span>{store.facebookName || "Facebook Page"}</span>
+                    <span>{store.facebookName || store.name || "Facebook Page"}</span>
                   </a>
                 )}
               </div>

@@ -202,22 +202,60 @@ export default function StoreDetail({
   );
 
   const facebookInfo = useMemo(() => {
-    const parseFbSlug = (urlStr?: string): string => {
-      if (!urlStr) return "Facebook Page";
+    const storeFallbackName =
+      storeDetail?.name || storeDetail?.displayName || "Facebook Page";
+
+    const parseFbSlug = (urlStr?: string, explicitFallback?: string): string => {
+      const fallback = explicitFallback || storeFallbackName;
+      if (!urlStr) return fallback;
       try {
         const parsed = new URL(urlStr.startsWith("http") ? urlStr : `https://${urlStr}`);
-        const pathname = parsed.pathname.replace(/\/$/, "");
+        const pathname = parsed.pathname.replace(/\/+$/, "");
         const parts = pathname.split("/").filter(Boolean);
-        if (parts.length > 0) {
-          const last = parts[parts.length - 1];
-          if (last && !last.includes("profile.php") && last !== "pages") {
-            return decodeURIComponent(last);
-          }
+
+        if (parts.length === 0) return fallback;
+
+        // Filter out common Facebook path prefixes
+        const filteredParts = parts.filter(
+          (p) =>
+            !["pages", "category", "people", "p", "share", "groups", "watch", "events", "posts"].includes(
+              p.toLowerCase()
+            )
+        );
+
+        if (filteredParts.length === 0) return fallback;
+
+        // Find the first non-numeric, meaningful slug
+        let rawName = "";
+        for (const part of filteredParts) {
+          if (/^\d+$/.test(part)) continue;
+          if (part.toLowerCase().includes("profile.php")) continue;
+          rawName = part;
+          break;
+        }
+
+        if (!rawName) {
+          const queryName =
+            parsed.searchParams.get("name") || parsed.searchParams.get("page_name");
+          if (queryName) return decodeURIComponent(queryName);
+          return fallback;
+        }
+
+        let cleaned = decodeURIComponent(rawName);
+        // Remove trailing numeric IDs (e.g. Food-Shop-100083948574 -> Food-Shop)
+        cleaned = cleaned.replace(/-\d{5,}$/, "");
+        // Replace dashes and underscores with spaces for natural presentation
+        if (cleaned.includes("-") || cleaned.includes("_")) {
+          cleaned = cleaned.replace(/[-_]+/g, " ").trim();
+        }
+
+        if (cleaned && cleaned.toLowerCase() !== "profile.php") {
+          return cleaned;
         }
       } catch {
         // fallback
       }
-      return "Facebook Page";
+      return fallback;
     };
 
     // 0. Check response from /businesses/social-settings/facebook endpoint
