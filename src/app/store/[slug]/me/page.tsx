@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Receipt, User as UserIcon } from "lucide-react";
@@ -30,7 +30,12 @@ function splitName(fullName: string): { firstName: string; lastName: string } {
  * (they might type it wrong once, move, or change their mind). Telegram's
  * avatar stays read-only since it isn't something set here.
  */
-export default function TmaMePage() {
+export default function TmaMePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = use(params);
   const isMessenger = useIsMessenger();
   const { queryParam } = useMiniAppMode();
   const [session, setSession] = useState<TmaSession | null>(null);
@@ -100,9 +105,24 @@ export default function TmaMePage() {
   }
 
   if (!session) {
+    // A Messenger visitor who hasn't added to cart or checked out yet has
+    // no session at all — `getTmaSession()` reads synchronously, so this
+    // isn't a "still loading" state, it's genuinely "nothing to show yet."
+    // Telegram always authenticates before browsing starts, so it never
+    // lands here.
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-muted-foreground">
-        Loading...
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 px-6 text-center">
+        <UserIcon className="size-8 text-muted-foreground" />
+        <p className="text-sm font-medium text-foreground">No profile yet</p>
+        <p className="text-sm text-muted-foreground">
+          Add something to your cart or start checkout to set up your profile.
+        </p>
+        <Link
+          href={`/store/${slug}?${queryParam}`}
+          className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+        >
+          Back to shop
+        </Link>
       </div>
     );
   }

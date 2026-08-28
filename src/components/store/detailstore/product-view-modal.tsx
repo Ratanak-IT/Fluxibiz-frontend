@@ -19,6 +19,7 @@ import {
   resolveItemPrices,
 } from "@/lib/type/storeType";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
+import { useIsMessenger } from "@/lib/tma/useIsMessenger";
 import { useRequireMessengerProfile } from "@/lib/tma/MessengerProfileGate";
 import { useTodayHoursLabel } from "./store-hours";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
@@ -55,6 +56,7 @@ export default function ProductQuickViewModal({
 
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
   const { isAuthenticated, status: authStatus, login } = useAuth();
+  const isMessenger = useIsMessenger();
   const requireMessengerProfile = useRequireMessengerProfile();
 
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
@@ -107,7 +109,12 @@ export default function ProductQuickViewModal({
       return;
     }
 
-    if (!isAuthenticated && authStatus !== "loading") {
+    // Messenger never goes through the regular Keycloak OAuth login — a
+    // brand-new visitor has no tmaSession token yet (one isn't created
+    // until they register via the MessengerProfileGate popup below), so
+    // `isAuthenticated` would otherwise read false here and bounce them to
+    // the Keycloak login page for no reason.
+    if (!isMessenger && !isAuthenticated && authStatus !== "loading") {
       login();
       return;
     }

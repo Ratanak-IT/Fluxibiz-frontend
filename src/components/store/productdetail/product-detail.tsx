@@ -16,6 +16,7 @@ import {
   type ChannelSchedule,
 } from "@/lib/type/storeType";
 import { useAuth } from "@/features/auth/useAuth";
+import { useIsMessenger } from "@/lib/tma/useIsMessenger";
 import { useRequireMessengerProfile } from "@/lib/tma/MessengerProfileGate";
 import { ProductStorefrontUI } from "./product-storefront-ui";
 
@@ -40,6 +41,7 @@ export default function ProductDetail({
 }: ProductDetailProps) {
   const t = useTranslations("Store");
   const { isAuthenticated, login } = useAuth();
+  const isMessenger = useIsMessenger();
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
   const requireMessengerProfile = useRequireMessengerProfile();
 
@@ -106,7 +108,12 @@ export default function ProductDetail({
       return;
     }
 
-    if (!isAuthenticated) {
+    // Messenger never goes through the regular Keycloak OAuth login — a
+    // brand-new visitor has no tmaSession token yet (one isn't created
+    // until they register via the MessengerProfileGate popup below), so
+    // `isAuthenticated` would otherwise read false here and bounce them to
+    // the Keycloak login page for no reason.
+    if (!isMessenger && !isAuthenticated) {
       toast.error(t("errors.signInRequired"));
       login();
       return;
