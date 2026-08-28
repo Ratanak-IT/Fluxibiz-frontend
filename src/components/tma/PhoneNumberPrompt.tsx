@@ -12,15 +12,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useUpdateMyProfileMutation } from "@/features/auth/telegramWebAppApi";
+import { useUpdateMyPhoneNumberMutation } from "@/features/checkout/checkoutApi";
 import { updateTmaSession } from "@/lib/tma/tmaSession";
 import { profileErrorMessage } from "@/lib/tma/profileErrorMessage";
 
 /**
- * Mini App checkout no longer blocks first entry on a full profile form —
- * a phone number is the only thing the shop actually needs to fulfill an
- * order, so it's collected here, once, right before "Pay"/"Confirm Order"
- * instead of on first open.
+ * Shown right before "Pay"/"Confirm order" — on any channel (web, Telegram,
+ * Messenger) — whenever the customer has no phone number on file yet. Uses
+ * `checkoutApi`'s mutation (auth via `applyTmaAuthHeader`: bearer token in a
+ * Mini App webview, cookie session on the regular site) rather than the
+ * Telegram-only `/me/profile` client, so the same popup works everywhere.
  */
 export function PhoneNumberPrompt({
   open,
@@ -35,7 +36,7 @@ export function PhoneNumberPrompt({
 }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [updateMyProfile, { isLoading }] = useUpdateMyProfileMutation();
+  const [updatePhoneNumber, { isLoading }] = useUpdateMyPhoneNumberMutation();
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -47,7 +48,7 @@ export function PhoneNumberPrompt({
 
     setError(null);
     try {
-      await updateMyProfile({ businessId, phoneNumber: trimmed }).unwrap();
+      await updatePhoneNumber({ businessId, phoneNumber: trimmed }).unwrap();
       updateTmaSession({ phoneNumber: trimmed });
       onSaved(trimmed);
     } catch (cause) {

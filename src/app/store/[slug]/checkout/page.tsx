@@ -15,6 +15,7 @@ import {
     useCancelCheckoutMutation,
     useCreateCheckoutMutation,
     useGetActiveCheckoutQuery,
+    useGetMyCustomerProfileQuery,
 } from "@/features/checkout/checkoutApi";
 import { formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
@@ -25,8 +26,7 @@ import {
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
-import { useIsTma } from "@/lib/tma/useIsTma";
-import { getTmaSession } from "@/lib/tma/tmaSession";
+import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 import { PhoneNumberPrompt } from "@/components/tma/PhoneNumberPrompt";
 
 export default function CheckoutPage({
@@ -37,7 +37,7 @@ export default function CheckoutPage({
   const t = useTranslations("Checkout");
     const router = useRouter();
     const { slug } = use(params);
-    const isTma = useIsTma();
+    const { isMiniApp, queryParam } = useMiniAppMode();
 
     const { data: cart, isLoading: cartLoading } = useGetCartQuery();
     const { data: publicStore } = useGetPublicStoreQuery(slug, { skip: !slug });
@@ -46,6 +46,7 @@ export default function CheckoutPage({
         isLoading: activeLoading,
         refetch: refetchActive,
     } = useGetActiveCheckoutQuery();
+    const { data: myProfile } = useGetMyCustomerProfileQuery();
 
     const [createCheckout, { isLoading: creating }] = useCreateCheckoutMutation();
     const [cancelCheckout, { isLoading: cancelling }] = useCancelCheckoutMutation();
@@ -60,10 +61,11 @@ export default function CheckoutPage({
     const store = cart?.stores.find((s) => s.slug === slug);
 
     // The general /cart page has no TMA chrome (no TmaNavbar/TmaBottomTabBar
-    // — it isn't nested under /store/[slug]) and stranding a Telegram
-    // shopper there was exactly the "sometimes lands on /store" complaint.
-    const backToCart = isTma ? `/store/${slug}/cart?tma=true` : `/cart?shop=${encodeURIComponent(slug)}`;
-    const keepShoppingHref = isTma ? `/store/${slug}?tma=true` : "/store";
+    // — it isn't nested under /store/[slug]) and stranding a Telegram or
+    // Messenger shopper there was exactly the "sometimes lands on /store"
+    // complaint.
+    const backToCart = isMiniApp ? `/store/${slug}/cart?${queryParam}` : `/cart?shop=${encodeURIComponent(slug)}`;
+    const keepShoppingHref = isMiniApp ? `/store/${slug}?${queryParam}` : "/store";
 
     const pending = active?.hasPendingCheckout ? active.checkout : null;
     const pendingIsThisStore = pending?.storeSlug === slug;
@@ -83,7 +85,7 @@ export default function CheckoutPage({
     }, [pending, pendingIsThisStore, session, cancelledOrderId]);
 
     const handlePayClick = () => {
-        if (isTma && !getTmaSession()?.phoneNumber) {
+        if (!myProfile?.phoneNumber) {
             setShowPhonePrompt(true);
             return;
         }
@@ -379,7 +381,7 @@ export default function CheckoutPage({
                 </div>
             )}
 
-            {isTma && store && (
+            {store && (
                 <PhoneNumberPrompt
                     open={showPhonePrompt}
                     businessId={store.businessId}

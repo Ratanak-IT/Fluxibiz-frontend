@@ -26,7 +26,7 @@ export default function TelegramWebAppProvider({
   const router = useRouter();
   const isTma =
     searchParams.get("tma") === "true" ||
-    (typeof window !== "undefined" && localStorage.getItem("tma_mode") === "true");
+    (typeof window !== "undefined" && sessionStorage.getItem("tma_mode") === "true");
 
   // Same store data the normal page already fetches — reused here just for
   // the id/name/logo the Mini App's own navbar and auth call need.

@@ -66,7 +66,7 @@ export default function MessengerWebAppProvider({
   const searchParams = useSearchParams();
   const isMessenger =
     searchParams.get("messenger") === "true" ||
-    (typeof window !== "undefined" && localStorage.getItem("messenger_mode") === "true");
+    (typeof window !== "undefined" && sessionStorage.getItem("messenger_mode") === "true");
 
   // Same store data the normal page already fetches — reused here just for
   // the id/name/logo the webview's own navbar and auth call need.
