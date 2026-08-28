@@ -16,6 +16,7 @@ import {
   type ChannelSchedule,
 } from "@/lib/type/storeType";
 import { useAuth } from "@/features/auth/useAuth";
+import { useRequireMessengerProfile } from "@/lib/tma/MessengerProfileGate";
 import { ProductStorefrontUI } from "./product-storefront-ui";
 
 interface ProductDetailProps {
@@ -40,6 +41,7 @@ export default function ProductDetail({
   const t = useTranslations("Store");
   const { isAuthenticated, login } = useAuth();
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
+  const requireMessengerProfile = useRequireMessengerProfile();
 
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
@@ -110,30 +112,35 @@ export default function ProductDetail({
       return;
     }
 
+    const businessId = item.businessId;
     const name = item.name || t("detail.product");
     const { sellingPrice } = resolveItemPrices(item, selectedVariant);
 
-    try {
-      await addToCartMutation({
-        businessId: item.businessId,
-        itemId: item.id,
-        variantId: selectedVariant?.id,
-        addOnIds: selectedAddOnIds,
-        unitId: selectedPack?.id,
-        quantity,
-        itemDetails: {
-          name,
-          price: sellingPrice,
-          storeName: storeName ?? item.businessName ?? t("common.store"),
-        },
-      }).unwrap();
+    requireMessengerProfile(businessId, () => {
+      void (async () => {
+        try {
+          await addToCartMutation({
+            businessId,
+            itemId: item.id,
+            variantId: selectedVariant?.id,
+            addOnIds: selectedAddOnIds,
+            unitId: selectedPack?.id,
+            quantity,
+            itemDetails: {
+              name,
+              price: sellingPrice,
+              storeName: storeName ?? item.businessName ?? t("common.store"),
+            },
+          }).unwrap();
 
-      toast.success(t("messages.addedToCart", { quantity, name }));
-    } catch (err: any) {
-      console.error("Failed to add to cart", err);
-      const msg = err?.data?.message || err?.data?.error || t("errors.addToCartFailed");
-      toast.error(msg);
-    }
+          toast.success(t("messages.addedToCart", { quantity, name }));
+        } catch (err: any) {
+          console.error("Failed to add to cart", err);
+          const msg = err?.data?.message || err?.data?.error || t("errors.addToCartFailed");
+          toast.error(msg);
+        }
+      })();
+    });
   };
 
   return (

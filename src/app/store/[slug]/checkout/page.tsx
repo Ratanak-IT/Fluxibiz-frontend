@@ -27,6 +27,8 @@ import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
+import { useIsMessenger } from "@/lib/tma/useIsMessenger";
+import { useRequireMessengerProfile } from "@/lib/tma/MessengerProfileGate";
 import { PhoneNumberPrompt } from "@/components/tma/PhoneNumberPrompt";
 
 export default function CheckoutPage({
@@ -38,6 +40,8 @@ export default function CheckoutPage({
     const router = useRouter();
     const { slug } = use(params);
     const { isMiniApp, queryParam } = useMiniAppMode();
+    const isMessenger = useIsMessenger();
+    const requireMessengerProfile = useRequireMessengerProfile();
 
     const { data: cart, isLoading: cartLoading } = useGetCartQuery();
     const { data: publicStore } = useGetPublicStoreQuery(slug, { skip: !slug });
@@ -85,6 +89,15 @@ export default function CheckoutPage({
     }, [pending, pendingIsThisStore, session, cancelledOrderId]);
 
     const handlePayClick = () => {
+        // Messenger's identity is thinner than Telegram's or the web's own
+        // sign-in — it has no reliable name, so it gets its own name+phone
+        // prompt (MessengerProfileGate) instead of the phone-only one below.
+        if (isMessenger) {
+            if (!store) return;
+            requireMessengerProfile(store.businessId, startPayment);
+            return;
+        }
+
         if (!myProfile?.phoneNumber) {
             setShowPhonePrompt(true);
             return;

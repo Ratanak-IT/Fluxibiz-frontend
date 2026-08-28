@@ -19,6 +19,7 @@ import {
   resolveItemPrices,
 } from "@/lib/type/storeType";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
+import { useRequireMessengerProfile } from "@/lib/tma/MessengerProfileGate";
 import { useTodayHoursLabel } from "./store-hours";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
 import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
@@ -54,6 +55,7 @@ export default function ProductQuickViewModal({
 
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
   const { isAuthenticated, status: authStatus, login } = useAuth();
+  const requireMessengerProfile = useRequireMessengerProfile();
 
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
@@ -155,46 +157,51 @@ export default function ProductQuickViewModal({
 
     const { sellingPrice, compareAtPrice: resolvedCompareAt, hasDiscount } = resolveItemPrices(product, selectedVariant);
     const baseUnitPrice = selectedPack ? Number(selectedPack.price) : sellingPrice;
+    const businessId = product.businessId;
 
-    try {
-      await addToCartMutation({
-        businessId: product.businessId,
-        itemId: product.id,
-        quantity,
-        variantId: selectedVariant?.id,
-        unitId: selectedPack?.unit?.id,
-        selections: Object.entries(selectedAttributes).map(
-          ([attributeName, value]) => ({ attributeName, value }),
-        ),
-        addOnIds: extras.map((addOn) => addOn.id),
-        itemDetails: {
-          name: product.name,
-          price: baseUnitPrice + extrasPerUnit,
-          compareAtPrice: hasDiscount ? resolvedCompareAt : undefined,
-          imageUrl: primaryItemImage(product),
-          currency: currency || item?.currency,
-          addOns: extras.map((addOn) => ({
-            addOnId: addOn.id,
-            name: addOn.name,
-            unitPrice: Number(addOn.price ?? 0),
-          })),
-        },
-      }).unwrap();
-      
-      toast.success(tCart("addedToCart"));
-      onOpenChange(false);
-    } catch (err: any) {
-        if (isUnauthorized(err)) {
+    requireMessengerProfile(businessId, () => {
+      void (async () => {
+        try {
+          await addToCartMutation({
+            businessId,
+            itemId: product.id,
+            quantity,
+            variantId: selectedVariant?.id,
+            unitId: selectedPack?.unit?.id,
+            selections: Object.entries(selectedAttributes).map(
+              ([attributeName, value]) => ({ attributeName, value }),
+            ),
+            addOnIds: extras.map((addOn) => addOn.id),
+            itemDetails: {
+              name: product.name,
+              price: baseUnitPrice + extrasPerUnit,
+              compareAtPrice: hasDiscount ? resolvedCompareAt : undefined,
+              imageUrl: primaryItemImage(product),
+              currency: currency || item?.currency,
+              addOns: extras.map((addOn) => ({
+                addOnId: addOn.id,
+                name: addOn.name,
+                unitPrice: Number(addOn.price ?? 0),
+              })),
+            },
+          }).unwrap();
+
+          toast.success(tCart("addedToCart"));
+          onOpenChange(false);
+        } catch (err: any) {
+          if (isUnauthorized(err)) {
             login();
-        } else {
+          } else {
             const msg = formatStockErrorMessage(err, product?.name || item?.name);
             const lower = msg.toLowerCase();
             if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
-                if (product?.id) markItemOutOfStock(product.id);
+              if (product?.id) markItemOutOfStock(product.id);
             }
             toast.error(msg);
+          }
         }
-    }
+      })();
+    });
   }
 
   return (

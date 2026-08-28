@@ -41,7 +41,10 @@ export const checkoutApi = createApi({
             providesTags: ["CustomerSelfProfile"],
         }),
 
-        updateMyPhoneNumber: builder.mutation<CustomerSelfProfile, { businessId: string; phoneNumber: string }>({
+        updateMyPhoneNumber: builder.mutation<
+            CustomerSelfProfile,
+            { businessId: string; phoneNumber: string; firstName?: string; lastName?: string }
+        >({
             query: (body) => ({
                 url: "/me/profile",
                 method: "PUT",

@@ -6,14 +6,13 @@ import Script from "next/script";
 
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import { useAuthenticateFacebookWebAppMutation } from "@/features/auth/facebookWebAppApi";
-import { setTmaSession, updateTmaSession } from "@/lib/tma/tmaSession";
+import { setTmaSession } from "@/lib/tma/tmaSession";
 import { TmaNavbar } from "@/components/tma/TmaNavbar";
 import { TmaBottomTabBar } from "@/components/tma/TmaBottomTabBar";
-import { CompleteProfileScreen } from "@/components/tma/CompleteProfileScreen";
+import { MessengerProfileGateProvider } from "@/lib/tma/MessengerProfileGate";
 
 type AuthState =
   | { status: "pending" }
-  | { status: "needs-profile"; businessId: string; businessName: string; fullName: string }
   | { status: "ready" }
   | { status: "error"; message: string };
 
@@ -167,16 +166,7 @@ export default function MessengerWebAppProvider({
           address: result.address,
         });
 
-        if (!result.profileComplete) {
-          setAuthState({
-            status: "needs-profile",
-            businessId: result.businessId,
-            businessName: result.businessName,
-            fullName: result.fullName,
-          });
-        } else {
-          setAuthState({ status: "ready" });
-        }
+        setAuthState({ status: "ready" });
       })
       .catch(() => {
         setAuthState({
@@ -210,30 +200,20 @@ export default function MessengerWebAppProvider({
         </div>
       )}
 
-      {authState.status === "needs-profile" && (
-        <CompleteProfileScreen
-          businessId={authState.businessId}
-          businessName={authState.businessName}
-          fullName={authState.fullName}
-          onComplete={(data) => {
-            updateTmaSession(data);
-            setAuthState({ status: "ready" });
-          }}
-        />
-      )}
-
       {authState.status === "ready" && (
-        <div className="tma-standalone-mode min-h-screen bg-background pb-24">
-          {store && (
-            <TmaNavbar
-              slug={slug}
-              businessName={store.name || store.displayName || ""}
-              businessLogo={store.logo}
-            />
-          )}
-          {children}
-          <TmaBottomTabBar slug={slug} />
-        </div>
+        <MessengerProfileGateProvider>
+          <div className="tma-standalone-mode min-h-screen bg-background pb-24">
+            {store && (
+              <TmaNavbar
+                slug={slug}
+                businessName={store.name || store.displayName || ""}
+                businessLogo={store.logo}
+              />
+            )}
+            {children}
+            <TmaBottomTabBar slug={slug} />
+          </div>
+        </MessengerProfileGateProvider>
       )}
     </>
   );
