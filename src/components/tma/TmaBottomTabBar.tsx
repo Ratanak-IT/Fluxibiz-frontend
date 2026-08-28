@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, LayoutGrid, ShoppingCart, User } from "lucide-react";
+import { Home, Receipt, ShoppingCart, User } from "lucide-react";
 
 /**
  * Fixed bottom tab bar — the Mini App's primary navigation instead of the
@@ -17,11 +17,8 @@ export function TmaBottomTabBar({ slug }: { slug: string }) {
   const homePath = `/store/${slug}`;
   const tabs = [
     { key: "home", label: "Home", icon: Home, href: `${homePath}?tma=true`, path: homePath },
-    // Not a real route — an anchor on the home page itself — so it never
-    // owns the "active" state on its own; matching Home's pathname would
-    // otherwise light up both tabs at once (they resolve to the same path).
-    { key: "categories", label: "Categories", icon: LayoutGrid, href: `${homePath}?tma=true#categories`, path: null },
     { key: "cart", label: "Cart", icon: ShoppingCart, href: `/store/${slug}/cart?tma=true`, path: `/store/${slug}/cart` },
+    { key: "payment", label: "Payment", icon: Receipt, href: `/store/${slug}/history?tma=true`, path: `/store/${slug}/history` },
     { key: "me", label: "Me", icon: User, href: `/store/${slug}/me?tma=true`, path: `/store/${slug}/me` },
   ] as const;
 

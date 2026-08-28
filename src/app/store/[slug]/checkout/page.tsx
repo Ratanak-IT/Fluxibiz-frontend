@@ -25,6 +25,7 @@ import {
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
+import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 
 export default function CheckoutPage({
     params,
@@ -34,6 +35,7 @@ export default function CheckoutPage({
   const t = useTranslations("Checkout");
     const router = useRouter();
     const { slug } = use(params);
+    const { isMiniApp, queryParam } = useMiniAppMode();
 
     const { data: cart, isLoading: cartLoading } = useGetCartQuery();
     const { data: publicStore } = useGetPublicStoreQuery(slug, { skip: !slug });
@@ -54,20 +56,9 @@ export default function CheckoutPage({
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
-    const discount = store?.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0) ?? 0;
-    const netAmount = Math.max(0, (store?.subtotal ?? 0) - discount);
-    const { taxAmount, total: payableTotal } = computeTax(
-        netAmount,
-        publicStore?.taxRate,
-        publicStore?.taxInclusionType,
-        publicStore?.taxEnabled,
-    );
-    const isTaxInclusive = publicStore?.taxInclusionType === "INCLUSIVE";
-    const taxRate = publicStore?.taxRate ?? 0;
-    const isTaxActive = Boolean(publicStore?.taxEnabled) && taxAmount > 0;
-    const effectiveTaxName = publicStore?.taxLabel?.trim() || "VAT";
-
-    const backToCart = `/cart?shop=${encodeURIComponent(slug)}`;
+  
+    const backToCart = isMiniApp ? `/store/${slug}/cart?${queryParam}` : `/cart?shop=${encodeURIComponent(slug)}`;
+    const keepShoppingHref = isMiniApp ? `/store/${slug}?${queryParam}` : "/store";
 
     const pending = active?.hasPendingCheckout ? active.checkout : null;
     const pendingIsThisStore = pending?.storeSlug === slug;
@@ -81,7 +72,6 @@ export default function CheckoutPage({
             !session &&
             cancelledOrderId !== pending.orderId
         ) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSession(pending);
         }
     }, [pending, pendingIsThisStore, session, cancelledOrderId]);
@@ -93,13 +83,7 @@ export default function CheckoutPage({
         try {
             const created = await createCheckout({
                 businessId: store.businessId,
-                // The backend's PaymentMethodType enum has no KHQR constant
-                // — it calls the same thing DIGITAL (see
-                // StorefrontCheckoutServiceImpl, which literally labels
-                // DIGITAL as "Bakong KHQR"). Sending "KHQR" as-is fails
-                // Jackson enum deserialization with a generic "Request
-                // body is invalid or malformed" 400, before any checkout
-                // logic even runs.
+            
                 paymentMethod: paymentMethod === "KHQR" ? "DIGITAL" : paymentMethod,
             }).unwrap();
 
@@ -428,7 +412,7 @@ export default function CheckoutPage({
 
             {paid && (
                 <div className="mt-6">
-                    <Link href="/store" className="block w-full">
+                    <Link href={keepShoppingHref} className="block w-full">
                         <Button
                             variant="outline"
                             className="h-12 w-full rounded-full border-primary bg-white text-base font-semibold text-primary transition-colors hover:bg-primary/5 dark:bg-transparent dark:text-primary dark:hover:bg-primary/10"

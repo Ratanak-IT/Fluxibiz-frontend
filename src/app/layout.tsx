@@ -63,11 +63,12 @@ export const metadata: Metadata = {
   },
   icons: {
   icon: [
-    { url: absoluteUrl("/favicon.ico") },
-    { url: absoluteUrl("/favicon.png?v=2"), type: "image/png" },
+    { url: absoluteUrl("/favicon.ico?v=3") },
+    { url: absoluteUrl("/favicon.png?v=3"), type: "image/png" },
+    { url: absoluteUrl("/favicon-48.png?v=3"), sizes: "48x48", type: "image/png" },
   ],
-  shortcut: absoluteUrl("/favicon.ico"),
-  apple: absoluteUrl("/favicon.png?v=2"),
+  shortcut: absoluteUrl("/favicon.ico?v=3"),
+  apple: absoluteUrl("/favicon.png?v=3"),
 },
   openGraph: {
     type: "website",

@@ -13,11 +13,13 @@ import EmptyCartComponent from "./empty-cart-component";
 import CartSkeletonComponent from "./cart-skeleton-component";
 
 import ApiErrorFallback from "@/components/common/api-error-fallback";
+import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 
 export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
   const t = useTranslations("Cart");
     const searchParams = useSearchParams();
     const slug = shopSlug ?? searchParams.get("shop");
+    const { isMiniApp, queryParam } = useMiniAppMode();
 
     const { status: authStatus, isAuthenticated } = useAuth();
 
@@ -44,7 +46,7 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
             <ApiErrorFallback
                 title={t("couldNotLoad")}
                 onRetry={() => refetch()}
-                backHref="/store"
+                backHref={isMiniApp && slug ? `/store/${slug}?${queryParam}` : isMiniApp ? undefined : "/store"}
             />
         );
     }

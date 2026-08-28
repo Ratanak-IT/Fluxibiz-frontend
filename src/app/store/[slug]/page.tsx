@@ -33,6 +33,7 @@ import ProductList from "@/components/store/detailstore/product-list";
 import { formatPrice } from "@/lib/store/productdetail/product";
 import { useShopperLocation } from "@/lib/hooks/useShopperLocation";
 import { useIsTma } from "@/lib/tma/useIsTma";
+import { useIsMessenger } from "@/lib/tma/useIsMessenger";
 
 function toMenuItem(
   item: StorefrontItemResponse,
@@ -82,6 +83,8 @@ export default function StoreDetail({
   const { slug } = use(params);
   const { coords } = useShopperLocation();
   const isTma = useIsTma();
+  const isMessenger = useIsMessenger();
+  const isMiniAppMode = isTma || isMessenger;
   const {
     data: storeDetail,
     isLoading: isLoadingStore,
@@ -434,10 +437,10 @@ export default function StoreDetail({
 
   return (
     <div className="mx-auto max-w-362.5 space-y-10 py-6 px-4 sm:px-10 dark:bg-background">
-      {/* The Mini App is scoped to this one business's own Telegram bot —
-          a way back to the general store directory makes no sense there,
-          same reasoning as hiding the site-wide Navbar/Footer in TMA mode. */}
-      {!isTma && (
+      {/* The Mini App is scoped to this one business's own Telegram/Messenger
+          bot — a way back to the general store directory makes no sense
+          there, same reasoning as hiding the site-wide Navbar/Footer. */}
+      {!isMiniAppMode && (
         <div className="mb-4 flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-20">
           <Link
             href="/store"
@@ -456,7 +459,7 @@ export default function StoreDetail({
           title={t("detail.couldNotLoadStore")}
           description={t("detail.checkStoreAddressOrConnection")}
           onRetry={() => window.location.reload()}
-          backHref="/store"
+          backHref={isMiniAppMode ? undefined : "/store"}
         />
       ) : (
         <>

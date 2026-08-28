@@ -7,11 +7,11 @@ import { Home, ShoppingCart, History, User } from "lucide-react";
 import CartDrawer from "@/components/common/CartDrawer";
 import { useGetCartQuery } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
-import { useIsTma } from "@/lib/tma/useIsTma";
+import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const isTma = useIsTma();
+  const { isMiniApp } = useMiniAppMode();
 
   const navItems = [
     { label: "Home", icon: Home, path: "/store" },
@@ -35,10 +35,10 @@ export default function Navbar() {
   // /user-profile — real Keycloak-gated pages). It used to bleed into TMA
   // pages too since /store/[slug] nests under /store/layout.tsx, which
   // rendered it unconditionally — clicking its "Profile" icon was sending
-  // Telegram shoppers to a real Keycloak login page instead of the Mini
-  // App's own TmaBottomTabBar "Me" tab. The Mini App has its own bottom
+  // Telegram/Messenger shoppers to a real Keycloak login page instead of the
+  // Mini App's own TmaBottomTabBar "Me" tab. The Mini App has its own bottom
   // nav; this one has no place there.
-  if (isTma) {
+  if (isMiniApp) {
     return null;
   }
 

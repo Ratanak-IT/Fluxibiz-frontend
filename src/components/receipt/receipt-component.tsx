@@ -17,7 +17,7 @@ import { formatMoney, resolveMediaUrl } from "@/lib/type/cartType";
 
 import { useTranslations } from "next-intl";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
-import { useIsTma } from "@/lib/tma/useIsTma";
+import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 
 /** A row/column label shown as "English / Khmer" on one line — this receipt is
  * always bilingual regardless of the site's language toggle, the way a printed
@@ -48,7 +48,7 @@ export default function ReceiptComponent({
   const t = useTranslations("Common");
   const { orderId } = use(params);
   const receiptRef = useRef<HTMLDivElement>(null);
-  const isTma = useIsTma();
+  const { isMiniApp: isTma } = useMiniAppMode();
 
   const { data: order, isLoading, isError, refetch } = useGetOrderReceiptQuery(orderId);
 
