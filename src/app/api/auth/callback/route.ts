@@ -49,16 +49,16 @@ export async function GET(req: NextRequest) {
     const user = userFromAccessToken(tokens.access_token);
     const roles = user?.roles || [];
 
-    const superAdminRedirect = process.env.SUPER_ADMIN_REDIRECT_URL || "https://administrator.fluxibiz.store";
-    const businessRedirect = process.env.BUSINESS_REDIRECT_URL || "https://bo-dashboard-ite-basic-lyart.vercel.app";
-    const globleUserRedirect = process.env.GLOBLE_USER_REDIRECT_URL || "https://www.fluxibiz.store";
+    const superAdminRedirect = process.env.SUPER_ADMIN_REDIRECT_URL;
+    const businessRedirect = process.env.BUSINESS_REDIRECT_URL;
+    const globleUserRedirect = process.env.GLOBLE_USER_REDIRECT_URL;
 
     let targetUrl: URL;
-    if (roles.includes("SUPER_ADMIN")) {
+    if (roles.includes("SUPER_ADMIN") && superAdminRedirect) {
       targetUrl = new URL(superAdminRedirect);
-    } else if (roles.includes("BUSINESS")) {
+    } else if (roles.includes("BUSINESS") && businessRedirect) {
       targetUrl = new URL(businessRedirect);
-    } else if (roles.includes("GLOBLE_USER")) {
+    } else if (roles.includes("GLOBLE_USER") && globleUserRedirect) {
       targetUrl = new URL(globleUserRedirect);
     } else {
       targetUrl = new URL(returnTo, origin);

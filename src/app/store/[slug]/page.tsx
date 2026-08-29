@@ -126,7 +126,7 @@ export default function StoreDetail({
       );
     }
 
-   
+    // Category filter
     if (selectedCategory !== "All") {
       result = result.filter((item) => {
         const catName = item.itemGroup?.name?.trim() || t("common.menu");
@@ -134,10 +134,11 @@ export default function StoreDetail({
       });
     }
 
-   
+    // Price range filter
     if (selectedPriceRange !== "All Prices") {
       result = result.filter((item) => {
-    
+        // The least it can be bought for, so an item priced only through its
+        // options is filtered on a price it really has rather than on zero.
         const price = sellingPriceFrom(item) ?? 0;
         switch (selectedPriceRange) {
           case "Under $2":
@@ -200,236 +201,9 @@ export default function StoreDetail({
     { skip: !slug }
   );
 
-  const facebookInfo = useMemo(() => {
-    const storeFallbackName =
-      storeDetail?.name || storeDetail?.displayName || "Facebook Page";
-
-    const parseFbSlug = (urlStr?: string, explicitFallback?: string): string => {
-      const fallback = explicitFallback || storeFallbackName;
-      if (!urlStr) return fallback;
-      try {
-        const parsed = new URL(urlStr.startsWith("http") ? urlStr : `https://${urlStr}`);
-        const pathname = parsed.pathname.replace(/\/+$/, "");
-        const parts = pathname.split("/").filter(Boolean);
-
-        if (parts.length === 0) return fallback;
-
-        // Filter out common Facebook path prefixes
-        const filteredParts = parts.filter(
-          (p) =>
-            !["pages", "category", "people", "p", "share", "groups", "watch", "events", "posts"].includes(
-              p.toLowerCase()
-            )
-        );
-
-        if (filteredParts.length === 0) return fallback;
-
-        // Find the first non-numeric, meaningful slug
-        let rawName = "";
-        for (const part of filteredParts) {
-          if (/^\d+$/.test(part)) continue;
-          if (part.toLowerCase().includes("profile.php")) continue;
-          rawName = part;
-          break;
-        }
-
-        if (!rawName) {
-          const queryName =
-            parsed.searchParams.get("name") || parsed.searchParams.get("page_name");
-          if (queryName) return decodeURIComponent(queryName);
-          return fallback;
-        }
-
-        let cleaned = decodeURIComponent(rawName);
-        // Remove trailing numeric IDs (e.g. Food-Shop-100083948574 -> Food-Shop)
-        cleaned = cleaned.replace(/-\d{5,}$/, "");
-        // Replace dashes and underscores with spaces for natural presentation
-        if (cleaned.includes("-") || cleaned.includes("_")) {
-          cleaned = cleaned.replace(/[-_]+/g, " ").trim();
-        }
-
-        if (cleaned && cleaned.toLowerCase() !== "profile.php") {
-          return cleaned;
-        }
-      } catch {
-        // fallback
-      }
-      return fallback;
-    };
-
-    // 0. Check response from /businesses/social-settings/facebook endpoint
-    if (facebookSettings) {
-      const fs = facebookSettings as any;
-      const fsName =
-        fs.pageName ||
-        fs.page_name ||
-        fs.name ||
-        fs.facebookPageName ||
-        fs.facebook_page_name ||
-        fs.title;
-      const fsUrl =
-        fs.pageUrl ||
-        fs.page_url ||
-        fs.url ||
-        fs.link ||
-        fs.facebookPageUrl ||
-        fs.facebook_page_url;
-
-      if (fsName || fsUrl) {
-        const finalUrl = fsUrl || `https://facebook.com/${encodeURIComponent(fsName || "")}`;
-        const finalName = fsName || parseFbSlug(finalUrl);
-        return { url: finalUrl, name: finalName };
-      }
-    }
-
-    if (!storeDetail) return null;
-    const sd = storeDetail as any;
-
-    // 1. Direct top-level connected Facebook properties & sub-objects
-    const connectedName =
-      sd.facebookPageName ||
-      sd.facebook_page_name ||
-      sd.facebookName ||
-      sd.facebook_name ||
-      sd.linkedFacebookPage ||
-      sd.linked_facebook_page ||
-      sd.linkedFacebookPageName ||
-      sd.linked_facebook_page_name ||
-      sd.facebookPageTitle ||
-      sd.facebook_page_title ||
-      sd.facebookPage?.name ||
-      sd.facebookPage?.pageName ||
-      sd.facebookPage?.page_name ||
-      sd.facebookPage?.title ||
-      sd.facebook_page?.name ||
-      sd.facebook_page?.page_name ||
-      sd.facebook_page?.title ||
-      sd.facebookIntegration?.pageName ||
-      sd.facebookIntegration?.page_name ||
-      sd.facebookIntegration?.name ||
-      sd.facebook_integration?.pageName ||
-      sd.facebook_integration?.page_name ||
-      sd.facebook_integration?.name ||
-      sd.facebookDetails?.name ||
-      sd.facebookDetails?.pageName ||
-      sd.facebook_details?.name ||
-      sd.facebook_details?.page_name ||
-      sd.messengerPage?.name ||
-      sd.messenger_page?.name;
-
-    const connectedUrl =
-      sd.facebookPageUrl ||
-      sd.facebook_page_url ||
-      sd.facebookUrl ||
-      sd.facebook_url ||
-      sd.linkedFacebookPageUrl ||
-      sd.linked_facebook_page_url ||
-      sd.facebookPage?.url ||
-      sd.facebookPage?.link ||
-      sd.facebook_page?.url ||
-      sd.facebook_page?.link ||
-      sd.facebookIntegration?.url ||
-      sd.facebookIntegration?.link ||
-      sd.facebook_integration?.url ||
-      sd.facebook_integration?.link;
-
-    if (connectedName || connectedUrl) {
-      const finalUrl =
-        connectedUrl ||
-        (sd.website && sd.website.toLowerCase().includes("facebook.com")
-          ? sd.website
-          : `https://facebook.com/${encodeURIComponent(connectedName || "")}`);
-      const finalName = connectedName || parseFbSlug(finalUrl);
-      return { url: finalUrl, name: finalName };
-    }
-
-    // 2. integrations array
-    if (Array.isArray(sd.integrations)) {
-      for (const item of sd.integrations) {
-        if (typeof item === "object" && item !== null) {
-          const type = (item.type || item.platform || item.provider || "").toLowerCase();
-          if (type.includes("facebook") || type.includes("messenger")) {
-            const name = item.pageName || item.page_name || item.name || item.title || item.label;
-            const url = item.url || item.link || item.facebookUrl;
-            if (name || url) {
-              const finalUrl = url || `https://facebook.com/${encodeURIComponent(name || "")}`;
-              const finalName = name || parseFbSlug(finalUrl);
-              return { url: finalUrl, name: finalName };
-            }
-          }
-        }
-      }
-    }
-
-    // 3. socialLinks array or object
-    const social = sd.socialLinks;
-    if (social) {
-      if (Array.isArray(social)) {
-        for (const item of social) {
-          if (typeof item === "object" && item !== null) {
-            const url = item.url || item.facebook || item.link || item.href || item.facebookUrl || item.facebook_url;
-            const name = item.name || item.pageName || item.page_name || item.title || item.label || item.facebookPageName || item.facebook_page_name;
-
-            if (url && String(url).toLowerCase().includes("facebook.com")) {
-              return {
-                url: String(url),
-                name: name ? String(name) : parseFbSlug(String(url)),
-              };
-            }
-
-            if (name && (item.platform?.toLowerCase() === "facebook" || item.type?.toLowerCase() === "facebook")) {
-              return {
-                url: url ? String(url) : `https://facebook.com/${encodeURIComponent(name)}`,
-                name: String(name),
-              };
-            }
-
-            for (const [key, val] of Object.entries(item)) {
-              if (
-                key.toLowerCase().includes("facebook") &&
-                typeof val === "string" &&
-                val.trim()
-              ) {
-                const isUrl = val.toLowerCase().includes("facebook.com");
-                return {
-                  url: isUrl ? val : `https://facebook.com/${encodeURIComponent(val)}`,
-                  name: name ? String(name) : isUrl ? parseFbSlug(val) : val,
-                };
-              }
-            }
-          }
-        }
-      } else if (typeof social === "object") {
-        const url = social.facebook || social.facebookUrl || social.url;
-        const name = social.facebookPageName || social.facebookName || social.name || social.pageName;
-        if (url || name) {
-          const finalUrl = url || `https://facebook.com/${encodeURIComponent(name)}`;
-          const finalName = name || parseFbSlug(finalUrl);
-          return { url: finalUrl, name: finalName };
-        }
-      }
-    }
-
-    // 4. Website
-    if (sd.website && sd.website.toLowerCase().includes("facebook.com")) {
-      return {
-        url: sd.website,
-        name: parseFbSlug(sd.website),
-      };
-    }
-
-    // 5. facebook string field
-    if (typeof sd.facebook === "string" && sd.facebook.trim()) {
-      const fbVal = sd.facebook.trim();
-      const isUrl = fbVal.toLowerCase().includes("facebook.com");
-      return {
-        url: isUrl ? fbVal : `https://facebook.com/${encodeURIComponent(fbVal)}`,
-        name: isUrl ? parseFbSlug(fbVal) : fbVal,
-      };
-    }
-
-    return null;
-  }, [storeDetail, facebookSettings]);
+  const facebookInfo = facebookSettings?.pageUrl
+    ? { url: facebookSettings.pageUrl, name: facebookSettings.pageName || "Facebook Page" }
+    : null;
 
   const storeData: StoreCardData | undefined = storeDetail
     ? {

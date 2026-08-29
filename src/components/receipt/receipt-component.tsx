@@ -310,11 +310,12 @@ export default function ReceiptComponent({
                     </p>
                     {item.freeQuantity && item.freeQuantity > 0 ? (
                       <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                        🎁 {item.freeQuantity} FREE
+                        {item.freeQuantity} FREE
                       </p>
                     ) : item.discountAmount && item.discountAmount > 0 ? (
                       <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                        Line discount -{formatMoney(item.discountAmount, order.currency)}
+                        {item.discountLabel ? `${item.discountLabel} · ` : ""}
+                        -{formatMoney(item.discountAmount, order.currency)}
                       </p>
                     ) : null}
                   </div>

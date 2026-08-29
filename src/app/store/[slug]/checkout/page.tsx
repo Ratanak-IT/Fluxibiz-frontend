@@ -15,8 +15,9 @@ import {
     useCancelCheckoutMutation,
     useCreateCheckoutMutation,
     useGetActiveCheckoutQuery,
+    useGetMyCustomerProfileQuery,
 } from "@/features/checkout/checkoutApi";
-import { computeTax, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
+import { formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
@@ -26,6 +27,9 @@ import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
+import { useIsMessengerContext } from "@/lib/tma/useIsMessengerContext";
+import { useRequireMessengerProfile } from "@/lib/tma/MessengerProfileGate";
+import { PhoneNumberPrompt } from "@/components/tma/PhoneNumberPrompt";
 
 export default function CheckoutPage({
     params,
@@ -36,14 +40,19 @@ export default function CheckoutPage({
     const router = useRouter();
     const { slug } = use(params);
     const { isMiniApp, queryParam } = useMiniAppMode();
+    const requireMessengerProfile = useRequireMessengerProfile();
 
     const { data: cart, isLoading: cartLoading } = useGetCartQuery();
     const { data: publicStore } = useGetPublicStoreQuery(slug, { skip: !slug });
+    const isMessenger = useIsMessengerContext(publicStore?.id);
     const {
         data: active,
         isLoading: activeLoading,
         refetch: refetchActive,
     } = useGetActiveCheckoutQuery();
+    // Messenger has its own gate (MessengerProfileGate, device-based) —
+    // this call would just 401 for a not-yet-registered Messenger visitor.
+    const { data: myProfile } = useGetMyCustomerProfileQuery(undefined, { skip: isMessenger });
 
     const [createCheckout, { isLoading: creating }] = useCreateCheckoutMutation();
     const [cancelCheckout, { isLoading: cancelling }] = useCancelCheckoutMutation();
@@ -53,10 +62,14 @@ export default function CheckoutPage({
     const [error, setError] = useState<string | null>(null);
     const [paid, setPaid] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("KHQR");
+    const [showPhonePrompt, setShowPhonePrompt] = useState(false);
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
-  
+    // The general /cart page has no TMA chrome (no TmaNavbar/TmaBottomTabBar
+    // — it isn't nested under /store/[slug]) and stranding a Telegram or
+    // Messenger shopper there was exactly the "sometimes lands on /store"
+    // complaint.
     const backToCart = isMiniApp ? `/store/${slug}/cart?${queryParam}` : `/cart?shop=${encodeURIComponent(slug)}`;
     const keepShoppingHref = isMiniApp ? `/store/${slug}?${queryParam}` : "/store";
 
@@ -72,9 +85,27 @@ export default function CheckoutPage({
             !session &&
             cancelledOrderId !== pending.orderId
         ) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSession(pending);
         }
     }, [pending, pendingIsThisStore, session, cancelledOrderId]);
+
+    const handlePayClick = () => {
+        // Messenger's identity is thinner than Telegram's or the web's own
+        // sign-in — it has no reliable name, so it gets its own name+phone
+        // prompt (MessengerProfileGate) instead of the phone-only one below.
+        if (isMessenger) {
+            if (!store) return;
+            requireMessengerProfile(store.businessId, startPayment);
+            return;
+        }
+
+        if (!myProfile?.phoneNumber) {
+            setShowPhonePrompt(true);
+            return;
+        }
+        startPayment();
+    };
 
     const startPayment = async () => {
         if (!store) return;
@@ -83,7 +114,13 @@ export default function CheckoutPage({
         try {
             const created = await createCheckout({
                 businessId: store.businessId,
-            
+                // The backend's PaymentMethodType enum has no KHQR constant
+                // — it calls the same thing DIGITAL (see
+                // StorefrontCheckoutServiceImpl, which literally labels
+                // DIGITAL as "Bakong KHQR"). Sending "KHQR" as-is fails
+                // Jackson enum deserialization with a generic "Request
+                // body is invalid or malformed" 400, before any checkout
+                // logic even runs.
                 paymentMethod: paymentMethod === "KHQR" ? "DIGITAL" : paymentMethod,
             }).unwrap();
 
@@ -242,6 +279,11 @@ export default function CheckoutPage({
                                 >
                                     <span className="text-neutral-700 dark:text-card-foreground">
                                         {line.name} × {line.quantity}
+                                        {line.discountAmount && line.discountAmount > 0 ? (
+                                            <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                                {line.discountLabel ?? "Discount"}
+                                            </span>
+                                        ) : null}
                                     </span>
 
                                     <span className="font-semibold text-neutral-900 dark:text-card-foreground">
@@ -251,60 +293,14 @@ export default function CheckoutPage({
                             ))}
                         </div>
 
-                        <div className="mt-4 space-y-2 border-t border-neutral-100 pt-4 dark:border-border">
-                            <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
-                                <span>{t("subtotal")}</span>
-                                <span className="font-medium text-neutral-900 dark:text-card-foreground">
-                                    {formatMoney(store.subtotal, currency)}
-                                </span>
-                            </div>
+                        <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-border">
+                            <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
+                                {t("total")}
+                            </span>
 
-                            {discount > 0 && (
-                                <div className="flex items-center justify-between text-sm text-emerald-600 dark:text-emerald-400">
-                                    <span>{t("discount")}</span>
-                                    <span className="font-medium">
-                                        -{formatMoney(discount, currency)}
-                                    </span>
-                                </div>
-                            )}
-
-                            {isTaxActive && !isTaxInclusive && (
-                                <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
-                                    <span>
-                                        {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
-                                    </span>
-                                    <span className="font-medium text-neutral-900 dark:text-card-foreground">
-                                        +{formatMoney(taxAmount, currency)}
-                                    </span>
-                                </div>
-                            )}
-
-                            {isTaxActive && isTaxInclusive && (
-                                <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-muted-foreground">
-                                    <span>
-                                        {effectiveTaxName} {taxRate > 0 ? `(${taxRate}% Incl.)` : "(Incl.)"}
-                                    </span>
-                                    <span className="font-medium text-neutral-700 dark:text-neutral-300">
-                                        {formatMoney(taxAmount, currency)}
-                                    </span>
-                                </div>
-                            )}
-
-                            <div className="flex items-center justify-between pt-1">
-                                <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
-                                    {t("total")}
-                                </span>
-
-                                <span className="text-2xl font-bold text-green-600 dark:text-primary">
-                                    {formatMoney(payableTotal, currency)}
-                                </span>
-                            </div>
-
-                            {isTaxActive && isTaxInclusive && (
-                                <p className="text-right text-[11px] font-medium text-neutral-400 dark:text-muted-foreground italic">
-                                    * Prices include {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
-                                </p>
-                            )}
+                            <span className="text-2xl font-bold text-green-600 dark:text-primary">
+                                {formatMoney(store.subtotal, currency)}
+                            </span>
                         </div>
                     </div>
 
@@ -384,7 +380,7 @@ export default function CheckoutPage({
             {/* Submit Button */}
             {!session && (
                 <Button
-                    onClick={startPayment}
+                    onClick={handlePayClick}
                     disabled={creating || !!blockedBy || store?.open === false}
                     className="mt-6 h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white hover:bg-green-700 disabled:bg-neutral-300 disabled:text-neutral-500 dark:bg-primary dark:text-primary-foreground"
                 >
@@ -394,8 +390,8 @@ export default function CheckoutPage({
                     {store?.open === false
                         ? t("shopClosed")
                         : paymentMethod === "PAY_LATER"
-                        ? `${t("placeOrder")} (${formatMoney(payableTotal, currency)})`
-                        : `${t("payWithKhqr")} (${formatMoney(payableTotal, currency)})`}
+                        ? `${t("placeOrder")} (${formatMoney(store?.subtotal ?? 0, currency)})`
+                        : `${t("payWithKhqr")} (${formatMoney(store?.subtotal ?? 0, currency)})`}
                 </Button>
             )}
 
@@ -416,6 +412,18 @@ export default function CheckoutPage({
                         onRegenerate={startPayment}
                     />
                 </div>
+            )}
+
+            {store && (
+                <PhoneNumberPrompt
+                    open={showPhonePrompt}
+                    businessId={store.businessId}
+                    onOpenChange={setShowPhonePrompt}
+                    onSaved={() => {
+                        setShowPhonePrompt(false);
+                        startPayment();
+                    }}
+                />
             )}
 
             {paid && (

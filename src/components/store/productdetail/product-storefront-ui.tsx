@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
     Check,
     ChevronLeft,
@@ -17,7 +17,7 @@ import { useTranslations } from "next-intl";
 import { attributeIcon } from "@/lib/api/attribute-icons";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/store/productdetail/product";
-import { StorefrontItemResponse, primaryItemImage, itemImageUrl, ItemAttributeValue, ItemAttribute, ItemVariant, ItemUomConversion, DescriptionBlockResponse, remainingStock, isVariantSelectable, sellableAddOns, type ChannelSchedule } from "@/lib/type/storeType";
+import { StorefrontItemResponse, primaryItemImage, itemImageUrl, ItemAttributeValue, ItemAttribute, ItemVariant, ItemUomConversion, DescriptionBlockResponse, remainingStock, isVariantSelectable, sellableAddOns, resolveItemPrices, type ChannelSchedule } from "@/lib/type/storeType";
 import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
@@ -146,6 +146,12 @@ export function ProductStorefrontUI({
         remaining === null ? null : Math.floor(remaining / packFactor);
     const atStockCeiling = maxQuantity !== null && quantity >= maxQuantity;
 
+    useEffect(() => {
+        if (maxQuantity !== null && maxQuantity > 0 && quantity > maxQuantity) {
+            setQuantity(maxQuantity);
+        }
+    }, [maxQuantity, quantity, setQuantity]);
+
     const options = attributes.filter(
         (attribute) =>
             attribute.placement === "OPTION" &&
@@ -185,14 +191,10 @@ export function ProductStorefrontUI({
         ? `One ${selectedVariant.name}`
         : `One ${unitWord}`;
 
-    const singlePrice =
-        selectedVariant?.price !== undefined && selectedVariant?.price !== null
-            ? Number(selectedVariant.price)
-            : item.price === undefined || item.price === null
-                ? undefined
-                : Number(item.price);
+    const { sellingPrice, compareAtPrice: resolvedCompareAt, hasDiscount, discountPercent } = resolveItemPrices(item, selectedVariant);
 
-    const activePrice = selectedPack ? Number(selectedPack.price) : singlePrice;
+    const singlePrice = selectedPack ? Number(selectedPack.price) : sellingPrice;
+    const activePrice = singlePrice;
     const addOns = useMemo(() => sellableAddOns(item), [item]);
     const ticked = useMemo(
         () => addOns.filter((addOn) => (selectedAddOnIds ?? []).includes(addOn.id)),
@@ -205,11 +207,8 @@ export function ProductStorefrontUI({
     const billedPrice =
         activePrice === undefined ? undefined : activePrice + addOnsPerUnit;
 
-    const compareAt = item.compareAtPrice ? Number(item.compareAtPrice) : 0;
-    const discount =
-        compareAt && activePrice !== undefined && compareAt > activePrice
-            ? Math.round(((compareAt - activePrice) / compareAt) * 100)
-            : 0;
+    const compareAt = resolvedCompareAt ?? 0;
+    const discount = hasDiscount ? (discountPercent ?? 0) : 0;
 
     const images = useMemo(() => {
         const gallery: string[] = [];
@@ -247,7 +246,7 @@ export function ProductStorefrontUI({
 
 
     return (
-        <div className={cn(onClose ? "max-h-[90vh] overflow-y-auto scrollbar-none" : "w-full md:max-h-[90vh] md:overflow-y-auto scrollbar-none max-md:max-h-none max-md:overflow-visible")}>
+        <div className={cn(onClose ? "max-h-[90vh] overflow-y-auto scrollbar-none" : "w-full overflow-visible")}>
             {onClose ? (
                 <div className="flex items-center gap-2 px-6 pt-6 text-sm text-[#657064] dark:text-[#94a3b8]">
                     <button type="button" onClick={onClose} className="hover:text-primary transition-colors flex items-center gap-2">
@@ -255,16 +254,9 @@ export function ProductStorefrontUI({
                         <span>Store / {item.itemGroup?.name || "product"} / detail</span>
                     </button>
                 </div>
-            ) : (
-                <div className="flex items-center gap-2 px-6 pt-6 text-sm text-[#657064] dark:text-[#94a3b8]">
-                    <Link href={`/store/${storeSlug}`} className="flex items-center gap-2 hover:text-primary transition-colors">
-                        <ChevronLeft className="size-4" />
-                        <span>Store / {item.itemGroup?.name || "product"} / detail</span>
-                    </Link>
-                </div>
-            )}
+            ) : null}
 
-            <div className="grid gap-8 p-6 md:grid-cols-2">
+            <div className={cn("grid gap-8 md:grid-cols-2", onClose ? "p-6" : "py-4 sm:py-6")}>
                 <Gallery
                     images={images}
                     name={item.name}
@@ -574,65 +566,70 @@ export function ProductStorefrontUI({
                     ))}
 
                     {!hideAddToCart && (
-                        <>
-                            <div className="flex items-center gap-3 self-start rounded-full border border-[#e8e8e8] dark:border-[#2a3042] bg-white dark:bg-[#1e2330] px-3 py-1.5 text-[#1a222b] dark:text-[#f8fafc]">
-                                <button
-                                    type="button"
-                                    aria-label="Decrease quantity"
-                                    disabled={outOfStock}
-                                    onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                                    className={cn("text-red-500 dark:text-red-400 hover:text-red-600 transition-colors cursor-pointer", outOfStock && "opacity-40 cursor-not-allowed")}
-                                >
-                                    <Minus className="size-4" />
-                                </button>
-                                <span className="min-w-6 text-center text-sm font-medium">
-                                    {quantity}
+                        <div className="flex flex-col gap-3 pt-1">
+                            <div className="flex flex-wrap items-center gap-3">
+                                <span className="text-sm font-semibold text-[#657064] dark:text-[#94a3b8]">
+                                    Quantity:
                                 </span>
-                                <button
-                                    type="button"
-                                    aria-label="Increase quantity"
-                                    disabled={outOfStock || atStockCeiling}
-                                    onClick={() =>
-                                        setQuantity((current) =>
-                                            maxQuantity === null
-                                                ? current + 1
-                                                : Math.min(maxQuantity, current + 1),
-                                        )
-                                    }
-                                    className={cn(
-                                        "text-primary cursor-pointer",
-                                        (outOfStock || atStockCeiling) && "opacity-40 cursor-not-allowed",
-                                    )}
-                                >
-                                    <Plus className="size-4" />
-                                </button>
-                            </div>
+                                <div className="flex items-center gap-3 rounded-full border border-[#e8e8e8] dark:border-[#2a3042] bg-white dark:bg-[#1e2330] px-3.5 py-1.5 text-[#1a222b] dark:text-[#f8fafc]">
+                                    <button
+                                        type="button"
+                                        aria-label="Decrease quantity"
+                                        disabled={outOfStock || quantity <= 1}
+                                        onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+                                        className={cn("text-red-500 hover:text-red-600 transition-colors cursor-pointer", (outOfStock || quantity <= 1) && "opacity-40 pointer-events-auto cursor-not-allowed")}
+                                    >
+                                        <Minus className="size-4 text-red-500" />
+                                    </button>
+                                    <span className="min-w-6 text-center text-sm font-medium">
+                                        {quantity}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        aria-label="Increase quantity"
+                                        disabled={outOfStock || atStockCeiling}
+                                        onClick={() =>
+                                            setQuantity((current) =>
+                                                maxQuantity === null
+                                                    ? current + 1
+                                                    : Math.min(maxQuantity, current + 1),
+                                            )
+                                        }
+                                        className={cn(
+                                            "text-[#00932A] hover:text-[#007d24] transition-colors cursor-pointer",
+                                            (outOfStock || atStockCeiling) && "opacity-40 pointer-events-auto cursor-not-allowed",
+                                        )}
+                                    >
+                                        <Plus className="size-4 text-[#00932A]" />
+                                    </button>
+                                </div>
 
-                            {!outOfStock && remaining !== null && remaining <= LOW_STOCK_THRESHOLD ? (
-                                <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
-                                    {t("detail.onlyLeft", { count: remaining })}
-                                </p>
-                            ) : null}
+                                {!outOfStock && remaining !== null && remaining <= LOW_STOCK_THRESHOLD ? (
+                                    <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                                        {t("detail.onlyLeft", { count: remaining })}
+                                    </span>
+                                ) : null}
+                            </div>
 
                             <button
                                 type="button"
                                 onClick={onAddToCart}
                                 disabled={isAddingToCart || outOfStock || !isStoreOpen}
                                 className={cn(
-                                    "flex h-12 items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-white shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
+                                    "flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-white shadow-md shadow-primary/20 hover:bg-primary/90 transition-all cursor-pointer",
                                     (outOfStock || !isStoreOpen) && "bg-neutral-300 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-300 dark:hover:bg-neutral-800 cursor-not-allowed shadow-none"
                                 )}
                             >
                                 {isStoreOpen ? (
-                                    <ShoppingBag className="size-4" />
+                                    <ShoppingBag className="size-5" />
                                 ) : (
-                                    <Clock className="size-4" />
+                                    <Clock className="size-5" />
                                 )}
                                 {!isStoreOpen
                                     ? t("detail.storeClosed")
-                                    : outOfStock ? (t("detail.outOfStock") || "Out of Stock") : isAddingToCart ? (t("detail.adding") || "Adding...") : (t("detail.add") || "Add to Cart")}
+                                    : outOfStock ? (t("detail.outOfStock") || "Out of Stock") : isAddingToCart ? (t("detail.adding") || "Adding...") : `${t("detail.add") || "Add to Cart"}${billedPrice ? ` · ${formatPrice(billedPrice * quantity, currency)}` : ""}`}
                             </button>
-                        </>
+                        </div>
                     )}
 
                     {highlights.length > 0 ? (
@@ -758,41 +755,43 @@ function Gallery({
     const active = images[Math.min(index, images.length - 1)];
 
     return (
-        <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex flex-row sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto max-w-full shrink-0 scrollbar-none">
-                {images.map((image, position) => (
-                    <button
-                        key={`${image}-${position}`}
-                        type="button"
-                        aria-label={`Show image ${position + 1}`}
-                        aria-pressed={position === index}
-                        onClick={() => onSelect(position)}
-                        className={cn(
-                            "relative size-14 shrink-0 overflow-hidden rounded-xl border-0 transition-all cursor-pointer",
-                            position === index
-                                ? "shadow-xs scale-[1.02] opacity-100 ring-0"
-                                : "opacity-70 hover:opacity-100",
-                        )}
-                    >
-                        <Image
-                            src={image}
-                            alt={name ? `${name} — photo ${position + 1}` : `Product photo ${position + 1}`}
-                            fill
-                            unoptimized
-                            sizes="56px"
-                            className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
-                        />
-                    </button>
-                ))}
-            </div>
-            <div className="relative aspect-square flex-1 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-[#f8faf8] dark:bg-card shadow-xs">
+        <div className="flex flex-col-reverse sm:flex-row gap-4 items-start justify-center">
+            {images.length > 1 && (
+                <div className="flex flex-row sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto max-w-full shrink-0 scrollbar-none">
+                    {images.map((image, position) => (
+                        <button
+                            key={`${image}-${position}`}
+                            type="button"
+                            aria-label={`Show image ${position + 1}`}
+                            aria-pressed={position === index}
+                            onClick={() => onSelect(position)}
+                            className={cn(
+                                "relative size-14 shrink-0 overflow-hidden rounded-xl border-0 transition-all cursor-pointer",
+                                position === index
+                                    ? "shadow-xs scale-[1.02] opacity-100 ring-0"
+                                    : "opacity-70 hover:opacity-100",
+                            )}
+                        >
+                            <Image
+                                src={image}
+                                alt={name ? `${name} — photo ${position + 1}` : `Product photo ${position + 1}`}
+                                fill
+                                unoptimized
+                                sizes="56px"
+                                className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
+                            />
+                        </button>
+                    ))}
+                </div>
+            )}
+            <div className="relative aspect-square w-full max-w-[440px] md:max-w-[560px] lg:max-w-[620px] overflow-hidden rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-[#f8faf8] dark:bg-card shadow-xs">
                 <Image
                     src={active}
                     alt={name || "Product image"}
                     fill
                     unoptimized
                     priority
-                    sizes="(max-width: 640px) 100vw, 50vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 560px, 620px"
                     className={cn("object-cover transition-all duration-300", outOfStock && "filter blur-[1.5px]")}
                 />
             </div>

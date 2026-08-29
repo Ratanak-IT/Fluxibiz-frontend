@@ -57,7 +57,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
 
               {store.discountLabel && (
                 <div className="rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-[12px] font-bold text-red-600 dark:bg-red-500/20 dark:text-red-400">
-                  🏷️ PROMOTION: {store.discountLabel}
+                  PROMOTION: {store.discountLabel}
                 </div>
               )}
             </div>

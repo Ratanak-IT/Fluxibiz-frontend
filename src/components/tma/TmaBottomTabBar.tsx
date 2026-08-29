@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Receipt, ShoppingCart, User } from "lucide-react";
 
+import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
+
 /**
  * Fixed bottom tab bar — the Mini App's primary navigation instead of the
  * site's usual top-nav pattern. Standard mobile-app convention, and matches
@@ -13,13 +15,14 @@ import { Home, Receipt, ShoppingCart, User } from "lucide-react";
  */
 export function TmaBottomTabBar({ slug }: { slug: string }) {
   const pathname = usePathname();
+  const { queryParam } = useMiniAppMode();
 
   const homePath = `/store/${slug}`;
   const tabs = [
-    { key: "home", label: "Home", icon: Home, href: `${homePath}?tma=true`, path: homePath },
-    { key: "cart", label: "Cart", icon: ShoppingCart, href: `/store/${slug}/cart?tma=true`, path: `/store/${slug}/cart` },
-    { key: "payment", label: "Payment", icon: Receipt, href: `/store/${slug}/history?tma=true`, path: `/store/${slug}/history` },
-    { key: "me", label: "Me", icon: User, href: `/store/${slug}/me?tma=true`, path: `/store/${slug}/me` },
+    { key: "home", label: "Home", icon: Home, href: `${homePath}?${queryParam}`, path: homePath },
+    { key: "cart", label: "Cart", icon: ShoppingCart, href: `/store/${slug}/cart?${queryParam}`, path: `/store/${slug}/cart` },
+    { key: "payment", label: "Payment", icon: Receipt, href: `/store/${slug}/history?${queryParam}`, path: `/store/${slug}/history` },
+    { key: "me", label: "Me", icon: User, href: `/store/${slug}/me?${queryParam}`, path: `/store/${slug}/me` },
   ] as const;
 
   const isActive = (path: string | null) => path !== null && pathname === path;

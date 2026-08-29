@@ -4,8 +4,9 @@ const CONTACT_DETAILS = [
   {
     icon: Mail,
     label: "Email",
-    value: "ipos.istad@gmail.com",
-    href: "mailto:ipos.istad@gmail.com",
+    value: "fluxibizz@gmail.com",
+    href: "https://mail.google.com/mail/?view=cm&fs=1&to=fluxibizz@gmail.com",
+    external: true,
   },
   {
     icon: Phone,
@@ -29,7 +30,7 @@ const CONTACT_DETAILS = [
 export function ContactCard() {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      {CONTACT_DETAILS.map(({ icon: Icon, label, value, href }) => (
+      {CONTACT_DETAILS.map(({ icon: Icon, label, value, href, external }) => (
         <div
           key={label}
           className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-card dark:bg-background"
@@ -47,6 +48,8 @@ export function ContactCard() {
             {href ? (
               <a
                 href={href}
+                target={external ? "_blank" : undefined}
+                rel={external ? "noopener noreferrer" : undefined}
                 className="font-medium text-gray-900 underline-offset-4 hover:text-[#00932A] hover:underline dark:text-text dark:hover:text-[#21B94B]"
               >
                 {value}

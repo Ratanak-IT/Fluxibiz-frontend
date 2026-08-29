@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -35,10 +35,14 @@ const SOCIAL_PROVIDERS = [
   },
 ] as const;
 
+import { useState } from "react";
+import { AuthErrorBanner } from "./AuthErrorBanner";
+
 export function UserRegisterForm() {
   const fieldsT = useTranslations("Register.fields");
   const userT = useTranslations("Register.user");
   const { login, loginHref } = useAuth();
+  const [formError, setFormError] = useState<string | null>(null);
 
   const [registerUser, { isLoading: isRegistering }] =
     useRegisterUserMutation();
@@ -60,6 +64,7 @@ export function UserRegisterForm() {
   });
 
   const onSubmit = async (data: UserRegisterFormData) => {
+    setFormError(null);
     try {
       const userPayload = {
         username: data.email,
@@ -103,10 +108,11 @@ export function UserRegisterForm() {
 
   return (
     <form
+      noValidate
       className="grid gap-3.5 font-body text-foreground dark:text-white"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
+      <div className="grid items-start gap-3.5 sm:grid-cols-2 sm:gap-4">
         <Controller
           name="firstName"
           control={control}
@@ -167,7 +173,7 @@ export function UserRegisterForm() {
         )}
       />
 
-      <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
+      <div className="grid items-start gap-3.5 sm:grid-cols-2 sm:gap-4">
         <Controller
           name="password"
           control={control}
@@ -205,7 +211,6 @@ export function UserRegisterForm() {
         )}
       >
         <Checkbox
-          required
           className={cn(
             "size-[18px] rounded-[2px]",
             "border-gray-400",
