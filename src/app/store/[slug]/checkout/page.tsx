@@ -266,6 +266,11 @@ export default function CheckoutPage({
                                 >
                                     <span className="text-neutral-700 dark:text-card-foreground">
                                         {line.name} × {line.quantity}
+                                        {line.discountAmount && line.discountAmount > 0 ? (
+                                            <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                                {line.discountLabel ?? "Discount"}
+                                            </span>
+                                        ) : null}
                                     </span>
 
                                     <span className="font-semibold text-neutral-900 dark:text-card-foreground">
