@@ -70,14 +70,15 @@ export function billedUnitPrice(
 }
 
 /**
- * Extracts and normalizes line item prices regardless of backend property naming.
- * Guarantees:
- * - unitPrice: the actual lower discounted selling price
- * - compareAtPrice: the original higher strikethrough price (or 0 if no discount)
+ * Reads a line's price/discount straight off what the backend already
+ * computed (`unitPriceWithAddOns`, `subtotal`, `discountAmount`) instead of
+ * guessing a discount from price differences — the fields are always
+ * populated (compareAtPrice/discountAmount null when nothing applies), so
+ * there is nothing left to infer.
  */
 export function extractCartLinePrices(
     line: CartLine | any,
-    catalogItem?: { price?: number | string | null; compareAtPrice?: number | string | null } | null
+    _catalogItem?: { price?: number | string | null; compareAtPrice?: number | string | null } | null
 ): {
     unitPrice: number;
     compareAtPrice: number;
@@ -90,74 +91,33 @@ export function extractCartLinePrices(
         return { unitPrice: 0, compareAtPrice: 0, hasDiscount: false, subtotal: 0, compareAtSubtotal: 0, discountPercent: 0 };
     }
 
-    const lineUnitPrice = Number(
-        line.unitPrice ??
-        line.unit_price ??
-        line.price ??
-        0
-    );
-
-    const catalogPrice = catalogItem?.price !== undefined && catalogItem?.price !== null
-        ? Number(catalogItem.price)
-        : null;
-
-    const catalogCompare = catalogItem?.compareAtPrice !== undefined && catalogItem?.compareAtPrice !== null
-        ? Number(catalogItem.compareAtPrice)
-        : null;
-
-    const lineCompare = Number(
-        line.compareAtPrice ??
-        line.compare_at_price ??
-        line.compareAt ??
-        line.compare_at ??
-        line.comparePrice ??
-        line.compare_price ??
-        line.originalPrice ??
-        line.original_price ??
-        line.originalUnitPrice ??
-        line.original_unit_price ??
-        line.regularPrice ??
-        line.regular_price ??
-        line.item?.compareAtPrice ??
-        line.item?.compare_at_price ??
-        0
-    );
-
     const quantity = Number(line.quantity ?? 1);
+    const unitPriceWithAddOns = Number(line.unitPriceWithAddOns ?? line.unitPrice ?? 0);
+    const subtotal = Number(line.subtotal ?? unitPriceWithAddOns * quantity);
+    const discountAmount = Number(line.discountAmount ?? 0);
+    const hasDiscount = Number.isFinite(discountAmount) && discountAmount > 0;
 
-    // Collect all valid candidate prices
-    const candidatePrices = [lineUnitPrice, catalogPrice, catalogCompare, lineCompare].filter(
-        (p): p is number => p !== null && Number.isFinite(p) && p > 0
-    );
-
-    const hasCompareSignal = (catalogCompare !== null && catalogCompare > 0) || lineCompare > 0 || (catalogPrice !== null && lineUnitPrice > 0 && catalogPrice !== lineUnitPrice);
-
-    if (candidatePrices.length >= 2 && hasCompareSignal) {
-        const minPrice = Math.min(...candidatePrices);
-        const maxPrice = Math.max(...candidatePrices);
-
-        if (maxPrice > minPrice) {
-            const discountPercent = Math.round(((maxPrice - minPrice) / maxPrice) * 100);
-            return {
-                unitPrice: minPrice,
-                compareAtPrice: maxPrice,
-                hasDiscount: true,
-                subtotal: minPrice * quantity,
-                compareAtSubtotal: maxPrice * quantity,
-                discountPercent,
-            };
-        }
+    if (!hasDiscount) {
+        return {
+            unitPrice: quantity > 0 ? subtotal / quantity : unitPriceWithAddOns,
+            compareAtPrice: 0,
+            hasDiscount: false,
+            subtotal,
+            compareAtSubtotal: 0,
+            discountPercent: 0,
+        };
     }
 
-    const fallbackUnitPrice = catalogPrice !== null && catalogPrice > 0 ? Math.min(catalogPrice, lineUnitPrice > 0 ? lineUnitPrice : catalogPrice) : lineUnitPrice;
+    const compareAtSubtotal = subtotal + discountAmount;
+    const discountPercent = compareAtSubtotal > 0 ? Math.round((discountAmount / compareAtSubtotal) * 100) : 0;
 
     return {
-        unitPrice: fallbackUnitPrice,
-        compareAtPrice: 0,
-        hasDiscount: false,
-        subtotal: fallbackUnitPrice * quantity,
-        compareAtSubtotal: 0,
-        discountPercent: 0,
+        unitPrice: quantity > 0 ? subtotal / quantity : unitPriceWithAddOns,
+        compareAtPrice: unitPriceWithAddOns,
+        hasDiscount: true,
+        subtotal,
+        compareAtSubtotal,
+        discountPercent,
     };
 }
 

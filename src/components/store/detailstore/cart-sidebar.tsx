@@ -18,7 +18,6 @@ import {
   useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
-import { useGetPublicStoreItemsQuery } from "@/features/store-api/store-api";
 import {
   formatMoney,
   resolveMediaUrl,
@@ -27,7 +26,6 @@ import {
   getCartLineStock,
   apiErrorMessage,
   formatStockErrorMessage,
-  billedUnitPrice,
   extractCartLinePrices,
   type CartLine,
   type StoreCart,
@@ -55,18 +53,11 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
     businessId ? store.businessId === businessId : slug ? store.slug === slug : false,
   );
 
-  const lines = storeCart?.items ?? [];
-  const activeSlug = slug || storeCart?.slug || "";
-  const { data: storeItems = [] } = useGetPublicStoreItemsQuery(activeSlug, { skip: !activeSlug });
+  const lines = useMemo(() => storeCart?.items ?? [], [storeCart?.items]);
 
   const effectiveSubtotal = useMemo(() => {
-    return lines.reduce((acc, line) => {
-      const catalogItem = storeItems.find((i: any) => i.id === line.itemId || i.slug === line.itemId);
-      const prices = extractCartLinePrices(line, catalogItem);
-      const extraPerUnit = line.unitPriceWithAddOns ? Math.max(0, line.unitPriceWithAddOns - line.unitPrice) : 0;
-      return acc + (prices.unitPrice + extraPerUnit) * line.quantity;
-    }, 0);
-  }, [lines, storeItems]);
+    return lines.reduce((acc, line) => acc + extractCartLinePrices(line).subtotal, 0);
+  }, [lines]);
 
   const currency = storeCurrency || storeCart?.currency || "USD";
   const itemCount = storeCart?.itemCount ?? 0;
@@ -244,17 +235,13 @@ function CartSidebarLine({
   const slug = typeof params?.slug === "string" ? params.slug : "";
   const productHref = slug && line.itemId ? `/store/${slug}/product/${line.itemId}` : null;
 
-  const { data: storeItems = [] } = useGetPublicStoreItemsQuery(slug, { skip: !slug });
-  const catalogItem = storeItems.find((i: any) => i.id === line.itemId || i.slug === line.itemId);
-
   const handleNavigate = () => {
     if (productHref) {
       router.push(productHref);
     }
   };
 
-  const { unitPrice: effectiveUnitPrice, hasDiscount, compareAtSubtotal } = extractCartLinePrices(line, catalogItem);
-  const currentSubtotal = (billedUnitPrice(line) - line.unitPrice + effectiveUnitPrice) * line.quantity;
+  const { hasDiscount, compareAtSubtotal, subtotal: currentSubtotal } = extractCartLinePrices(line);
 
   return (
     <div className={cn("flex w-full items-center gap-3 rounded-xl bg-neutral-50 p-2.5 dark:bg-muted/40 relative", outOfStock && "opacity-90")}>

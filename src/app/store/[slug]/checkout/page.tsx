@@ -273,8 +273,15 @@ export default function CheckoutPage({
                                         ) : null}
                                     </span>
 
-                                    <span className="font-semibold text-neutral-900 dark:text-card-foreground">
-                                        {formatMoney(line.subtotal, currency)}
+                                    <span className="flex flex-col items-end">
+                                        {line.discountAmount && line.discountAmount > 0 ? (
+                                            <span className="text-xs text-neutral-400 line-through">
+                                                {formatMoney(line.subtotal + line.discountAmount, currency)}
+                                            </span>
+                                        ) : null}
+                                        <span className="font-semibold text-neutral-900 dark:text-card-foreground">
+                                            {formatMoney(line.subtotal, currency)}
+                                        </span>
                                     </span>
                                 </div>
                             ))}

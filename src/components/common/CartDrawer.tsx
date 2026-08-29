@@ -34,7 +34,7 @@ import {
     useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
 import { useGetActiveCheckoutQuery } from "@/features/checkout/checkoutApi";
-import { useGetPublicStoreQuery, useGetPublicStoreItemsQuery } from "@/features/store-api/store-api";
+import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import { useAuth } from "@/features/auth/useAuth";
 import {
     formatMoney,
@@ -44,7 +44,6 @@ import {
     getCartLineStock,
     apiErrorMessage,
     formatStockErrorMessage,
-    billedUnitPrice,
     freeUnitsOnLine,
     extractCartLinePrices,
     type CartLine,
@@ -196,13 +195,8 @@ function StoreSection({
     const { data: storeItems = [] } = useGetPublicStoreItemsQuery(store.slug, { skip: !store.slug });
 
     const effectiveSubtotal = useMemo(() => {
-        return store.items.reduce((acc, line) => {
-            const catalogItem = storeItems.find((i: any) => i.id === line.itemId || i.slug === line.itemId);
-            const prices = extractCartLinePrices(line, catalogItem);
-            const extraPerUnit = line.unitPriceWithAddOns ? Math.max(0, line.unitPriceWithAddOns - line.unitPrice) : 0;
-            return acc + (prices.unitPrice + extraPerUnit) * line.quantity;
-        }, 0);
-    }, [store.items, storeItems]);
+        return store.items.reduce((acc, line) => acc + extractCartLinePrices(line).subtotal, 0);
+    }, [store.items]);
 
     const logoUrl = resolveMediaUrl(store.logo);
 
@@ -423,11 +417,10 @@ function LineRow({
             });
     };
 
-    const { data: storeItems = [] } = useGetPublicStoreItemsQuery(storeSlug ?? "", { skip: !storeSlug });
-    const catalogItem = storeItems.find((i: any) => i.id === line.itemId || i.slug === line.itemId);
-
-    const { unitPrice: effectiveUnitPrice, hasDiscount, compareAtSubtotal } = extractCartLinePrices(line, catalogItem);
-    const currentSubtotal = (billedUnitPrice(line) - line.unitPrice + effectiveUnitPrice) * pendingQty;
+    const { unitPrice: effectiveUnitPrice, hasDiscount, compareAtSubtotal } = extractCartLinePrices(line);
+    const currentSubtotal = pendingQty === line.quantity
+        ? extractCartLinePrices(line).subtotal
+        : effectiveUnitPrice * pendingQty;
 
     return (
         <div
