@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 export const STRICT_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
+export const NAME_REGEX = /^[a-zA-Z\u00C0-\u024F\u1780-\u17FF\s'-]+$/;
+export const PHONE_REGEX = /^\+?[0-9\s-]{8,15}$/;
 
 export function validateEmailFormat(val?: string | null): string | true {
   if (!val || val.trim() === "") return "Email is required";
@@ -16,7 +18,7 @@ export function validateEmailFormat(val?: string | null): string | true {
   }
 
   if (!parts[1].includes(".") || parts[1].endsWith(".")) {
-    return "Email domain must include an extension like .com or .kh (e.g. gmail.com)";
+    return "Email domain must include an extension like .com (e.g. gmail.com)";
   }
 
   if (!STRICT_EMAIL_REGEX.test(trimmed)) {
@@ -47,17 +49,36 @@ export const strictEmailSchema = z.string().superRefine((val, ctx) => {
   }
 });
 
+export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_#^~<>-]).{8,}$/;
+
+export const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(
+    PASSWORD_REGEX,
+    "Password requires uppercase, lowercase, number & special character"
+  );
+
 export const userRegisterSchema = z
   .object({
-    firstName: z.string().min(2, "First name must be at least 2 characters"),
-    lastName: z.string().min(2, "Last name must be at least 2 characters"),
+    firstName: z
+      .string()
+      .trim()
+      .min(2, "First name 2 characters required")
+      .regex(NAME_REGEX, "Invalid first name"),
+    lastName: z
+      .string()
+      .trim()
+      .min(2, "Last name 2 characters required")
+      .regex(NAME_REGEX, "Invalid last name"),
     phone: z
       .string()
+      .trim()
       .min(8, "Phone number must be at least 8 digits")
-      .regex(/^\+?[0-9\s]+$/, "Invalid phone number format"),
+      .regex(PHONE_REGEX, "Invalid phone number format (e.g. 012345678 or +85512345678)"),
     email: strictEmailSchema,
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(8, "Confirm password is required"),
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -67,10 +88,18 @@ export const userRegisterSchema = z
 export type UserRegisterFormData = z.infer<typeof userRegisterSchema>;
 
 export const businessRegisterSchema = z.object({
-  storeName: z.string().min(2, "Store name must be at least 2 characters"),
-  businessType: z.string().min(1, "Please select a business type"),
+  storeName: z
+    .string()
+    .trim()
+    .min(2, "Store name must be at least 2 characters"),
+  businessType: z
+    .string()
+    .min(1, "Please select a business type"),
   businessEmail: strictEmailSchema,
-  businessAddress: z.string().min(3, "Address must be at least 3 characters"),
+  businessAddress: z
+    .string()
+    .trim()
+    .min(3, "Business address must be at least 3 characters"),
   description: z.string().optional(),
 });
 

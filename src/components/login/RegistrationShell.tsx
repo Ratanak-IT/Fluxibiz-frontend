@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
@@ -63,7 +63,7 @@ export function RegistrationShell({
           >
             <h1
               className={cn(
-                "text-center font-body font-bold text-primary",
+                "text-center font-body font-bold text-primary mt-3 sm:mt-5",
                 isFigma
                   ? "mb-2 text-xl tracking-[-0.6px] sm:mb-3 sm:text-2xl md:text-[30px]"
                   : "mb-4 text-lg tracking-[-0.54px] sm:mb-6 sm:text-xl md:text-[27px]",
@@ -104,8 +104,8 @@ export function RegistrationShell({
                   "dark:focus-visible:ring-offset-background",
                 )}
               >
+                <ArrowLeft className="size-4" aria-hidden="true" />
                 <span>{t("backToWebsite")}</span>
-                <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
             </div>
 
@@ -150,8 +150,8 @@ export function RegistrationShell({
                 "dark:focus-visible:ring-offset-background",
               )}
             >
+              <ArrowLeft className="size-4" aria-hidden="true" />
               <span>{t("backToWebsite")}</span>
-              <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           </div>
         </div>

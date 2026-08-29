@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Store as StoreIcon } from "lucide-react";
 
+import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
+
 /**
  * The Mini App's own top bar — replaces the site-wide Navbar (hidden via
  * useIsTma in Navbar.tsx). Shows only *this* business's identity: no link
@@ -21,9 +23,11 @@ export function TmaNavbar({
   businessName: string;
   businessLogo?: string | null;
 }) {
+  const { queryParam } = useMiniAppMode();
+
   return (
     <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background px-4 py-3">
-      <Link href={`/store/${slug}?tma=true`} className="flex min-w-0 flex-1 items-center gap-3">
+      <Link href={`/store/${slug}?${queryParam}`} className="flex min-w-0 flex-1 items-center gap-3">
         <div className="relative size-9 shrink-0 overflow-hidden rounded-lg bg-muted">
           {businessLogo ? (
             <Image

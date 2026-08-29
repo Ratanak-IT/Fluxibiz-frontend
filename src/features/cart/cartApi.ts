@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import type { AuthState } from "@/features/auth/authSlice";
 import { applyTmaAuthHeader, hasTmaSessionToken } from "@/lib/tma/tmaAuthHeader";
-import { billedUnitPrice } from "@/lib/type/cartType";
+import { billedUnitPrice, extractCartLinePrices } from "@/lib/type/cartType";
 import type {
     AddToCartPayload,
     CartCount,
@@ -50,10 +50,16 @@ function sanitizeCartData(cartData: CartSummary | null | undefined): CartSummary
     const stores = cartData.stores.map((store) => {
         let storeSubtotal = 0;
         const items = store.items.map((line) => {
-            const lineSubtotal = billedUnitPrice(line) * line.quantity;
+            const priceInfo = extractCartLinePrices(line);
+            const lineSubtotal = (priceInfo.unitPrice + (line.unitPriceWithAddOns ? Math.max(0, line.unitPriceWithAddOns - line.unitPrice) : 0)) * line.quantity;
             storeSubtotal += lineSubtotal;
 
-            return { ...line, subtotal: lineSubtotal };
+            return {
+                ...line,
+                unitPrice: priceInfo.unitPrice,
+                compareAtPrice: priceInfo.hasDiscount ? priceInfo.compareAtPrice : (line.compareAtPrice ?? null),
+                subtotal: lineSubtotal,
+            };
         });
 
         return {
@@ -220,6 +226,7 @@ export const cartApi = createApi({
                                 addOns: itemDetails.addOns ?? [],
                                 quantity,
                                 unitPrice: itemDetails.price,
+                                compareAtPrice: itemDetails.compareAtPrice ?? null,
                                 unitPriceWithAddOns: itemDetails.price,
                                 subtotal: newSubtotal,
                             });

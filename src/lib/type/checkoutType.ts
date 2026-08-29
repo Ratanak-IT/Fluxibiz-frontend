@@ -48,6 +48,8 @@ export interface StorefrontOrderItem {
     unitPrice: number;
     /** Total knocked off this whole line by an active promotion — a line total, not a per-unit amount. */
     discountAmount?: number;
+    /** Name of the discount that produced discountAmount for this line, e.g. "Summer Sale 15%". */
+    discountLabel?: string | null;
     /** Units within this line's quantity given free by a Buy X Get Y promotion, when the backend reports it. */
     freeQuantity?: number;
     lineTotal: number;

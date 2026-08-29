@@ -217,30 +217,12 @@ export const storeCateApi = createApi({
             providesTags: ["PublicStore"],
         }),
 
+        /** The public "Find us on Facebook" link — both fields null when this store has no Page connected. */
         getFacebookSocialSettings: builder.query<
-            any,
-            { slug?: string; businessId?: string } | string | void
+            { pageName: string | null; pageUrl: string | null },
+            string
         >({
-            queryFn: async (arg, _api, _extra, fetchWithBQ) => {
-                const idOrSlug = typeof arg === "string" ? arg : arg?.slug || arg?.businessId;
-                const endpointsToTry = [
-                    "/businesses/social-settings/facebook",
-                    idOrSlug ? `/public/stores/${idOrSlug}/social-settings/facebook` : null,
-                    idOrSlug ? `/businesses/${idOrSlug}/social-settings/facebook` : null,
-                ].filter(Boolean) as string[];
-
-                for (const url of endpointsToTry) {
-                    try {
-                        const res = await fetchWithBQ(url);
-                        if (res.data) {
-                            return { data: res.data };
-                        }
-                    } catch {
-                        // ignore and try next
-                    }
-                }
-                return { data: null };
-            },
+            query: (slugOrId) => `/public/stores/${slugOrId}/social-settings/facebook`,
             providesTags: ["PublicStore"],
         }),
     }),

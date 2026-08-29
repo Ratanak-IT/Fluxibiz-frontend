@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Trash2 } from "lucide-react";
 
 import { StoreCart } from "@/lib/type/cartType";
-import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
+import { useGetPublicStoreQuery, useGetPublicStoreItemsQuery } from "@/features/store-api/store-api";
 import { useRemoveCartStoreMutation } from "@/features/cart/cartApi";
 import { Button } from "@/components/ui/button";
 import ItemCardComponent from "./item-card-component";
@@ -16,6 +16,7 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
     const t = useTranslations("Cart");
     const [removeStore, { isLoading: isRemoving }] = useRemoveCartStoreMutation();
     const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
+    const { data: storeItems = [] } = useGetPublicStoreItemsQuery(store.slug, { skip: !store.slug });
     const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
 
     return (
@@ -48,11 +49,12 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
                             line={line}
                             currency={effectiveCurrency}
                             storeSlug={store.slug}
+                            storeItems={storeItems}
                         />
                     ))}
                 </div>
 
-                <OrderSummaryComponent store={store} currency={effectiveCurrency} />
+                <OrderSummaryComponent store={store} currency={effectiveCurrency} storeItems={storeItems} />
             </div>
         </section>
     );

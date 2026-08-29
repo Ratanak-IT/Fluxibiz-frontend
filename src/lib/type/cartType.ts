@@ -28,6 +28,7 @@ export interface CartLine {
     quantity: number;
     /** The thing itself, without its extras. */
     unitPrice: number;
+    compareAtPrice?: number | null;
     /**
      * What one of this line is billed at — the price above plus every extra
      * on it. This is what `subtotal` is a multiple of, so a per-unit price
@@ -41,8 +42,7 @@ export interface CartLine {
     available?: boolean | null;
     status?: string | null;
     stock?: number | null;
-    /** What this line's units would cost before any promotion. Present only once the store's cart endpoint reports it. */
-    compareAtPrice?: number | null;
+    availableQuantity?: number | null;
     /** Total knocked off this whole line by an active promotion — a line total, not a per-unit amount. */
     discountAmount?: number | null;
     /** Human label for the promotion applied to this line, e.g. "Buy 2 Get 1 Free" or "10% OFF". */
@@ -69,7 +69,117 @@ export function billedUnitPrice(
     return line.unitPriceWithAddOns ?? line.unitPrice;
 }
 
+/**
+ * Extracts and normalizes line item prices regardless of backend property naming.
+ * Guarantees:
+ * - unitPrice: the actual lower discounted selling price
+ * - compareAtPrice: the original higher strikethrough price (or 0 if no discount)
+ */
+export function extractCartLinePrices(
+    line: CartLine | any,
+    catalogItem?: { price?: number | string | null; compareAtPrice?: number | string | null } | null
+): {
+    unitPrice: number;
+    compareAtPrice: number;
+    hasDiscount: boolean;
+    subtotal: number;
+    compareAtSubtotal: number;
+    discountPercent: number;
+} {
+    if (!line) {
+        return { unitPrice: 0, compareAtPrice: 0, hasDiscount: false, subtotal: 0, compareAtSubtotal: 0, discountPercent: 0 };
+    }
+
+    const lineUnitPrice = Number(
+        line.unitPrice ??
+        line.unit_price ??
+        line.price ??
+        0
+    );
+
+    const catalogPrice = catalogItem?.price !== undefined && catalogItem?.price !== null
+        ? Number(catalogItem.price)
+        : null;
+
+    const catalogCompare = catalogItem?.compareAtPrice !== undefined && catalogItem?.compareAtPrice !== null
+        ? Number(catalogItem.compareAtPrice)
+        : null;
+
+    const lineCompare = Number(
+        line.compareAtPrice ??
+        line.compare_at_price ??
+        line.compareAt ??
+        line.compare_at ??
+        line.comparePrice ??
+        line.compare_price ??
+        line.originalPrice ??
+        line.original_price ??
+        line.originalUnitPrice ??
+        line.original_unit_price ??
+        line.regularPrice ??
+        line.regular_price ??
+        line.item?.compareAtPrice ??
+        line.item?.compare_at_price ??
+        0
+    );
+
+    const quantity = Number(line.quantity ?? 1);
+
+    // Collect all valid candidate prices
+    const candidatePrices = [lineUnitPrice, catalogPrice, catalogCompare, lineCompare].filter(
+        (p): p is number => p !== null && Number.isFinite(p) && p > 0
+    );
+
+    const hasCompareSignal = (catalogCompare !== null && catalogCompare > 0) || lineCompare > 0 || (catalogPrice !== null && lineUnitPrice > 0 && catalogPrice !== lineUnitPrice);
+
+    if (candidatePrices.length >= 2 && hasCompareSignal) {
+        const minPrice = Math.min(...candidatePrices);
+        const maxPrice = Math.max(...candidatePrices);
+
+        if (maxPrice > minPrice) {
+            const discountPercent = Math.round(((maxPrice - minPrice) / maxPrice) * 100);
+            return {
+                unitPrice: minPrice,
+                compareAtPrice: maxPrice,
+                hasDiscount: true,
+                subtotal: minPrice * quantity,
+                compareAtSubtotal: maxPrice * quantity,
+                discountPercent,
+            };
+        }
+    }
+
+    const fallbackUnitPrice = catalogPrice !== null && catalogPrice > 0 ? Math.min(catalogPrice, lineUnitPrice > 0 ? lineUnitPrice : catalogPrice) : lineUnitPrice;
+
+    return {
+        unitPrice: fallbackUnitPrice,
+        compareAtPrice: 0,
+        hasDiscount: false,
+        subtotal: fallbackUnitPrice * quantity,
+        compareAtSubtotal: 0,
+        discountPercent: 0,
+    };
+}
+
 import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+
+export function getCartLineStock(line?: CartLine | any | null): number | null {
+    if (!line) return null;
+    if (line.availableQuantity !== undefined && line.availableQuantity !== null) {
+        return Number(line.availableQuantity);
+    }
+    if (line.stock !== undefined && line.stock !== null) {
+        return Number(line.stock);
+    }
+    return null;
+}
+
+export function isCartLineAtStockCeiling(line?: CartLine | any | null): boolean {
+    if (!line) return false;
+    const stock = getCartLineStock(line);
+    if (stock === null) return false;
+    return (line.quantity ?? 1) >= stock;
+}
 
 export function isCartLineOutOfStock(line?: CartLine | any | null): boolean {
     if (!line) return false;
@@ -170,6 +280,7 @@ export interface AddToCartPayload {
         name: string;
         /** All-in, extras included: it stands in for the billed price. */
         price: number;
+        compareAtPrice?: number | null;
         imageUrl?: string | null;
         storeName?: string;
         currency?: string;

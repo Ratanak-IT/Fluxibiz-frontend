@@ -2,45 +2,30 @@
 
 import { useEffect, useState, ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import Script from "next/script";
 
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
-import { useAuthenticateFacebookWebAppMutation } from "@/features/auth/facebookWebAppApi";
-import { setTmaSession, updateTmaSession } from "@/lib/tma/tmaSession";
+import { setTmaSession } from "@/lib/tma/tmaSession";
+import { getDeviceSession } from "@/lib/tma/messengerDeviceStore";
 import { TmaNavbar } from "@/components/tma/TmaNavbar";
 import { TmaBottomTabBar } from "@/components/tma/TmaBottomTabBar";
-import { CompleteProfileScreen } from "@/components/tma/CompleteProfileScreen";
+import { MessengerProfileGateProvider } from "@/lib/tma/MessengerProfileGate";
 
-type AuthState =
-  | { status: "pending" }
-  | { status: "needs-profile"; businessId: string; businessName: string; fullName: string }
-  | { status: "ready" }
-  | { status: "error"; message: string };
-
-declare global {
-  interface Window {
-    extAsyncInit?: () => void;
-    MessengerExtensions?: {
-      getContext: (
-        appId: string,
-        success: (context: { psid: string; signed_request?: string; thread_type?: string; tid?: string }) => void,
-        error: (errCode: number, errMsg: string) => void
-      ) => void;
-    };
-  }
-}
+type AuthState = { status: "pending" } | { status: "ready" };
 
 /**
  * Messenger's counterpart to TelegramWebAppProvider — the whole shopping
- * experience (browse, cart, checkout) happens inside this one webview now,
- * the same as the Telegram Mini App.
+ * experience (browse, cart, checkout) happens inside this one webview.
  *
- * Unlike what Facebook's own docs imply, a `web_url` button with
- * `messenger_extensions: true` does NOT reliably append `signed_request` to
- * the webview's URL on load — the only mechanism that actually works is
- * calling `MessengerExtensions.getContext()` from inside the loaded page
- * once the SDK has initialised, which returns the same signed_request the
- * backend needs to verify.
+ * This used to authenticate through Messenger Extensions'
+ * `getContext()`/`signed_request` the instant the page loaded. That never
+ * became reliable — Facebook's own client kept returning `-32603`/`2071011`
+ * regardless of any fix on this side — and even when it worked, the Graph
+ * API name lookup behind it commonly fell back to a placeholder ("Facebook
+ * User") since Meta rarely grants profile-read permission for it. So this
+ * no longer touches the Messenger Extensions SDK at all: a visitor browses
+ * completely unauthenticated at first (see `MessengerProfileGateProvider`,
+ * mounted below), and only registers — name, phone, a device id kept in
+ * localStorage — the first time they try to add to cart or pay.
  */
 export default function MessengerWebAppProvider({
   slug,
@@ -50,144 +35,86 @@ export default function MessengerWebAppProvider({
   children: ReactNode;
 }) {
   const searchParams = useSearchParams();
-  const isMessenger =
+  const flaggedMessenger =
     searchParams.get("messenger") === "true" ||
-    (typeof window !== "undefined" && localStorage.getItem("messenger_mode") === "true");
+    (typeof window !== "undefined" && sessionStorage.getItem("messenger_mode") === "true");
 
-  // Same store data the normal page already fetches — reused here just for
-  // the id/name/logo the webview's own navbar and auth call need.
-  const { data: store } = useGetPublicStoreQuery(slug, { skip: !isMessenger });
-  const [authenticate] = useAuthenticateFacebookWebAppMutation();
+  // Fetched unconditionally, not gated on the flag above — Messenger tears
+  // down and recreates its embedded webview between separate opens on
+  // mobile, and `sessionStorage` (what that flag lives in) doesn't reliably
+  // survive that. Without the store's id, there's no way to check for a
+  // durable device session below, so a visitor whose flag got lost would
+  // otherwise be stuck looking like a brand-new, unauthenticated web guest
+  // forever — losing their session, order history, everything.
+  const { data: store } = useGetPublicStoreQuery(slug, { skip: !slug });
   const [authState, setAuthState] = useState<AuthState>({ status: "pending" });
-  const [sdkReady, setSdkReady] = useState(false);
+  const [hasDeviceSession, setHasDeviceSession] = useState(false);
 
-  // The SDK calls this itself once its own script has finished loading —
-  // must be assigned before the script tag runs, so it can't wait for a
-  // useEffect after mount.
   useEffect(() => {
-    if (!isMessenger) return;
-    window.extAsyncInit = () => setSdkReady(true);
-    // The script may have already finished loading (e.g. fast reload) before
-    // this effect ran and called extAsyncInit itself — nothing left to wait for.
-    if (window.MessengerExtensions) setSdkReady(true);
-  }, [isMessenger]);
+    if (!store) return;
 
-  // Always re-authenticate rather than trusting a cached session token —
-  // same reasoning as Telegram: this call is what links the PSID to a
-  // Customer row on the backend, and that link is what lets an order be
-  // tagged MESSENGER instead of WEB at checkout.
-  useEffect(() => {
-    if (!isMessenger || !store || !sdkReady) return;
+    const existing = getDeviceSession(store.id);
+    if (!existing) return;
 
-    const appId = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID;
-    if (!appId) {
-      setAuthState({ status: "error", message: "Messenger sign-in is not configured (missing app id)." });
-      return;
+    setHasDeviceSession(true);
+
+    // Hydrates the same sessionStorage-backed `tmaSession` every other API
+    // slice reads its bearer token from, so a returning visitor's
+    // cart/checkout/history calls are already authenticated without
+    // asking again — even after the flag above was lost.
+    setTmaSession({
+      token: existing.token,
+      refreshToken: existing.refreshToken,
+      businessId: existing.businessId,
+      businessSlug: existing.businessSlug,
+      customerId: existing.customerId,
+      fullName: existing.fullName,
+      phoneNumber: existing.phoneNumber,
+    });
+
+    // Restores the flag itself once a device session proves this really is
+    // Messenger — so every other component on this page load that reads
+    // `useIsMessenger()` independently (Navbar, the "Me" tab, payment
+    // history) sees the correct answer too, not just this provider.
+    try {
+      window.sessionStorage.setItem("messenger_mode", "true");
+    } catch {
+      // Storage disabled — the flag just won't stick, same as before.
     }
+  }, [store]);
 
-    window.MessengerExtensions?.getContext(
-      appId,
-      (context) => {
-        if (!context.signed_request) {
-          setAuthState({
-            status: "error",
-            message: "Open this from the shop's Messenger bot to sign in.",
-          });
-          return;
-        }
+  const isMessenger = flaggedMessenger || hasDeviceSession;
 
-        authenticate({ businessId: store.id, signedRequest: context.signed_request })
-          .unwrap()
-          .then((result) => {
-            setTmaSession({
-              token: result.token,
-              refreshToken: result.refreshToken,
-              businessId: result.businessId,
-              businessSlug: result.businessSlug,
-              customerId: result.customerId,
-              fullName: result.fullName,
-              phoneNumber: result.phoneNumber,
-              email: result.email,
-              gender: result.gender,
-              address: result.address,
-            });
-
-            if (!result.profileComplete) {
-              setAuthState({
-                status: "needs-profile",
-                businessId: result.businessId,
-                businessName: result.businessName,
-                fullName: result.fullName,
-              });
-            } else {
-              setAuthState({ status: "ready" });
-            }
-          })
-          .catch(() => {
-            setAuthState({
-              status: "error",
-              message: "Couldn't sign you in. Try reopening this from the bot.",
-            });
-          });
-      },
-      (errCode, errMsg) => {
-        setAuthState({
-          status: "error",
-          message: `Open this from the shop's Messenger bot to sign in.\n\n[debug] getContext failed: ${errCode} ${errMsg}`,
-        });
-      }
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMessenger, store, sdkReady]);
+  useEffect(() => {
+    if (!isMessenger || !store) return;
+    setAuthState({ status: "ready" });
+  }, [isMessenger, store]);
 
   if (!isMessenger) {
     return <div>{children}</div>;
   }
 
+  if (authState.status === "pending") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
+        Loading...
+      </div>
+    );
+  }
+
   return (
-    <>
-      <Script
-        src="https://connect.facebook.net/en_US/messenger.Extensions.js"
-        strategy="afterInteractive"
-      />
-
-      {authState.status === "pending" && (
-        <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
-          Loading...
-        </div>
-      )}
-
-      {authState.status === "error" && (
-        <div className="flex min-h-screen items-center justify-center whitespace-pre-wrap wrap-break-word bg-background px-6 text-center text-sm text-muted-foreground">
-          {authState.message}
-        </div>
-      )}
-
-      {authState.status === "needs-profile" && (
-        <CompleteProfileScreen
-          businessId={authState.businessId}
-          businessName={authState.businessName}
-          fullName={authState.fullName}
-          onComplete={(data) => {
-            updateTmaSession(data);
-            setAuthState({ status: "ready" });
-          }}
-        />
-      )}
-
-      {authState.status === "ready" && (
-        <div className="tma-standalone-mode min-h-screen bg-background pb-24">
-          {store && (
-            <TmaNavbar
-              slug={slug}
-              businessName={store.name || store.displayName || ""}
-              businessLogo={store.logo}
-            />
-          )}
-          {children}
-          <TmaBottomTabBar slug={slug} />
-        </div>
-      )}
-    </>
+    <MessengerProfileGateProvider>
+      <div className="tma-standalone-mode min-h-screen bg-background pb-24">
+        {store && (
+          <TmaNavbar
+            slug={slug}
+            businessName={store.name || store.displayName || ""}
+            businessLogo={store.logo}
+          />
+        )}
+        {children}
+        <TmaBottomTabBar slug={slug} />
+      </div>
+    </MessengerProfileGateProvider>
   );
 }
