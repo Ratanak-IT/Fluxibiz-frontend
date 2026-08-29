@@ -17,7 +17,7 @@ import {
     useGetActiveCheckoutQuery,
     useGetMyCustomerProfileQuery,
 } from "@/features/checkout/checkoutApi";
-import { formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
+import { computeTax, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
@@ -195,6 +195,21 @@ export default function CheckoutPage({
     const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
+    // `store.subtotal` is already net of every discount (see cartApi's
+    // sanitizeCartData) — tax is computed on top of that, exactly like the
+    // cart page's own order summary, so the button/QR total this page shows
+    // never disagrees with what the cart page already previewed.
+    const netAmount = store?.subtotal ?? 0;
+    const { taxAmount, total: payableTotal } = computeTax(
+        netAmount,
+        publicStore?.taxRate,
+        publicStore?.taxInclusionType,
+        publicStore?.taxEnabled,
+    );
+    const isTaxInclusive = publicStore?.taxInclusionType === "INCLUSIVE";
+    const isTaxActive = Boolean(publicStore?.taxEnabled) && taxAmount > 0;
+    const effectiveTaxName = publicStore?.taxLabel?.trim() || "VAT";
+
     return (
         <div className="mx-auto max-w-3xl px-6 pt-16 pb-24 sm:pt-8 sm:pb-12">
             <div className="mb-2 flex items-center justify-between sm:mb-3">
@@ -287,14 +302,38 @@ export default function CheckoutPage({
                             ))}
                         </div>
 
-                        <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-border">
-                            <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
-                                {t("total")}
-                            </span>
+                        <div className="mt-4 flex flex-col gap-2 border-t border-neutral-100 pt-4 dark:border-border">
+                            {isTaxActive && !isTaxInclusive && (
+                                <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
+                                    <span>
+                                        {effectiveTaxName} {publicStore?.taxRate ? `(${publicStore.taxRate}%)` : ""}
+                                    </span>
+                                    <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                                        +{formatMoney(taxAmount, currency)}
+                                    </span>
+                                </div>
+                            )}
 
-                            <span className="text-2xl font-bold text-green-600 dark:text-primary">
-                                {formatMoney(store.subtotal, currency)}
-                            </span>
+                            {isTaxActive && isTaxInclusive && (
+                                <div className="flex items-center justify-between text-xs text-neutral-400 dark:text-muted-foreground">
+                                    <span>
+                                        {effectiveTaxName} {publicStore?.taxRate ? `(${publicStore.taxRate}% Incl.)` : "(Incl.)"}
+                                    </span>
+                                    <span className="font-medium text-neutral-500">
+                                        {formatMoney(taxAmount, currency)}
+                                    </span>
+                                </div>
+                            )}
+
+                            <div className="flex items-center justify-between">
+                                <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
+                                    {t("total")}
+                                </span>
+
+                                <span className="text-2xl font-bold text-green-600 dark:text-primary">
+                                    {formatMoney(payableTotal, currency)}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -384,8 +423,8 @@ export default function CheckoutPage({
                     {store?.open === false
                         ? t("shopClosed")
                         : paymentMethod === "PAY_LATER"
-                        ? `${t("placeOrder")} (${formatMoney(store?.subtotal ?? 0, currency)})`
-                        : `${t("payWithKhqr")} (${formatMoney(store?.subtotal ?? 0, currency)})`}
+                        ? `${t("placeOrder")} (${formatMoney(payableTotal, currency)})`
+                        : `${t("payWithKhqr")} (${formatMoney(payableTotal, currency)})`}
                 </Button>
             )}
 

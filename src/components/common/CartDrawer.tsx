@@ -192,8 +192,6 @@ function StoreSection({
     const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
     const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
 
-    const { data: storeItems = [] } = useGetPublicStoreItemsQuery(store.slug, { skip: !store.slug });
-
     const effectiveSubtotal = useMemo(() => {
         return store.items.reduce((acc, line) => acc + extractCartLinePrices(line).subtotal, 0);
     }, [store.items]);
