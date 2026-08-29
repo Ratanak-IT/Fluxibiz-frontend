@@ -26,13 +26,16 @@ type Phase = "waiting" | "paid" | "expired" | "cancelled";
 
 function secondsLeft(expiresAt: string | null): number {
     if (!expiresAt) return 180; // 3 minutes default KHQR TTL fallback
-  
-    const normalizedDate =
-        expiresAt.endsWith("Z") || expiresAt.includes("+")
-            ? expiresAt
-            : `${expiresAt}Z`;
 
-    const parsed = new Date(normalizedDate).getTime();
+    // The backend's timestamps are LocalDateTime — a bare string with no
+    // timezone marker, captured in the server's own local wall-clock time
+    // (Asia/Phnom_Penh, see the api container's TZ setting). Appending "Z"
+    // here used to be correct back when the server ran in UTC, but now it
+    // makes the browser (also Phnom Penh time) misread the value as UTC and
+    // add a further 7 hours on top — inflating a ~2 minute countdown to
+    // ~422 minutes. Parsing the bare string directly lets `Date` read it as
+    // local time, which is what it already is.
+    const parsed = new Date(expiresAt).getTime();
     if (Number.isNaN(parsed)) return 180;
 
     const diff = parsed - Date.now();
