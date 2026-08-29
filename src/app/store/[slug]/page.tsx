@@ -126,7 +126,7 @@ export default function StoreDetail({
       );
     }
 
-    // Category filter
+   
     if (selectedCategory !== "All") {
       result = result.filter((item) => {
         const catName = item.itemGroup?.name?.trim() || t("common.menu");
@@ -134,11 +134,10 @@ export default function StoreDetail({
       });
     }
 
-    // Price range filter
+   
     if (selectedPriceRange !== "All Prices") {
       result = result.filter((item) => {
-        // The least it can be bought for, so an item priced only through its
-        // options is filtered on a price it really has rather than on zero.
+    
         const price = sellingPriceFrom(item) ?? 0;
         switch (selectedPriceRange) {
           case "Under $2":
