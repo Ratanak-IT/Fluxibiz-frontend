@@ -35,37 +35,58 @@ export default function MessengerWebAppProvider({
   children: ReactNode;
 }) {
   const searchParams = useSearchParams();
-  const isMessenger =
+  const flaggedMessenger =
     searchParams.get("messenger") === "true" ||
     (typeof window !== "undefined" && sessionStorage.getItem("messenger_mode") === "true");
 
-  // Same store data the normal page already fetches — reused here just for
-  // the id/name/logo the webview's own navbar needs, and to look up any
-  // device session already registered for this specific business.
-  const { data: store } = useGetPublicStoreQuery(slug, { skip: !isMessenger });
+  // Fetched unconditionally, not gated on the flag above — Messenger tears
+  // down and recreates its embedded webview between separate opens on
+  // mobile, and `sessionStorage` (what that flag lives in) doesn't reliably
+  // survive that. Without the store's id, there's no way to check for a
+  // durable device session below, so a visitor whose flag got lost would
+  // otherwise be stuck looking like a brand-new, unauthenticated web guest
+  // forever — losing their session, order history, everything.
+  const { data: store } = useGetPublicStoreQuery(slug, { skip: !slug });
   const [authState, setAuthState] = useState<AuthState>({ status: "pending" });
+  const [hasDeviceSession, setHasDeviceSession] = useState(false);
+
+  useEffect(() => {
+    if (!store) return;
+
+    const existing = getDeviceSession(store.id);
+    if (!existing) return;
+
+    setHasDeviceSession(true);
+
+    // Hydrates the same sessionStorage-backed `tmaSession` every other API
+    // slice reads its bearer token from, so a returning visitor's
+    // cart/checkout/history calls are already authenticated without
+    // asking again — even after the flag above was lost.
+    setTmaSession({
+      token: existing.token,
+      refreshToken: existing.refreshToken,
+      businessId: existing.businessId,
+      businessSlug: existing.businessSlug,
+      customerId: existing.customerId,
+      fullName: existing.fullName,
+      phoneNumber: existing.phoneNumber,
+    });
+
+    // Restores the flag itself once a device session proves this really is
+    // Messenger — so every other component on this page load that reads
+    // `useIsMessenger()` independently (Navbar, the "Me" tab, payment
+    // history) sees the correct answer too, not just this provider.
+    try {
+      window.sessionStorage.setItem("messenger_mode", "true");
+    } catch {
+      // Storage disabled — the flag just won't stick, same as before.
+    }
+  }, [store]);
+
+  const isMessenger = flaggedMessenger || hasDeviceSession;
 
   useEffect(() => {
     if (!isMessenger || !store) return;
-
-    // A device that already registered with this shop's Mini App before
-    // has its session sitting in localStorage — hydrate the same
-    // sessionStorage-backed `tmaSession` every other API slice reads its
-    // bearer token from, so a returning visitor's cart/checkout calls are
-    // already authenticated without asking again.
-    const existing = getDeviceSession(store.id);
-    if (existing) {
-      setTmaSession({
-        token: existing.token,
-        refreshToken: existing.refreshToken,
-        businessId: existing.businessId,
-        businessSlug: existing.businessSlug,
-        customerId: existing.customerId,
-        fullName: existing.fullName,
-        phoneNumber: existing.phoneNumber,
-      });
-    }
-
     setAuthState({ status: "ready" });
   }, [isMessenger, store]);
 
