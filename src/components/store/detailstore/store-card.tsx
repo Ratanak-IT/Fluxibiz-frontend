@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Card } from "../../ui/card";
 import { Clock, ImageOff, MapPin, Phone } from "lucide-react";
-import { TbBrandFacebook } from "react-icons/tb";
+import { RiMessengerLine } from "react-icons/ri";
 import { StoreCardData } from "@/lib/store/detailstore/store";
 import { StoreCardSkeleton } from "@/components/common/Skeletons";
 import { formatDistance, formatStoreTime } from "@/lib/type/storeType";
@@ -117,7 +117,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                     className="group/fb flex shrink-0 items-center gap-1.5 text-[14px] sm:text-[15px] font-medium text-muted-foreground transition-colors hover:text-primary"
                     title={store.facebookName || store.name || "Facebook Page"}
                   >
-                    <TbBrandFacebook className="h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover/fb:text-primary" />
+                    <RiMessengerLine className="h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover/fb:text-primary" />
                     <span>{store.facebookName || store.name || "Facebook Page"}</span>
                   </a>
                 )}
