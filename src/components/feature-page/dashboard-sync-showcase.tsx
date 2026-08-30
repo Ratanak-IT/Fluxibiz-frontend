@@ -6,7 +6,6 @@ import {
   Box,
   Boxes,
   Check,
-  ChevronRight,
   Globe,
   MessageCircle,
   ReceiptText,
@@ -402,8 +401,6 @@ function DashboardCard({ card }: { card: ShowcaseCard }) {
                       {item.detail}
                     </p>
                   </div>
-
-                  <ChevronRight className="size-5 shrink-0 text-muted-foreground/60" />
                 </div>
               );
             })}

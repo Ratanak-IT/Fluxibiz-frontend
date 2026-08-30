@@ -128,8 +128,8 @@ export default function NavbarAfterLoginComponent({
   const avatarSrc = profile
     ? resolvedProfilePic || undefined
     : resolveMediaUrl(user.image) ||
-      user.image ||
-      undefined;
+    user.image ||
+    undefined;
 
   return (
     <header
@@ -232,10 +232,9 @@ export default function NavbarAfterLoginComponent({
                   font-semibold
                   transition-colors
 
-                  ${
-                    active
-                      ? "text-primary"
-                      : `
+                  ${active
+                    ? "text-primary"
+                    : `
                           text-[#6b7280]
                           hover:text-primary
 
@@ -511,10 +510,9 @@ export default function NavbarAfterLoginComponent({
                         font-bold
                         transition-colors
 
-                        ${
-                          active
-                            ? "border-primary bg-primary/10 text-primary"
-                            : `
+                        ${active
+                          ? "border-primary bg-primary/10 text-primary"
+                          : `
                                 border-transparent
                                 text-[#374151]
                                 hover:bg-[#f3f4f6]
