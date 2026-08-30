@@ -17,7 +17,7 @@ import {
     useGetActiveCheckoutQuery,
     useGetMyCustomerProfileQuery,
 } from "@/features/checkout/checkoutApi";
-import { formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
+import { computeTax, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
@@ -50,8 +50,7 @@ export default function CheckoutPage({
         isLoading: activeLoading,
         refetch: refetchActive,
     } = useGetActiveCheckoutQuery();
-    // Messenger has its own gate (MessengerProfileGate, device-based) —
-    // this call would just 401 for a not-yet-registered Messenger visitor.
+ 
     const { data: myProfile } = useGetMyCustomerProfileQuery(undefined, { skip: isMessenger });
 
     const [createCheckout, { isLoading: creating }] = useCreateCheckoutMutation();
@@ -66,10 +65,6 @@ export default function CheckoutPage({
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
-    // The general /cart page has no TMA chrome (no TmaNavbar/TmaBottomTabBar
-    // — it isn't nested under /store/[slug]) and stranding a Telegram or
-    // Messenger shopper there was exactly the "sometimes lands on /store"
-    // complaint.
     const backToCart = isMiniApp ? `/store/${slug}/cart?${queryParam}` : `/cart?shop=${encodeURIComponent(slug)}`;
     const keepShoppingHref = isMiniApp ? `/store/${slug}?${queryParam}` : "/store";
 
@@ -91,9 +86,7 @@ export default function CheckoutPage({
     }, [pending, pendingIsThisStore, session, cancelledOrderId]);
 
     const handlePayClick = () => {
-        // Messenger's identity is thinner than Telegram's or the web's own
-        // sign-in — it has no reliable name, so it gets its own name+phone
-        // prompt (MessengerProfileGate) instead of the phone-only one below.
+ 
         if (isMessenger) {
             if (!store) return;
             requireMessengerProfile(store.businessId, startPayment);
@@ -114,13 +107,7 @@ export default function CheckoutPage({
         try {
             const created = await createCheckout({
                 businessId: store.businessId,
-                // The backend's PaymentMethodType enum has no KHQR constant
-                // — it calls the same thing DIGITAL (see
-                // StorefrontCheckoutServiceImpl, which literally labels
-                // DIGITAL as "Bakong KHQR"). Sending "KHQR" as-is fails
-                // Jackson enum deserialization with a generic "Request
-                // body is invalid or malformed" 400, before any checkout
-                // logic even runs.
+               
                 paymentMethod: paymentMethod === "KHQR" ? "DIGITAL" : paymentMethod,
             }).unwrap();
 
@@ -194,6 +181,17 @@ export default function CheckoutPage({
     const storeName = store?.name ?? session?.storeName ?? publicStore?.name ?? t("thisShop");
     const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
+
+    const netAmount = store?.subtotal ?? 0;
+    const { taxAmount, total: payableTotal } = computeTax(
+        netAmount,
+        publicStore?.taxRate,
+        publicStore?.taxInclusionType,
+        publicStore?.taxEnabled,
+    );
+    const isTaxInclusive = publicStore?.taxInclusionType === "INCLUSIVE";
+    const isTaxActive = Boolean(publicStore?.taxEnabled) && taxAmount > 0;
+    const effectiveTaxName = publicStore?.taxLabel?.trim() || "VAT";
 
     return (
         <div className="mx-auto max-w-3xl px-6 pt-16 pb-24 sm:pt-8 sm:pb-12">
@@ -273,21 +271,52 @@ export default function CheckoutPage({
                                         ) : null}
                                     </span>
 
-                                    <span className="font-semibold text-neutral-900 dark:text-card-foreground">
-                                        {formatMoney(line.subtotal, currency)}
+                                    <span className="flex flex-col items-end">
+                                        {line.discountAmount && line.discountAmount > 0 ? (
+                                            <span className="text-xs text-neutral-400 line-through">
+                                                {formatMoney(line.subtotal + line.discountAmount, currency)}
+                                            </span>
+                                        ) : null}
+                                        <span className="font-semibold text-neutral-900 dark:text-card-foreground">
+                                            {formatMoney(line.subtotal, currency)}
+                                        </span>
                                     </span>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-border">
-                            <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
-                                {t("total")}
-                            </span>
+                        <div className="mt-4 flex flex-col gap-2 border-t border-neutral-100 pt-4 dark:border-border">
+                            {isTaxActive && !isTaxInclusive && (
+                                <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
+                                    <span>
+                                        {effectiveTaxName} {publicStore?.taxRate ? `(${publicStore.taxRate}%)` : ""}
+                                    </span>
+                                    <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                                        +{formatMoney(taxAmount, currency)}
+                                    </span>
+                                </div>
+                            )}
 
-                            <span className="text-2xl font-bold text-green-600 dark:text-primary">
-                                {formatMoney(store.subtotal, currency)}
-                            </span>
+                            {isTaxActive && isTaxInclusive && (
+                                <div className="flex items-center justify-between text-xs text-neutral-400 dark:text-muted-foreground">
+                                    <span>
+                                        {effectiveTaxName} {publicStore?.taxRate ? `(${publicStore.taxRate}% Incl.)` : "(Incl.)"}
+                                    </span>
+                                    <span className="font-medium text-neutral-500">
+                                        {formatMoney(taxAmount, currency)}
+                                    </span>
+                                </div>
+                            )}
+
+                            <div className="flex items-center justify-between">
+                                <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
+                                    {t("total")}
+                                </span>
+
+                                <span className="text-2xl font-bold text-green-600 dark:text-primary">
+                                    {formatMoney(payableTotal, currency)}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -377,8 +406,8 @@ export default function CheckoutPage({
                     {store?.open === false
                         ? t("shopClosed")
                         : paymentMethod === "PAY_LATER"
-                        ? `${t("placeOrder")} (${formatMoney(store?.subtotal ?? 0, currency)})`
-                        : `${t("payWithKhqr")} (${formatMoney(store?.subtotal ?? 0, currency)})`}
+                        ? `${t("placeOrder")} (${formatMoney(payableTotal, currency)})`
+                        : `${t("payWithKhqr")} (${formatMoney(payableTotal, currency)})`}
                 </Button>
             )}
 

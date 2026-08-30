@@ -21,13 +21,19 @@ export default function OrderSummaryComponent({
 }) {
     const t = useTranslations("Cart");
     const activeCurrency = currency || store.currency;
-    const discount = store.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0);
-    const netAmount = Math.max(0, store.subtotal - discount);
+    // `store.subtotal` from the server is already NET of every discount,
+    // including order-wide ones (e.g. a storewide Buy X Get Y) that never
+    // show up on any individual line's `discountAmount`. So the only way to
+    // recover the true pre-discount total — and therefore how much was
+    // actually saved — is to rebuild it from each line's own undiscounted
+    // unit price, then diff against the server's net total.
+    const originalSubtotal = store.items.reduce(
+        (acc, item) => acc + (item.unitPriceWithAddOns ?? item.unitPrice) * item.quantity,
+        0,
+    );
+    const netAmount = store.subtotal;
+    const discount = Math.max(0, originalSubtotal - netAmount);
     const freeItemCount = store.items.reduce((acc, item) => acc + (item.freeQuantity ?? 0), 0);
-    // `store.subtotal` is already the pre-discount gross total (netAmount above
-    // is what subtracts the discount from it) — the "subtotal" row shows this
-    // number as-is, with the discount broken out on its own line below.
-    const originalSubtotal = store.subtotal;
 
     const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
     const { taxAmount, total } = computeTax(

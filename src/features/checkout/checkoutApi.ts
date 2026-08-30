@@ -1,7 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 import { cartApi } from "@/features/cart/cartApi";
-import { applyTmaAuthHeader } from "@/lib/tma/tmaAuthHeader";
+import { tmaBaseQuery } from "@/lib/tma/tmaBaseQuery";
 import {
     ActiveCheckout,
     CheckoutSession,
@@ -11,10 +11,7 @@ import {
 } from "@/lib/type/checkoutType";
 
 
-const baseQuery = fetchBaseQuery({
-    baseUrl: "/api/v1",
-    prepareHeaders: applyTmaAuthHeader,
-});
+const baseQuery = tmaBaseQuery;
 
 export type CustomerSelfProfile = {
     fullName: string | null;

@@ -74,3 +74,51 @@ export function setDeviceSession(businessId: string, session: MessengerDeviceSes
     // Session just won't survive a reload.
   }
 }
+
+/**
+ * There is no refresh-token grant wired up for a device session — the only
+ * endpoint that mints a token is `/facebook-webapp/device-auth`, which is
+ * idempotent by design (same deviceId, same name/phone already on file just
+ * re-registers and hands back a fresh token pair). So once the access token
+ * a customer registered with expires — which happens quietly if the Mini App
+ * sits open, or backgrounded, long enough — this is what quietly repairs it,
+ * instead of the app treating an expired token as "never signed in" and
+ * bouncing a Messenger visitor to a Keycloak login page they have no
+ * credentials for.
+ */
+export async function reissueMessengerDeviceToken(
+  businessId: string,
+  businessSlug?: string,
+): Promise<MessengerDeviceSession | null> {
+  const existing = getDeviceSession(businessId);
+  if (!existing) return null;
+
+  try {
+    const res = await fetch("/api/v1/facebook-webapp/device-auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        businessId,
+        deviceId: getOrCreateDeviceId(),
+        fullName: existing.fullName,
+        phoneNumber: existing.phoneNumber,
+      }),
+    });
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const refreshed: MessengerDeviceSession = {
+      token: data.token,
+      refreshToken: data.refreshToken,
+      businessId: data.businessId ?? businessId,
+      businessSlug: data.businessSlug ?? businessSlug ?? existing.businessSlug,
+      customerId: data.customerId ?? existing.customerId,
+      fullName: data.fullName ?? existing.fullName,
+      phoneNumber: data.phoneNumber ?? existing.phoneNumber,
+    };
+    setDeviceSession(businessId, refreshed);
+    return refreshed;
+  } catch {
+    return null;
+  }
+}

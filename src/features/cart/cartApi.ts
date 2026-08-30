@@ -1,8 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 import type { AuthState } from "@/features/auth/authSlice";
-import { applyTmaAuthHeader, hasTmaSessionToken } from "@/lib/tma/tmaAuthHeader";
-import { billedUnitPrice, extractCartLinePrices } from "@/lib/type/cartType";
+import { hasTmaSessionToken } from "@/lib/tma/tmaAuthHeader";
+import { tmaBaseQuery } from "@/lib/tma/tmaBaseQuery";
+import { billedUnitPrice } from "@/lib/type/cartType";
 import type {
     AddToCartPayload,
     CartCount,
@@ -36,11 +37,11 @@ function addOnKeyOf(addOnIds?: string[] | null): string {
 /**
  * Normalises a cart the server sent, without changing what it charges.
  *
- * Line and store subtotals are recomputed from the server's own unit prices so
- * an optimistic patch cannot leave a stale total on screen. The unit price
- * itself is never touched: it is the channel price the checkout will bill, and
- * a client that lowered it showed the shopper one number while the shop
- * charged another.
+ * The server already computes each line's discount-aware `subtotal` (and
+ * `compareAtPrice`/`discountAmount`/`discountLabel` alongside it), so this
+ * only re-derives the store total from those line subtotals — it must never
+ * recompute a line's own subtotal from its unit price, since that would
+ * silently drop whatever discount the server applied.
  */
 function sanitizeCartData(cartData: CartSummary | null | undefined): CartSummary {
     if (!cartData || !Array.isArray(cartData.stores)) {
@@ -50,16 +51,10 @@ function sanitizeCartData(cartData: CartSummary | null | undefined): CartSummary
     const stores = cartData.stores.map((store) => {
         let storeSubtotal = 0;
         const items = store.items.map((line) => {
-            const priceInfo = extractCartLinePrices(line);
-            const lineSubtotal = (priceInfo.unitPrice + (line.unitPriceWithAddOns ? Math.max(0, line.unitPriceWithAddOns - line.unitPrice) : 0)) * line.quantity;
+            const billed = billedUnitPrice(line);
+            const lineSubtotal = typeof line.subtotal === "number" ? line.subtotal : billed * line.quantity;
             storeSubtotal += lineSubtotal;
-
-            return {
-                ...line,
-                unitPrice: priceInfo.unitPrice,
-                compareAtPrice: priceInfo.hasDiscount ? priceInfo.compareAtPrice : (line.compareAtPrice ?? null),
-                subtotal: lineSubtotal,
-            };
+            return { ...line, subtotal: lineSubtotal };
         });
 
         return {
@@ -75,10 +70,7 @@ function sanitizeCartData(cartData: CartSummary | null | undefined): CartSummary
     };
 }
 
-const rawBaseQuery = fetchBaseQuery({
-    baseUrl: "/api/v1",
-    prepareHeaders: applyTmaAuthHeader,
-});
+const rawBaseQuery = tmaBaseQuery;
 
 const baseQuery: typeof rawBaseQuery = async (args, api, extraOptions) => {
     const state = api.getState() as { auth: AuthState };

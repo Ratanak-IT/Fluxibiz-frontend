@@ -1,13 +1,11 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 import type { AuthState } from "@/features/auth/authSlice";
-import { applyTmaAuthHeader, hasTmaSessionToken } from "@/lib/tma/tmaAuthHeader";
+import { hasTmaSessionToken } from "@/lib/tma/tmaAuthHeader";
+import { tmaBaseQuery } from "@/lib/tma/tmaBaseQuery";
 import type { UserProfileResponse } from "@/lib/type/authType";
 
-const rawBaseQuery = fetchBaseQuery({
-    baseUrl: "/api/v1",
-    prepareHeaders: applyTmaAuthHeader,
-});
+const rawBaseQuery = tmaBaseQuery;
 
 const baseQuery: typeof rawBaseQuery = async (args, api, extraOptions) => {
     const state = api.getState() as { auth: AuthState };
