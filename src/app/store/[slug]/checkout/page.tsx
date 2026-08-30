@@ -50,8 +50,7 @@ export default function CheckoutPage({
         isLoading: activeLoading,
         refetch: refetchActive,
     } = useGetActiveCheckoutQuery();
-    // Messenger has its own gate (MessengerProfileGate, device-based) —
-    // this call would just 401 for a not-yet-registered Messenger visitor.
+ 
     const { data: myProfile } = useGetMyCustomerProfileQuery(undefined, { skip: isMessenger });
 
     const [createCheckout, { isLoading: creating }] = useCreateCheckoutMutation();
@@ -66,10 +65,6 @@ export default function CheckoutPage({
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
-    // The general /cart page has no TMA chrome (no TmaNavbar/TmaBottomTabBar
-    // — it isn't nested under /store/[slug]) and stranding a Telegram or
-    // Messenger shopper there was exactly the "sometimes lands on /store"
-    // complaint.
     const backToCart = isMiniApp ? `/store/${slug}/cart?${queryParam}` : `/cart?shop=${encodeURIComponent(slug)}`;
     const keepShoppingHref = isMiniApp ? `/store/${slug}?${queryParam}` : "/store";
 
@@ -91,9 +86,7 @@ export default function CheckoutPage({
     }, [pending, pendingIsThisStore, session, cancelledOrderId]);
 
     const handlePayClick = () => {
-        // Messenger's identity is thinner than Telegram's or the web's own
-        // sign-in — it has no reliable name, so it gets its own name+phone
-        // prompt (MessengerProfileGate) instead of the phone-only one below.
+ 
         if (isMessenger) {
             if (!store) return;
             requireMessengerProfile(store.businessId, startPayment);
@@ -114,13 +107,7 @@ export default function CheckoutPage({
         try {
             const created = await createCheckout({
                 businessId: store.businessId,
-                // The backend's PaymentMethodType enum has no KHQR constant
-                // — it calls the same thing DIGITAL (see
-                // StorefrontCheckoutServiceImpl, which literally labels
-                // DIGITAL as "Bakong KHQR"). Sending "KHQR" as-is fails
-                // Jackson enum deserialization with a generic "Request
-                // body is invalid or malformed" 400, before any checkout
-                // logic even runs.
+               
                 paymentMethod: paymentMethod === "KHQR" ? "DIGITAL" : paymentMethod,
             }).unwrap();
 
@@ -195,10 +182,6 @@ export default function CheckoutPage({
     const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
-    // `store.subtotal` is already net of every discount (see cartApi's
-    // sanitizeCartData) — tax is computed on top of that, exactly like the
-    // cart page's own order summary, so the button/QR total this page shows
-    // never disagrees with what the cart page already previewed.
     const netAmount = store?.subtotal ?? 0;
     const { taxAmount, total: payableTotal } = computeTax(
         netAmount,
