@@ -327,6 +327,7 @@ export default function NavbarAfterLoginComponent({
             <SheetContent
               side="right"
               className="
+                z-70
                 flex
                 w-[82vw]
                 max-w-[320px]
