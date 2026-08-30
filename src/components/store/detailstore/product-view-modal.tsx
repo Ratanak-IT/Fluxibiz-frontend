@@ -196,8 +196,14 @@ export default function ProductQuickViewModal({
           toast.success(tCart("addedToCart"));
           onOpenChange(false);
         } catch (err: any) {
-          if (isUnauthorized(err)) {
+          if (isUnauthorized(err) && !isMessenger) {
             login();
+          } else if (isUnauthorized(err)) {
+            // Messenger never has Keycloak credentials to log back in with —
+            // by this point `tmaBaseQuery` has already tried silently
+            // re-registering the device and retrying once; a 401 surviving
+            // that means it genuinely failed, not just an expired token.
+            toast.error(t("errors.addToCartFailed"));
           } else {
             const msg = formatStockErrorMessage(err, product?.name || item?.name);
             const lower = msg.toLowerCase();
