@@ -205,7 +205,9 @@ export function ProductStorefrontUI({
     const billedPrice =
         activePrice === undefined ? undefined : activePrice + addOnsPerUnit;
 
-    const compareAt = item.compareAtPrice ? Number(item.compareAtPrice) : 0;
+    const variantCompareAt = selectedVariant?.compareAtPrice ? Number(selectedVariant.compareAtPrice) : 0;
+    const itemCompareAt = item.compareAtPrice ? Number(item.compareAtPrice) : 0;
+    const compareAt = variantCompareAt > 0 ? variantCompareAt : itemCompareAt;
     const discount =
         compareAt && activePrice !== undefined && compareAt > activePrice
             ? Math.round(((compareAt - activePrice) / compareAt) * 100)
@@ -379,8 +381,19 @@ export function ProductStorefrontUI({
                                 >
                                     <span>{name}</span>
                                     {variant.price === undefined ? null : (
-                                        <span className="mt-0.5 block text-xs text-[#7b857a] dark:text-[#94a3b8]">
-                                            {formatPrice(Number(variant.price), currency)}
+                                        <span className="mt-0.5 flex items-center justify-center gap-1 text-xs">
+                                            {variant.compareAtPrice && Number(variant.compareAtPrice) > Number(variant.price) && (
+                                                <span className="line-through text-muted-foreground/70 font-normal">
+                                                    {formatPrice(Number(variant.compareAtPrice), currency)}
+                                                </span>
+                                            )}
+                                            <span className={cn(
+                                                variant.compareAtPrice && Number(variant.compareAtPrice) > Number(variant.price)
+                                                    ? "font-semibold text-danger"
+                                                    : "text-[#7b857a] dark:text-[#94a3b8]"
+                                            )}>
+                                                {formatPrice(Number(variant.price), currency)}
+                                            </span>
                                         </span>
                                     )}
                                 </Chip>

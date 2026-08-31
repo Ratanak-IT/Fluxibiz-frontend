@@ -158,6 +158,19 @@ export default function CheckoutPage({
     const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
+    const discount = store?.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0) ?? 0;
+    const netAmount = Math.max(0, (store?.subtotal ?? 0) - discount);
+    const { taxAmount, total: payableTotal } = computeTax(
+        netAmount,
+        publicStore?.taxRate,
+        publicStore?.taxInclusionType,
+        publicStore?.taxEnabled,
+    );
+    const isTaxInclusive = publicStore?.taxInclusionType === "INCLUSIVE";
+    const taxRate = publicStore?.taxRate ?? 0;
+    const isTaxActive = Boolean(publicStore?.taxEnabled) && taxAmount > 0;
+    const effectiveTaxName = publicStore?.taxLabel?.trim() || "VAT";
+
     return (
         <div className="mx-auto max-w-3xl px-6 pt-16 pb-24 sm:pt-8 sm:pb-12">
             <div className="mb-2 flex items-center justify-between sm:mb-3">

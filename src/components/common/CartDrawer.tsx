@@ -259,15 +259,29 @@ function StoreSection({
                 ))}
             </div>
 
-            <div className="mt-3 flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-border">
-                <span className="text-xs text-neutral-500 dark:text-muted-foreground">
-                    {t("itemCount", { count: store.itemCount })}
-                </span>
+            {(() => {
+                const storeDiscount = store.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0);
+                const discountedStoreTotal = Math.max(0, store.subtotal - storeDiscount);
 
-                <span className="text-base font-bold text-green-600 dark:text-primary">
-                    {formatMoney(store.subtotal, effectiveCurrency)}
-                </span>
-            </div>
+                return (
+                    <div className="mt-3 flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-border">
+                        <span className="text-xs text-neutral-500 dark:text-muted-foreground">
+                            {t("itemCount", { count: store.itemCount })}
+                        </span>
+
+                        <div className="flex items-baseline gap-1.5">
+                            {storeDiscount > 0 && (
+                                <span className="text-xs text-neutral-400 line-through font-normal">
+                                    {formatMoney(store.subtotal, effectiveCurrency)}
+                                </span>
+                            )}
+                            <span className="text-base font-bold text-green-600 dark:text-primary">
+                                {formatMoney(discountedStoreTotal, effectiveCurrency)}
+                            </span>
+                        </div>
+                    </div>
+                );
+            })()}
 
             <StoreCheckoutButton store={store} onNavigate={onNavigate} />
         </section>
@@ -507,9 +521,22 @@ function LineRow({
                         </Button>
                     </div>
 
-                    <span className="whitespace-nowrap text-sm font-bold text-red-500 dark:text-destructive">
-                        {formatMoney(currentSubtotal, currency)}
-                    </span>
+                    <div className="flex flex-col items-end">
+                        {line.discountAmount && line.discountAmount > 0 ? (
+                            <>
+                                <span className="text-[11px] text-muted-foreground line-through font-normal">
+                                    {formatMoney(currentSubtotal, currency)}
+                                </span>
+                                <span className="whitespace-nowrap text-sm font-bold text-green-600 dark:text-primary">
+                                    {formatMoney(Math.max(0, currentSubtotal - line.discountAmount), currency)}
+                                </span>
+                            </>
+                        ) : (
+                            <span className="whitespace-nowrap text-sm font-bold text-red-500 dark:text-destructive">
+                                {formatMoney(currentSubtotal, currency)}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
 
