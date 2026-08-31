@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
     // was never the account's actual destination.
     let targetUrl: URL;
     let shouldSetStorefrontSession = true;
-    if (roles.includes("SUPER_ADMIN") && superAdminRedirect) {
+    if ((roles.includes("SUPER_ADMIN") || roles.includes("GLOBLE_ADMIN")) && superAdminRedirect) {
       targetUrl = new URL(superAdminRedirect);
       shouldSetStorefrontSession = false;
     } else if (roles.includes("BUSINESS") && businessRedirect) {
