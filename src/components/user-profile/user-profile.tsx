@@ -149,10 +149,23 @@ export default function UserProfile() {
     }
   }, [profile, user, reset]);
 
+  // Matches the backend's own multipart limit (application-*.yaml:
+  // spring.servlet.multipart.max-file-size) — checked here so an oversized
+  // photo never reaches "Save Changes" only to fail with a vague error.
+  const MAX_PROFILE_IMAGE_BYTES = 10 * 1024 * 1024;
+
   // Handle local image file selection (Preview only, uploaded on Save Changes)
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_PROFILE_IMAGE_BYTES) {
+      toast.error(
+        `That photo is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Please choose one under 10MB.`
+      );
+      e.target.value = "";
+      return;
+    }
 
     setSelectedFile(file);
     const previewUrl = URL.createObjectURL(file);
@@ -241,6 +254,19 @@ export default function UserProfile() {
     } catch (err: any) {
       console.error("Failed to update profile", err);
       let errMsg = "Could not save profile changes. Please check your input.";
+
+      const rawBody = typeof err?.data === "string" ? err.data : JSON.stringify(err?.data ?? "");
+      const looksLikeSizeError =
+        err?.status === 413 ||
+        err?.originalStatus === 413 ||
+        /max(imum)?\s*(upload|file)?\s*size|too large|payload too large/i.test(rawBody);
+
+      if (isFileChanged && looksLikeSizeError) {
+        errMsg = "That photo is too large. Please choose one under 10MB.";
+        setSaveError(errMsg);
+        toast.error(errMsg);
+        return;
+      }
 
       if (typeof err?.data === "string") {
         errMsg = err.data;

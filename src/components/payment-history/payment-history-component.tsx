@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -227,6 +228,7 @@ export default function PaymentHistoryComponent() {
 function OrderCard({ order }: { order: StorefrontOrder }) {
   const t = useTranslations("PaymentHistory");
   const locale = useLocale();
+  const router = useRouter();
   const storeLogo = resolveMediaUrl(order.storeLogo);
 
   const formattedDate = order.createdDate
@@ -244,7 +246,10 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
   const isCancelled = order.status === "CANCELLED";
 
   return (
-    <Card className="overflow-hidden border-0 bg-white shadow-sm transition-all hover:shadow-md dark:bg-card">
+    <Card
+      onClick={() => router.push(`/receipt/${order.orderId}`)}
+      className="cursor-pointer overflow-hidden border-0 bg-white shadow-sm transition-all hover:shadow-md dark:bg-card"
+    >
       <CardContent className="p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           {/* Store & Order Info */}
@@ -267,6 +272,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
               <div className="flex flex-wrap items-center gap-2">
                 <Link
                   href={`/store/${order.storeSlug}`}
+                  onClick={(e) => e.stopPropagation()}
                   className="font-bold text-neutral-900 transition-colors hover:text-[#00932A] dark:text-foreground"
                 >
                   {order.storeName}
@@ -313,7 +319,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
 
           {/* Amount & Receipt Action Button */}
           <div className="flex items-center justify-between border-t border-neutral-100 pt-3 sm:border-t-0 sm:pt-0 sm:flex-col sm:items-end">
-            <div className="text-right">
+            <div className="flex items-center gap-1.5 sm:block sm:text-right">
               <span className="text-xs text-neutral-400">{t("total")}</span>
               <p className="text-xl font-black text-[#00932A]">
                 {formatMoney(order.total, order.currency)}
@@ -321,8 +327,8 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
             </div>
 
             <div className="mt-2 flex items-center gap-2">
-              {isPending && (
-                <Link href={`/store/${order.storeSlug}/checkout`}>
+              {isPending ? (
+                <Link href={`/store/${order.storeSlug}/checkout`} onClick={(e) => e.stopPropagation()}>
                   <Button
                     size="sm"
                     className="h-8 rounded-full bg-amber-500 text-xs font-bold text-white hover:bg-amber-600"
@@ -330,19 +336,17 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
                     {t("finishPayment")}
                   </Button>
                 </Link>
+              ) : (
+                <Link href={`/receipt/${order.orderId}`} onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 rounded-full border-gray-200 text-xs font-semibold hover:border-[#00932A] hover:text-[#00932A]"
+                  >
+                    {t("viewReceipt")}
+                  </Button>
+                </Link>
               )}
-
-              <Link href={`/receipt/${order.orderId}`}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 gap-1.5 rounded-full border-gray-200 text-xs font-semibold hover:border-[#00932A] hover:text-[#00932A]"
-                >
-                  <Receipt className="h-3.5 w-3.5" />
-                  {t("viewReceipt")}
-                  <ArrowUpRight className="h-3 w-3" />
-                </Button>
-              </Link>
             </div>
           </div>
         </div>
