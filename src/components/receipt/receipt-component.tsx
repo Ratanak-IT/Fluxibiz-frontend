@@ -343,10 +343,10 @@ export default function ReceiptComponent({
             </div>
 
             {order.discountAmount > 0 && (
-              <div className="flex justify-between items-center text-xs text-emerald-600 dark:text-emerald-400">
+              <div className="flex justify-between items-center text-xs text-primary">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <BiLabel en="Discount" km="បញ្ចុះតម្លៃ" />
-                  <span className="rounded-md bg-emerald-100 dark:bg-emerald-950/60 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                  <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[11px] font-semibold text-primary">
                     {order.discountLabel || (order.subtotal > 0 ? `${Math.round((order.discountAmount / order.subtotal) * 100)}% OFF` : "Savings")}
                   </span>
                 </div>
@@ -366,7 +366,7 @@ export default function ReceiptComponent({
             )}
 
             {isTaxActive && !isTaxInclusive && (
-              <div className="flex justify-between items-center text-xs text-emerald-700 dark:text-emerald-400 font-medium">
+              <div className="flex justify-between items-center text-xs text-primary font-medium">
                 <BiLabel
                   en={`+ ${effectiveTaxName}${taxRate > 0 ? ` (${taxRate}%)` : ""}`}
                   km="អាករ"
@@ -383,16 +383,16 @@ export default function ReceiptComponent({
             className={`mt-3 flex items-center justify-between rounded-2xl border p-4 ${
               isPayLater
                 ? "border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30"
-                : "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/30"
+                : "border-primary/25 bg-primary/10 dark:border-primary/40 dark:bg-primary/20"
             }`}
           >
             <BiLabel
               en="TOTAL"
               km="សរុប"
-              className={`text-base font-bold ${isPayLater ? "text-amber-800 dark:text-amber-300" : "text-emerald-800 dark:text-emerald-300"}`}
+              className={`text-base font-bold ${isPayLater ? "text-amber-800 dark:text-amber-300" : "text-primary"}`}
             />
             <span
-              className={`text-2xl font-black ${isPayLater ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}`}
+              className={`text-2xl font-black ${isPayLater ? "text-amber-600 dark:text-amber-400" : "text-primary"}`}
             >
               {formatMoney(order.total, order.currency)}
             </span>

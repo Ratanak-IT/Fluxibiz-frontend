@@ -84,7 +84,7 @@ export default function OrderSummaryComponent({
                     <span className="flex items-center gap-1.5">
                         {t("discount")}
                         {freeItemCount > 0 && (
-                            <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                            <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[11px] font-semibold text-primary">
                                 {freeItemCount} FREE
                             </span>
                         )}
@@ -121,7 +121,7 @@ export default function OrderSummaryComponent({
                         Total
                     </span>
 
-                    <span className="text-2xl font-bold text-green-600 dark:text-primary">
+                    <span className="text-2xl font-bold text-primary">
                         {formatMoney(total, activeCurrency)}
                     </span>
                 </div>
@@ -150,7 +150,7 @@ export default function OrderSummaryComponent({
                     </Button>
                 ) : (
                     <Link href={`/store/${store.slug}/checkout`} className="w-full">
-                        <Button className="h-13 sm:h-14 w-full rounded-full bg-green-600 text-base sm:text-lg font-bold text-white transition-colors hover:bg-green-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90">
+                        <Button className="h-13 sm:h-14 w-full rounded-full bg-primary text-base sm:text-lg font-bold text-primary-foreground transition-colors hover:bg-primary/90">
                             {pendingHere ? t("finishPayment") : t("checkout")}
                         </Button>
                     </Link>

@@ -152,32 +152,52 @@ export default function ItemCardComponent({
                         />
 
                         <div className="flex flex-col items-end">
-                            {hasDiscount && (
-                                <span className="text-[11px] text-neutral-400 line-through">
-                                    {formatMoney(compareAtSubtotal, currency)}
+                            {line.discountAmount && line.discountAmount > 0 && (
+                                <span className="text-xs text-muted-foreground line-through font-normal">
+                                    {formatMoney(line.subtotal, currency)}
                                 </span>
                             )}
-                            <span className="whitespace-nowrap text-base font-semibold text-red-500 dark:text-destructive">
-                                {formatMoney(lineSubtotal, currency)}
+                            <span className={cn(
+                                "whitespace-nowrap text-base font-semibold",
+                                line.discountAmount && line.discountAmount > 0
+                                    ? "text-primary font-bold"
+                                    : "text-red-500 dark:text-destructive"
+                            )}>
+                                {formatMoney(
+                                    line.discountAmount && line.discountAmount > 0
+                                        ? Math.max(0, line.subtotal - line.discountAmount)
+                                        : line.subtotal,
+                                    currency
+                                )}
                             </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Desktop columns — untouched */}
+                {/* Desktop columns */}
                 <div className="hidden items-center justify-center gap-4 sm:flex">
                     <Stepper line={line} busy={busy} outOfStock={outOfStock} onChange={updateItem} />
                 </div>
 
                 <div className="hidden items-center justify-end gap-6 sm:flex">
                     <div className="flex flex-col items-end">
-                        {hasDiscount && (
-                            <span className="text-xs text-neutral-400 line-through">
-                                {formatMoney(compareAtSubtotal, currency)}
+                        {line.discountAmount && line.discountAmount > 0 && (
+                            <span className="text-xs text-muted-foreground line-through font-normal">
+                                {formatMoney(line.subtotal, currency)}
                             </span>
                         )}
-                        <span className="whitespace-nowrap text-xl font-semibold text-red-500 dark:text-destructive">
-                            {formatMoney(lineSubtotal, currency)}
+                        <span className={cn(
+                            "whitespace-nowrap text-xl font-semibold",
+                            line.discountAmount && line.discountAmount > 0
+                                ? "text-primary font-bold"
+                                : "text-red-500 dark:text-destructive"
+                        )}>
+                            {formatMoney(
+                                line.discountAmount && line.discountAmount > 0
+                                    ? Math.max(0, line.subtotal - line.discountAmount)
+                                    : line.subtotal,
+                                currency
+                            )}
                         </span>
                     </div>
 
