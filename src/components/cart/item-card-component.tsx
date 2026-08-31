@@ -152,7 +152,6 @@ export default function ItemCardComponent({
                         />
 
                         <div className="flex flex-col items-end">
-<<<<<<< HEAD
                             {line.discountAmount && line.discountAmount > 0 && (
                                 <span className="text-xs text-muted-foreground line-through font-normal">
                                     {formatMoney(line.subtotal, currency)}
@@ -161,7 +160,7 @@ export default function ItemCardComponent({
                             <span className={cn(
                                 "whitespace-nowrap text-base font-semibold",
                                 line.discountAmount && line.discountAmount > 0
-                                    ? "text-green-600 dark:text-primary font-bold"
+                                    ? "text-primary font-bold"
                                     : "text-red-500 dark:text-destructive"
                             )}>
                                 {formatMoney(
@@ -170,15 +169,6 @@ export default function ItemCardComponent({
                                         : line.subtotal,
                                     currency
                                 )}
-=======
-                            {hasDiscount && (
-                                <span className="text-[11px] text-neutral-400 line-through">
-                                    {formatMoney(compareAtSubtotal, currency)}
-                                </span>
-                            )}
-                            <span className="whitespace-nowrap text-base font-semibold text-red-500 dark:text-destructive">
-                                {formatMoney(lineSubtotal, currency)}
->>>>>>> a59cf05125fd7b1f314f8100c978c89eda2deaad
                             </span>
                         </div>
                     </div>
@@ -191,7 +181,6 @@ export default function ItemCardComponent({
 
                 <div className="hidden items-center justify-end gap-6 sm:flex">
                     <div className="flex flex-col items-end">
-<<<<<<< HEAD
                         {line.discountAmount && line.discountAmount > 0 && (
                             <span className="text-xs text-muted-foreground line-through font-normal">
                                 {formatMoney(line.subtotal, currency)}
@@ -200,7 +189,7 @@ export default function ItemCardComponent({
                         <span className={cn(
                             "whitespace-nowrap text-xl font-semibold",
                             line.discountAmount && line.discountAmount > 0
-                                ? "text-green-600 dark:text-primary font-bold"
+                                ? "text-primary font-bold"
                                 : "text-red-500 dark:text-destructive"
                         )}>
                             {formatMoney(
@@ -209,15 +198,6 @@ export default function ItemCardComponent({
                                     : line.subtotal,
                                 currency
                             )}
-=======
-                        {hasDiscount && (
-                            <span className="text-xs text-neutral-400 line-through">
-                                {formatMoney(compareAtSubtotal, currency)}
-                            </span>
-                        )}
-                        <span className="whitespace-nowrap text-xl font-semibold text-red-500 dark:text-destructive">
-                            {formatMoney(lineSubtotal, currency)}
->>>>>>> a59cf05125fd7b1f314f8100c978c89eda2deaad
                         </span>
                     </div>
 

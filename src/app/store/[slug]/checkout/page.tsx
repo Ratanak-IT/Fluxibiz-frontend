@@ -182,12 +182,8 @@ export default function CheckoutPage({
     const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
-<<<<<<< HEAD
     const discount = store?.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0) ?? 0;
     const netAmount = Math.max(0, (store?.subtotal ?? 0) - discount);
-=======
-    const netAmount = store?.subtotal ?? 0;
->>>>>>> a59cf05125fd7b1f314f8100c978c89eda2deaad
     const { taxAmount, total: payableTotal } = computeTax(
         netAmount,
         publicStore?.taxRate,
@@ -195,10 +191,7 @@ export default function CheckoutPage({
         publicStore?.taxEnabled,
     );
     const isTaxInclusive = publicStore?.taxInclusionType === "INCLUSIVE";
-<<<<<<< HEAD
     const taxRate = publicStore?.taxRate ?? 0;
-=======
->>>>>>> a59cf05125fd7b1f314f8100c978c89eda2deaad
     const isTaxActive = Boolean(publicStore?.taxEnabled) && taxAmount > 0;
     const effectiveTaxName = publicStore?.taxLabel?.trim() || "VAT";
 

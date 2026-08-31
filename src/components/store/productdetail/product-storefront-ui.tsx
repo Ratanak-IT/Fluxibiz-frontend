@@ -207,7 +207,6 @@ export function ProductStorefrontUI({
     const billedPrice =
         activePrice === undefined ? undefined : activePrice + addOnsPerUnit;
 
-<<<<<<< HEAD
     const variantCompareAt = selectedVariant?.compareAtPrice ? Number(selectedVariant.compareAtPrice) : 0;
     const itemCompareAt = item.compareAtPrice ? Number(item.compareAtPrice) : 0;
     const compareAt = variantCompareAt > 0 ? variantCompareAt : itemCompareAt;
@@ -215,10 +214,6 @@ export function ProductStorefrontUI({
         compareAt && activePrice !== undefined && compareAt > activePrice
             ? Math.round(((compareAt - activePrice) / compareAt) * 100)
             : 0;
-=======
-    const compareAt = resolvedCompareAt ?? 0;
-    const discount = hasDiscount ? (discountPercent ?? 0) : 0;
->>>>>>> a59cf05125fd7b1f314f8100c978c89eda2deaad
 
     const images = useMemo(() => {
         const gallery: string[] = [];

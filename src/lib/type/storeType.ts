@@ -513,16 +513,12 @@ export interface ItemVariant {
     variant_name?: string;
     title?: string;
     price: number;
-<<<<<<< HEAD
     compareAtPrice?: number | null;
     /**
      * The option's own picture. It leads the gallery while the option is
      * picked, so choosing a size changes what is on show — and on an item
      * whose only pictures live on its options, it is the only picture there is.
      */
-=======
-
->>>>>>> a59cf05125fd7b1f314f8100c978c89eda2deaad
     imageUrl?: string | null;
 
     optionName?: string | null;
