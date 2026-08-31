@@ -15,6 +15,7 @@ import {
     useCancelCheckoutMutation,
     useCreateCheckoutMutation,
     useGetActiveCheckoutQuery,
+    useGetMyCustomerProfileQuery,
 } from "@/features/checkout/checkoutApi";
 import { computeTax, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
@@ -26,6 +27,9 @@ import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
+import { useIsMessengerContext } from "@/lib/tma/useIsMessengerContext";
+import { useRequireMessengerProfile } from "@/lib/tma/MessengerProfileGate";
+import { PhoneNumberPrompt } from "@/components/tma/PhoneNumberPrompt";
 
 export default function CheckoutPage({
     params,
@@ -36,14 +40,18 @@ export default function CheckoutPage({
     const router = useRouter();
     const { slug } = use(params);
     const { isMiniApp, queryParam } = useMiniAppMode();
+    const requireMessengerProfile = useRequireMessengerProfile();
 
     const { data: cart, isLoading: cartLoading } = useGetCartQuery();
     const { data: publicStore } = useGetPublicStoreQuery(slug, { skip: !slug });
+    const isMessenger = useIsMessengerContext(publicStore?.id);
     const {
         data: active,
         isLoading: activeLoading,
         refetch: refetchActive,
     } = useGetActiveCheckoutQuery();
+ 
+    const { data: myProfile } = useGetMyCustomerProfileQuery(undefined, { skip: isMessenger });
 
     const [createCheckout, { isLoading: creating }] = useCreateCheckoutMutation();
     const [cancelCheckout, { isLoading: cancelling }] = useCancelCheckoutMutation();
@@ -53,10 +61,10 @@ export default function CheckoutPage({
     const [error, setError] = useState<string | null>(null);
     const [paid, setPaid] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("KHQR");
+    const [showPhonePrompt, setShowPhonePrompt] = useState(false);
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
-  
     const backToCart = isMiniApp ? `/store/${slug}/cart?${queryParam}` : `/cart?shop=${encodeURIComponent(slug)}`;
     const keepShoppingHref = isMiniApp ? `/store/${slug}?${queryParam}` : "/store";
 
@@ -72,9 +80,25 @@ export default function CheckoutPage({
             !session &&
             cancelledOrderId !== pending.orderId
         ) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSession(pending);
         }
     }, [pending, pendingIsThisStore, session, cancelledOrderId]);
+
+    const handlePayClick = () => {
+ 
+        if (isMessenger) {
+            if (!store) return;
+            requireMessengerProfile(store.businessId, startPayment);
+            return;
+        }
+
+        if (!myProfile?.phoneNumber) {
+            setShowPhonePrompt(true);
+            return;
+        }
+        startPayment();
+    };
 
     const startPayment = async () => {
         if (!store) return;
@@ -83,7 +107,7 @@ export default function CheckoutPage({
         try {
             const created = await createCheckout({
                 businessId: store.businessId,
-            
+               
                 paymentMethod: paymentMethod === "KHQR" ? "DIGITAL" : paymentMethod,
             }).unwrap();
 
@@ -158,8 +182,12 @@ export default function CheckoutPage({
     const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
+<<<<<<< HEAD
     const discount = store?.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0) ?? 0;
     const netAmount = Math.max(0, (store?.subtotal ?? 0) - discount);
+=======
+    const netAmount = store?.subtotal ?? 0;
+>>>>>>> a59cf05125fd7b1f314f8100c978c89eda2deaad
     const { taxAmount, total: payableTotal } = computeTax(
         netAmount,
         publicStore?.taxRate,
@@ -167,7 +195,10 @@ export default function CheckoutPage({
         publicStore?.taxEnabled,
     );
     const isTaxInclusive = publicStore?.taxInclusionType === "INCLUSIVE";
+<<<<<<< HEAD
     const taxRate = publicStore?.taxRate ?? 0;
+=======
+>>>>>>> a59cf05125fd7b1f314f8100c978c89eda2deaad
     const isTaxActive = Boolean(publicStore?.taxEnabled) && taxAmount > 0;
     const effectiveTaxName = publicStore?.taxLabel?.trim() || "VAT";
 
@@ -249,53 +280,44 @@ export default function CheckoutPage({
                                         ) : null}
                                     </span>
 
-                                    <span className="font-semibold text-neutral-900 dark:text-card-foreground">
-                                        {formatMoney(line.subtotal, currency)}
+                                    <span className="flex flex-col items-end">
+                                        {line.discountAmount && line.discountAmount > 0 ? (
+                                            <span className="text-xs text-neutral-400 line-through">
+                                                {formatMoney(line.subtotal + line.discountAmount, currency)}
+                                            </span>
+                                        ) : null}
+                                        <span className="font-semibold text-neutral-900 dark:text-card-foreground">
+                                            {formatMoney(line.subtotal, currency)}
+                                        </span>
                                     </span>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="mt-4 space-y-2 border-t border-neutral-100 pt-4 dark:border-border">
-                            <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
-                                <span>{t("subtotal")}</span>
-                                <span className="font-medium text-neutral-900 dark:text-card-foreground">
-                                    {formatMoney(store.subtotal, currency)}
-                                </span>
-                            </div>
-
-                            {discount > 0 && (
-                                <div className="flex items-center justify-between text-sm text-emerald-600 dark:text-emerald-400">
-                                    <span>{t("discount")}</span>
-                                    <span className="font-medium">
-                                        -{formatMoney(discount, currency)}
-                                    </span>
-                                </div>
-                            )}
-
+                        <div className="mt-4 flex flex-col gap-2 border-t border-neutral-100 pt-4 dark:border-border">
                             {isTaxActive && !isTaxInclusive && (
                                 <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
                                     <span>
-                                        {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
+                                        {effectiveTaxName} {publicStore?.taxRate ? `(${publicStore.taxRate}%)` : ""}
                                     </span>
-                                    <span className="font-medium text-neutral-900 dark:text-card-foreground">
+                                    <span className="font-semibold text-neutral-700 dark:text-neutral-300">
                                         +{formatMoney(taxAmount, currency)}
                                     </span>
                                 </div>
                             )}
 
                             {isTaxActive && isTaxInclusive && (
-                                <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-muted-foreground">
+                                <div className="flex items-center justify-between text-xs text-neutral-400 dark:text-muted-foreground">
                                     <span>
-                                        {effectiveTaxName} {taxRate > 0 ? `(${taxRate}% Incl.)` : "(Incl.)"}
+                                        {effectiveTaxName} {publicStore?.taxRate ? `(${publicStore.taxRate}% Incl.)` : "(Incl.)"}
                                     </span>
-                                    <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                                    <span className="font-medium text-neutral-500">
                                         {formatMoney(taxAmount, currency)}
                                     </span>
                                 </div>
                             )}
 
-                            <div className="flex items-center justify-between pt-1">
+                            <div className="flex items-center justify-between">
                                 <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
                                     {t("total")}
                                 </span>
@@ -304,12 +326,6 @@ export default function CheckoutPage({
                                     {formatMoney(payableTotal, currency)}
                                 </span>
                             </div>
-
-                            {isTaxActive && isTaxInclusive && (
-                                <p className="text-right text-[11px] font-medium text-neutral-400 dark:text-muted-foreground italic">
-                                    * Prices include {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
-                                </p>
-                            )}
                         </div>
                     </div>
 
@@ -389,7 +405,7 @@ export default function CheckoutPage({
             {/* Submit Button */}
             {!session && (
                 <Button
-                    onClick={startPayment}
+                    onClick={handlePayClick}
                     disabled={creating || !!blockedBy || store?.open === false}
                     className="mt-6 h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white hover:bg-green-700 disabled:bg-neutral-300 disabled:text-neutral-500 dark:bg-primary dark:text-primary-foreground"
                 >
@@ -421,6 +437,18 @@ export default function CheckoutPage({
                         onRegenerate={startPayment}
                     />
                 </div>
+            )}
+
+            {store && (
+                <PhoneNumberPrompt
+                    open={showPhonePrompt}
+                    businessId={store.businessId}
+                    onOpenChange={setShowPhonePrompt}
+                    onSaved={() => {
+                        setShowPhonePrompt(false);
+                        startPayment();
+                    }}
+                />
             )}
 
             {paid && (

@@ -24,8 +24,8 @@ export default function TeamCard({
   linkedin,
 }: MemberType) {
   return (
-   <Card
-    className="
+    <Card
+      className="
         group relative overflow-hidden flex flex-col 
         py-8 px-6 items-center rounded-[32px] 
         bg-card
@@ -33,9 +33,9 @@ export default function TeamCard({
         transition-all duration-400
         hover:shadow-[0_0_0_2px_rgba(254,185,13,0.12),0_18px_40px_-20px_rgba(254,185,13,0.28)]
         hover:-translate-y-1
-    "
->
-    <style>{`
+      "
+    >
+      <style>{`
         @keyframes breathe {
           0%, 100% { transform: scale(1); opacity: .85; }
           50% { transform: scale(1.05); opacity: 1; }
@@ -46,96 +46,84 @@ export default function TeamCard({
           15% { opacity: .5; }
           100% { transform: translateY(-160px) scale(1.3); opacity: 0; }
         }
-    `}</style>
+      `}</style>
 
-
-    <section className="relative z-10 flex flex-col items-center">
-
+      <section className="relative z-10 flex flex-col items-center">
         <div className="relative flex items-center justify-center w-[230px] h-[230px] mb-6">
+          {/* green breathing ring */}
+          <div
+            className="
+              absolute inset-0 rounded-full 
+              border-[1px] border-brand
+            "
+            style={{ animation: "breathe 2.5s ease-in-out infinite" }}
+          />
 
-            {/* green breathing ring */}
-            <div
-                className="
-                    absolute inset-0 rounded-full 
-                    border-[1px] border-brand
-                "
-                style={{ animation: "breathe 2.5s ease-in-out infinite" }}
+          {/* amber dashed ring */}
+          <div
+            className="
+              absolute inset-[10px] rounded-full 
+              border border-dashed border-secondary
+              animate-[spin_50s_linear_infinite]
+            "
+          />
+
+          {/* photo */}
+          <div className="absolute inset-[18px] rounded-full overflow-hidden">
+            <Image
+              src={image}
+              alt={name}
+              fill
+              priority
+              quality={100}
+              sizes="(min-resolution: 2dppx) 320px, 160px"
+              className="object-cover object-center"
             />
-
-
-            {/* amber dashed ring */}
-            <div
-                className="
-                    absolute inset-[10px] rounded-full 
-                    border border-dashed border-secondary
-                    animate-[spin_50s_linear_infinite]
-                "
-            />
-
-
-            {/* photo */}
-            <div className="absolute inset-[18px] rounded-full overflow-hidden">
-                <Image
-                    src={image}
-                    alt={name}
-                    fill
-                    priority
-                    quality={100}
-                    sizes="(min-resolution: 2dppx) 320px, 160px"
-                    className="object-cover object-center"
-                />
-            </div>
-
+          </div>
         </div>
-
 
         {/* Name */}
         <span
-            className="
-                text-[24px] font-bold uppercase 
-                text-brand text-center
-            "
+          className="
+            text-[24px] font-bold uppercase 
+            text-brand text-center
+          "
         >
-            {name}
+          {name}
         </span>
-
 
         {/* Position */}
         <span
-            className="
-                mt-1 mb-5 text-sm uppercase 
-                text-destructive text-center
-            "
+          className="
+            mt-1 mb-5 text-sm uppercase 
+            text-destructive text-center
+          "
         >
-            {position}
+          {position}
         </span>
-
 
         {/* Divider */}
         <div className="h-[2px] w-12 rounded bg-secondary" />
 
-
         {/* Mentor tag */}
         <Button
-            className="
-                mt-7 rounded-full 
-                border-2 border-secondary 
-                bg-secondary/10
-                px-8 py-2 h-auto
-                hover:bg-secondary/20
-            "
-            onClick={() => alert("Pressed!")}
+          className="
+            mt-7 rounded-full 
+            border-2 border-secondary 
+            bg-secondary/10
+            px-8 py-2 h-auto
+            hover:bg-secondary/20
+          "
         >
-            <span
-                className="
-                    text-xs font-bold uppercase 
-                    text-brand
-                "
-            >
-                {tag}
-            </span>
+          <span
+            className="
+              text-xs font-bold uppercase 
+              text-brand
+            "
+          >
+            {tag}
+          </span>
         </Button>
-
 
         {/* Socials */}
         <div className="mt-7 flex items-center justify-center gap-4">
@@ -184,7 +172,6 @@ export default function TeamCard({
                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
                 "
               >
-                <span className="absolute size-4.5 rounded-full bg-white transition-opacity duration-300 group-hover/social:opacity-0" />
                 <FaTelegram className="relative z-10 w-5 h-5 text-[#24A1DE] group-hover/social:text-white transition-all duration-300 group-hover/social:scale-110" />
               </a>
             );
@@ -209,14 +196,12 @@ export default function TeamCard({
                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
                 "
               >
-                <span className="absolute size-4.5 rounded-full bg-white transition-opacity duration-300 group-hover/social:opacity-0" />
                 <FaLinkedin className="relative z-10 w-5 h-5 text-[#0077B5] group-hover/social:text-white transition-all duration-300 group-hover/social:scale-110" />
               </a>
             );
           })()}
         </div>
-
-    </section>
-</Card>
+      </section>
+    </Card>
   );
 }

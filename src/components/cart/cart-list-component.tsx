@@ -14,6 +14,7 @@ import CartSkeletonComponent from "./cart-skeleton-component";
 
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
+import { useIsMessenger } from "@/lib/tma/useIsMessenger";
 
 export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
   const t = useTranslations("Cart");
@@ -22,18 +23,24 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
     const { isMiniApp, queryParam } = useMiniAppMode();
 
     const { status: authStatus, isAuthenticated } = useAuth();
+    const isMessenger = useIsMessenger();
+
+    // A Messenger visitor who hasn't added to cart or checked out yet has no
+    // tmaSession token at all (registration only happens lazily, at those
+    // actions) — `isAuthenticated` reads false forever for them, unlike
+    // Telegram/web where it resolves quickly. Skipping the query and
+    // showing a skeleton in that case would spin forever, so Messenger lets
+    // the request through: cartApi's own 401 handling already returns an
+    // empty cart, which is the correct answer here anyway.
+    const waitingOnAuth = !isMessenger && (authStatus === "loading" || !isAuthenticated);
 
     const { data: cart, isLoading, isError, error, refetch } = useGetCartQuery(undefined, {
-        // Don't fire until we know the real auth state. While AuthProvider's
-        // session fetch is still in flight (authStatus === "loading"), skip
-        // entirely instead of firing an unauthenticated request that would
-        // 401 and get stuck cached as an error forever.
-        skip: authStatus === "loading" || !isAuthenticated,
+        skip: waitingOnAuth,
     });
 
     // Auth itself still resolving, or user genuinely not logged in and about
     // to be redirected — show the skeleton instead of a scary error.
-    if (authStatus === "loading" || !isAuthenticated) {
+    if (waitingOnAuth) {
         return <CartSkeletonComponent />;
     }
 

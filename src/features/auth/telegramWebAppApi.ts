@@ -30,12 +30,12 @@ export interface TelegramWebAppAuthResponse {
 
 export interface UpdateMyProfileRequest {
   businessId: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  gender: string;
   phoneNumber: string;
-  address: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: string;
+  address?: string;
 }
 
 export interface UpdateMyProfileResponse {

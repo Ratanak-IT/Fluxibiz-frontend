@@ -37,9 +37,9 @@ export function ContactSection() {
     {
       icon: Mail,
       label: t("details.email"),
-      value: "ipos.istad@gmail.com",
-      href: "mailto:ipos.istad@gmail.com",
-      external: false,
+      value: "fluxibizz@gmail.com",
+      href: "https://mail.google.com/mail/?view=cm&fs=1&to=fluxibizz@gmail.com",
+      external: true,
     },
     {
       icon: Phone,
@@ -51,8 +51,8 @@ export function ContactSection() {
     {
       icon: Send,
       label: t("details.telegram"),
-      value: "@ipos_team",
-      href: "https://t.me/ipos_team",
+      value: "@fluxibiz_team",
+      href: "https://t.me/fluxibiz_team",
       external: true,
     },
   ];
@@ -73,13 +73,16 @@ export function ContactSection() {
   } = form;
 
   async function onSubmit(values: ContactFormValues) {
-    const result = await sendContactEmail(values);
-
-    if (result.success) {
-      toast.success(t("form.successMessage"));
-      form.reset();
-    } else {
-      toast.error(result.error || t("form.errorMessage"));
+    try {
+      const result = await sendContactEmail(values);
+      if (result.success) {
+        toast.success(t("form.successMessage"));
+        form.reset();
+      } else {
+        toast.error(result.error || t("form.errorMessage"));
+      }
+    } catch (err: any) {
+      toast.error(err?.message || t("form.errorMessage"));
     }
   }
 

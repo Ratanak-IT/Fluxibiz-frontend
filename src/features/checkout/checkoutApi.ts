@@ -1,7 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 import { cartApi } from "@/features/cart/cartApi";
-import { applyTmaAuthHeader } from "@/lib/tma/tmaAuthHeader";
+import { tmaBaseQuery } from "@/lib/tma/tmaBaseQuery";
 import {
     ActiveCheckout,
     CheckoutSession,
@@ -11,17 +11,45 @@ import {
 } from "@/lib/type/checkoutType";
 
 
-const baseQuery = fetchBaseQuery({
-    baseUrl: "/api/v1",
-    prepareHeaders: applyTmaAuthHeader,
-});
+const baseQuery = tmaBaseQuery;
+
+export type CustomerSelfProfile = {
+    fullName: string | null;
+    email: string | null;
+    gender: string | null;
+    phoneNumber: string | null;
+    address: string | null;
+    profileComplete: boolean;
+};
 
 export const checkoutApi = createApi({
     reducerPath: "checkoutApi",
     baseQuery,
-    tagTypes: ["Checkout", "OrderHistory"],
+    tagTypes: ["Checkout", "OrderHistory", "CustomerSelfProfile"],
     endpoints: (builder) => ({
-   
+
+        // Checked right before "Pay"/"Confirm order" on every channel (web,
+        // Telegram, Messenger) — a phone number is the one thing every
+        // channel's checkout requires the shop to be able to reach the
+        // customer, and it lives on GlobalCustomer rather than being
+        // guaranteed by any one channel's own sign-in flow.
+        getMyCustomerProfile: builder.query<CustomerSelfProfile, void>({
+            query: () => "/me/profile",
+            providesTags: ["CustomerSelfProfile"],
+        }),
+
+        updateMyPhoneNumber: builder.mutation<
+            CustomerSelfProfile,
+            { businessId: string; phoneNumber: string; firstName?: string; lastName?: string }
+        >({
+            query: (body) => ({
+                url: "/me/profile",
+                method: "PUT",
+                body,
+            }),
+            invalidatesTags: ["CustomerSelfProfile"],
+        }),
+
         createCheckout: builder.mutation<CheckoutSession, CreateCheckoutPayload>({
             query: (body) => ({
                 url: "/storefront/checkout",
@@ -97,4 +125,6 @@ export const {
     useCancelCheckoutMutation,
     useGetOrderHistoryQuery,
     useGetOrderReceiptQuery,
+    useGetMyCustomerProfileQuery,
+    useUpdateMyPhoneNumberMutation,
 } = checkoutApi;

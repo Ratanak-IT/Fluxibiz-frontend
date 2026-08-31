@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 
-import { formatMoney, resolveMediaUrl, isCartLineOutOfStock, apiErrorMessage, formatStockErrorMessage, freeUnitsOnLine, type CartLine } from "@/lib/type/cartType";
+import { formatMoney, resolveMediaUrl, isCartLineOutOfStock, isCartLineAtStockCeiling, getCartLineStock, apiErrorMessage, formatStockErrorMessage, extractCartLinePrices, freeUnitsOnLine, type CartLine } from "@/lib/type/cartType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { toast } from "sonner";
 import {
@@ -22,10 +22,12 @@ export default function ItemCardComponent({
     line,
     currency = "USD",
     storeSlug,
+    storeItems = [],
 }: {
     line: CartLine;
     currency?: string;
     storeSlug?: string;
+    storeItems?: any[];
 }) {
     const router = useRouter();
     const tStore = useTranslations("Store");
@@ -35,6 +37,7 @@ export default function ItemCardComponent({
     const imageUrl = resolveMediaUrl(line.imageUrl);
     const busy = isUpdating || isRemoving;
     const outOfStock = isCartLineOutOfStock(line);
+    const stockLimit = getCartLineStock(line);
 
     const productHref = storeSlug && line.itemId ? `/store/${storeSlug}/product/${line.itemId}` : null;
     const freeUnits = freeUnitsOnLine(line);
@@ -44,6 +47,9 @@ export default function ItemCardComponent({
             router.push(productHref);
         }
     };
+
+    const catalogItem = (storeItems ?? []).find((i: any) => i.id === line.itemId || i.slug === line.itemId);
+    const { hasDiscount, subtotal: lineSubtotal, compareAtSubtotal } = extractCartLinePrices(line, catalogItem);
 
     return (
         <Card className={cn("relative w-full overflow-hidden rounded-2xl border-0 bg-gray-100 p-0 dark:bg-card", outOfStock && "opacity-90")}>
@@ -130,6 +136,12 @@ export default function ItemCardComponent({
                         </p>
                     ) : null}
 
+                    {!outOfStock && stockLimit !== null && stockLimit <= 10 && (
+                        <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                            {tStore("detail.onlyLeft", { count: stockLimit })}
+                        </p>
+                    )}
+
                     <div className="mt-2 flex items-center justify-between gap-2 sm:hidden">
                         <Stepper
                             line={line}
@@ -140,6 +152,7 @@ export default function ItemCardComponent({
                         />
 
                         <div className="flex flex-col items-end">
+<<<<<<< HEAD
                             {line.discountAmount && line.discountAmount > 0 && (
                                 <span className="text-xs text-muted-foreground line-through font-normal">
                                     {formatMoney(line.subtotal, currency)}
@@ -157,6 +170,15 @@ export default function ItemCardComponent({
                                         : line.subtotal,
                                     currency
                                 )}
+=======
+                            {hasDiscount && (
+                                <span className="text-[11px] text-neutral-400 line-through">
+                                    {formatMoney(compareAtSubtotal, currency)}
+                                </span>
+                            )}
+                            <span className="whitespace-nowrap text-base font-semibold text-red-500 dark:text-destructive">
+                                {formatMoney(lineSubtotal, currency)}
+>>>>>>> a59cf05125fd7b1f314f8100c978c89eda2deaad
                             </span>
                         </div>
                     </div>
@@ -169,6 +191,7 @@ export default function ItemCardComponent({
 
                 <div className="hidden items-center justify-end gap-6 sm:flex">
                     <div className="flex flex-col items-end">
+<<<<<<< HEAD
                         {line.discountAmount && line.discountAmount > 0 && (
                             <span className="text-xs text-muted-foreground line-through font-normal">
                                 {formatMoney(line.subtotal, currency)}
@@ -186,6 +209,15 @@ export default function ItemCardComponent({
                                     : line.subtotal,
                                 currency
                             )}
+=======
+                        {hasDiscount && (
+                            <span className="text-xs text-neutral-400 line-through">
+                                {formatMoney(compareAtSubtotal, currency)}
+                            </span>
+                        )}
+                        <span className="whitespace-nowrap text-xl font-semibold text-red-500 dark:text-destructive">
+                            {formatMoney(lineSubtotal, currency)}
+>>>>>>> a59cf05125fd7b1f314f8100c978c89eda2deaad
                         </span>
                     </div>
 
@@ -214,6 +246,8 @@ function Stepper({
     onRemove?: () => { unwrap: () => Promise<unknown> };
 }) {
     const t = useTranslations("Cart");
+    const atStockCeiling = isCartLineAtStockCeiling(line);
+    const stockLimit = getCartLineStock(line);
 
     const handleDecrease = () => {
         // Pressing "-" at 1 removes the line — the same behavior the
@@ -236,6 +270,10 @@ function Stepper({
     };
 
     const handleIncrease = () => {
+        if (atStockCeiling && stockLimit !== null) {
+            toast.error(`Only ${stockLimit} item(s) available in stock`);
+            return;
+        }
         const nextQty = line.quantity + 1;
         const res = onChange({ cartItemId: line.cartItemId, quantity: nextQty });
         if (res && typeof res.unwrap === "function") {
@@ -263,10 +301,10 @@ function Stepper({
                 size="icon"
                 onClick={handleDecrease}
                 disabled={busy}
-                className="h-6 w-6 border-0 text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950/30 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="h-6 w-6 border-0 text-red-500 hover:bg-red-50 hover:text-red-600 dark:bg-transparent dark:text-red-500 dark:hover:bg-red-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
                 aria-label={t("decreaseQuantity")}
             >
-                <Minus className="h-3.5 w-3.5 " />
+                <Minus className="h-3.5 w-3.5 text-red-500" />
             </Button>
 
             <span className="text-md w-4 text-center font-medium dark:text-card-foreground">
@@ -278,11 +316,11 @@ function Stepper({
                 variant="ghost"
                 size="icon"
                 onClick={handleIncrease}
-                disabled={busy || outOfStock}
-                className="h-6 w-6 border-0 text-green-600 dark:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
+                disabled={busy || outOfStock || atStockCeiling}
+                className="h-6 w-6 border-0 text-[#00932A] hover:bg-green-50 hover:text-[#007d24] dark:bg-transparent dark:text-[#00932A] dark:hover:bg-green-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
                 aria-label={t("increaseQuantity")}
             >
-                <Plus className="h-3.5 w-3.5" />
+                <Plus className="h-3.5 w-3.5 text-[#00932A]" />
             </Button>
         </div>
     );

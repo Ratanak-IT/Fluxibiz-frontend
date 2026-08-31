@@ -13,14 +13,26 @@ import { computeTax, formatMoney, type StoreCart } from "@/lib/type/cartType";
 export default function OrderSummaryComponent({
     store,
     currency,
+    storeItems = [],
 }: {
     store: StoreCart;
     currency?: string;
+    storeItems?: any[];
 }) {
     const t = useTranslations("Cart");
     const activeCurrency = currency || store.currency;
-    const discount = store.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0);
-    const netAmount = Math.max(0, store.subtotal - discount);
+    // `store.subtotal` from the server is already NET of every discount,
+    // including order-wide ones (e.g. a storewide Buy X Get Y) that never
+    // show up on any individual line's `discountAmount`. So the only way to
+    // recover the true pre-discount total — and therefore how much was
+    // actually saved — is to rebuild it from each line's own undiscounted
+    // unit price, then diff against the server's net total.
+    const originalSubtotal = store.items.reduce(
+        (acc, item) => acc + (item.unitPriceWithAddOns ?? item.unitPrice) * item.quantity,
+        0,
+    );
+    const netAmount = store.subtotal;
+    const discount = Math.max(0, originalSubtotal - netAmount);
     const freeItemCount = store.items.reduce((acc, item) => acc + (item.freeQuantity ?? 0), 0);
 
     const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
@@ -64,7 +76,7 @@ export default function OrderSummaryComponent({
                 <div className="flex items-center justify-between">
                     <span>{t("subtotal")}</span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
-                        {formatMoney(store.subtotal, activeCurrency)}
+                        {formatMoney(originalSubtotal, activeCurrency)}
                     </span>
                 </div>
 

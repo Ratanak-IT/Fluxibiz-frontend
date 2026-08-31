@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
-import { MenuItemData, markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { MenuItemData, markItemOutOfStock, isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import {
   StorefrontItemResponse,
   ItemVariant,
@@ -15,8 +15,12 @@ import {
   isVariantSelectable,
   sellableAddOns,
   isStorefrontOpen,
+  remainingStock,
+  resolveItemPrices,
 } from "@/lib/type/storeType";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
+import { useIsMessengerContext } from "@/lib/tma/useIsMessengerContext";
+import { useRequireMessengerProfile } from "@/lib/tma/MessengerProfileGate";
 import { useTodayHoursLabel } from "./store-hours";
 import { ProductStorefrontUI } from "@/components/store/productdetail/product-storefront-ui";
 import { apiErrorMessage, formatStockErrorMessage, isUnauthorized } from "@/lib/type/cartType";
@@ -52,6 +56,8 @@ export default function ProductQuickViewModal({
 
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
   const { isAuthenticated, status: authStatus, login } = useAuth();
+  const isMessenger = useIsMessengerContext(product?.businessId);
+  const requireMessengerProfile = useRequireMessengerProfile();
 
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
@@ -103,7 +109,12 @@ export default function ProductQuickViewModal({
       return;
     }
 
-    if (!isAuthenticated && authStatus !== "loading") {
+    // Messenger never goes through the regular Keycloak OAuth login — a
+    // brand-new visitor has no tmaSession token yet (one isn't created
+    // until they register via the MessengerProfileGate popup below), so
+    // `isAuthenticated` would otherwise read false here and bounce them to
+    // the Keycloak login page for no reason.
+    if (!isMessenger && !isAuthenticated && authStatus !== "loading") {
       login();
       return;
     }
@@ -119,6 +130,28 @@ export default function ProductQuickViewModal({
       return;
     }
 
+    // Check stock availability
+    const remaining = remainingStock(variants.length > 0 ? selectedVariant : product);
+    const packFactor = selectedPack ? Number(selectedPack.factor) || 1 : 1;
+    const maxQuantity = remaining === null ? null : Math.floor(remaining / packFactor);
+    const outOfStock =
+      (variants.length > 0
+        ? !isVariantSelectable(selectedVariant)
+        : isItemOutOfStock(product)) ||
+      (remaining !== null &&
+        selectedPack !== null &&
+        remaining < packFactor);
+
+    if (outOfStock) {
+      toast.error(t("detail.outOfStock") || "Product is out of stock");
+      return;
+    }
+
+    if (maxQuantity !== null && quantity > maxQuantity) {
+      toast.error(`Only ${maxQuantity} item(s) left in stock`);
+      return;
+    }
+
     // Only the ones this item still sells, priced from its own library; the
     // server checks the same thing rather than trusting the tick.
     const extras = sellableAddOns(product).filter((addOn) =>
@@ -129,47 +162,59 @@ export default function ProductQuickViewModal({
       0,
     );
 
-    try {
-      await addToCartMutation({
-        businessId: product.businessId,
-        itemId: product.id,
-        quantity,
-        variantId: selectedVariant?.id,
-        unitId: selectedPack?.unit?.id,
-        selections: Object.entries(selectedAttributes).map(
-          ([attributeName, value]) => ({ attributeName, value }),
-        ),
-        addOnIds: extras.map((addOn) => addOn.id),
-        itemDetails: {
-          name: product.name,
-          price:
-            Number(
-              selectedPack?.price ?? selectedVariant?.price ?? product.price ?? 0,
-            ) + extrasPerUnit,
-          imageUrl: primaryItemImage(product),
-          currency: currency || item?.currency,
-          addOns: extras.map((addOn) => ({
-            addOnId: addOn.id,
-            name: addOn.name,
-            unitPrice: Number(addOn.price ?? 0),
-          })),
-        },
-      }).unwrap();
-      
-      toast.success(tCart("addedToCart"));
-      onOpenChange(false);
-    } catch (err: any) {
-        if (isUnauthorized(err)) {
+    const { sellingPrice, compareAtPrice: resolvedCompareAt, hasDiscount } = resolveItemPrices(product, selectedVariant);
+    const baseUnitPrice = selectedPack ? Number(selectedPack.price) : sellingPrice;
+    const businessId = product.businessId;
+
+    requireMessengerProfile(businessId, () => {
+      void (async () => {
+        try {
+          await addToCartMutation({
+            businessId,
+            itemId: product.id,
+            quantity,
+            variantId: selectedVariant?.id,
+            unitId: selectedPack?.unit?.id,
+            selections: Object.entries(selectedAttributes).map(
+              ([attributeName, value]) => ({ attributeName, value }),
+            ),
+            addOnIds: extras.map((addOn) => addOn.id),
+            itemDetails: {
+              name: product.name,
+              price: baseUnitPrice + extrasPerUnit,
+              compareAtPrice: hasDiscount ? resolvedCompareAt : undefined,
+              imageUrl: primaryItemImage(product),
+              currency: currency || item?.currency,
+              addOns: extras.map((addOn) => ({
+                addOnId: addOn.id,
+                name: addOn.name,
+                unitPrice: Number(addOn.price ?? 0),
+              })),
+            },
+          }).unwrap();
+
+          toast.success(tCart("addedToCart"));
+          onOpenChange(false);
+        } catch (err: any) {
+          if (isUnauthorized(err) && !isMessenger) {
             login();
-        } else {
+          } else if (isUnauthorized(err)) {
+            // Messenger never has Keycloak credentials to log back in with —
+            // by this point `tmaBaseQuery` has already tried silently
+            // re-registering the device and retrying once; a 401 surviving
+            // that means it genuinely failed, not just an expired token.
+            toast.error(t("errors.addToCartFailed"));
+          } else {
             const msg = formatStockErrorMessage(err, product?.name || item?.name);
             const lower = msg.toLowerCase();
             if (lower.includes("stock") || lower.includes("enough") || lower.includes("negative") || lower.includes("unavailable")) {
-                if (product?.id) markItemOutOfStock(product.id);
+              if (product?.id) markItemOutOfStock(product.id);
             }
             toast.error(msg);
+          }
         }
-    }
+      })();
+    });
   }
 
   return (

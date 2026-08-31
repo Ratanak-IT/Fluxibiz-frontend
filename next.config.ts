@@ -28,10 +28,6 @@ const securityHeaders = [
     value: "max-age=63072000; includeSubDomains; preload",
   },
   {
-    key: "X-Frame-Options",
-    value: "DENY",
-  },
-  {
     key: "X-Content-Type-Options",
     value: "nosniff",
   },
@@ -45,15 +41,14 @@ const securityHeaders = [
   },
   {
     key: "Permissions-Policy",
-    // geolocation=(self) — not (): an empty allowlist blocks the API even
-    // for the site's own pages, which is what silently broke the /store
-    // distance feature. (self) keeps the actual intent of this header —
-    // deny it to any embedded third-party content — without taking out
-    // first-party use.
+
     value:
       "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
   },
 ];
+
+
+const frameOptionsDeny = { key: "X-Frame-Options", value: "DENY" };
 
 const nextConfig: NextConfig = {
   compress: true,
@@ -65,6 +60,20 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      {
+    
+        source: "/:path((?!store).*)",
+        headers: [frameOptionsDeny],
+      },
+      {
+        source: "/store/:path*",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'self' https://*.facebook.com https://*.messenger.com;",
+          },
+        ],
+      },
     ];
   },
 
@@ -73,7 +82,7 @@ const nextConfig: NextConfig = {
       {
         source: "/",
         destination: "/store",
-        permanent: false,
+        permanent: true,
       },
     ];
   },

@@ -116,6 +116,13 @@ export default async function RootLayout({
     logo: absoluteUrl("/favicon.png?v=2"),
   };
 
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "FluxiBiz",
+    url: SITE_URL,
+  };
+
   return (
     <html
       lang={locale}
@@ -139,6 +146,10 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         <NextIntlClientProvider>
           <NetworkStatusBanner />

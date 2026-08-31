@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Receipt, User as UserIcon } from "lucide-react";
@@ -8,12 +8,8 @@ import { ChevronRight, Receipt, User as UserIcon } from "lucide-react";
 import { getTmaSession, updateTmaSession, type TmaSession } from "@/lib/tma/tmaSession";
 import { useUpdateMyProfileMutation } from "@/features/auth/telegramWebAppApi";
 import { profileErrorMessage } from "@/lib/tma/profileErrorMessage";
-
-const GENDER_OPTIONS = [
-  { value: "Male", label: "Male" },
-  { value: "Female", label: "Female" },
-  { value: "Other", label: "Other" },
-];
+import { useIsMessenger } from "@/lib/tma/useIsMessenger";
+import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 
 function splitName(fullName: string): { firstName: string; lastName: string } {
   const trimmed = fullName.trim();
@@ -23,19 +19,25 @@ function splitName(fullName: string): { firstName: string; lastName: string } {
 }
 
 /**
- * The Mini App's "Me" tab — everything CompleteProfileScreen first
- * collected (name, email, gender, phone, address), editable any time
- * (they might type it wrong once, move, or change their mind). Telegram's
- * avatar stays read-only since it isn't something set here.
+ * The Mini App's "Me" tab — name and phone, editable any time (they might
+ * type it wrong once, or change their number). Email is a synthetic address
+ * Keycloak assigns automatically and was never something to show or edit
+ * here; gender and delivery address were part of an older, fuller profile
+ * form this app no longer collects since only a phone number is required to
+ * order. Telegram's avatar stays read-only since it isn't set here either.
  */
-export default function TmaMePage() {
+export default function TmaMePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = use(params);
+  const isMessenger = useIsMessenger();
+  const { queryParam } = useMiniAppMode();
   const [session, setSession] = useState<TmaSession | null>(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [gender, setGender] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [updateMyProfile, { isLoading }] = useUpdateMyProfileMutation();
@@ -47,10 +49,7 @@ export default function TmaMePage() {
     const { firstName: fn, lastName: ln } = splitName(current?.fullName ?? "");
     setFirstName(fn);
     setLastName(ln);
-    setEmail(current?.email ?? "");
-    setGender(current?.gender ?? "");
     setPhoneNumber(current?.phoneNumber ?? "");
-    setAddress(current?.address ?? "");
   }, []);
 
   async function handleSave(event: React.FormEvent) {
@@ -60,22 +59,12 @@ export default function TmaMePage() {
     setSaved(false);
 
     const trimmed = {
-      email: email.trim(),
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      gender,
       phoneNumber: phoneNumber.trim(),
-      address: address.trim(),
     };
 
-    if (
-      !trimmed.email ||
-      !trimmed.firstName ||
-      !trimmed.lastName ||
-      !trimmed.gender ||
-      !trimmed.phoneNumber ||
-      !trimmed.address
-    ) {
+    if (!trimmed.firstName || !trimmed.lastName || !trimmed.phoneNumber) {
       setError("Please fill in every field.");
       return;
     }
@@ -84,10 +73,7 @@ export default function TmaMePage() {
       const result = await updateMyProfile({ businessId: session.businessId, ...trimmed }).unwrap();
       updateTmaSession({
         fullName: result.fullName,
-        email: trimmed.email,
-        gender: trimmed.gender,
         phoneNumber: trimmed.phoneNumber,
-        address: trimmed.address,
       });
       setSaved(true);
     } catch (cause) {
@@ -96,9 +82,24 @@ export default function TmaMePage() {
   }
 
   if (!session) {
+    // A Messenger visitor who hasn't added to cart or checked out yet has
+    // no session at all — `getTmaSession()` reads synchronously, so this
+    // isn't a "still loading" state, it's genuinely "nothing to show yet."
+    // Telegram always authenticates before browsing starts, so it never
+    // lands here.
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-muted-foreground">
-        Loading...
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 px-6 text-center">
+        <UserIcon className="size-8 text-muted-foreground" />
+        <p className="text-sm font-medium text-foreground">No profile yet</p>
+        <p className="text-sm text-muted-foreground">
+          Add something to your cart or start checkout to set up your profile.
+        </p>
+        <Link
+          href={`/store/${slug}?${queryParam}`}
+          className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+        >
+          Back to shop
+        </Link>
       </div>
     );
   }
@@ -124,12 +125,14 @@ export default function TmaMePage() {
         </div>
         <div>
           <p className="text-base font-semibold text-foreground">{session.fullName}</p>
-          <p className="text-xs text-muted-foreground">Signed in with Telegram</p>
+          <p className="text-xs text-muted-foreground">
+            Signed in with {isMessenger ? "Messenger" : "Telegram"}
+          </p>
         </div>
       </div>
 
       <Link
-        href={`/store/${session.businessSlug}/history?tma=true`}
+        href={`/store/${session.businessSlug}/history?${queryParam}`}
         className="flex items-center justify-between rounded-xl border border-input bg-background px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
       >
         <span className="flex items-center gap-2.5">
@@ -167,40 +170,6 @@ export default function TmaMePage() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="email" className="text-sm font-medium text-foreground">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            inputMode="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary"
-          />
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <span className="text-sm font-medium text-foreground">Gender</span>
-          <div className="flex gap-2">
-            {GENDER_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setGender(option.value)}
-                className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
-                  gender === option.value
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-input bg-background text-foreground"
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
           <label htmlFor="phoneNumber" className="text-sm font-medium text-foreground">
             Phone number
           </label>
@@ -211,19 +180,6 @@ export default function TmaMePage() {
             value={phoneNumber}
             onChange={(event) => setPhoneNumber(event.target.value)}
             className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary"
-          />
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="address" className="text-sm font-medium text-foreground">
-            Delivery address
-          </label>
-          <textarea
-            id="address"
-            rows={3}
-            value={address}
-            onChange={(event) => setAddress(event.target.value)}
-            className="resize-none rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary"
           />
         </div>
 
