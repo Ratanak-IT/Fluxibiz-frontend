@@ -198,10 +198,9 @@ export default function NavbarBeforeLoginComponent({
                       outline-none
                       transition-colors
 
-                      ${
-                        menuActive
-                          ? "text-primary"
-                          : `
+                      ${menuActive
+                        ? "text-primary"
+                        : `
                               text-[#6b7280]
                               hover:text-primary
 
@@ -278,10 +277,9 @@ export default function NavbarBeforeLoginComponent({
                             dark:data-[highlighted]:bg-primary/10
                             dark:data-[highlighted]:!text-primary
 
-                            ${
-                              childIsActive
-                                ? "bg-primary/10 text-primary"
-                                : "text-[#4b5563] dark:text-white"
+                            ${childIsActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-[#4b5563] dark:text-white"
                             }
                           `}
                         >
@@ -308,10 +306,9 @@ export default function NavbarBeforeLoginComponent({
                   font-semibold
                   transition-colors
 
-                  ${
-                    active
-                      ? "text-primary"
-                      : `
+                  ${active
+                    ? "text-primary"
+                    : `
                           text-[#6b7280]
                           hover:text-primary
 
@@ -349,10 +346,9 @@ export default function NavbarBeforeLoginComponent({
             gap-4
             lg:flex
 
-            ${
-              pending || isLoggingIn
-                ? "pointer-events-none opacity-60"
-                : ""
+            ${pending || isLoggingIn
+              ? "pointer-events-none opacity-60"
+              : ""
             }
           `}
         >
@@ -608,10 +604,9 @@ export default function NavbarBeforeLoginComponent({
                         font-bold
                         transition-colors
 
-                        ${
-                          active
-                            ? "border-primary bg-primary/10 text-primary"
-                            : `
+                        ${active
+                          ? "border-primary bg-primary/10 text-primary"
+                          : `
                                 border-transparent
                                 text-[#374151]
                                 hover:bg-[#f3f4f6]
@@ -677,10 +672,9 @@ export default function NavbarBeforeLoginComponent({
                                   font-medium
                                   transition-colors
 
-                                  ${
-                                    childActive
-                                      ? "bg-primary/10 text-primary"
-                                      : `
+                                  ${childActive
+                                    ? "bg-primary/10 text-primary"
+                                    : `
                                           text-[#6b7280]
                                           hover:bg-[#f3f4f6]
                                           hover:text-primary
