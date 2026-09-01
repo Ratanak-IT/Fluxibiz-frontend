@@ -182,8 +182,13 @@ export default function CheckoutPage({
     const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
-    const discount = store?.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0) ?? 0;
-    const netAmount = Math.max(0, (store?.subtotal ?? 0) - discount);
+    const originalSubtotal = store?.items.reduce(
+        (acc, item) => acc + (item.unitPriceWithAddOns ?? item.unitPrice) * item.quantity,
+        0,
+    ) ?? 0;
+    const netAmount = store?.subtotal ?? 0;
+    const discount = Math.max(0, originalSubtotal - netAmount);
+    const freeItemCount = store?.items.reduce((acc, item) => acc + (item.freeQuantity ?? 0), 0) ?? 0;
     const { taxAmount, total: payableTotal } = computeTax(
         netAmount,
         publicStore?.taxRate,
@@ -259,35 +264,63 @@ export default function CheckoutPage({
                     {/* Order summary card */}
                     <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
                         <div className="flex flex-col gap-4">
-                            {store.items.map((line) => (
-                                <div
-                                    key={line.cartItemId}
-                                    className="flex items-center justify-between text-base"
-                                >
-                                    <span className="text-neutral-700 dark:text-card-foreground">
-                                        {line.name} × {line.quantity}
-                                        {line.discountAmount && line.discountAmount > 0 ? (
-                                            <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                                                {line.discountLabel ?? "Discount"}
-                                            </span>
-                                        ) : null}
-                                    </span>
+                            {store.items.map((line) => {
+                                const originalLineSubtotal = (line.unitPriceWithAddOns ?? line.unitPrice) * line.quantity;
+                                const hasDiscount = Boolean(line.discountAmount && line.discountAmount > 0);
 
-                                    <span className="flex flex-col items-end">
-                                        {line.discountAmount && line.discountAmount > 0 ? (
-                                            <span className="text-xs text-neutral-400 line-through">
-                                                {formatMoney(line.subtotal + line.discountAmount, currency)}
-                                            </span>
-                                        ) : null}
-                                        <span className="font-semibold text-neutral-900 dark:text-card-foreground">
-                                            {formatMoney(line.subtotal, currency)}
+                                return (
+                                    <div
+                                        key={line.cartItemId}
+                                        className="flex items-center justify-between text-base"
+                                    >
+                                        <span className="text-neutral-700 dark:text-card-foreground">
+                                            {line.name} × {line.quantity}
+                                            {hasDiscount ? (
+                                                <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                                    {line.discountLabel ?? t("discount")}
+                                                </span>
+                                            ) : null}
                                         </span>
-                                    </span>
-                                </div>
-                            ))}
+
+                                        <span className="flex flex-col items-end">
+                                            {hasDiscount ? (
+                                                <span className="text-xs text-neutral-400 line-through">
+                                                    {formatMoney(originalLineSubtotal, currency)}
+                                                </span>
+                                            ) : null}
+                                            <span className="font-semibold text-neutral-900 dark:text-card-foreground">
+                                                {formatMoney(line.subtotal, currency)}
+                                            </span>
+                                        </span>
+                                    </div>
+                                );
+                            })}
                         </div>
 
                         <div className="mt-4 flex flex-col gap-2 border-t border-neutral-100 pt-4 dark:border-border">
+                            <div className="flex items-center justify-between text-sm text-neutral-600 dark:text-muted-foreground">
+                                <span>{t("subtotal")}</span>
+                                <span className="font-semibold text-neutral-900 dark:text-card-foreground">
+                                    {formatMoney(originalSubtotal, currency)}
+                                </span>
+                            </div>
+
+                            {discount > 0 && (
+                                <div className="flex items-center justify-between text-sm text-emerald-600 dark:text-emerald-400">
+                                    <span className="flex items-center gap-1.5 font-medium">
+                                        {t("discount")}
+                                        {freeItemCount > 0 && (
+                                            <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                                {freeItemCount} FREE
+                                            </span>
+                                        )}
+                                    </span>
+                                    <span className="font-bold">
+                                        -{formatMoney(discount, currency)}
+                                    </span>
+                                </div>
+                            )}
+
                             {isTaxActive && !isTaxInclusive && (
                                 <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
                                     <span>
@@ -310,7 +343,7 @@ export default function CheckoutPage({
                                 </div>
                             )}
 
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pt-1 border-t border-neutral-100 dark:border-border">
                                 <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
                                     {t("total")}
                                 </span>

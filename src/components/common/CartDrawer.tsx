@@ -265,8 +265,11 @@ function StoreSection({
             </div>
 
             {(() => {
-                const storeDiscount = store.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0);
-                const discountedStoreTotal = Math.max(0, store.subtotal - storeDiscount);
+                const originalStoreSubtotal = store.items.reduce(
+                    (acc, item) => acc + (item.unitPriceWithAddOns ?? item.unitPrice) * item.quantity,
+                    0,
+                );
+                const storeDiscount = Math.max(0, originalStoreSubtotal - store.subtotal);
 
                 return (
                     <div className="mt-3 flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-border">
@@ -277,11 +280,11 @@ function StoreSection({
                         <div className="flex items-baseline gap-1.5">
                             {storeDiscount > 0 && (
                                 <span className="text-xs text-neutral-400 line-through font-normal">
-                                    {formatMoney(store.subtotal, effectiveCurrency)}
+                                    {formatMoney(originalStoreSubtotal, effectiveCurrency)}
                                 </span>
                             )}
                             <span className="text-base font-bold text-primary">
-                                {formatMoney(discountedStoreTotal, effectiveCurrency)}
+                                {formatMoney(store.subtotal, effectiveCurrency)}
                             </span>
                         </div>
                     </div>
@@ -429,9 +432,12 @@ function LineRow({
             });
     };
 
-    const { unitPrice: effectiveUnitPrice, hasDiscount, compareAtSubtotal } = extractCartLinePrices(line);
+    const { unitPrice: effectiveUnitPrice, hasDiscount, subtotal: lineSubtotal, compareAtSubtotal } = extractCartLinePrices(line);
     const currentSubtotal = pendingQty === line.quantity
-        ? extractCartLinePrices(line).subtotal
+        ? lineSubtotal
+        : (hasDiscount && line.quantity > 0 ? (lineSubtotal / line.quantity) : effectiveUnitPrice) * pendingQty;
+    const currentCompareAtSubtotal = pendingQty === line.quantity
+        ? compareAtSubtotal
         : effectiveUnitPrice * pendingQty;
 
     return (
@@ -523,13 +529,13 @@ function LineRow({
                     </div>
 
                     <div className="flex flex-col items-end">
-                        {line.discountAmount && line.discountAmount > 0 ? (
+                        {hasDiscount ? (
                             <>
                                 <span className="text-[11px] text-muted-foreground line-through font-normal">
-                                    {formatMoney(currentSubtotal, currency)}
+                                    {formatMoney(currentCompareAtSubtotal, currency)}
                                 </span>
                                 <span className="whitespace-nowrap text-sm font-bold text-primary">
-                                    {formatMoney(Math.max(0, currentSubtotal - line.discountAmount), currency)}
+                                    {formatMoney(currentSubtotal, currency)}
                                 </span>
                             </>
                         ) : (

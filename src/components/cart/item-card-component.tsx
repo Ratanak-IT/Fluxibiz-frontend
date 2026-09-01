@@ -152,23 +152,18 @@ export default function ItemCardComponent({
                         />
 
                         <div className="flex flex-col items-end">
-                            {line.discountAmount && line.discountAmount > 0 && (
+                            {hasDiscount && (
                                 <span className="text-xs text-muted-foreground line-through font-normal">
-                                    {formatMoney(line.subtotal, currency)}
+                                    {formatMoney(compareAtSubtotal, currency)}
                                 </span>
                             )}
                             <span className={cn(
                                 "whitespace-nowrap text-base font-semibold",
-                                line.discountAmount && line.discountAmount > 0
+                                hasDiscount
                                     ? "text-primary font-bold"
                                     : "text-red-500 dark:text-destructive"
                             )}>
-                                {formatMoney(
-                                    line.discountAmount && line.discountAmount > 0
-                                        ? Math.max(0, line.subtotal - line.discountAmount)
-                                        : line.subtotal,
-                                    currency
-                                )}
+                                {formatMoney(lineSubtotal, currency)}
                             </span>
                         </div>
                     </div>
@@ -181,23 +176,18 @@ export default function ItemCardComponent({
 
                 <div className="hidden items-center justify-end gap-6 sm:flex">
                     <div className="flex flex-col items-end">
-                        {line.discountAmount && line.discountAmount > 0 && (
+                        {hasDiscount && (
                             <span className="text-xs text-muted-foreground line-through font-normal">
-                                {formatMoney(line.subtotal, currency)}
+                                {formatMoney(compareAtSubtotal, currency)}
                             </span>
                         )}
                         <span className={cn(
                             "whitespace-nowrap text-xl font-semibold",
-                            line.discountAmount && line.discountAmount > 0
+                            hasDiscount
                                 ? "text-primary font-bold"
                                 : "text-red-500 dark:text-destructive"
                         )}>
-                            {formatMoney(
-                                line.discountAmount && line.discountAmount > 0
-                                    ? Math.max(0, line.subtotal - line.discountAmount)
-                                    : line.subtotal,
-                                currency
-                            )}
+                            {formatMoney(lineSubtotal, currency)}
                         </span>
                     </div>
 
