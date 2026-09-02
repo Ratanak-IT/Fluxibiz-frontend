@@ -17,7 +17,7 @@ import {
     useGetActiveCheckoutQuery,
     useGetMyCustomerProfileQuery,
 } from "@/features/checkout/checkoutApi";
-import { computeTax, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
+import { cartTotals, computeTax, displayLinePrices, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
@@ -182,6 +182,7 @@ export default function CheckoutPage({
     const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
+<<<<<<< HEAD
     const originalSubtotal = store?.items.reduce(
         (acc, item) => acc + (item.unitPriceWithAddOns ?? item.unitPrice) * item.quantity,
         0,
@@ -189,6 +190,13 @@ export default function CheckoutPage({
     const netAmount = store?.subtotal ?? 0;
     const discount = Math.max(0, originalSubtotal - netAmount);
     const freeItemCount = store?.items.reduce((acc, item) => acc + (item.freeQuantity ?? 0), 0) ?? 0;
+=======
+    // `store.subtotal` is already net of every discount — see cartTotals.
+    const { net: netAmount } = store
+        ? cartTotals(store)
+        : { net: 0 };
+    const displayPrices = store ? displayLinePrices(store) : new Map();
+>>>>>>> 518ace3c769eb440171b054a0225a48a8795294d
     const { taxAmount, total: payableTotal } = computeTax(
         netAmount,
         publicStore?.taxRate,
@@ -265,8 +273,13 @@ export default function CheckoutPage({
                     <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
                         <div className="flex flex-col gap-4">
                             {store.items.map((line) => {
+<<<<<<< HEAD
                                 const originalLineSubtotal = (line.unitPriceWithAddOns ?? line.unitPrice) * line.quantity;
                                 const hasDiscount = Boolean(line.discountAmount && line.discountAmount > 0);
+=======
+                                const linePrice = displayPrices.get(line.cartItemId);
+                                const lineDiscount = linePrice?.discountAmount ?? 0;
+>>>>>>> 518ace3c769eb440171b054a0225a48a8795294d
 
                                 return (
                                     <div
@@ -275,6 +288,7 @@ export default function CheckoutPage({
                                     >
                                         <span className="text-neutral-700 dark:text-card-foreground">
                                             {line.name} × {line.quantity}
+<<<<<<< HEAD
                                             {hasDiscount ? (
                                                 <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                                                     {line.discountLabel ?? t("discount")}
@@ -290,6 +304,23 @@ export default function CheckoutPage({
                                             ) : null}
                                             <span className="font-semibold text-neutral-900 dark:text-card-foreground">
                                                 {formatMoney(line.subtotal, currency)}
+=======
+                                            {lineDiscount > 0 && (
+                                                <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                                    {linePrice?.discountLabel ?? "Discount"}
+                                                </span>
+                                            )}
+                                        </span>
+
+                                        <span className="flex flex-col items-end">
+                                            {lineDiscount > 0 && (
+                                                <span className="text-xs text-neutral-400 line-through">
+                                                    {formatMoney(linePrice!.compareAtSubtotal, currency)}
+                                                </span>
+                                            )}
+                                            <span className="font-semibold text-neutral-900 dark:text-card-foreground">
+                                                {formatMoney(linePrice?.subtotal ?? line.subtotal, currency)}
+>>>>>>> 518ace3c769eb440171b054a0225a48a8795294d
                                             </span>
                                         </span>
                                     </div>

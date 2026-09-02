@@ -204,6 +204,98 @@ export interface StoreCart {
     items: CartLine[];
 }
 
+/**
+ * A store cart's totals, discount-aware.
+ *
+ * `subtotal` off the wire is already NET of every discount — each line's
+ * `subtotal` has its own `discountAmount` taken off, and an order-wide
+ * promotion (a storewide Buy X Get Y, say) is deducted on top without ever
+ * showing up on a line. Subtracting the line discounts from it again charges
+ * every promotion twice: a 10% discount reads as 20% off, and a 90% one wipes
+ * the order out entirely.
+ *
+ * So `net` is the server's number, untouched, and the saving is recovered by
+ * rebuilding the undiscounted total from each line's own billed unit price
+ * and diffing — which also catches the order-wide portion that no line
+ * reports.
+ */
+export function cartTotals(store: { subtotal: number; items: CartLine[] }): {
+    /** What every line would have cost with no promotion applied. */
+    original: number;
+    /** Total knocked off — line-level and order-wide alike. */
+    discount: number;
+    /** What is actually owed before tax. */
+    net: number;
+} {
+    const original = store.items.reduce(
+        (acc, line) => acc + billedUnitPrice(line) * line.quantity,
+        0,
+    );
+    const net = Math.max(0, store.subtotal);
+
+    return { original, discount: Math.max(0, original - net), net };
+}
+
+/** What one line should show for its price, after a storewide discount is accounted for. */
+export interface DisplayLinePrice {
+    subtotal: number;
+    compareAtSubtotal: number;
+    discountAmount: number;
+    discountLabel: string | null;
+}
+
+/**
+ * Per-line prices for display, spreading a storewide discount across lines
+ * pro rata when the server hasn't attributed any of it to a line itself —
+ * older backend responses only ever subtract it from the store total, which
+ * leaves every line looking like full price even though the shopper is
+ * genuinely paying less. This is a display-only estimate: `store.subtotal`
+ * (via {@link cartTotals}) is always what actually gets charged, regardless
+ * of how it's split across lines here.
+ */
+export function displayLinePrices(store: { subtotal: number; items: CartLine[] }): Map<string, DisplayLinePrice> {
+    const result = new Map<string, DisplayLinePrice>();
+    const lineAttributed = store.items.reduce((acc, line) => acc + (line.discountAmount ?? 0), 0);
+    const { original, discount } = cartTotals(store);
+
+    if (lineAttributed > 0 || discount <= 0) {
+        // Either every line already carries its own share (a fixed backend,
+        // or a line/category-scoped discount, which was always attributed),
+        // or there is nothing to spread — read straight off each line.
+        store.items.forEach((line) => {
+            const prices = extractCartLinePrices(line);
+            result.set(line.cartItemId, {
+                subtotal: prices.subtotal,
+                compareAtSubtotal: prices.hasDiscount ? prices.compareAtSubtotal : prices.subtotal,
+                discountAmount: line.discountAmount ?? 0,
+                discountLabel: line.discountLabel ?? null,
+            });
+        });
+        return result;
+    }
+
+    let remaining = discount;
+    store.items.forEach((line, index) => {
+        const rawSubtotal = billedUnitPrice(line) * line.quantity;
+        const isLast = index === store.items.length - 1;
+        const share = isLast
+            ? remaining
+            : original > 0
+                ? Math.round(((discount * rawSubtotal) / original) * 100) / 100
+                : 0;
+        if (!isLast) {
+            remaining -= share;
+        }
+        result.set(line.cartItemId, {
+            subtotal: Math.max(0, rawSubtotal - share),
+            compareAtSubtotal: rawSubtotal,
+            discountAmount: share,
+            discountLabel: line.discountLabel ?? null,
+        });
+    });
+    return result;
+}
+
 export interface CartSummary {
     storeCount: number;
     totalItems: number;

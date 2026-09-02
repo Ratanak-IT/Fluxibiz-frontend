@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { resolveMediaUrl } from "@/lib/type/cartType";
-import type { ItemResponse } from "@/lib/type/storeType";
+import { primaryItemImage, type ItemResponse } from "@/lib/type/storeType";
 import { Plus, Minus, ShoppingBag } from "lucide-react";
 
 interface TmaProductGridProps {
@@ -72,8 +71,7 @@ export default function TmaProductGrid({
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {filteredItems.map((item) => {
-            const rawImage = item.images && item.images.length > 0 ? item.images[0].url : null;
-            const imageUrl = rawImage ? resolveMediaUrl(rawImage) : null;
+            const imageUrl = primaryItemImage(item);
             const qty = cartItems[item.id] || 0;
             const priceDisplay = item.unitPrice
               ? `$${Number(item.unitPrice).toFixed(2)}`

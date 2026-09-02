@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useGetOrderReceiptQuery } from "@/features/checkout/checkoutApi";
 import { formatMoney, resolveMediaUrl } from "@/lib/type/cartType";
+import { displayOrderItemPrices } from "@/lib/type/checkoutType";
 
 import { useTranslations } from "next-intl";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
@@ -99,6 +100,7 @@ export default function ReceiptComponent({
   const isTaxActive = taxAmount > 0;
   const effectiveTaxName = order.taxLabel?.trim() || "VAT";
   const afterDiscount = Math.max(0, order.subtotal - (order.discountAmount ?? 0));
+  const itemPrices = displayOrderItemPrices(order);
 
   const formattedDate = order.createdDate
     ? new Date(order.createdDate).toLocaleDateString("en-US", {
@@ -291,45 +293,57 @@ export default function ReceiptComponent({
             </div>
 
             <div className="divide-y divide-neutral-100 rounded-2xl border border-neutral-100 bg-neutral-50/50 p-4 dark:divide-border dark:border-border dark:bg-neutral-900/30">
-              {order.items.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0"
-                >
-                  <div className="flex-1 pr-4">
-                    <p className="text-sm font-semibold text-neutral-800 dark:text-foreground">
-                      {item.itemName}
-                    </p>
-                    {item.selections && item.selections.length > 0 ? (
-                      <p className="text-xs text-neutral-500 dark:text-muted-foreground">
-                        {item.selections.join(" · ")}
-                      </p>
-                    ) : null}
-                    <p className="text-xs text-neutral-400">
-                      {formatMoney(item.unitPrice, order.currency)} ea
-                    </p>
-                    {item.freeQuantity && item.freeQuantity > 0 ? (
-                      <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                        {item.freeQuantity} FREE
-                      </p>
-                    ) : item.discountAmount && item.discountAmount > 0 ? (
-                      <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                        {item.discountLabel ? `${item.discountLabel} · ` : ""}
-                        -{formatMoney(item.discountAmount, order.currency)}
-                      </p>
-                    ) : null}
-                  </div>
+              {order.items.map((item, idx) => {
+                const price = itemPrices[idx];
+                const lineDiscount = price?.discountAmount ?? 0;
 
-                  <div className="flex gap-6">
-                    <span className="w-8 text-right text-sm text-neutral-500 dark:text-muted-foreground">
-                      {item.quantity}
-                    </span>
-                    <span className="w-16 text-right font-bold text-neutral-900 dark:text-foreground">
-                      {formatMoney(item.lineTotal, order.currency)}
-                    </span>
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex-1 pr-4">
+                      <p className="text-sm font-semibold text-neutral-800 dark:text-foreground">
+                        {item.itemName}
+                      </p>
+                      {item.selections && item.selections.length > 0 ? (
+                        <p className="text-xs text-neutral-500 dark:text-muted-foreground">
+                          {item.selections.join(" · ")}
+                        </p>
+                      ) : null}
+                      <p className="text-xs text-neutral-400">
+                        {formatMoney(item.unitPrice, order.currency)} ea
+                      </p>
+                      {item.freeQuantity && item.freeQuantity > 0 ? (
+                        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                          {item.freeQuantity} FREE
+                        </p>
+                      ) : lineDiscount > 0 ? (
+                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                          {price?.discountLabel ? `${price.discountLabel} · ` : ""}
+                          -{formatMoney(lineDiscount, order.currency)}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="flex gap-6">
+                      <span className="w-8 text-right text-sm text-neutral-500 dark:text-muted-foreground">
+                        {item.quantity}
+                      </span>
+                      <span className="flex w-16 flex-col items-end">
+                        {lineDiscount > 0 && (
+                          <span className="text-xs text-neutral-400 line-through">
+                            {formatMoney(price!.compareAtLineTotal, order.currency)}
+                          </span>
+                        )}
+                        <span className="text-right font-bold text-neutral-900 dark:text-foreground">
+                          {formatMoney(price?.lineTotal ?? item.lineTotal, order.currency)}
+                        </span>
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

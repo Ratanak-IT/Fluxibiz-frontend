@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import Image from "next/image";
@@ -27,6 +27,7 @@ import {
   apiErrorMessage,
   formatStockErrorMessage,
   extractCartLinePrices,
+  cartTotals,
   type CartLine,
   type StoreCart,
 } from "@/lib/type/cartType";
@@ -55,9 +56,14 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
 
   const lines = useMemo(() => storeCart?.items ?? [], [storeCart?.items]);
 
-  const effectiveSubtotal = useMemo(() => {
-    return lines.reduce((acc, line) => acc + extractCartLinePrices(line).subtotal, 0);
-  }, [lines]);
+  // `storeCart.subtotal` is the server's own net total — the one figure
+  // that always accounts for an order-wide promotion, which no single line
+  // carries a share of on the wire. Re-summing the lines' own subtotals (as
+  // this used to) silently drops that discount and overcharges.
+  const { original: originalSubtotal, discount, net: effectiveSubtotal } = useMemo(
+    () => cartTotals(storeCart ?? { subtotal: 0, items: [] }),
+    [storeCart],
+  );
 
   const currency = storeCurrency || storeCart?.currency || "USD";
   const itemCount = storeCart?.itemCount ?? 0;
@@ -124,9 +130,16 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-neutral-500 dark:text-neutral-400">{t("total")}</span>
-            <span className="font-semibold text-neutral-900 dark:text-neutral-50">
-              {formatMoney(effectiveSubtotal, currency)}
-            </span>
+            <div className="flex items-baseline gap-1.5">
+              {discount > 0 && (
+                <span className="text-xs text-neutral-400 line-through">
+                  {formatMoney(originalSubtotal, currency)}
+                </span>
+              )}
+              <span className="font-semibold text-neutral-900 dark:text-neutral-50">
+                {formatMoney(effectiveSubtotal, currency)}
+              </span>
+            </div>
           </div>
 
           {otherShops > 0 && (
@@ -182,7 +195,10 @@ function CartSidebarLine({
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
   const busy = isUpdating || isRemoving;
-  const imageUrl = resolveMediaUrl(line.imageUrl);
+  // A link that 404s leaves the alt text sitting in the frame like a caption;
+  // the placeholder says "no picture" far more clearly.
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageUrl = imageFailed ? null : resolveMediaUrl(line.imageUrl);
   const outOfStock = isCartLineOutOfStock(line);
   const atStockCeiling = isCartLineAtStockCeiling(line);
   const stockLimit = getCartLineStock(line);
@@ -255,6 +271,7 @@ function CartSidebarLine({
             alt={line.name}
             fill
             unoptimized
+            onError={() => setImageFailed(true)}
             sizes="52px"
             className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
           />

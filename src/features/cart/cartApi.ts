@@ -35,13 +35,18 @@ function addOnKeyOf(addOnIds?: string[] | null): string {
 }
 
 /**
- * Normalises a cart the server sent, without changing what it charges.
+ * Fills in anything the server left off a cart, without changing what it
+ * charges.
  *
- * The server already computes each line's discount-aware `subtotal` (and
- * `compareAtPrice`/`discountAmount`/`discountLabel` alongside it), so this
- * only re-derives the store total from those line subtotals — it must never
- * recompute a line's own subtotal from its unit price, since that would
- * silently drop whatever discount the server applied.
+ * Every total here is the server's own and is kept as sent. A store's
+ * `subtotal` in particular must never be re-derived by adding up its lines:
+ * an order-wide promotion (a storewide percentage, a "$5 off the order") is
+ * deducted from the store total and is deliberately attributed to no line at
+ * all, so summing the lines silently charges full price again — a 90% off
+ * cart reappears at 100% of its cost.
+ *
+ * Only a value the server genuinely omitted is derived, and a line's own
+ * subtotal likewise falls back to its billed unit price only when absent.
  */
 function sanitizeCartData(cartData: CartSummary | null | undefined): CartSummary {
     if (!cartData || !Array.isArray(cartData.stores)) {
@@ -49,17 +54,17 @@ function sanitizeCartData(cartData: CartSummary | null | undefined): CartSummary
     }
 
     const stores = cartData.stores.map((store) => {
-        let storeSubtotal = 0;
+        let lineTotal = 0;
         const items = store.items.map((line) => {
             const billed = billedUnitPrice(line);
             const lineSubtotal = typeof line.subtotal === "number" ? line.subtotal : billed * line.quantity;
-            storeSubtotal += lineSubtotal;
+            lineTotal += lineSubtotal;
             return { ...line, subtotal: lineSubtotal };
         });
 
         return {
             ...store,
-            subtotal: storeSubtotal,
+            subtotal: typeof store.subtotal === "number" ? store.subtotal : lineTotal,
             items,
         };
     });

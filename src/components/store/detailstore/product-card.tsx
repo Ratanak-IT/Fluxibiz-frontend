@@ -12,7 +12,6 @@ import { ImageOff, Plus } from "lucide-react";
 import Image from "next/image";
 import { MenuItemData, isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
-/** Matches the product page: the count only earns its place when it is small. */
 const LOW_STOCK_THRESHOLD = 10;
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
@@ -31,8 +30,30 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
   const storeSlug = (params?.slug as string) || "";
   const t = useTranslations("Store");
 
-  const imageUrl = item.image?.trim() ? item.image : null;
+  // A link that 404s leaves the browser rendering the alt text in the frame,
+  // which reads as a caption rather than a missing picture. Once it has
+  // failed there is nothing to show, so the frame falls back to the same
+  // placeholder an item with no picture at all gets.
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSrc = item.image?.trim() ? item.image : null;
+  const imageUrl = imageFailed ? null : imageSrc;
   const outOfStock = isItemOutOfStock(item);
+
+  // A live promotion is the more urgent thing to say in the one badge slot
+  // the card has, so it wins over the label the seller typed on the item.
+  // It is the only signal for a storewide promotion, whose amount is worked
+  // out once per order and so never shows up in this item's own price.
+  const cornerBadge = item.discountLabel?.trim() || item.badge;
+
+  // Shown only when the server actually priced the promotion into `price` —
+  // the strikethrough beside it is what it was worth before.
+  const compareAt = Number(item.compareAtPrice);
+  const priceNow = Number(item.price);
+  const isPricedDown =
+    item.compareAtPrice !== undefined && compareAt > priceNow && compareAt > 0;
+  const percentOff = isPricedDown
+    ? Math.round(((compareAt - priceNow) / compareAt) * 100)
+    : 0;
 
   const handleCardClick = () => {
     const itemTarget = item.rawItem?.slug || item.rawItem?.id || item.id;
@@ -52,13 +73,16 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
           outOfStock && "opacity-90"
         )}
       >
-        <div className="flex h-28 @xs:h-32 items-center justify-between">
-          <div className={cn("flex min-w-0 flex-1 flex-col justify-between h-full p-2.5 pr-2 @xs:p-3", outOfStock && "filter blur-[0.5px]")}>
-            <CardHeader className="gap-0.5 p-0 min-w-0">
+        <div className="flex h-32 @xs:h-36 items-center justify-between">
+          <div className={cn("flex min-w-0 flex-1 flex-col h-full p-2.5 pr-2 @xs:p-3", outOfStock && "filter blur-[0.5px]")}>
+            <CardHeader className="gap-1 p-0 min-w-0">
               <CardTitle className="truncate text-[16px] @xs:text-[17px] font-bold text-text dark:text-text">
                 {item.name}
               </CardTitle>
-              <div className="flex items-center gap-2">
+              {/* Current price, what it used to cost, and the percent off all
+                  read as one line — the eye takes in the whole deal at once
+                  instead of hunting a strikethrough on the row below. */}
+              <div className="flex flex-wrap items-center gap-1.5">
                 {item.price === undefined ? (
                   <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                     {t("detail.priceNotSet")}
@@ -73,20 +97,25 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                       : ""}
                   </p>
                 )}
-                {item.compareAtPrice && Number(item.compareAtPrice) > Number(item.price) && (
+                {isPricedDown && (
                   <p className="text-[10px] font-medium text-neutral-400 line-through @xs:text-xs">
-                    {formatPrice(Number(item.compareAtPrice), item.currency)}
+                    {formatPrice(compareAt, item.currency)}
                   </p>
+                )}
+                {isPricedDown && percentOff > 0 && (
+                  <span className="rounded bg-red-50 px-1 py-0.5 text-[10px] font-bold text-red-600 @xs:text-xs dark:bg-red-950/50 dark:text-red-400">
+                    -{percentOff}%
+                  </span>
                 )}
               </div>
               {item.description ? (
-                <CardDescription className="truncate text-[13px] text-neutral-500 dark:text-neutral-400">
+                <CardDescription className="line-clamp-2 text-[13px] text-neutral-500 dark:text-neutral-400">
                   {item.description}
                 </CardDescription>
               ) : null}
             </CardHeader>
 
-            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <div className="mt-auto flex flex-wrap items-center gap-1.5">
               <span className="text-[13px] font-bold text-primary dark:text-primary">
                 {item.category}
               </span>
@@ -112,9 +141,9 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 </span>
               </div>
             ) : (
-              item.badge && (
+              cornerBadge && (
                 <div className="absolute left-0 top-0 z-10 max-w-full truncate whitespace-nowrap rounded-br-lg bg-red-500 px-1.5 py-0.5 text-[8px] font-extrabold text-white shadow-xs @xs:text-[10px]">
-                  {item.badge}
+                  {cornerBadge}
                 </div>
               )
             )}
@@ -124,6 +153,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 alt={item.name || t("common.productImage")}
                 fill
                 unoptimized
+                onError={() => setImageFailed(true)}
                 sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, 112px"
                 className={cn("h-full w-full object-cover transition-all", outOfStock && "filter blur-[3px]")}
               />

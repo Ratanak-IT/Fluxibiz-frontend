@@ -14,6 +14,8 @@ export interface MenuItemData {
   priceMax?: string;
   compareAtPrice?: string;
   badge?: string | null;
+  /** The promotion on this item, named by the server. See StorefrontItemResponse.discountLabel. */
+  discountLabel?: string | null;
   description: string;
   category: string;
   image: string;
