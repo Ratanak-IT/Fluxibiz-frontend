@@ -481,28 +481,46 @@ export function itemImageUrl(image?: ItemImage | null): string | null {
 }
 
 
-export function primaryItemImage(
-    item?: {
-        images?: ItemImage[] | null;
-        colors?: { imageUrl?: string | null }[] | null;
-        variants?: { imageUrl?: string | null }[] | null;
-    } | null,
-): string | null {
-    const sorted = [...(item?.images ?? [])].sort(
-        (a, b) => (a.position ?? 0) - (b.position ?? 0),
-    );
+type ItemWithPictures = {
+    imageUrl?: string | null;
+    images?: ItemImage[] | null;
+    colors?: { imageUrl?: string | null }[] | null;
+    variants?: { imageUrl?: string | null }[] | null;
+};
 
-    for (const image of sorted) {
-        const url = itemImageUrl(image);
-        if (url) return url;
-    }
+/**
+ * Every picture an item has, best first — the same gallery, in the same
+ * order, as the back office builds in `itemImageUrls`.
+ *
+ * The item's own `imageUrl` comes first and is the only one that can be a
+ * plain link: uploaded images live in `images` as keys into our asset store,
+ * but an imported item has never been near it and its picture is a URL on the
+ * shop's old system sitting in `imageUrl` alone. Leaving that out is why an
+ * imported item showed a placeholder here while the back office showed the
+ * real photograph.
+ */
+export function itemImageUrls(item?: ItemWithPictures | null): string[] {
+    const gallery: string[] = [];
 
-    for (const option of [...(item?.colors ?? []), ...(item?.variants ?? [])]) {
-        const url = resolveMediaUrl(option.imageUrl);
-        if (url) return url;
-    }
+    const push = (value?: string | null) => {
+        const url = resolveMediaUrl(value);
+        if (url && !gallery.includes(url)) gallery.push(url);
+    };
 
-    return null;
+    push(item?.imageUrl);
+
+    [...(item?.images ?? [])]
+        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+        .forEach((image) => push(image.url ?? image.imageUrl));
+
+    (item?.colors ?? []).forEach((color) => push(color.imageUrl));
+    (item?.variants ?? []).forEach((variant) => push(variant.imageUrl));
+
+    return gallery;
+}
+
+export function primaryItemImage(item?: ItemWithPictures | null): string | null {
+    return itemImageUrls(item)[0] ?? null;
 }
 
 export interface ItemVariant {
@@ -583,6 +601,11 @@ export interface StorefrontItemResponse {
     sku: string | null;
     code: string | null;
     description: string | null;
+    /**
+     * The item's own picture, as a plain link. An item imported from another
+     * system carries its photograph here and has no `images` at all.
+     */
+    imageUrl?: string | null;
     images: ItemImage[];
     barcode: string | null;
     price: number;
@@ -695,6 +718,8 @@ export interface ItemResponse {
     description?: string;
     unitPrice?: number | string;
     itemGroup?: { id: string; name: string };
+    /** The item's own picture, as a plain link. See {@link itemImageUrls}. */
+    imageUrl?: string | null;
     images?: ItemImage[];
     status?: string;
 }

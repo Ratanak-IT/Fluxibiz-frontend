@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import Image from "next/image";
@@ -182,7 +182,10 @@ function CartSidebarLine({
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
   const busy = isUpdating || isRemoving;
-  const imageUrl = resolveMediaUrl(line.imageUrl);
+  // A link that 404s leaves the alt text sitting in the frame like a caption;
+  // the placeholder says "no picture" far more clearly.
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageUrl = imageFailed ? null : resolveMediaUrl(line.imageUrl);
   const outOfStock = isCartLineOutOfStock(line);
   const atStockCeiling = isCartLineAtStockCeiling(line);
   const stockLimit = getCartLineStock(line);
@@ -255,6 +258,7 @@ function CartSidebarLine({
             alt={line.name}
             fill
             unoptimized
+            onError={() => setImageFailed(true)}
             sizes="52px"
             className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
           />

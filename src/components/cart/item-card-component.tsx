@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { useRouter } from "next/navigation";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 
 import { formatMoney, resolveMediaUrl, isCartLineOutOfStock, isCartLineAtStockCeiling, getCartLineStock, apiErrorMessage, formatStockErrorMessage, extractCartLinePrices, freeUnitsOnLine, type CartLine } from "@/lib/type/cartType";
+import { primaryItemImage } from "@/lib/type/storeType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 import { toast } from "sonner";
 import {
@@ -34,7 +36,9 @@ export default function ItemCardComponent({
     const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
     const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
-    const imageUrl = resolveMediaUrl(line.imageUrl);
+    // A link that 404s leaves the browser rendering the alt text in the frame
+    // like a caption; the placeholder says "no picture" far more clearly.
+    const [imageFailed, setImageFailed] = useState(false);
     const busy = isUpdating || isRemoving;
     const outOfStock = isCartLineOutOfStock(line);
     const stockLimit = getCartLineStock(line);
@@ -50,6 +54,13 @@ export default function ItemCardComponent({
 
     const catalogItem = (storeItems ?? []).find((i: any) => i.id === line.itemId || i.slug === line.itemId);
     const { hasDiscount, subtotal: lineSubtotal, compareAtSubtotal } = extractCartLinePrices(line, catalogItem);
+
+    // The line carries whichever picture the server chose for it, but a row
+    // added before that choice was widened can arrive without one. The store
+    // listing is already loaded on this screen, so it fills the gap using the
+    // same gallery order the back office uses.
+    const resolvedImage = resolveMediaUrl(line.imageUrl) ?? primaryItemImage(catalogItem);
+    const imageUrl = imageFailed ? null : resolvedImage;
 
     return (
         <Card className={cn("relative w-full overflow-hidden rounded-2xl border-0 bg-gray-100 p-0 dark:bg-card", outOfStock && "opacity-90")}>
@@ -72,6 +83,7 @@ export default function ItemCardComponent({
                             alt={line.name}
                             width={110}
                             height={110}
+                            onError={() => setImageFailed(true)}
                             className={cn("h-full w-full object-cover", outOfStock && "filter blur-[1.5px]")}
                         />
                     ) : (

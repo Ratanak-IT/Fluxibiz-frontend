@@ -31,7 +31,13 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
   const storeSlug = (params?.slug as string) || "";
   const t = useTranslations("Store");
 
-  const imageUrl = item.image?.trim() ? item.image : null;
+  // A link that 404s leaves the browser rendering the alt text in the frame,
+  // which reads as a caption rather than a missing picture. Once it has
+  // failed there is nothing to show, so the frame falls back to the same
+  // placeholder an item with no picture at all gets.
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSrc = item.image?.trim() ? item.image : null;
+  const imageUrl = imageFailed ? null : imageSrc;
   const outOfStock = isItemOutOfStock(item);
 
   // A live promotion is the more urgent thing to say in the one badge slot
@@ -149,6 +155,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 alt={item.name || t("common.productImage")}
                 fill
                 unoptimized
+                onError={() => setImageFailed(true)}
                 sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, 112px"
                 className={cn("h-full w-full object-cover transition-all", outOfStock && "filter blur-[3px]")}
               />

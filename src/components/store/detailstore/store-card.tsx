@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Card } from "../../ui/card";
@@ -18,7 +21,10 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
     return <StoreCardSkeleton />;
   }
 
-  const imageUrl = store.image?.trim() ? store.image : null;
+  // A logo link that 404s would otherwise render the store's name as alt
+  // text inside the logo frame; the placeholder is the honest fallback.
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageUrl = imageFailed || !store.image?.trim() ? null : store.image;
   const distanceLabel = formatDistance(store.distanceKm);
 
   return (
@@ -34,6 +40,7 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
                     alt={store.name || t("storeLogo")}
                     fill
                     unoptimized
+                    onError={() => setImageFailed(true)}
                     priority
                     sizes="(max-width: 640px) 100vw, 192px"
                     className="h-full w-full rounded-md object-cover"
