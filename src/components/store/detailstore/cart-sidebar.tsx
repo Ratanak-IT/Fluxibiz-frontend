@@ -27,6 +27,7 @@ import {
   apiErrorMessage,
   formatStockErrorMessage,
   extractCartLinePrices,
+  cartTotals,
   type CartLine,
   type StoreCart,
 } from "@/lib/type/cartType";
@@ -55,9 +56,14 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
 
   const lines = useMemo(() => storeCart?.items ?? [], [storeCart?.items]);
 
-  const effectiveSubtotal = useMemo(() => {
-    return lines.reduce((acc, line) => acc + extractCartLinePrices(line).subtotal, 0);
-  }, [lines]);
+  // `storeCart.subtotal` is the server's own net total — the one figure
+  // that always accounts for an order-wide promotion, which no single line
+  // carries a share of on the wire. Re-summing the lines' own subtotals (as
+  // this used to) silently drops that discount and overcharges.
+  const { original: originalSubtotal, discount, net: effectiveSubtotal } = useMemo(
+    () => cartTotals(storeCart ?? { subtotal: 0, items: [] }),
+    [storeCart],
+  );
 
   const currency = storeCurrency || storeCart?.currency || "USD";
   const itemCount = storeCart?.itemCount ?? 0;
@@ -124,9 +130,16 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-neutral-500 dark:text-neutral-400">{t("total")}</span>
-            <span className="font-semibold text-neutral-900 dark:text-neutral-50">
-              {formatMoney(effectiveSubtotal, currency)}
-            </span>
+            <div className="flex items-baseline gap-1.5">
+              {discount > 0 && (
+                <span className="text-xs text-neutral-400 line-through">
+                  {formatMoney(originalSubtotal, currency)}
+                </span>
+              )}
+              <span className="font-semibold text-neutral-900 dark:text-neutral-50">
+                {formatMoney(effectiveSubtotal, currency)}
+              </span>
+            </div>
           </div>
 
           {otherShops > 0 && (
