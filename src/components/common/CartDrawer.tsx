@@ -46,6 +46,7 @@ import {
     formatStockErrorMessage,
     freeUnitsOnLine,
     extractCartLinePrices,
+    cartTotals,
     type CartLine,
     type StoreCart,
 } from "@/lib/type/cartType";
@@ -265,8 +266,11 @@ function StoreSection({
             </div>
 
             {(() => {
-                const storeDiscount = store.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0);
-                const discountedStoreTotal = Math.max(0, store.subtotal - storeDiscount);
+                // `store.subtotal` is already net of every discount, so the
+                // struck-through "before" price has to be rebuilt from the
+                // lines' own undiscounted prices — see cartTotals.
+                const { original: storeOriginal, discount: storeDiscount, net: discountedStoreTotal } =
+                    cartTotals(store);
 
                 return (
                     <div className="mt-3 flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-border">
@@ -277,7 +281,7 @@ function StoreSection({
                         <div className="flex items-baseline gap-1.5">
                             {storeDiscount > 0 && (
                                 <span className="text-xs text-neutral-400 line-through font-normal">
-                                    {formatMoney(store.subtotal, effectiveCurrency)}
+                                    {formatMoney(storeOriginal, effectiveCurrency)}
                                 </span>
                             )}
                             <span className="text-base font-bold text-primary">

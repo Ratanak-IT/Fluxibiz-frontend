@@ -588,6 +588,14 @@ export interface StorefrontItemResponse {
     price: number;
     compareAtPrice?: number | null;
     badge?: string | null;
+    /**
+     * The promotion currently on this item, named by the server — "Summer
+     * Sale", "Buy 2 Get 1", "10% OFF". Present whenever a discount applies to
+     * the item, including a storewide one whose amount is only ever worked
+     * out once per order and so never shows up in `price` here. Distinct from
+     * `badge`, which is a label the seller typed on the item itself.
+     */
+    discountLabel?: string | null;
     itemType: string;
     attributes: ItemAttribute[] | null;
     colors?: ItemColor[] | null;

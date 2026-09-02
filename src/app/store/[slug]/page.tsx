@@ -63,6 +63,7 @@ function toMenuItem(
         ? String(item.compareAtPrice)
         : undefined,
     badge: item.badge,
+    discountLabel: item.discountLabel,
     currency: currency,
     description: item.description ?? "",
     category: item.itemGroup?.name ?? fallbackCategory,

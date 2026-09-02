@@ -215,6 +215,11 @@ export function ProductStorefrontUI({
             ? Math.round(((compareAt - activePrice) / compareAt) * 100)
             : 0;
 
+    // The promotion the server named for this item wins over the label the
+    // seller typed, and is the only signal for a storewide promotion, whose
+    // amount is worked out once per order and never priced into `price`.
+    const promoLabel = item.discountLabel?.trim() || item.badge;
+
     const images = useMemo(() => {
         const gallery: string[] = [];
 
@@ -321,12 +326,12 @@ export function ProductStorefrontUI({
                                     {formatPrice(compareAt, currency)}
                                 </span>
                                 <span className="rounded-full bg-[#d14341]/10 dark:bg-[#f87171]/20 px-2 py-0.5 text-xs font-semibold text-[#d14341] dark:text-[#f87171]">
-                                    {item.badge || `${discount}% OFF`}
+                                    {promoLabel || `${discount}% OFF`}
                                 </span>
                             </>
-                        ) : item.badge ? (
+                        ) : promoLabel ? (
                             <span className="rounded-full bg-[#d14341]/10 dark:bg-[#f87171]/20 px-2 py-0.5 text-xs font-semibold text-[#d14341] dark:text-[#f87171]">
-                                {item.badge}
+                                {promoLabel}
                             </span>
                         ) : null}
                         {selectedPack?.unit?.name ? (
