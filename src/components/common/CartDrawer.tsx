@@ -527,13 +527,13 @@ function LineRow({
                     </div>
 
                     <div className="flex flex-col items-end">
-                        {line.discountAmount && line.discountAmount > 0 ? (
+                        {hasDiscount ? (
                             <>
                                 <span className="text-[11px] text-muted-foreground line-through font-normal">
-                                    {formatMoney(currentSubtotal, currency)}
+                                    {formatMoney(compareAtSubtotal, currency)}
                                 </span>
                                 <span className="whitespace-nowrap text-sm font-bold text-primary">
-                                    {formatMoney(Math.max(0, currentSubtotal - line.discountAmount), currency)}
+                                    {formatMoney(currentSubtotal, currency)}
                                 </span>
                             </>
                         ) : (
