@@ -12,6 +12,7 @@ import Navbar from "@/components/common/Navbar";
 import AuthProvider from "@/components/common/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import StoreProvider from "./StoreProvider";
 
@@ -184,6 +185,12 @@ export default async function RootLayout({
             </AuthProvider>
           </StoreProvider>
         </NextIntlClientProvider>
+        {/* Reports load timings from real shoppers on real networks. Everything
+            we tuned — the function region, the server-rendered pages, the API
+            cache — was measured on a developer's machine against a warm API;
+            this is the only way to see what a phone in Phnom Penh actually
+            waits for. */}
+        <SpeedInsights />
       </body>
     </html>
   );
