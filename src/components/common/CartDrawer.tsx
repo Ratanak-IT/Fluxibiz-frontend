@@ -533,7 +533,11 @@ function LineRow({
                         {hasDiscount ? (
                             <>
                                 <span className="text-[11px] text-muted-foreground line-through font-normal">
+<<<<<<< HEAD
                                     {formatMoney(currentCompareAtSubtotal, currency)}
+=======
+                                    {formatMoney(compareAtSubtotal, currency)}
+>>>>>>> c53a1b10c5eaef7f96f3fcc55a79d685b5b050a5
                                 </span>
                                 <span className="whitespace-nowrap text-sm font-bold text-primary">
                                     {formatMoney(currentSubtotal, currency)}
