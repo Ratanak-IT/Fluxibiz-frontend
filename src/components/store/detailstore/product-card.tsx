@@ -115,7 +115,6 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
               ) : null}
             </CardHeader>
 
-            
             <div className="mt-auto flex flex-wrap items-center gap-1.5">
               <span className="text-[13px] font-bold text-primary dark:text-primary">
                 {item.category}
