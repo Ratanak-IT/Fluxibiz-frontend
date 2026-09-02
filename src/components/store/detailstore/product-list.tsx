@@ -18,7 +18,7 @@ export default function ProductList({ title, items = [] }: ProductListProps) {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {Array.isArray(items) && items.map((item) => (
-                     <MenuProductCard key={item.id} item={item} /> 
+                    <MenuProductCard key={item.id} item={item} />
                 ))}
             </div>
         </section>
