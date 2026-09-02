@@ -31,8 +31,30 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
   const storeSlug = (params?.slug as string) || "";
   const t = useTranslations("Store");
 
-  const imageUrl = item.image?.trim() ? item.image : null;
+  // A link that 404s leaves the browser rendering the alt text in the frame,
+  // which reads as a caption rather than a missing picture. Once it has
+  // failed there is nothing to show, so the frame falls back to the same
+  // placeholder an item with no picture at all gets.
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSrc = item.image?.trim() ? item.image : null;
+  const imageUrl = imageFailed ? null : imageSrc;
   const outOfStock = isItemOutOfStock(item);
+
+  // A live promotion is the more urgent thing to say in the one badge slot
+  // the card has, so it wins over the label the seller typed on the item.
+  // It is the only signal for a storewide promotion, whose amount is worked
+  // out once per order and so never shows up in this item's own price.
+  const cornerBadge = item.discountLabel?.trim() || item.badge;
+
+  // Shown only when the server actually priced the promotion into `price` —
+  // the strikethrough beside it is what it was worth before.
+  const compareAt = Number(item.compareAtPrice);
+  const priceNow = Number(item.price);
+  const isPricedDown =
+    item.compareAtPrice !== undefined && compareAt > priceNow && compareAt > 0;
+  const percentOff = isPricedDown
+    ? Math.round(((compareAt - priceNow) / compareAt) * 100)
+    : 0;
 
   const handleCardClick = () => {
     const itemTarget = item.rawItem?.slug || item.rawItem?.id || item.id;
@@ -58,24 +80,33 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
               <CardTitle className="truncate text-[16px] @xs:text-[17px] font-bold text-text dark:text-text">
                 {item.name}
               </CardTitle>
-              <div className="flex items-center gap-2">
-                {item.price === undefined ? (
-                  <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                    {t("detail.priceNotSet")}
-                  </p>
-                ) : (
-                  /* A span where the options differ — "8,000 ៛ – 10,000 ៛" —
-                     since there is no one price such an item is sold at. */
-                  <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
-                    {formatPrice(Number(item.price), item.currency)}
-                    {item.priceMax
-                      ? ` – ${formatPrice(Number(item.priceMax), item.currency)}`
-                      : ""}
-                  </p>
-                )}
-                {item.compareAtPrice && Number(item.compareAtPrice) > Number(item.price) && (
+              {/* What is charged reads first and alone; what it used to be
+                  sits under it, so the eye lands on the price being asked. */}
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center gap-2">
+                  {item.price === undefined ? (
+                    <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                      {t("detail.priceNotSet")}
+                    </p>
+                  ) : (
+                    /* A span where the options differ — "8,000 ៛ – 10,000 ៛" —
+                       since there is no one price such an item is sold at. */
+                    <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
+                      {formatPrice(Number(item.price), item.currency)}
+                      {item.priceMax
+                        ? ` – ${formatPrice(Number(item.priceMax), item.currency)}`
+                        : ""}
+                    </p>
+                  )}
+                  {isPricedDown && percentOff > 0 && (
+                    <span className="rounded bg-red-50 px-1 py-0.5 text-[10px] font-bold text-red-600 @xs:text-xs dark:bg-red-950/50 dark:text-red-400">
+                      -{percentOff}%
+                    </span>
+                  )}
+                </div>
+                {isPricedDown && (
                   <p className="text-[10px] font-medium text-neutral-400 line-through @xs:text-xs">
-                    {formatPrice(Number(item.compareAtPrice), item.currency)}
+                    {formatPrice(compareAt, item.currency)}
                   </p>
                 )}
               </div>
@@ -112,9 +143,9 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 </span>
               </div>
             ) : (
-              item.badge && (
+              cornerBadge && (
                 <div className="absolute left-0 top-0 z-10 max-w-full truncate whitespace-nowrap rounded-br-lg bg-red-500 px-1.5 py-0.5 text-[8px] font-extrabold text-white shadow-xs @xs:text-[10px]">
-                  {item.badge}
+                  {cornerBadge}
                 </div>
               )
             )}
@@ -124,6 +155,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 alt={item.name || t("common.productImage")}
                 fill
                 unoptimized
+                onError={() => setImageFailed(true)}
                 sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, 112px"
                 className={cn("h-full w-full object-cover transition-all", outOfStock && "filter blur-[3px]")}
               />

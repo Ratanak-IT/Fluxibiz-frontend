@@ -17,7 +17,7 @@ import { useTranslations } from "next-intl";
 import { attributeIcon } from "@/lib/api/attribute-icons";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/store/productdetail/product";
-import { StorefrontItemResponse, primaryItemImage, itemImageUrl, ItemAttributeValue, ItemAttribute, ItemVariant, ItemUomConversion, DescriptionBlockResponse, remainingStock, isVariantSelectable, sellableAddOns, resolveItemPrices, type ChannelSchedule } from "@/lib/type/storeType";
+import { StorefrontItemResponse, itemImageUrls, ItemAttributeValue, ItemAttribute, ItemVariant, ItemUomConversion, DescriptionBlockResponse, remainingStock, isVariantSelectable, sellableAddOns, resolveItemPrices, type ChannelSchedule } from "@/lib/type/storeType";
 import { useTodayHoursLabel } from "@/components/store/detailstore/store-hours";
 import { resolveMediaUrl } from "@/lib/type/cartType";
 import { isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
@@ -215,19 +215,22 @@ export function ProductStorefrontUI({
             ? Math.round(((compareAt - activePrice) / compareAt) * 100)
             : 0;
 
+    // The promotion the server named for this item wins over the label the
+    // seller typed, and is the only signal for a storewide promotion, whose
+    // amount is worked out once per order and never priced into `price`.
+    const promoLabel = item.discountLabel?.trim() || item.badge;
+
     const images = useMemo(() => {
-        const gallery: string[] = [];
+        // The shared gallery covers the item's own picture and its images, in
+        // the back office's order. The options are appended from the lists
+        // this screen has already resolved, which may hold more than the item
+        // payload's own — `itemImageUrls` de-duplicates against what it built.
+        const gallery = itemImageUrls(item);
 
         const push = (url: string | null) => {
             if (url && !gallery.includes(url)) gallery.push(url);
         };
 
-        const sorted = [...(item.images ?? [])].sort(
-            (a, b) => (a.position ?? 0) - (b.position ?? 0),
-        );
-        sorted.forEach((img) => push(itemImageUrl(img)));
-
-        if (gallery.length === 0) push(primaryItemImage(item));
         itemColors.forEach((color) => push(resolveMediaUrl(color.imageUrl)));
         variants.forEach((option) => push(resolveMediaUrl(option.imageUrl)));
 
@@ -321,12 +324,12 @@ export function ProductStorefrontUI({
                                     {formatPrice(compareAt, currency)}
                                 </span>
                                 <span className="rounded-full bg-[#d14341]/10 dark:bg-[#f87171]/20 px-2 py-0.5 text-xs font-semibold text-[#d14341] dark:text-[#f87171]">
-                                    {item.badge || `${discount}% OFF`}
+                                    {promoLabel || `${discount}% OFF`}
                                 </span>
                             </>
-                        ) : item.badge ? (
+                        ) : promoLabel ? (
                             <span className="rounded-full bg-[#d14341]/10 dark:bg-[#f87171]/20 px-2 py-0.5 text-xs font-semibold text-[#d14341] dark:text-[#f87171]">
-                                {item.badge}
+                                {promoLabel}
                             </span>
                         ) : null}
                         {selectedPack?.unit?.name ? (
@@ -757,7 +760,18 @@ function Gallery({
     onSelect: (index: number) => void;
     outOfStock?: boolean;
 }) {
-    if (!images.length) {
+    // A link that 404s leaves the browser rendering the alt text inside the
+    // frame, which reads as a caption rather than a missing picture. A photo
+    // that fails is dropped from the gallery instead, and if every one of
+    // them fails the frame falls back to the same placeholder an item with no
+    // pictures at all gets.
+    const [broken, setBroken] = useState<string[]>([]);
+    const markBroken = (image: string) =>
+        setBroken((previous) => (previous.includes(image) ? previous : [...previous, image]));
+
+    const usable = images.filter((image) => !broken.includes(image));
+
+    if (!usable.length) {
         return (
             <div className="flex aspect-square items-center justify-center rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-card text-center shadow-xs">
                 <div className="flex flex-col items-center gap-2 text-[#a3aca1] dark:text-[#64748b]">
@@ -768,13 +782,13 @@ function Gallery({
         );
     }
 
-    const active = images[Math.min(index, images.length - 1)];
+    const active = usable[Math.min(index, usable.length - 1)];
 
     return (
         <div className="flex flex-col-reverse sm:flex-row gap-4 items-start justify-center">
-            {images.length > 1 && (
+            {usable.length > 1 && (
                 <div className="flex flex-row sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto max-w-full shrink-0 scrollbar-none">
-                    {images.map((image, position) => (
+                    {usable.map((image, position) => (
                         <button
                             key={`${image}-${position}`}
                             type="button"
@@ -793,6 +807,7 @@ function Gallery({
                                 alt={name ? `${name} — photo ${position + 1}` : `Product photo ${position + 1}`}
                                 fill
                                 unoptimized
+                                onError={() => markBroken(image)}
                                 sizes="56px"
                                 className={cn("object-cover", outOfStock && "filter blur-[1.5px]")}
                             />
@@ -806,6 +821,7 @@ function Gallery({
                     alt={name || "Product image"}
                     fill
                     unoptimized
+                    onError={() => markBroken(active)}
                     priority
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 560px, 620px"
                     className={cn("object-cover transition-all duration-300", outOfStock && "filter blur-[1.5px]")}

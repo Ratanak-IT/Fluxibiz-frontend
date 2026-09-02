@@ -204,6 +204,38 @@ export interface StoreCart {
     items: CartLine[];
 }
 
+/**
+ * A store cart's totals, discount-aware.
+ *
+ * `subtotal` off the wire is already NET of every discount — each line's
+ * `subtotal` has its own `discountAmount` taken off, and an order-wide
+ * promotion (a storewide Buy X Get Y, say) is deducted on top without ever
+ * showing up on a line. Subtracting the line discounts from it again charges
+ * every promotion twice: a 10% discount reads as 20% off, and a 90% one wipes
+ * the order out entirely.
+ *
+ * So `net` is the server's number, untouched, and the saving is recovered by
+ * rebuilding the undiscounted total from each line's own billed unit price
+ * and diffing — which also catches the order-wide portion that no line
+ * reports.
+ */
+export function cartTotals(store: { subtotal: number; items: CartLine[] }): {
+    /** What every line would have cost with no promotion applied. */
+    original: number;
+    /** Total knocked off — line-level and order-wide alike. */
+    discount: number;
+    /** What is actually owed before tax. */
+    net: number;
+} {
+    const original = store.items.reduce(
+        (acc, line) => acc + billedUnitPrice(line) * line.quantity,
+        0,
+    );
+    const net = Math.max(0, store.subtotal);
+
+    return { original, discount: Math.max(0, original - net), net };
+}
+
 export interface CartSummary {
     storeCount: number;
     totalItems: number;

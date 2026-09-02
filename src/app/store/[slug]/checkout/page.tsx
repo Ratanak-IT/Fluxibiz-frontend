@@ -17,7 +17,7 @@ import {
     useGetActiveCheckoutQuery,
     useGetMyCustomerProfileQuery,
 } from "@/features/checkout/checkoutApi";
-import { computeTax, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
+import { cartTotals, computeTax, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
@@ -182,8 +182,10 @@ export default function CheckoutPage({
     const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
-    const discount = store?.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0) ?? 0;
-    const netAmount = Math.max(0, (store?.subtotal ?? 0) - discount);
+    // `store.subtotal` is already net of every discount — see cartTotals.
+    const { net: netAmount } = store
+        ? cartTotals(store)
+        : { net: 0 };
     const { taxAmount, total: payableTotal } = computeTax(
         netAmount,
         publicStore?.taxRate,
