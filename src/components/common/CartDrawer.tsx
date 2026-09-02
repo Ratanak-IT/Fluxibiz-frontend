@@ -266,19 +266,11 @@ function StoreSection({
             </div>
 
             {(() => {
-<<<<<<< HEAD
-                const originalStoreSubtotal = store.items.reduce(
-                    (acc, item) => acc + (item.unitPriceWithAddOns ?? item.unitPrice) * item.quantity,
-                    0,
-                );
-                const storeDiscount = Math.max(0, originalStoreSubtotal - store.subtotal);
-=======
                 // `store.subtotal` is already net of every discount, so the
                 // struck-through "before" price has to be rebuilt from the
                 // lines' own undiscounted prices — see cartTotals.
-                const { original: storeOriginal, discount: storeDiscount, net: discountedStoreTotal } =
+                const { original: storeOriginal, discount: storeDiscount } =
                     cartTotals(store);
->>>>>>> 518ace3c769eb440171b054a0225a48a8795294d
 
                 return (
                     <div className="mt-3 flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-border">
@@ -289,11 +281,7 @@ function StoreSection({
                         <div className="flex items-baseline gap-1.5">
                             {storeDiscount > 0 && (
                                 <span className="text-xs text-neutral-400 line-through font-normal">
-<<<<<<< HEAD
-                                    {formatMoney(originalStoreSubtotal, effectiveCurrency)}
-=======
                                     {formatMoney(storeOriginal, effectiveCurrency)}
->>>>>>> 518ace3c769eb440171b054a0225a48a8795294d
                                 </span>
                             )}
                             <span className="text-base font-bold text-primary">

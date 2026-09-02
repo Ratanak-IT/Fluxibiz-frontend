@@ -44,7 +44,7 @@ export function OfflineGate({ children }: { children: React.ReactNode }) {
           type="button"
           onClick={handleRetry}
           disabled={checking}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#00932A] px-6 py-2.5 font-medium text-white shadow-md transition-colors hover:bg-[#007d24] disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-2.5 font-medium text-primary-foreground shadow-md transition-all hover:bg-primary/90 hover:scale-105 active:scale-95 disabled:opacity-60"
         >
           <RefreshCw className={`h-4 w-4 ${checking ? 'animate-spin' : ''}`} />
           {checking ? 'Checking connection...' : 'Retry'}

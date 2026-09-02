@@ -14,7 +14,6 @@ const SINGLE_ROW_MAX = 2;
 /** The gap between cards, in px — kept in step with the `gap-4` below. */
 const CARD_GAP = 16;
 
-
 interface ProductListProps {
     title?: string;
     items: MenuItemData[];
@@ -23,13 +22,8 @@ interface ProductListProps {
 /**
  * One horizontally scrolling row of cards, with its own scroll position.
  *
- * The cards are fixed-width and never shrink, so the row keeps overflowing
- * sideways rather than squeezing more in — which is what gives it something
- * to scroll.
- *
- * The scrollbar itself is hidden: an arrow appears at whichever end still has
- * items past it, which says the same thing more quietly and doubles as the
- * control for a pointer that has no touch swipe to offer.
+ * An arrow button appears on hover at whichever end still has items past it,
+ * styled with a clean white circle, drop shadow, and smooth fade transition.
  */
 function ProductRow({ items }: { items: MenuItemData[] }) {
     const t = useTranslations("Store");
@@ -41,12 +35,17 @@ function ProductRow({ items }: { items: MenuItemData[] }) {
         const track = trackRef.current;
         if (!track) return;
 
-        // Fractional layout widths leave a sub-pixel remainder at either end,
-        // so a whole pixel of slack keeps an arrow from lingering on a row
-        // that is already scrolled as far as it goes.
-        const remaining = track.scrollWidth - track.clientWidth - track.scrollLeft;
-        setCanScrollBack(track.scrollLeft > 1);
-        setCanScrollOn(remaining > 1);
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        // If content fits without scrolling, neither button should appear
+        if (maxScroll <= 8) {
+            setCanScrollBack(false);
+            setCanScrollOn(false);
+            return;
+        }
+
+        // Threshold of 12px accounts for subpixel snapping and padding
+        setCanScrollBack(track.scrollLeft > 12);
+        setCanScrollOn(track.scrollLeft < maxScroll - 12);
     }, []);
 
     useEffect(() => {
@@ -55,31 +54,56 @@ function ProductRow({ items }: { items: MenuItemData[] }) {
 
         syncArrows();
 
-        // Both the row's own width and its content can change after mount —
-        // a filter narrowing the list, the viewport rotating — and either
-        // decides whether there is anything left to scroll to.
+        track.addEventListener("scroll", syncArrows, { passive: true });
+        track.addEventListener("scrollend", syncArrows, { passive: true } as any);
+        window.addEventListener("resize", syncArrows);
+
         const observer = new ResizeObserver(syncArrows);
         observer.observe(track);
-        return () => observer.disconnect();
+
+        return () => {
+            track.removeEventListener("scroll", syncArrows);
+            track.removeEventListener("scrollend", syncArrows as any);
+            window.removeEventListener("resize", syncArrows);
+            observer.disconnect();
+        };
     }, [syncArrows, items.length]);
 
     const scrollByCard = (direction: 1 | -1) => {
         const track = trackRef.current;
         if (!track) return;
 
-        // One card and its gap, so a click lands the next card where the
-        // last one was rather than at some arbitrary offset.
-        const card = track.firstElementChild;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        const card = track.firstElementChild as HTMLElement | null;
         const step = (card ? card.clientWidth : track.clientWidth) + CARD_GAP;
-        track.scrollBy({ left: direction * step, behavior: "smooth" });
+
+        if (direction === -1) {
+            // When within one card of the start, scroll cleanly to 0
+            if (track.scrollLeft <= step + 20) {
+                track.scrollTo({ left: 0, behavior: "smooth" });
+            } else {
+                track.scrollBy({ left: -step, behavior: "smooth" });
+            }
+        } else {
+            // When within one card of the end, scroll cleanly to maxScroll
+            if (track.scrollLeft + step >= maxScroll - 20) {
+                track.scrollTo({ left: maxScroll, behavior: "smooth" });
+            } else {
+                track.scrollBy({ left: step, behavior: "smooth" });
+            }
+        }
+
+        // Re-check as smooth scroll animation progresses and finishes
+        setTimeout(syncArrows, 80);
+        setTimeout(syncArrows, 220);
+        setTimeout(syncArrows, 420);
     };
 
     return (
-        <div className="group relative">
+        <div className="group/row relative">
             <div
                 ref={trackRef}
-                onScroll={syncArrows}
-                className="no-scrollbar -mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-1 py-1"
+                className="no-scrollbar -mx-2 -my-2 flex snap-x snap-mandatory scroll-pl-2 gap-4 overflow-x-auto overscroll-x-contain px-2 py-3"
             >
                 {items.map((item) => (
                     <div
@@ -102,25 +126,16 @@ function ProductRow({ items }: { items: MenuItemData[] }) {
                         aria-label={label}
                         onClick={() => scrollByCard(side === "back" ? -1 : 1)}
                         className={cn(
-                            // Bare chevron, no chrome behind it — the arrow
-                            // is a hint about the row, not a control panel
-                            // sitting on top of it. The box stays 8x8 so
-                            // there is still something to click at.
-                            "absolute top-1/2 z-20 hidden h-8 w-8 -translate-y-1/2 items-center justify-center text-neutral-400 transition hover:text-neutral-700 sm:flex dark:text-neutral-500 dark:hover:text-neutral-200",
-                            side === "back" ? "-left-3" : "-right-3",
+                            "absolute top-1/2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center",
+                            "rounded-full bg-white text-neutral-900 shadow-sm border border-neutral-200/80 dark:bg-neutral-900 dark:text-neutral-100 dark:border-neutral-800",
+                            "opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 transition-all duration-200",
+                            "hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:scale-105 active:scale-95",
+                            side === "back" ? "left-1 sm:left-2" : "right-1 sm:right-2",
                         )}
                     >
-                        <Icon className="h-4 w-4" />
+                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-900 dark:text-neutral-100" />
                     </button>
                 ) : null,
-            )}
-
-            {/* A touch screen has no pointer to hover an arrow with, and the
-                arrows are hidden there; this is the hint in its place. */}
-            {canScrollOn && (
-                <div className="pointer-events-none absolute -right-1 top-1/2 z-20 -translate-y-1/2 text-neutral-400 sm:hidden dark:text-neutral-500">
-                    <ChevronRight className="h-4 w-4" />
-                </div>
             )}
         </div>
     );
@@ -148,15 +163,9 @@ export default function ProductList({ title, items = [] }: ProductListProps) {
                 </h2>
             )}
 
-<<<<<<< HEAD
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {Array.isArray(items) && items.map((item) => (
-                    <MenuProductCard key={item.id} item={item} />
-=======
-            <div className="space-y-3">
+            <div className="space-y-4">
                 {rows.map((row, index) => (
                     <ProductRow key={index} items={row} />
->>>>>>> 518ace3c769eb440171b054a0225a48a8795294d
                 ))}
             </div>
         </section>
