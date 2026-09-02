@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Banknote, ChevronLeft, Loader2, QrCode, Store, TriangleAlert } from "lucide-react";
@@ -24,6 +24,7 @@ import {
     type PaymentMethodType,
 } from "@/lib/type/checkoutType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { newIdempotencyKey } from "@/lib/idempotencyKey";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
@@ -62,6 +63,12 @@ export default function CheckoutPage({
     const [paid, setPaid] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("KHQR");
     const [showPhonePrompt, setShowPhonePrompt] = useState(false);
+
+    // Identifies this attempt at placing the order, not the click. It has to
+    // outlive a failed try — the shopper fixing an out-of-stock line and paying
+    // again is the same attempt — and is dropped once an order exists, so the
+    // next checkout is not answered with this one.
+    const attemptKey = useRef<string | null>(null);
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
@@ -104,12 +111,19 @@ export default function CheckoutPage({
         if (!store) return;
         setError(null);
 
+        if (!attemptKey.current) {
+            attemptKey.current = newIdempotencyKey();
+        }
+
         try {
             const created = await createCheckout({
                 businessId: store.businessId,
-               
+
                 paymentMethod: paymentMethod === "KHQR" ? "DIGITAL" : paymentMethod,
+                idempotencyKey: attemptKey.current,
             }).unwrap();
+
+            attemptKey.current = null;
 
             if (paymentMethod === "PAY_LATER" || !created.qr) {
                 toast.success(t("orderPlacedToast"));
