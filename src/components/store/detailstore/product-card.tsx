@@ -70,81 +70,78 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
       <Card
         onClick={handleCardClick}
         className={cn(
-          "w-full @container cursor-pointer overflow-hidden border-0 bg-white p-0 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg dark:bg-card relative",
+          "w-full cursor-pointer overflow-hidden border-0 bg-white p-0 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg dark:bg-card relative rounded-xl sm:rounded-2xl",
           outOfStock && "opacity-90"
         )}
       >
-        <div className="flex h-28 @xs:h-32 items-center justify-between">
-          <div className={cn("flex min-w-0 flex-1 flex-col justify-between h-full p-2.5 pr-2 @xs:p-3", outOfStock && "filter blur-[0.5px]")}>
-            <CardHeader className="gap-0.5 p-0 min-w-0">
-              <CardTitle className="truncate text-[16px] @xs:text-[17px] font-bold text-text dark:text-text">
+        <div className="flex h-[114px] sm:h-[124px] items-center justify-between">
+          <div className={cn("flex min-w-0 flex-1 flex-col justify-between h-full p-2.5 sm:p-3", outOfStock && "filter blur-[0.5px]")}>
+            <CardHeader className="gap-0.5 p-0 min-w-0 space-y-0">
+              <CardTitle className="truncate text-[14px] sm:text-[16px] font-bold text-foreground leading-tight">
                 {item.name}
               </CardTitle>
-              {/* What is charged reads first and alone; what it used to be
-                  sits under it, so the eye lands on the price being asked. */}
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center gap-2">
-                  {item.price === undefined ? (
-                    <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                      {t("detail.priceNotSet")}
-                    </p>
-                  ) : (
-                    /* A span where the options differ — "8,000 ៛ – 10,000 ៛" —
-                       since there is no one price such an item is sold at. */
-                    <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
-                      {formatPrice(Number(item.price), item.currency)}
-                      {item.priceMax
-                        ? ` – ${formatPrice(Number(item.priceMax), item.currency)}`
-                        : ""}
-                    </p>
-                  )}
-                  {isPricedDown && percentOff > 0 && (
-                    <span className="rounded bg-red-50 px-1 py-0.5 text-[10px] font-bold text-red-600 @xs:text-xs dark:bg-red-950/50 dark:text-red-400">
-                      -{percentOff}%
-                    </span>
-                  )}
-                </div>
+
+              {/* Price, Strikethrough, and Discount badge on a single row */}
+              <div className="flex items-center gap-1.5 flex-nowrap min-w-0">
+                {item.price === undefined ? (
+                  <p className="text-xs sm:text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                    {t("detail.priceNotSet")}
+                  </p>
+                ) : (
+                  <p className="text-[16px] font-bold text-red-500 shrink-0 dark:text-red-400">
+                    {formatPrice(Number(item.price), item.currency)}
+                    {item.priceMax
+                      ? ` – ${formatPrice(Number(item.priceMax), item.currency)}`
+                      : ""}
+                  </p>
+                )}
                 {isPricedDown && (
-                  <p className="text-[10px] font-medium text-neutral-400 line-through @xs:text-xs">
+                  <p className="text-[10px] sm:text-[11px] font-medium text-neutral-400 line-through shrink-0">
                     {formatPrice(compareAt, item.currency)}
                   </p>
                 )}
+                {isPricedDown && percentOff > 0 && (
+                  <span className="rounded bg-red-50 px-1 py-0.5 text-[9px] sm:text-[10px] font-bold text-red-600 shrink-0 dark:bg-red-950/50 dark:text-red-400">
+                    -{percentOff}%
+                  </span>
+                )}
               </div>
+
               {item.description ? (
-                <CardDescription className="truncate text-[13px] text-neutral-500 dark:text-neutral-400">
+                <CardDescription className="truncate text-[13px] text-muted-foreground leading-snug">
                   {item.description}
                 </CardDescription>
               ) : null}
             </CardHeader>
 
-            <div className="mt-1 flex flex-wrap items-center gap-1.5">
-              <span className="text-[13px] font-bold text-primary dark:text-primary">
+            <div className="flex items-center gap-1.5 overflow-hidden text-[13px] flex-nowrap min-w-0">
+              <span className="truncate font-semibold text-primary">
                 {item.category}
               </span>
               {outOfStock ? (
-                <span className="text-[11px] font-bold text-red-600 dark:text-red-500">
+                <span className="shrink-0 text-[11px] sm:text-[12px] font-bold text-red-600 dark:text-red-500">
                   • {t("detail.outOfStock") || "Out of Stock"}
                 </span>
               ) : item.remaining !== null &&
                 item.remaining !== undefined &&
                 item.remaining <= LOW_STOCK_THRESHOLD ? (
-                <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                <span className="shrink-0 text-[11px] sm:text-[12px] font-bold text-amber-600 dark:text-amber-400">
                   • {t("detail.countLeft", { count: item.remaining })}
                 </span>
               ) : null}
             </div>
           </div>
 
-          <div className="relative m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 @xs:m-2.5 @xs:w-24 @sm:w-28 dark:bg-card">
+          <div className="relative m-2 aspect-square w-20 sm:w-24 shrink-0 overflow-hidden rounded-lg sm:rounded-xl bg-neutral-100 dark:bg-card">
             {outOfStock ? (
               <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-1 text-center">
-                <span className="rounded bg-red-600 px-2 py-1 text-[10px] @xs:text-xs font-black text-white uppercase tracking-wide shadow-md border border-red-400">
+                <span className="rounded bg-red-600 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-black text-white uppercase tracking-wide shadow-md border border-red-400">
                   {t("detail.outOfStock") || "Out Stock"}
                 </span>
               </div>
             ) : (
               cornerBadge && (
-                <div className="absolute left-0 top-0 z-10 max-w-full truncate whitespace-nowrap rounded-br-lg bg-red-500 px-1.5 py-0.5 text-[8px] font-extrabold text-white shadow-xs @xs:text-[10px]">
+                <div className="absolute left-0 top-0 z-10 max-w-full truncate whitespace-nowrap rounded-br-lg bg-red-500 px-1.5 py-0.5 text-[8px] font-extrabold text-white shadow-xs sm:text-[9px]">
                   {cornerBadge}
                 </div>
               )
@@ -156,7 +153,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 fill
                 unoptimized
                 onError={() => setImageFailed(true)}
-                sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, 112px"
+                sizes="(max-width: 640px) 80px, 96px"
                 className={cn("h-full w-full object-cover transition-all", outOfStock && "filter blur-[3px]")}
               />
             ) : (
@@ -172,7 +169,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 variant="secondary"
                 disabled={outOfStock}
                 className={cn(
-                  "h-6 w-6 rounded-full bg-card text-primary shadow-md hover:bg-card @xs:h-7 @xs:w-7 dark:bg-text dark:text-primary",
+                  "h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-card text-primary shadow-md hover:bg-card hover:scale-105 active:scale-95 transition-transform dark:bg-text dark:text-primary",
                   outOfStock && "opacity-50 cursor-not-allowed bg-neutral-200 text-neutral-400 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-500"
                 )}
                 aria-label={t("detail.addToCartAria", { name: item.name })}
@@ -183,7 +180,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                   }
                 }}
               >
-                <Plus className="h-3 w-3 @xs:h-3.5 @xs:w-3.5" />
+                <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               </Button>
             </div>
           </div>

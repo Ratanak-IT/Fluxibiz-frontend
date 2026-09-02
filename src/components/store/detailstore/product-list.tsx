@@ -79,12 +79,12 @@ function ProductRow({ items }: { items: MenuItemData[] }) {
             <div
                 ref={trackRef}
                 onScroll={syncArrows}
-                className="no-scrollbar -mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-1 py-1"
+                className="no-scrollbar -mx-1 flex snap-x snap-mandatory gap-3 sm:gap-4 overflow-x-auto overscroll-x-contain px-1 py-1"
             >
                 {items.map((item) => (
                     <div
                         key={item.id}
-                        className="w-[85%] shrink-0 snap-start sm:w-[380px]"
+                        className="w-[85%] min-w-[270px] max-w-[360px] shrink-0 snap-start sm:w-[350px] md:w-[380px]"
                     >
                         <MenuProductCard item={item} />
                     </div>
@@ -141,9 +141,9 @@ export default function ProductList({ title, items = [] }: ProductListProps) {
             : [list];
 
     return (
-        <section className="py-4">
+        <section className="py-2.5 sm:py-4">
             {title && (
-                <h2 className="mb-6 text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+                <h2 className="mb-3 sm:mb-4 text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
                     {title}
                 </h2>
             )}

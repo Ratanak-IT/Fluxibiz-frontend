@@ -248,12 +248,12 @@ export default function StoreDetail({
   const isLoading = isLoadingStore || isLoadingItems;
 
   return (
-    <div className="mx-auto max-w-362.5 space-y-10 py-6 px-4 sm:px-10 dark:bg-background">
+    <div className="mx-auto max-w-362.5 space-y-6 sm:space-y-10 py-4 sm:py-6 px-3 sm:px-6 lg:px-8 dark:bg-background">
       {/* The Mini App is scoped to this one business's own Telegram/Messenger
           bot — a way back to the general store directory makes no sense
           there, same reasoning as hiding the site-wide Navbar/Footer. */}
       {!isMiniAppMode && (
-        <div className="mb-4 flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-20">
+        <div className="mb-2 sm:mb-4 flex items-center justify-between px-1 sm:px-2 md:px-4 lg:px-8">
           <Link
             href="/store"
             className="flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-50"
@@ -275,7 +275,7 @@ export default function StoreDetail({
         />
       ) : (
         <>
-          <div className="space-y-10">
+          <div className="space-y-6 sm:space-y-10">
             <StoreCard store={storeData} />
             <div className="sticky top-0 z-30 bg-background/95 py-2.5 backdrop-blur-md">
               <SearchFilterBar
@@ -296,7 +296,7 @@ export default function StoreDetail({
           {/* Said once, at the top: the menu below is still worth reading,
               but nothing on it can be ordered until the shop reopens. */}
           {storeDetail && !storefrontOpen ? (
-            <div className="mt-6 px-4 sm:px-6 md:px-12 lg:px-20">
+            <div className="mt-4 sm:mt-6 px-1 sm:px-2 md:px-4 lg:px-8">
               <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-400">
                 <Clock className="h-4 w-4 shrink-0" />
                 <span className="font-bold">{t("detail.storeClosed")}</span>
@@ -305,7 +305,7 @@ export default function StoreDetail({
             </div>
           ) : null}
 
-          <div id="categories" className="scroll-mt-20 px-4 sm:px-6 md:px-12 lg:px-20">
+          <div id="categories" className="scroll-mt-20 px-1 sm:px-2 md:px-4 lg:px-8">
             <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
               <div className="min-w-0 space-y-2">
                 {hasFilteredItems ? (

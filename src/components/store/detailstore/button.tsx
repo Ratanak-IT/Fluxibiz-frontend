@@ -102,7 +102,7 @@ export default function SearchFilterBar({
     sortBy !== "Default";
 
   return (
-    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-4 sm:px-6 md:px-12 lg:px-20">
+    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-1 sm:px-2 md:px-4 lg:px-8">
       {/* Search input */}
       <div className="relative w-full sm:flex-1">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />

@@ -5,16 +5,20 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export function MenuProductCardSkeleton() {
   return (
-    <Card className="w-full overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-card">
-      <div className="flex h-24 items-center sm:h-29">
-        <div className="flex flex-1 flex-col justify-center space-y-1.5 p-2.5 pr-2 sm:p-3">
-          <Skeleton className="h-4 w-3/4 rounded-md sm:h-4.5" />
-          <Skeleton className="h-3.5 w-1/3 rounded-md sm:h-4" />
-          <Skeleton className="h-3 w-5/6 rounded-md" />
+    <Card className="w-full overflow-hidden border-0 bg-white p-0 shadow-sm dark:bg-card rounded-xl sm:rounded-2xl">
+      <div className="flex h-[114px] sm:h-[124px] items-center justify-between">
+        <div className="flex flex-1 flex-col justify-between h-full p-2.5 sm:p-3 space-y-1">
+          <Skeleton className="h-4 w-3/4 rounded-md" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-3.5 w-16 rounded-md" />
+            <Skeleton className="h-3 w-12 rounded-md" />
+          </div>
+          <Skeleton className="h-3 w-4/5 rounded-md" />
+          <Skeleton className="h-3 w-1/3 rounded-md" />
         </div>
 
-        <div className="relative m-2 aspect-square w-20 shrink-0 overflow-hidden rounded-lg sm:m-2.5 sm:w-24">
-          <Skeleton className="h-full w-full rounded-lg" />
+        <div className="relative m-2 aspect-square w-20 sm:w-24 shrink-0 overflow-hidden rounded-lg sm:rounded-xl">
+          <Skeleton className="h-full w-full rounded-lg sm:rounded-xl" />
         </div>
       </div>
     </Card>
@@ -37,10 +41,10 @@ export function ProductGridSkeleton({ count = 6 }: { count?: number }) {
 
 export function StoreCardSkeleton() {
   return (
-    <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
+    <div className="mb-2 sm:mb-4 px-1 sm:px-2 md:px-4 lg:px-8">
       <Card className="overflow-hidden bg-card p-0">
         <div className="flex flex-col sm:h-44 md:flex-row">
-          <div className="relative flex h-56 w-full shrink-0 items-center justify-center p-3.5 sm:h-44 sm:w-44 md:w-48">
+          <div className="relative flex h-48 sm:h-44 w-full shrink-0 items-center justify-center p-2.5 sm:p-3.5 sm:w-44 md:w-48">
             <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-white p-2.5 dark:bg-card">
               <Skeleton className="h-full w-full rounded-md" />
             </div>
@@ -69,7 +73,7 @@ export function StoreCardSkeleton() {
 
 export function SearchFilterBarSkeleton() {
   return (
-    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-4 sm:px-6 md:px-12 lg:px-20">
+    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-1 sm:px-2 md:px-4 lg:px-8">
       <Skeleton className="h-11 flex-1 min-w-[200px] rounded-full" />
       <div className="flex items-center gap-2 shrink-0">
         <Skeleton className="h-11 w-28 rounded-full" />
