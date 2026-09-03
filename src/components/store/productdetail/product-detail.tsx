@@ -93,7 +93,7 @@ export default function ProductDetail({
           {t("detail.itemNotFoundDescription")}
         </p>
         <Link href={storeSlug ? `/store/${storeSlug}` : "/store"}>
-          <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#00932A] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#007d24]">
+          <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
             <ChevronLeft className="h-4 w-4" />
             {t("common.backToStore")}
           </button>

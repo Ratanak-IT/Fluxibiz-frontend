@@ -142,10 +142,10 @@ export default function ReceiptComponent({
             subtitleText: "ការទូទាត់កំពុងរង់ចាំ",
           }
         : {
-            box: "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/30",
-            title: "text-emerald-800 dark:text-emerald-300",
-            subtitle: "text-emerald-700/80 dark:text-emerald-400/80",
-            icon: <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />,
+            box: "border-primary/20 bg-primary/10 dark:border-primary/30 dark:bg-primary/15",
+            title: "text-primary",
+            subtitle: "text-primary/80",
+            icon: <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />,
             titleText: "PAYMENT SUCCESSFUL",
             subtitleText: "ការទូទាត់បានជោគជ័យ",
           };
@@ -156,7 +156,7 @@ export default function ReceiptComponent({
       <div className="mx-auto mb-8 max-w-xl flex flex-wrap items-center justify-between gap-4 print:hidden">
         <Link
           href="/payment-history"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-600 transition-colors hover:text-green-600 dark:text-muted-foreground dark:hover:text-primary"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-600 transition-colors hover:text-primary dark:text-muted-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Payment History
@@ -168,7 +168,7 @@ export default function ReceiptComponent({
           <div className="flex items-center gap-2">
             <Button
               onClick={handlePrint}
-              className="h-11 gap-2 rounded-full bg-green-600 px-5 text-sm font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
+              className="h-11 gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-md hover:bg-primary/90"
             >
               <Printer className="h-4 w-4" />
               Print Receipt
@@ -194,7 +194,7 @@ export default function ReceiptComponent({
                 className="mb-3 size-16 rounded-2xl object-cover"
               />
             ) : (
-              <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-green-50 text-lg font-black text-green-700 dark:bg-primary/10 dark:text-primary">
+              <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-lg font-black text-primary">
                 {storeInitials(order.storeName)}
               </div>
             )}
@@ -263,7 +263,7 @@ export default function ReceiptComponent({
             <div className="flex items-center justify-between">
               <BiLabel en="Payment" km="វិធីទូទាត់" className="text-neutral-400" />
               <span
-                className={`flex items-center gap-1.5 font-semibold ${isPayLater ? "text-amber-600 dark:text-amber-400" : "text-green-600 dark:text-primary"}`}
+                className={`flex items-center gap-1.5 font-semibold ${isPayLater ? "text-amber-600 dark:text-amber-400" : "text-primary"}`}
               >
                 {order.paymentMethod || "Bakong KHQR"}
                 {isPayLater && (
@@ -315,11 +315,11 @@ export default function ReceiptComponent({
                         {formatMoney(item.unitPrice, order.currency)} ea
                       </p>
                       {item.freeQuantity && item.freeQuantity > 0 ? (
-                        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        <p className="text-xs font-bold text-primary">
                           {item.freeQuantity} FREE
                         </p>
                       ) : lineDiscount > 0 ? (
-                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        <p className="text-xs font-semibold text-primary">
                           {price?.discountLabel ? `${price.discountLabel} · ` : ""}
                           -{formatMoney(lineDiscount, order.currency)}
                         </p>
@@ -443,9 +443,9 @@ export default function ReceiptComponent({
           </div>
 
           {/* Verification Footer & QR Stamp */}
-          <div className="mt-8 flex flex-col items-center justify-center rounded-2xl bg-emerald-50/60 p-4 text-center dark:bg-emerald-950/20">
-            <ShieldCheck className="h-6 w-6 text-green-600 dark:text-primary" />
-            <p className="mt-1 text-xs font-semibold text-green-600 dark:text-primary">
+          <div className="mt-8 flex flex-col items-center justify-center rounded-2xl bg-primary/10 p-4 text-center dark:bg-primary/15">
+            <ShieldCheck className="h-6 w-6 text-primary" />
+            <p className="mt-1 text-xs font-semibold text-primary">
               Official Digital Receipt Verified by FluxiBiz
             </p>
             <p className="text-[11px] text-neutral-400">
@@ -467,7 +467,7 @@ export default function ReceiptComponent({
         </Link>
 
         <Link href="/payment-history">
-          <Button className="h-11 rounded-full bg-green-600 px-6 font-semibold text-white shadow-sm hover:bg-green-700 dark:bg-primary dark:text-primary-foreground">
+          <Button className="h-11 rounded-full bg-primary px-6 font-semibold text-primary-foreground shadow-sm hover:bg-primary/90">
             View All Payments
           </Button>
         </Link>

@@ -129,7 +129,7 @@ export default function ItemCardComponent({
                                 <Badge
                                     key={index}
                                     variant="secondary"
-                                    className="shrink-0 whitespace-nowrap rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-medium text-green-700 hover:bg-green-50 dark:border-primary/30 dark:bg-primary/15 dark:text-primary dark:hover:bg-primary/20"
+                                    className="shrink-0 whitespace-nowrap rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary hover:bg-primary/15 dark:border-primary/30 dark:bg-primary/15 dark:text-primary dark:hover:bg-primary/20"
                                 >
                                     {badge}
                                 </Badge>
@@ -138,11 +138,11 @@ export default function ItemCardComponent({
                     )}
 
                     {freeUnits > 0 ? (
-                        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        <p className="text-xs font-bold text-primary">
                             {freeUnits} FREE{line.discountLabel ? ` · ${line.discountLabel}` : ""}
                         </p>
                     ) : line.discountAmount && line.discountAmount > 0 ? (
-                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        <p className="text-xs font-semibold text-primary">
                             {line.discountLabel ? `${line.discountLabel} · ` : ""}
                             -{formatMoney(line.discountAmount, currency)}
                         </p>
@@ -299,10 +299,10 @@ function Stepper({
                 size="icon"
                 onClick={handleIncrease}
                 disabled={busy || outOfStock || atStockCeiling}
-                className="h-6 w-6 border-0 text-[#00932A] hover:bg-green-50 hover:text-[#007d24] dark:bg-transparent dark:text-[#00932A] dark:hover:bg-green-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
+                className="h-6 w-6 border-0 text-primary hover:bg-primary/10 hover:text-primary dark:bg-transparent dark:text-primary dark:hover:bg-primary/20 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
                 aria-label={t("increaseQuantity")}
             >
-                <Plus className="h-3.5 w-3.5 text-[#00932A]" />
+                <Plus className="h-3.5 w-3.5 text-primary" />
             </Button>
         </div>
     );

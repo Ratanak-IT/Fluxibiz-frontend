@@ -183,7 +183,7 @@ export default function CheckoutPage({
 
                 <Link
                     href={backToCart}
-                    className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
+                    className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                 >
                     <ChevronLeft className="h-4 w-4" />
                     {t("backToCart")}
@@ -216,11 +216,11 @@ export default function CheckoutPage({
     return (
         <div className="mx-auto max-w-3xl px-6 pt-16 pb-24 sm:pt-8 sm:pb-12">
             <div className="mb-2 flex items-center justify-between sm:mb-3">
-                <h1 className="text-3xl font-bold text-green-600 dark:text-primary">{t("title")}</h1>
+                <h1 className="text-3xl font-bold text-primary">{t("title")}</h1>
 
                 <Link
                     href={backToCart}
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-green-600 transition-colors hover:underline dark:text-primary"
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-primary transition-colors hover:underline"
                 >
                     <ChevronLeft className="h-4 w-4" />
                     {t("backToCart")}
@@ -289,7 +289,7 @@ export default function CheckoutPage({
                                         <span className="text-neutral-700 dark:text-card-foreground">
                                             {line.name} × {line.quantity}
                                             {lineDiscount > 0 && (
-                                                <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                                <span className="ml-2 text-xs font-semibold text-primary">
                                                     {linePrice?.discountLabel ?? t("discount")}
                                                 </span>
                                             )}
@@ -319,11 +319,11 @@ export default function CheckoutPage({
                             </div>
 
                             {discount > 0 && (
-                                <div className="flex items-center justify-between text-sm text-emerald-600 dark:text-emerald-400">
+                                <div className="flex items-center justify-between text-sm text-primary">
                                     <span className="flex items-center gap-1.5 font-medium">
                                         {t("discount")}
                                         {freeItemCount > 0 && (
-                                            <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                            <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[11px] font-semibold text-primary">
                                                 {freeItemCount} FREE
                                             </span>
                                         )}
@@ -361,7 +361,7 @@ export default function CheckoutPage({
                                     {t("total")}
                                 </span>
 
-                                <span className="text-2xl font-bold text-green-600 dark:text-primary">
+                                <span className="text-2xl font-bold text-primary">
                                     {formatMoney(payableTotal, currency)}
                                 </span>
                             </div>
@@ -381,13 +381,13 @@ export default function CheckoutPage({
                                 onClick={() => setPaymentMethod("KHQR")}
                                 className={`flex items-start gap-3.5 rounded-xl border p-4 text-left transition-all ${
                                     paymentMethod === "KHQR"
-                                        ? "border-green-600 bg-green-50/50 shadow-xs ring-1 ring-green-600 dark:border-primary dark:bg-primary/10 dark:ring-primary"
+                                        ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary"
                                         : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700"
                                 }`}
                             >
                                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
                                     paymentMethod === "KHQR"
-                                        ? "bg-green-600 text-white dark:bg-primary dark:text-primary-foreground"
+                                        ? "bg-primary text-primary-foreground"
                                         : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
                                 }`}>
                                     <QrCode className="h-5 w-5" />
@@ -408,13 +408,13 @@ export default function CheckoutPage({
                                 onClick={() => setPaymentMethod("PAY_LATER")}
                                 className={`flex items-start gap-3.5 rounded-xl border p-4 text-left transition-all ${
                                     paymentMethod === "PAY_LATER"
-                                        ? "border-green-600 bg-green-50/50 shadow-xs ring-1 ring-green-600 dark:border-primary dark:bg-primary/10 dark:ring-primary"
+                                        ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary"
                                         : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700"
                                 }`}
                             >
                                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
                                     paymentMethod === "PAY_LATER"
-                                        ? "bg-green-600 text-white dark:bg-primary dark:text-primary-foreground"
+                                        ? "bg-primary text-primary-foreground"
                                         : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
                                 }`}>
                                     <Banknote className="h-5 w-5" />
@@ -446,7 +446,7 @@ export default function CheckoutPage({
                 <Button
                     onClick={handlePayClick}
                     disabled={creating || !!blockedBy || store?.open === false}
-                    className="mt-6 h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white hover:bg-green-700 disabled:bg-neutral-300 disabled:text-neutral-500 dark:bg-primary dark:text-primary-foreground"
+                    className="mt-6 h-12 w-full rounded-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:bg-neutral-300 disabled:text-neutral-500"
                 >
                     {creating && (
                         <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />

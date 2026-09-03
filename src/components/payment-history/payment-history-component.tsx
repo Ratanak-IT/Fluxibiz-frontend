@@ -83,7 +83,7 @@ export default function PaymentHistoryComponent() {
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="flex items-center gap-2.5 text-2xl font-black text-primary sm:text-3xl  dark:text-primary">
-              <Receipt className="h-7 w-7 text-[#00932A]" />
+              <Receipt className="h-7 w-7 text-primary" />
               {t("title")}
             </h1>
             <p className="mt-1 text-sm text-neutral-500 dark:text-muted-foreground">
@@ -97,7 +97,7 @@ export default function PaymentHistoryComponent() {
           {isTma ? (
             tmaStoreHref && (
               <Link href={tmaStoreHref}>
-                <Button className="gap-2 rounded-full bg-[#00932A] font-bold text-white shadow-sm hover:bg-[#007d24]">
+                <Button className="gap-2 rounded-full bg-primary font-bold text-primary-foreground shadow-sm hover:bg-primary/90">
                   <ShoppingBag className="h-4 w-4" />
                   {t("backToStore")}
                 </Button>
@@ -105,7 +105,7 @@ export default function PaymentHistoryComponent() {
             )
           ) : (
             <Link href="/store">
-              <Button className="gap-2 rounded-full bg-[#00932A] font-bold text-white shadow-sm hover:bg-[#007d24]">
+              <Button className="gap-2 rounded-full bg-primary font-bold text-primary-foreground shadow-sm hover:bg-primary/90">
                 <ShoppingBag className="h-4 w-4" />
                 {t("exploreStores")}
               </Button>
@@ -133,7 +133,7 @@ export default function PaymentHistoryComponent() {
               onClick={() => setActiveTab("PAID")}
               className={`flex flex-1 justify-center shrink-0 whitespace-nowrap items-center gap-0 sm:gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold transition-all sm:flex-initial sm:px-4 sm:py-1.5 sm:text-xs ${
                 activeTab === "PAID"
-                  ? "bg-[#00932A] text-white shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
               }`}
             >
@@ -176,14 +176,14 @@ export default function PaymentHistoryComponent() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("searchPlaceholder")}
-              className="h-10 w-full rounded-full border border-gray-200 bg-white pl-9 text-xs transition-colors focus-visible:border-[#00932A] focus-visible:ring-1 focus-visible:ring-[#00932A]/30 dark:border-neutral-800 dark:bg-card"
+              className="h-10 w-full rounded-full border border-gray-200 bg-white pl-9 text-xs transition-colors focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/30 dark:border-neutral-800 dark:bg-card"
             />
           </div>
         </div>
         {/* Orders List */}
         {filteredOrders.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-neutral-200 bg-white p-12 text-center dark:border-border dark:bg-card">
-            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-[#00932A]/10 text-[#00932A]">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Receipt className="h-8 w-8" />
             </div>
 
@@ -200,14 +200,14 @@ export default function PaymentHistoryComponent() {
             {isTma ? (
               tmaStoreHref && (
                 <Link href={tmaStoreHref} className="mt-6 inline-block">
-                  <Button className="rounded-full bg-[#00932A] px-6 text-xs font-bold text-white hover:bg-[#007d24]">
+                  <Button className="rounded-full bg-primary px-6 text-xs font-bold text-primary-foreground hover:bg-primary/90">
                     {t("backToStore")}
                   </Button>
                 </Link>
               )
             ) : (
               <Link href="/store" className="mt-6 inline-block">
-                <Button className="rounded-full bg-[#00932A] px-6 text-xs font-bold text-white hover:bg-[#007d24]">
+                <Button className="rounded-full bg-primary px-6 text-xs font-bold text-primary-foreground hover:bg-primary/90">
                   {t("startShopping")}
                 </Button>
               </Link>
@@ -263,7 +263,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
                 className="size-13 shrink-0 rounded-2xl object-cover"
               />
             ) : (
-              <div className="flex size-13 shrink-0 items-center justify-center rounded-2xl bg-[#00932A]/10 text-[#00932A]">
+              <div className="flex size-13 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <Store className="h-6 w-6" />
               </div>
             )}
@@ -273,7 +273,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
                 <Link
                   href={`/store/${order.storeSlug}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="font-bold text-neutral-900 transition-colors hover:text-[#00932A] dark:text-foreground"
+                  className="font-bold text-neutral-900 transition-colors hover:text-primary dark:text-foreground"
                 >
                   {order.storeName}
                 </Link>
@@ -321,7 +321,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
           <div className="flex items-center justify-between border-t border-neutral-100 pt-3 sm:border-t-0 sm:pt-0 sm:flex-col sm:items-end">
             <div className="flex items-center gap-1.5 sm:block sm:text-right">
               <span className="text-xs text-neutral-400">{t("total")}</span>
-              <p className="text-xl font-black text-[#00932A]">
+              <p className="text-xl font-black text-primary">
                 {formatMoney(order.total, order.currency)}
               </p>
             </div>
@@ -341,7 +341,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 gap-1.5 rounded-full border-gray-200 text-xs font-semibold hover:border-[#00932A] hover:text-[#00932A]"
+                    className="h-8 gap-1.5 rounded-full border-gray-200 text-xs font-semibold hover:border-primary hover:text-primary"
                   >
                     {t("viewReceipt")}
                   </Button>

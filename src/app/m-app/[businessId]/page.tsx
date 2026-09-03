@@ -132,7 +132,7 @@ export default function MessengerMiniAppPage({
     if (orderSuccess) {
         return (
             <div className="flex h-screen flex-col items-center justify-center p-6 text-center bg-white">
-                <CheckCircle className="h-16 w-16 text-emerald-500 mb-4" />
+                <CheckCircle className="h-16 w-16 text-primary mb-4" />
                 <h2 className="text-xl font-bold text-gray-900">ការបញ្ជាទិញជោគជ័យ!</h2>
                 <p className="mt-2 text-sm text-gray-500">
                     វិក្កយបត្រត្រូវបានផ្ញើទៅកាន់ Messenger Chat របស់អ្នករួចរាល់ហើយ។
