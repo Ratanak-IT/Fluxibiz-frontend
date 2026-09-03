@@ -69,7 +69,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
       <Card
         onClick={handleCardClick}
         className={cn(
-          "w-full @container cursor-pointer overflow-hidden border-0 bg-white p-0 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg dark:bg-card relative",
+          "w-full @container cursor-pointer overflow-hidden border-0 bg-white p-0 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-4px_rgba(0,0,0,0.1),0_4px_8px_-2px_rgba(0,0,0,0.04)] dark:bg-card dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_20px_rgba(0,0,0,0.45)] relative",
           outOfStock && "opacity-90"
         )}
       >
@@ -170,7 +170,7 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                 variant="secondary"
                 disabled={outOfStock}
                 className={cn(
-                  "h-6 w-6 rounded-full bg-card text-primary shadow-md hover:bg-card @xs:h-7 @xs:w-7 dark:bg-text dark:text-primary",
+                  "h-6 w-6 rounded-full bg-card text-primary shadow-xs border border-black/5 dark:border-white/10 hover:bg-card @xs:h-7 @xs:w-7 dark:bg-text dark:text-primary",
                   outOfStock && "opacity-50 cursor-not-allowed bg-neutral-200 text-neutral-400 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-500"
                 )}
                 aria-label={t("detail.addToCartAria", { name: item.name })}

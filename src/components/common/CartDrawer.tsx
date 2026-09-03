@@ -269,7 +269,7 @@ function StoreSection({
                 // `store.subtotal` is already net of every discount, so the
                 // struck-through "before" price has to be rebuilt from the
                 // lines' own undiscounted prices — see cartTotals.
-                const { original: storeOriginal, discount: storeDiscount, net: discountedStoreTotal } =
+                const { original: storeOriginal, discount: storeDiscount } =
                     cartTotals(store);
 
                 return (
@@ -285,7 +285,7 @@ function StoreSection({
                                 </span>
                             )}
                             <span className="text-base font-bold text-primary">
-                                {formatMoney(discountedStoreTotal, effectiveCurrency)}
+                                {formatMoney(store.subtotal, effectiveCurrency)}
                             </span>
                         </div>
                     </div>
@@ -433,9 +433,12 @@ function LineRow({
             });
     };
 
-    const { unitPrice: effectiveUnitPrice, hasDiscount, compareAtSubtotal } = extractCartLinePrices(line);
+    const { unitPrice: effectiveUnitPrice, hasDiscount, subtotal: lineSubtotal, compareAtSubtotal } = extractCartLinePrices(line);
     const currentSubtotal = pendingQty === line.quantity
-        ? extractCartLinePrices(line).subtotal
+        ? lineSubtotal
+        : (hasDiscount && line.quantity > 0 ? (lineSubtotal / line.quantity) : effectiveUnitPrice) * pendingQty;
+    const currentCompareAtSubtotal = pendingQty === line.quantity
+        ? compareAtSubtotal
         : effectiveUnitPrice * pendingQty;
 
     return (

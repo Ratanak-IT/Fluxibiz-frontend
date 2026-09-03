@@ -197,9 +197,10 @@ export default function CheckoutPage({
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
 
     // `store.subtotal` is already net of every discount — see cartTotals.
-    const { net: netAmount } = store
+    const { original: originalSubtotal, discount, net: netAmount } = store
         ? cartTotals(store)
-        : { net: 0 };
+        : { original: 0, discount: 0, net: 0 };
+    const freeItemCount = store?.items.reduce((acc, item) => acc + (item.freeQuantity ?? 0), 0) ?? 0;
     const displayPrices = store ? displayLinePrices(store) : new Map();
     const { taxAmount, total: payableTotal } = computeTax(
         netAmount,
@@ -289,7 +290,7 @@ export default function CheckoutPage({
                                             {line.name} × {line.quantity}
                                             {lineDiscount > 0 && (
                                                 <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                                                    {linePrice?.discountLabel ?? "Discount"}
+                                                    {linePrice?.discountLabel ?? t("discount")}
                                                 </span>
                                             )}
                                         </span>
@@ -310,6 +311,29 @@ export default function CheckoutPage({
                         </div>
 
                         <div className="mt-4 flex flex-col gap-2 border-t border-neutral-100 pt-4 dark:border-border">
+                            <div className="flex items-center justify-between text-sm text-neutral-600 dark:text-muted-foreground">
+                                <span>{t("subtotal")}</span>
+                                <span className="font-semibold text-neutral-900 dark:text-card-foreground">
+                                    {formatMoney(originalSubtotal, currency)}
+                                </span>
+                            </div>
+
+                            {discount > 0 && (
+                                <div className="flex items-center justify-between text-sm text-emerald-600 dark:text-emerald-400">
+                                    <span className="flex items-center gap-1.5 font-medium">
+                                        {t("discount")}
+                                        {freeItemCount > 0 && (
+                                            <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                                {freeItemCount} FREE
+                                            </span>
+                                        )}
+                                    </span>
+                                    <span className="font-bold">
+                                        -{formatMoney(discount, currency)}
+                                    </span>
+                                </div>
+                            )}
+
                             {isTaxActive && !isTaxInclusive && (
                                 <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-muted-foreground">
                                     <span>
@@ -332,7 +356,7 @@ export default function CheckoutPage({
                                 </div>
                             )}
 
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pt-1 border-t border-neutral-100 dark:border-border">
                                 <span className="text-base font-bold text-neutral-900 dark:text-card-foreground">
                                     {t("total")}
                                 </span>
