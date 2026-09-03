@@ -25,6 +25,7 @@ interface ProductDetailProps {
   storeSlug?: string;
   storeName?: string;
   currency?: string;
+  exchangeRate?: number | null;
   isLoading?: boolean;
   isStoreOpen?: boolean;
   onlineHours?: ChannelSchedule | null;
@@ -35,6 +36,7 @@ export default function ProductDetail({
   storeSlug,
   storeName,
   currency,
+  exchangeRate,
   isLoading = false,
   isStoreOpen = true,
   onlineHours,
@@ -165,6 +167,7 @@ export default function ProductDetail({
       <ProductStorefrontUI
         item={item}
         currency={currency}
+        exchangeRate={exchangeRate}
         storeSlug={storeSlug}
         storeName={storeName}
         onAddToCart={handleAddToCart}

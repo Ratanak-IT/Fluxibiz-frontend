@@ -195,6 +195,7 @@ export default function CheckoutPage({
     const storeName = store?.name ?? session?.storeName ?? publicStore?.name ?? t("thisShop");
     const storeCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency;
     const currency = storeCurrency || (store?.currency !== "USD" ? store?.currency : undefined) || session?.currency || "KHR";
+    const exchangeRate = publicStore?.displayExchangeRate;
 
     // `store.subtotal` is already net of every discount — see cartTotals.
     const { original: originalSubtotal, discount, net: netAmount } = store
@@ -298,11 +299,11 @@ export default function CheckoutPage({
                                         <span className="flex flex-col items-end">
                                             {lineDiscount > 0 && (
                                                 <span className="text-xs text-neutral-400 line-through">
-                                                    {formatMoney(linePrice!.compareAtSubtotal, currency)}
+                                                    {formatMoney(linePrice!.compareAtSubtotal, currency, exchangeRate)}
                                                 </span>
                                             )}
                                             <span className="font-semibold text-neutral-900 dark:text-card-foreground">
-                                                {formatMoney(linePrice?.subtotal ?? line.subtotal, currency)}
+                                                {formatMoney(linePrice?.subtotal ?? line.subtotal, currency, exchangeRate)}
                                             </span>
                                         </span>
                                     </div>
@@ -314,7 +315,7 @@ export default function CheckoutPage({
                             <div className="flex items-center justify-between text-sm text-neutral-600 dark:text-muted-foreground">
                                 <span>{t("subtotal")}</span>
                                 <span className="font-semibold text-neutral-900 dark:text-card-foreground">
-                                    {formatMoney(originalSubtotal, currency)}
+                                    {formatMoney(originalSubtotal, currency, exchangeRate)}
                                 </span>
                             </div>
 
@@ -329,7 +330,7 @@ export default function CheckoutPage({
                                         )}
                                     </span>
                                     <span className="font-bold">
-                                        -{formatMoney(discount, currency)}
+                                        -{formatMoney(discount, currency, exchangeRate)}
                                     </span>
                                 </div>
                             )}
@@ -340,7 +341,7 @@ export default function CheckoutPage({
                                         {effectiveTaxName} {publicStore?.taxRate ? `(${publicStore.taxRate}%)` : ""}
                                     </span>
                                     <span className="font-semibold text-neutral-700 dark:text-neutral-300">
-                                        +{formatMoney(taxAmount, currency)}
+                                        +{formatMoney(taxAmount, currency, exchangeRate)}
                                     </span>
                                 </div>
                             )}
@@ -351,7 +352,7 @@ export default function CheckoutPage({
                                         {effectiveTaxName} {publicStore?.taxRate ? `(${publicStore.taxRate}% Incl.)` : "(Incl.)"}
                                     </span>
                                     <span className="font-medium text-neutral-500">
-                                        {formatMoney(taxAmount, currency)}
+                                        {formatMoney(taxAmount, currency, exchangeRate)}
                                     </span>
                                 </div>
                             )}
@@ -362,7 +363,7 @@ export default function CheckoutPage({
                                 </span>
 
                                 <span className="text-2xl font-bold text-green-600 dark:text-primary">
-                                    {formatMoney(payableTotal, currency)}
+                                    {formatMoney(payableTotal, currency, exchangeRate)}
                                 </span>
                             </div>
                         </div>
@@ -454,8 +455,8 @@ export default function CheckoutPage({
                     {store?.open === false
                         ? t("shopClosed")
                         : paymentMethod === "PAY_LATER"
-                        ? `${t("placeOrder")} (${formatMoney(payableTotal, currency)})`
-                        : `${t("payWithKhqr")} (${formatMoney(payableTotal, currency)})`}
+                        ? `${t("placeOrder")} (${formatMoney(payableTotal, currency, exchangeRate)})`
+                        : `${t("payWithKhqr")} (${formatMoney(payableTotal, currency, exchangeRate)})`}
                 </Button>
             )}
 
@@ -463,7 +464,6 @@ export default function CheckoutPage({
                 <div className="mt-8">
                     <KhqrPaymentComponent
                         session={session}
-                        overrideCurrency={currency}
                         regenerating={creating}
                         onPaid={() => setPaid(true)}
                         onCancelled={() => {

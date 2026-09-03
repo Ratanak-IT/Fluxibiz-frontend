@@ -192,6 +192,7 @@ function StoreSection({
 
     const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
     const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
+    const exchangeRate = publicStore?.displayExchangeRate;
 
     const effectiveSubtotal = useMemo(() => {
         return store.items.reduce((acc, line) => acc + extractCartLinePrices(line).subtotal, 0);
@@ -259,6 +260,7 @@ function StoreSection({
                         key={line.cartItemId}
                         line={line}
                         currency={effectiveCurrency}
+                        exchangeRate={exchangeRate}
                         storeSlug={store.slug}
                         onNavigate={onNavigate}
                     />
@@ -281,11 +283,11 @@ function StoreSection({
                         <div className="flex items-baseline gap-1.5">
                             {storeDiscount > 0 && (
                                 <span className="text-xs text-neutral-400 line-through font-normal">
-                                    {formatMoney(storeOriginal, effectiveCurrency)}
+                                    {formatMoney(storeOriginal, effectiveCurrency, exchangeRate)}
                                 </span>
                             )}
                             <span className="text-base font-bold text-primary">
-                                {formatMoney(store.subtotal, effectiveCurrency)}
+                                {formatMoney(store.subtotal, effectiveCurrency, exchangeRate)}
                             </span>
                         </div>
                     </div>
@@ -355,11 +357,13 @@ function StoreCheckoutButton({
 function LineRow({
     line,
     currency,
+    exchangeRate,
     storeSlug,
     onNavigate,
 }: {
     line: CartLine;
     currency: string;
+    exchangeRate?: number | null;
     storeSlug?: string;
     onNavigate?: () => void;
 }) {
@@ -496,7 +500,7 @@ function LineRow({
                     </p>
                 ) : line.discountAmount && line.discountAmount > 0 ? (
                     <p className="mt-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                        -{formatMoney(line.discountAmount, currency)}
+                        -{formatMoney(line.discountAmount, currency, exchangeRate)}
                     </p>
                 ) : null}
 
@@ -533,15 +537,15 @@ function LineRow({
                         {hasDiscount ? (
                             <>
                                 <span className="text-[11px] text-muted-foreground line-through font-normal">
-                                    {formatMoney(compareAtSubtotal, currency)}
+                                    {formatMoney(compareAtSubtotal, currency, exchangeRate)}
                                 </span>
                                 <span className="whitespace-nowrap text-sm font-bold text-primary">
-                                    {formatMoney(currentSubtotal, currency)}
+                                    {formatMoney(currentSubtotal, currency, exchangeRate)}
                                 </span>
                             </>
                         ) : (
                             <span className="whitespace-nowrap text-sm font-bold text-red-500 dark:text-destructive">
-                                {formatMoney(currentSubtotal, currency)}
+                                {formatMoney(currentSubtotal, currency, exchangeRate)}
                             </span>
                         )}
                     </div>

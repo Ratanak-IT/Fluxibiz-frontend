@@ -124,7 +124,13 @@ export async function addToCart(payload: {
   return { success: true };
 }
 
-export function formatPrice(value: number, currency: string = "USD", exchangeRate = 4000): string {
+/**
+ * Mirrors `formatMoney` in `cartType.ts` — see its comment. `value` is
+ * always in the item's own base currency; `exchangeRate` must be the real
+ * `displayExchangeRate` from the store/order, or left unset when the base
+ * currency is already KHR (nothing to convert), never guessed from size.
+ */
+export function formatPrice(value: number, currency: string = "USD", exchangeRate?: number | null): string {
   const code = (currency || "").toUpperCase().trim();
   if (
     code === "KHR" ||
@@ -138,8 +144,8 @@ export function formatPrice(value: number, currency: string = "USD", exchangeRat
     code.includes("KHMER") ||
     code.includes("៛")
   ) {
-    const finalAmount = value < 100 ? value * exchangeRate : value;
-    return `${Math.round(finalAmount).toLocaleString('en-US')} ៛`;
+    const rate = exchangeRate && exchangeRate > 0 ? exchangeRate : 1;
+    return `${Math.round(value * rate).toLocaleString('en-US')} ៛`;
   }
   return `$${value.toFixed(2)}`;
 }

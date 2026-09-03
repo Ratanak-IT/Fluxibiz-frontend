@@ -23,11 +23,13 @@ import { cn } from "@/lib/utils";
 export default function ItemCardComponent({
     line,
     currency = "USD",
+    exchangeRate,
     storeSlug,
     storeItems = [],
 }: {
     line: CartLine;
     currency?: string;
+    exchangeRate?: number | null;
     storeSlug?: string;
     storeItems?: any[];
 }) {
@@ -144,7 +146,7 @@ export default function ItemCardComponent({
                     ) : line.discountAmount && line.discountAmount > 0 ? (
                         <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                             {line.discountLabel ? `${line.discountLabel} · ` : ""}
-                            -{formatMoney(line.discountAmount, currency)}
+                            -{formatMoney(line.discountAmount, currency, exchangeRate)}
                         </p>
                     ) : null}
 
@@ -166,7 +168,7 @@ export default function ItemCardComponent({
                         <div className="flex flex-col items-end">
                             {hasDiscount && (
                                 <span className="text-xs text-muted-foreground line-through font-normal">
-                                    {formatMoney(compareAtSubtotal, currency)}
+                                    {formatMoney(compareAtSubtotal, currency, exchangeRate)}
                                 </span>
                             )}
                             <span className={cn(
@@ -175,7 +177,7 @@ export default function ItemCardComponent({
                                     ? "text-primary font-bold"
                                     : "text-red-500 dark:text-destructive"
                             )}>
-                                {formatMoney(lineSubtotal, currency)}
+                                {formatMoney(lineSubtotal, currency, exchangeRate)}
                             </span>
                         </div>
                     </div>
@@ -190,7 +192,7 @@ export default function ItemCardComponent({
                     <div className="flex flex-col items-end">
                         {hasDiscount && (
                             <span className="text-xs text-muted-foreground line-through font-normal">
-                                {formatMoney(compareAtSubtotal, currency)}
+                                {formatMoney(compareAtSubtotal, currency, exchangeRate)}
                             </span>
                         )}
                         <span className={cn(
@@ -199,7 +201,7 @@ export default function ItemCardComponent({
                                 ? "text-primary font-bold"
                                 : "text-red-500 dark:text-destructive"
                         )}>
-                            {formatMoney(lineSubtotal, currency)}
+                            {formatMoney(lineSubtotal, currency, exchangeRate)}
                         </span>
                     </div>
 

@@ -54,19 +54,20 @@ export default function KhqrPaymentComponent({
     onCancelled,
     onRegenerate,
     regenerating,
-    overrideCurrency,
 }: {
     session: CheckoutSession;
     onPaid: () => void;
     onCancelled: () => void;
     onRegenerate: () => void;
     regenerating: boolean;
-    overrideCurrency?: string;
 }) {
     const t = useTranslations("Checkout");
-    const currency = overrideCurrency || session.currency;
     const [phase, setPhase] = useState<Phase>("waiting");
     const [remaining, setRemaining] = useState(() => secondsLeft(session.expiresAt));
+    // The real KHQR TTL — captured once per QR so the progress bar starts
+    // full and empties over the window this QR actually has, instead of
+    // assuming a fixed 3 minutes when the backend may grant less (or more).
+    const [totalWindow, setTotalWindow] = useState(() => Math.max(1, secondsLeft(session.expiresAt)));
     const [notice, setNotice] = useState<string | null>(null);
 
     const [getPaymentStatus] = useGetPaymentStatusMutation();
@@ -81,6 +82,7 @@ export default function KhqrPaymentComponent({
         setPhase("waiting");
         setNotice(null);
         setRemaining(secondsLeft(expiresAt));
+        setTotalWindow(Math.max(1, secondsLeft(expiresAt)));
     }, [orderId, expiresAt]);
 
     // Countdown.
@@ -219,10 +221,16 @@ export default function KhqrPaymentComponent({
     }
 
     const expired = phase === "expired";
-    const totalWindow = 3 * 60;
     const progress = Math.min(100, Math.max(0, (remaining / totalWindow) * 100));
 
-    const isRiel = currency?.toUpperCase() === "KHR" || currency?.toUpperCase() === "RIEL";
+    // The scannable amount/currency shown here has to match what Bakong
+    // actually encoded in the QR (`session.currency`/`session.total`, the
+    // order's real base currency) exactly — not the shop's preferred
+    // display currency. Relabeling it as a converted KHR figure would show
+    // a number the customer's own banking app won't agree with once they
+    // scan it, which reads as far more broken than an unconverted one.
+    const scanCurrency = session.currency;
+    const isRiel = scanCurrency?.toUpperCase() === "KHR" || scanCurrency?.toUpperCase() === "RIEL";
     const currencySymbol = isRiel ? "៛" : "$";
     const formattedAmount = isRiel
         ? Number(session.total).toLocaleString()
@@ -272,7 +280,7 @@ export default function KhqrPaymentComponent({
                                 {formattedAmount}
                             </span>
                             <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                                {currency}
+                                {scanCurrency}
                             </span>
                         </div>
                     </div>
@@ -288,7 +296,7 @@ export default function KhqrPaymentComponent({
                             <div className="relative flex items-center justify-center rounded-xl bg-white p-1">
                                 <Image
                                     src={session.qrImage}
-                                    alt={t("qrAlt", { amount: formatMoney(session.total, currency), storeName: session.storeName })}
+                                    alt={t("qrAlt", { amount: formatMoney(session.total, scanCurrency), storeName: session.storeName })}
                                     width={240}
                                     height={240}
                                     unoptimized

@@ -39,9 +39,10 @@ interface CartSidebarProps {
   slug?: string;
   businessId?: string;
   storeCurrency?: string;
+  storeExchangeRate?: number | null;
 }
 
-export default function CartSidebar({ slug, businessId, storeCurrency }: CartSidebarProps) {
+export default function CartSidebar({ slug, businessId, storeCurrency, storeExchangeRate }: CartSidebarProps) {
   const t = useTranslations("Cart");
   const { isMiniApp, queryParam } = useMiniAppMode();
   const { isAuthenticated, status: authStatus, login } = useAuth();
@@ -66,6 +67,7 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
   );
 
   const currency = storeCurrency || storeCart?.currency || "USD";
+  const exchangeRate = storeExchangeRate;
   const itemCount = storeCart?.itemCount ?? 0;
   const otherShops = (cart?.storeCount ?? 0) - (storeCart ? 1 : 0);
 
@@ -119,7 +121,7 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
               }`}
           >
             {lines.map((line) => (
-              <CartSidebarLine key={line.cartItemId} line={line} currency={currency} />
+              <CartSidebarLine key={line.cartItemId} line={line} currency={currency} exchangeRate={exchangeRate} />
             ))}
           </div>
         )}
@@ -133,11 +135,11 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
             <div className="flex items-baseline gap-1.5">
               {discount > 0 && (
                 <span className="text-xs text-neutral-400 line-through">
-                  {formatMoney(originalSubtotal, currency)}
+                  {formatMoney(originalSubtotal, currency, exchangeRate)}
                 </span>
               )}
               <span className="font-semibold text-neutral-900 dark:text-neutral-50">
-                {formatMoney(effectiveSubtotal, currency)}
+                {formatMoney(effectiveSubtotal, currency, exchangeRate)}
               </span>
             </div>
           </div>
@@ -185,9 +187,11 @@ export default function CartSidebar({ slug, businessId, storeCurrency }: CartSid
 function CartSidebarLine({
   line,
   currency,
+  exchangeRate,
 }: {
   line: CartLine;
   currency: string;
+  exchangeRate?: number | null;
 }) {
   const t = useTranslations("Cart");
   const rootT = useTranslations();
@@ -328,11 +332,11 @@ function CartSidebarLine({
           <div className="ml-auto flex items-center gap-1.5">
             {hasDiscount && (
               <span className="text-[11px] text-neutral-400 line-through">
-                {formatMoney(compareAtSubtotal, currency)}
+                {formatMoney(compareAtSubtotal, currency, exchangeRate)}
               </span>
             )}
             <span className="text-sm font-semibold text-red-500 dark:text-destructive">
-              {formatMoney(currentSubtotal, currency)}
+              {formatMoney(currentSubtotal, currency, exchangeRate)}
             </span>
           </div>
         </div>

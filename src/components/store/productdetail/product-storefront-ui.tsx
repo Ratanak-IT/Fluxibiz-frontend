@@ -31,6 +31,7 @@ function displayOf(value: ItemAttributeValue) {
 export function ProductStorefrontUI({
     item,
     currency,
+    exchangeRate,
     storeSlug,
     storeName,
     onClose,
@@ -52,6 +53,7 @@ export function ProductStorefrontUI({
 }: {
     item: StorefrontItemResponse;
     currency?: string;
+    exchangeRate?: number | null;
     storeSlug?: string;
     storeName?: string;
     onClose?: () => void;
@@ -308,20 +310,20 @@ export function ProductStorefrontUI({
                             </span>
                         ) : (
                             <span className="text-2xl font-bold text-danger">
-                                {formatPrice(billedPrice, currency)}
+                                {formatPrice(billedPrice, currency, exchangeRate)}
                             </span>
                         )}
                         {addOnsPerUnit > 0 ? (
                             <span className="text-sm text-[#657064] dark:text-[#94a3b8]">
                                 {t("detail.includingExtras", {
-                                    amount: formatPrice(addOnsPerUnit, currency),
+                                    amount: formatPrice(addOnsPerUnit, currency, exchangeRate),
                                 })}
                             </span>
                         ) : null}
                         {discount ? (
                             <>
                                 <span className="text-sm text-[#7b857a] dark:text-[#94a3b8] line-through">
-                                    {formatPrice(compareAt, currency)}
+                                    {formatPrice(compareAt, currency, exchangeRate)}
                                 </span>
                                 <span className="rounded-full bg-[#d14341]/10 dark:bg-[#f87171]/20 px-2 py-0.5 text-xs font-semibold text-[#d14341] dark:text-[#f87171]">
                                     {promoLabel || `${discount}% OFF`}
@@ -382,7 +384,7 @@ export function ProductStorefrontUI({
                                         <span className="mt-0.5 flex items-center justify-center gap-1 text-xs">
                                             {variant.compareAtPrice && Number(variant.compareAtPrice) > Number(variant.price) && (
                                                 <span className="line-through text-muted-foreground/70 font-normal">
-                                                    {formatPrice(Number(variant.compareAtPrice), currency)}
+                                                    {formatPrice(Number(variant.compareAtPrice), currency, exchangeRate)}
                                                 </span>
                                             )}
                                             <span className={cn(
@@ -390,7 +392,7 @@ export function ProductStorefrontUI({
                                                     ? "font-semibold text-danger"
                                                     : "text-[#7b857a] dark:text-[#94a3b8]"
                                             )}>
-                                                {formatPrice(Number(variant.price), currency)}
+                                                {formatPrice(Number(variant.price), currency, exchangeRate)}
                                             </span>
                                         </span>
                                     )}
@@ -446,7 +448,7 @@ export function ProductStorefrontUI({
                                 <span className="mt-0.5 block text-xs text-[#7b857a] dark:text-[#94a3b8]">
                                     {singlePrice === undefined
                                         ? t("detail.priceNotSet")
-                                        : formatPrice(singlePrice, currency)}
+                                        : formatPrice(singlePrice, currency, exchangeRate)}
                                 </span>
                             </Chip>
                             {packs.map((row) => {
@@ -475,7 +477,7 @@ export function ProductStorefrontUI({
                                             })}
                                         </span>
                                         <span className="mt-0.5 block text-xs text-[#7b857a] dark:text-[#94a3b8]">
-                                            {formatPrice(Number(row.price), currency)}
+                                            {formatPrice(Number(row.price), currency, exchangeRate)}
                                         </span>
                                     </Chip>
                                 );
@@ -552,7 +554,7 @@ export function ProductStorefrontUI({
                                                 <span>{addOn.name}</span>
                                             </span>
                                             <span className="shrink-0 text-xs text-[#7b857a] dark:text-[#94a3b8]">
-                                                + {formatPrice(Number(addOn.price), currency)}
+                                                + {formatPrice(Number(addOn.price), currency, exchangeRate)}
                                             </span>
                                         </label>
                                     );
@@ -646,7 +648,7 @@ export function ProductStorefrontUI({
                                 )}
                                 {!isStoreOpen
                                     ? t("detail.storeClosed")
-                                    : outOfStock ? (t("detail.outOfStock") || "Out of Stock") : isAddingToCart ? (t("detail.adding") || "Adding...") : `${t("detail.add") || "Add to Cart"}${billedPrice ? ` · ${formatPrice(billedPrice * quantity, currency)}` : ""}`}
+                                    : outOfStock ? (t("detail.outOfStock") || "Out of Stock") : isAddingToCart ? (t("detail.adding") || "Adding...") : `${t("detail.add") || "Add to Cart"}${billedPrice ? ` · ${formatPrice(billedPrice * quantity, currency, exchangeRate)}` : ""}`}
                             </button>
                         </div>
                     )}

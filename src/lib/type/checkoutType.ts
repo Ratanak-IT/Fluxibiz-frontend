@@ -11,6 +11,10 @@ export interface CheckoutSession {
     itemCount: number;
     total: number;
     currency: string;
+    /** The second currency this order is shown in, frozen at checkout — null when the shop shows only one currency. */
+    displayCurrency?: string | null;
+    /** Units of displayCurrency per one unit of currency. */
+    displayExchangeRate?: number | null;
     qr: string | null;
     md5: string | null;
     qrImage: string | null;
@@ -82,6 +86,10 @@ export interface StorefrontOrder {
     taxLabel?: string | null;
     total: number;
     currency: string;
+    /** The second currency this order was shown in, frozen at checkout — null when the shop shows only one currency. */
+    displayCurrency?: string | null;
+    /** Units of displayCurrency per one unit of currency. */
+    displayExchangeRate?: number | null;
     itemCount: number;
     createdDate: string;
     paidAt: string | null;

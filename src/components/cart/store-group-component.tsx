@@ -18,6 +18,7 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
     const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
     const { data: storeItems = [] } = useGetPublicStoreItemsQuery(store.slug, { skip: !store.slug });
     const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
+    const exchangeRate = publicStore?.displayExchangeRate;
 
     return (
         <section aria-label={t("cartForStore", { storeName: store.name })}>
@@ -48,13 +49,14 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
                             key={line.cartItemId}
                             line={line}
                             currency={effectiveCurrency}
+                            exchangeRate={exchangeRate}
                             storeSlug={store.slug}
                             storeItems={storeItems}
                         />
                     ))}
                 </div>
 
-                <OrderSummaryComponent store={store} currency={effectiveCurrency} storeItems={storeItems} />
+                <OrderSummaryComponent store={store} currency={effectiveCurrency} exchangeRate={exchangeRate} storeItems={storeItems} />
             </div>
         </section>
     );
