@@ -213,9 +213,9 @@ export default function CheckoutPage({
     const effectiveTaxName = publicStore?.taxLabel?.trim() || "VAT";
 
     return (
-        <div className="mx-auto max-w-3xl px-6 pt-16 pb-24 sm:pt-8 sm:pb-12">
-            <div className="mb-2 flex items-center justify-between sm:mb-3">
-                <h1 className="text-3xl font-bold text-green-600 dark:text-primary">{t("title")}</h1>
+        <div className="mx-auto max-w-3xl px-4 pt-4 pb-32 sm:px-6 sm:pt-8 sm:pb-20">
+            <div className="mb-1.5 flex items-center justify-between sm:mb-3">
+                <h1 className="text-2xl font-bold text-green-600 sm:text-3xl dark:text-primary">{t("title")}</h1>
 
                 <Link
                     href={backToCart}
@@ -226,7 +226,7 @@ export default function CheckoutPage({
                 </Link>
             </div>
 
-            <p className="mt-1 mb-6 text-sm text-muted-foreground">{storeName}</p>
+            <p className="mt-0.5 mb-4 text-sm text-muted-foreground sm:mt-1 sm:mb-6">{storeName}</p>
 
             {blockedBy && !session && (
                 <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900 dark:bg-amber-950/40">
@@ -272,10 +272,10 @@ export default function CheckoutPage({
             )}
 
             {!session && store && (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                     {/* Order summary card */}
-                    <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
-                        <div className="flex flex-col gap-4">
+                    <div className="rounded-2xl bg-white border border-neutral-100/80 p-4 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
+                        <div className="flex flex-col gap-3 sm:gap-4">
                             {store.items.map((line) => {
                                 const linePrice = displayPrices.get(line.cartItemId);
                                 const lineDiscount = linePrice?.discountAmount ?? 0;
@@ -283,7 +283,7 @@ export default function CheckoutPage({
                                 return (
                                     <div
                                         key={line.cartItemId}
-                                        className="flex items-center justify-between text-base"
+                                        className="flex items-center justify-between text-sm sm:text-base"
                                     >
                                         <span className="text-neutral-700 dark:text-card-foreground">
                                             {line.name} × {line.quantity}
@@ -337,7 +337,7 @@ export default function CheckoutPage({
                                     {t("total")}
                                 </span>
 
-                                <span className="text-2xl font-bold text-green-600 dark:text-primary">
+                                <span className="text-xl sm:text-2xl font-bold text-green-600 dark:text-primary">
                                     {formatMoney(payableTotal, currency)}
                                 </span>
                             </div>
@@ -345,17 +345,17 @@ export default function CheckoutPage({
                     </div>
 
                     {/* Payment Method Selector */}
-                    <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
-                        <h2 className="text-base font-bold text-neutral-900 dark:text-card-foreground mb-4">
+                    <div className="rounded-2xl bg-white border border-neutral-100/80 p-4 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
+                        <h2 className="text-base font-bold text-neutral-900 dark:text-card-foreground mb-3 sm:mb-4">
                             {t("paymentMethod")}
                         </h2>
 
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
                         
                             <button
                                 type="button"
                                 onClick={() => setPaymentMethod("KHQR")}
-                                className={`flex items-start gap-3.5 rounded-xl border p-4 text-left transition-all ${
+                                className={`flex items-start gap-3 rounded-xl border p-3.5 sm:p-4 text-left transition-all ${
                                     paymentMethod === "KHQR"
                                         ? "border-green-600 bg-green-50/50 shadow-xs ring-1 ring-green-600 dark:border-primary dark:bg-primary/10 dark:ring-primary"
                                         : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700"
@@ -382,7 +382,7 @@ export default function CheckoutPage({
                             <button
                                 type="button"
                                 onClick={() => setPaymentMethod("PAY_LATER")}
-                                className={`flex items-start gap-3.5 rounded-xl border p-4 text-left transition-all ${
+                                className={`flex items-start gap-3 rounded-xl border p-3.5 sm:p-4 text-left transition-all ${
                                     paymentMethod === "PAY_LATER"
                                         ? "border-green-600 bg-green-50/50 shadow-xs ring-1 ring-green-600 dark:border-primary dark:bg-primary/10 dark:ring-primary"
                                         : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700"
@@ -422,7 +422,7 @@ export default function CheckoutPage({
                 <Button
                     onClick={handlePayClick}
                     disabled={creating || !!blockedBy || store?.open === false}
-                    className="mt-6 h-12 w-full rounded-full bg-green-600 text-base font-semibold text-white hover:bg-green-700 disabled:bg-neutral-300 disabled:text-neutral-500 dark:bg-primary dark:text-primary-foreground"
+                    className="mt-5 sm:mt-6 h-11 sm:h-12 w-full rounded-full bg-green-600 text-sm sm:text-base font-semibold text-white hover:bg-green-700 disabled:bg-neutral-300 disabled:text-neutral-500 dark:bg-primary dark:text-primary-foreground"
                 >
                     {creating && (
                         <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
@@ -436,7 +436,7 @@ export default function CheckoutPage({
             )}
 
             {session && (
-                <div className="mt-8">
+                <div className="mt-4 sm:mt-8">
                     <KhqrPaymentComponent
                         session={session}
                         overrideCurrency={currency}
