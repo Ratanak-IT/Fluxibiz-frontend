@@ -12,7 +12,6 @@ import { ImageOff, Plus } from "lucide-react";
 import Image from "next/image";
 import { MenuItemData, isItemOutOfStock } from "@/lib/store/detailstore/detailstore";
 
-/** Matches the product page: the count only earns its place when it is small. */
 const LOW_STOCK_THRESHOLD = 10;
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
@@ -74,21 +73,24 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
           outOfStock && "opacity-90"
         )}
       >
-        <div className="flex h-[114px] sm:h-[124px] items-center justify-between">
-          <div className={cn("flex min-w-0 flex-1 flex-col justify-between h-full p-2.5 sm:p-3", outOfStock && "filter blur-[0.5px]")}>
-            <CardHeader className="gap-0.5 p-0 min-w-0 space-y-0">
-              <CardTitle className="truncate text-[14px] sm:text-[16px] font-bold text-foreground leading-tight">
+        <div className="flex h-32 @xs:h-36 items-center justify-between">
+          <div className={cn("flex min-w-0 flex-1 flex-col h-full p-2.5 pr-2 @xs:p-3", outOfStock && "filter blur-[0.5px]")}>
+            <CardHeader className="gap-1 p-0 min-w-0">
+              <CardTitle className="truncate text-[16px] @xs:text-[17px] font-bold text-text dark:text-text">
                 {item.name}
               </CardTitle>
-
-              {/* Price, Strikethrough, and Discount badge on a single row */}
-              <div className="flex items-center gap-1.5 flex-nowrap min-w-0">
+              {/* Current price, what it used to cost, and the percent off all
+                  read as one line — the eye takes in the whole deal at once
+                  instead of hunting a strikethrough on the row below. */}
+              <div className="flex flex-wrap items-center gap-1.5">
                 {item.price === undefined ? (
-                  <p className="text-xs sm:text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                  <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                     {t("detail.priceNotSet")}
                   </p>
                 ) : (
-                  <p className="text-[16px] font-bold text-red-500 shrink-0 dark:text-red-400">
+                  /* A span where the options differ — "8,000 ៛ – 10,000 ៛" —
+                     since there is no one price such an item is sold at. */
+                  <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
                     {formatPrice(Number(item.price), item.currency)}
                     {item.priceMax
                       ? ` – ${formatPrice(Number(item.priceMax), item.currency)}`
@@ -101,21 +103,21 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                   </p>
                 )}
                 {isPricedDown && percentOff > 0 && (
-                  <span className="rounded bg-red-50 px-1 py-0.5 text-[9px] sm:text-[10px] font-bold text-red-600 shrink-0 dark:bg-red-950/50 dark:text-red-400">
+                  <span className="rounded bg-red-50 px-1 py-0.5 text-[10px] font-bold text-red-600 @xs:text-xs dark:bg-red-950/50 dark:text-red-400">
                     -{percentOff}%
                   </span>
                 )}
               </div>
 
               {item.description ? (
-                <CardDescription className="truncate text-[13px] text-muted-foreground leading-snug">
+                <CardDescription className="line-clamp-2 text-[13px] text-neutral-500 dark:text-neutral-400">
                   {item.description}
                 </CardDescription>
               ) : null}
             </CardHeader>
 
-            <div className="flex items-center gap-1.5 overflow-hidden text-[13px] flex-nowrap min-w-0">
-              <span className="truncate font-semibold text-primary">
+            <div className="mt-auto flex flex-wrap items-center gap-1.5">
+              <span className="text-[13px] font-bold text-primary dark:text-primary">
                 {item.category}
               </span>
               {outOfStock ? (

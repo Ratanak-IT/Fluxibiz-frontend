@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Banknote, ChevronLeft, Loader2, QrCode, Store, TriangleAlert } from "lucide-react";
@@ -17,13 +17,14 @@ import {
     useGetActiveCheckoutQuery,
     useGetMyCustomerProfileQuery,
 } from "@/features/checkout/checkoutApi";
-import { cartTotals, computeTax, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
+import { cartTotals, computeTax, displayLinePrices, formatMoney, formatStockErrorMessage } from "@/lib/type/cartType";
 import {
     checkoutErrorMessage,
     type CheckoutSession,
     type PaymentMethodType,
 } from "@/lib/type/checkoutType";
 import { markItemOutOfStock } from "@/lib/store/detailstore/detailstore";
+import { newIdempotencyKey } from "@/lib/idempotencyKey";
 import { useGetPublicStoreQuery } from "@/features/store-api/store-api";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
@@ -62,6 +63,12 @@ export default function CheckoutPage({
     const [paid, setPaid] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("KHQR");
     const [showPhonePrompt, setShowPhonePrompt] = useState(false);
+
+    // Identifies this attempt at placing the order, not the click. It has to
+    // outlive a failed try — the shopper fixing an out-of-stock line and paying
+    // again is the same attempt — and is dropped once an order exists, so the
+    // next checkout is not answered with this one.
+    const attemptKey = useRef<string | null>(null);
 
     const store = cart?.stores.find((s) => s.slug === slug);
 
@@ -104,12 +111,19 @@ export default function CheckoutPage({
         if (!store) return;
         setError(null);
 
+        if (!attemptKey.current) {
+            attemptKey.current = newIdempotencyKey();
+        }
+
         try {
             const created = await createCheckout({
                 businessId: store.businessId,
-               
+
                 paymentMethod: paymentMethod === "KHQR" ? "DIGITAL" : paymentMethod,
+                idempotencyKey: attemptKey.current,
             }).unwrap();
+
+            attemptKey.current = null;
 
             if (paymentMethod === "PAY_LATER" || !created.qr) {
                 toast.success(t("orderPlacedToast"));
@@ -186,6 +200,7 @@ export default function CheckoutPage({
     const { net: netAmount } = store
         ? cartTotals(store)
         : { net: 0 };
+    const displayPrices = store ? displayLinePrices(store) : new Map();
     const { taxAmount, total: payableTotal } = computeTax(
         netAmount,
         publicStore?.taxRate,
@@ -261,32 +276,37 @@ export default function CheckoutPage({
                     {/* Order summary card */}
                     <div className="rounded-2xl bg-white border border-neutral-100/80 p-6 sm:p-7 shadow-xs dark:border-neutral-800 dark:bg-card">
                         <div className="flex flex-col gap-4">
-                            {store.items.map((line) => (
-                                <div
-                                    key={line.cartItemId}
-                                    className="flex items-center justify-between text-base"
-                                >
-                                    <span className="text-neutral-700 dark:text-card-foreground">
-                                        {line.name} × {line.quantity}
-                                        {line.discountAmount && line.discountAmount > 0 ? (
-                                            <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                                                {line.discountLabel ?? "Discount"}
-                                            </span>
-                                        ) : null}
-                                    </span>
+                            {store.items.map((line) => {
+                                const linePrice = displayPrices.get(line.cartItemId);
+                                const lineDiscount = linePrice?.discountAmount ?? 0;
 
-                                    <span className="flex flex-col items-end">
-                                        {line.discountAmount && line.discountAmount > 0 ? (
-                                            <span className="text-xs text-neutral-400 line-through">
-                                                {formatMoney(line.subtotal + line.discountAmount, currency)}
-                                            </span>
-                                        ) : null}
-                                        <span className="font-semibold text-neutral-900 dark:text-card-foreground">
-                                            {formatMoney(line.subtotal, currency)}
+                                return (
+                                    <div
+                                        key={line.cartItemId}
+                                        className="flex items-center justify-between text-base"
+                                    >
+                                        <span className="text-neutral-700 dark:text-card-foreground">
+                                            {line.name} × {line.quantity}
+                                            {lineDiscount > 0 && (
+                                                <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                                    {linePrice?.discountLabel ?? "Discount"}
+                                                </span>
+                                            )}
                                         </span>
-                                    </span>
-                                </div>
-                            ))}
+
+                                        <span className="flex flex-col items-end">
+                                            {lineDiscount > 0 && (
+                                                <span className="text-xs text-neutral-400 line-through">
+                                                    {formatMoney(linePrice!.compareAtSubtotal, currency)}
+                                                </span>
+                                            )}
+                                            <span className="font-semibold text-neutral-900 dark:text-card-foreground">
+                                                {formatMoney(linePrice?.subtotal ?? line.subtotal, currency)}
+                                            </span>
+                                        </span>
+                                    </div>
+                                );
+                            })}
                         </div>
 
                         <div className="mt-4 flex flex-col gap-2 border-t border-neutral-100 pt-4 dark:border-border">

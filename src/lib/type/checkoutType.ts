@@ -88,6 +88,64 @@ export interface StorefrontOrder {
     items: StorefrontOrderItem[];
 }
 
+/** What one receipt line should show for its price, after an order-wide discount is accounted for. */
+export interface DisplayOrderItemPrice {
+    lineTotal: number;
+    compareAtLineTotal: number;
+    discountAmount: number;
+    discountLabel: string | null;
+}
+
+/**
+ * Per-item prices for a receipt, spreading an order-wide discount across
+ * items pro rata when the order was placed before the discount was
+ * attributed to each item — an older order only ever carries the discount
+ * on its own total, which leaves every item looking like full price even
+ * though less was actually charged. Display-only: `order.total` is always
+ * what was actually charged, regardless of how it's split across items here.
+ */
+export function displayOrderItemPrices(order: StorefrontOrder): DisplayOrderItemPrice[] {
+    const itemAttributed = order.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0);
+    const orderDiscount = order.discountAmount ?? 0;
+
+    if (itemAttributed > 0 || orderDiscount <= 0) {
+        // Either every item already carries its own share, or there is
+        // nothing to spread — read straight off each item.
+        return order.items.map((item) => ({
+            lineTotal: item.lineTotal,
+            compareAtLineTotal:
+                item.discountAmount && item.discountAmount > 0
+                    ? item.lineTotal + item.discountAmount
+                    : item.lineTotal,
+            discountAmount: item.discountAmount ?? 0,
+            discountLabel: item.discountLabel ?? null,
+        }));
+    }
+
+    const rawSubtotal = order.items.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
+    let remaining = orderDiscount;
+
+    return order.items.map((item, index) => {
+        const rawLineTotal = item.unitPrice * item.quantity;
+        const isLast = index === order.items.length - 1;
+        const share = isLast
+            ? remaining
+            : rawSubtotal > 0
+                ? Math.round(((orderDiscount * rawLineTotal) / rawSubtotal) * 100) / 100
+                : 0;
+        if (!isLast) {
+            remaining -= share;
+        }
+
+        return {
+            lineTotal: Math.max(0, rawLineTotal - share),
+            compareAtLineTotal: rawLineTotal,
+            discountAmount: share,
+            discountLabel: order.discountLabel ?? null,
+        };
+    });
+}
+
 export function checkoutErrorMessage(error: unknown, fallback: string): string {
     if (typeof error !== "object" || error === null) return fallback;
 

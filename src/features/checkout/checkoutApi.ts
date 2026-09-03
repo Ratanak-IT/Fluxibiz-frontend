@@ -50,11 +50,19 @@ export const checkoutApi = createApi({
             invalidatesTags: ["CustomerSelfProfile"],
         }),
 
-        createCheckout: builder.mutation<CheckoutSession, CreateCheckoutPayload>({
-            query: (body) => ({
+        // `idempotencyKey` travels as a header rather than in the body: it
+        // identifies the attempt, not the order. Sending the same key twice —
+        // a double-tapped Pay button, or this slice's own 401 retry above —
+        // gets the first attempt's order back instead of placing a second one.
+        createCheckout: builder.mutation<
+            CheckoutSession,
+            CreateCheckoutPayload & { idempotencyKey?: string }
+        >({
+            query: ({ idempotencyKey, ...body }) => ({
                 url: "/storefront/checkout",
                 method: "POST",
                 body,
+                headers: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : undefined,
             }),
             invalidatesTags: ["Checkout", "OrderHistory"],
         }),

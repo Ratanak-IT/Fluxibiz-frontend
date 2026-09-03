@@ -37,7 +37,9 @@ export async function GET(req: NextRequest) {
 
   if (idp) {
     queryObj.kc_idp_hint = idp;
-  } else if (prompt) {
+  }
+
+  if (prompt) {
     queryObj.prompt = prompt;
   }
 

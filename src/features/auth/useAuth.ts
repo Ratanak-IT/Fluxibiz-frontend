@@ -51,11 +51,9 @@ export function useAuth() {
                 : currentPath + (typeof window === "undefined" ? "" : window.location.search);
         }
 
-        const params = new URLSearchParams({ returnTo });
+        const params = new URLSearchParams({ returnTo, prompt: "login" });
         if (idp) {
             params.set("idp", idp);
-        } else {
-            params.set("prompt", "login");
         }
 
         window.location.href = `/api/auth/login?${params.toString()}`;

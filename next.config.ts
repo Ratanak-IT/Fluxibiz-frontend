@@ -90,6 +90,11 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 86400,
+    // Next.js 16 rejects any `quality` an <Image> passes that isn't listed
+    // here — 75 is its own default, 100 is what a couple of logo images
+    // ask for explicitly (a compressed sponsor/partner mark reads as
+    // blurry at 75).
+    qualities: [75, 100],
     remotePatterns: [
       {
         protocol: "https",
