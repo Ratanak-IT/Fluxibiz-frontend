@@ -35,7 +35,7 @@ export function NetworkStatusBanner() {
 
       {/*  Connection Restored */}
       {status === "online" && showRestored && (
-        <div className="flex items-center gap-2.5 rounded-full bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-2xl">
+        <div className="flex items-center gap-2.5 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-2xl">
           <Wifi className="size-4" />
           <span>Back Online</span>
         </div>
