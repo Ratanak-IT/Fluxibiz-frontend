@@ -50,6 +50,6 @@ export async function GET(req: NextRequest) {
   res.cookies.set(COOKIE.verifier, verifier, TRANSIENT_COOKIE);
   res.cookies.set(COOKIE.state, state, TRANSIENT_COOKIE);
   res.cookies.set(COOKIE.returnTo, returnTo, TRANSIENT_COOKIE);
-
+//
   return res;
 }
