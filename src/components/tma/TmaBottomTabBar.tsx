@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Receipt, ShoppingCart, User } from "lucide-react";
 
+import { useGetCartQuery } from "@/features/cart/cartApi";
+import { useAuth } from "@/features/auth/useAuth";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 
 /**
@@ -16,6 +18,9 @@ import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 export function TmaBottomTabBar({ slug }: { slug: string }) {
   const pathname = usePathname();
   const { queryParam } = useMiniAppMode();
+  const { isAuthenticated } = useAuth();
+  const { data: cart } = useGetCartQuery(undefined, { skip: !isAuthenticated });
+  const totalItems = cart?.totalItems ?? 0;
 
   const homePath = `/store/${slug}`;
   const tabs = [
@@ -42,7 +47,14 @@ export function TmaBottomTabBar({ slug }: { slug: string }) {
                   : "text-muted-foreground active:bg-muted"
               }`}
             >
-              <Icon className={`size-5 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} />
+              <span className="relative inline-block">
+                <Icon className={`size-5 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                {key === "cart" && totalItems > 0 && (
+                  <span className="absolute -right-2 -top-1.5 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 py-0.5 text-[9px] font-semibold leading-none text-white">
+                    {totalItems > 99 ? "99+" : totalItems}
+                  </span>
+                )}
+              </span>
               {label}
             </Link>
           );

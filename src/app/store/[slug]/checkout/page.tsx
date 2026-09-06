@@ -64,10 +64,6 @@ export default function CheckoutPage({
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("KHQR");
     const [showPhonePrompt, setShowPhonePrompt] = useState(false);
 
-    // Identifies this attempt at placing the order, not the click. It has to
-    // outlive a failed try — the shopper fixing an out-of-stock line and paying
-    // again is the same attempt — and is dropped once an order exists, so the
-    // next checkout is not answered with this one.
     const attemptKey = useRef<string | null>(null);
 
     const store = cart?.stores.find((s) => s.slug === slug);
