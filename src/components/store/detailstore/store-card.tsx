@@ -28,10 +28,10 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
   const distanceLabel = formatDistance(store.distanceKm);
 
   return (
-    <div className="mb-2 sm:mb-4 px-1 sm:px-2 md:px-4 lg:px-8">
+    <div className="mb-4 px-4 sm:px-6 md:px-12 lg:px-20">
       <Card className="overflow-hidden bg-card p-0">
         <div className="flex flex-col sm:h-auto md:h-48 md:flex-row">
-          <div className="relative flex h-48 sm:h-48 w-full shrink-0 items-center justify-center p-2.5 sm:p-3.5 sm:w-48 md:h-48 md:w-52">
+          <div className="relative flex h-60 w-full shrink-0 items-center justify-center p-3.5 sm:h-48 sm:w-48 md:h-48 md:w-52">
             <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-white p-2 dark:bg-card">
               {imageUrl ? (
                 <div className="relative h-full w-full overflow-hidden rounded-md">

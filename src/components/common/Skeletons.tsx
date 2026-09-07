@@ -41,41 +41,52 @@ export function ProductGridSkeleton({ count = 6 }: { count?: number }) {
 
 export function StoreCardSkeleton() {
   return (
-    <div className="mb-2 sm:mb-4 px-1 sm:px-2 md:px-4 lg:px-8">
-      <Card className="overflow-hidden bg-card p-0">
-        <div className="flex flex-col sm:h-44 md:flex-row">
-          <div className="relative flex h-48 sm:h-44 w-full shrink-0 items-center justify-center p-2.5 sm:p-3.5 sm:w-44 md:w-48">
-            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-white p-2.5 dark:bg-card">
-              <Skeleton className="h-full w-full rounded-md" />
-            </div>
+    <div className="w-full space-y-5">
+      <div className="w-full rounded-2xl sm:rounded-3xl border border-neutral-200/80 bg-white p-5 sm:p-7 shadow-xs dark:border-[#293831] dark:bg-[#121c18]">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-7">
+          <div className="relative h-32 w-32 sm:h-36 sm:w-36 md:h-40 md:w-40 shrink-0 overflow-hidden rounded-2xl bg-white border border-neutral-100 dark:border-neutral-800 p-2.5 flex items-center justify-center">
+            <Skeleton className="h-full w-full rounded-xl" />
           </div>
 
-          <div className="flex flex-1 flex-col justify-between p-4 sm:px-6 sm:py-3.5 space-y-3 sm:space-y-0">
+          <div className="flex flex-1 min-w-0 flex-col justify-between self-stretch gap-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Skeleton className="h-4 w-24 rounded-md" />
-              <Skeleton className="h-5 w-32 rounded-full" />
+              <Skeleton className="h-5 w-36 rounded-full" />
             </div>
 
-            <div className="my-1">
-              <Skeleton className="h-7 w-48 rounded-md sm:h-8 sm:w-72" />
+            <div>
+              <Skeleton className="h-7 sm:h-8 w-56 rounded-md" />
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-              <Skeleton className="h-4 w-36 rounded-md" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4 rounded-full" />
+              <Skeleton className="h-4 w-64 rounded-md" />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4 rounded-full" />
+              <Skeleton className="h-4 w-32 rounded-md" />
+            </div>
+
+            <div className="flex items-center gap-3">
               <Skeleton className="h-4 w-28 rounded-md" />
+              <Skeleton className="h-5 w-14 rounded-full" />
+              <Skeleton className="h-4 w-20 rounded-md" />
             </div>
           </div>
         </div>
-      </Card>
+      </div>
+      <Skeleton className="h-10 w-full max-w-3xl rounded-md" />
     </div>
   );
 }
 
 export function SearchFilterBarSkeleton() {
   return (
-    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3 px-1 sm:px-2 md:px-4 lg:px-8">
+    <div className="flex w-full flex-wrap lg:flex-nowrap items-center gap-2.5 lg:gap-3">
       <Skeleton className="h-11 flex-1 min-w-[200px] rounded-full" />
       <div className="flex items-center gap-2 shrink-0">
+        <Skeleton className="h-11 w-28 rounded-full" />
         <Skeleton className="h-11 w-28 rounded-full" />
         <Skeleton className="h-11 w-28 rounded-full" />
         <Skeleton className="h-11 w-28 rounded-full" />

@@ -2,19 +2,7 @@ import { backendBaseUrl } from "@/lib/seo";
 import type { PublicStoreDetailResponse, StorefrontItemResponse } from "@/lib/type/storeType";
 import StoreDetail from "./store-detail-client";
 
-/**
- * Fetches the shop and its menu on the server so the browser is sent a page that
- * already has them.
- *
- * Rendered in the browser alone, this page could only start loading its data once
- * the JavaScript had arrived and run, and a shopper watched a skeleton for the
- * whole of that wait plus two round trips. Both calls go straight to the API
- * rather than through this app's own proxy — that hop exists to attach a
- * shopper's cookie, and there is no shopper here.
- *
- * A minute of staleness is invisible on a menu, and the API's own cache sits
- * behind this, so a popular shop costs a query neither here nor there.
- */
+
 async function fetchStore(slug: string): Promise<PublicStoreDetailResponse | null> {
   try {
     const res = await fetch(`${backendBaseUrl}/api/v1/public/stores/${slug}`, {

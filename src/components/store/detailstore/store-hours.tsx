@@ -72,10 +72,10 @@ export default function StoreHours({
         isOpen === undefined ? null : (
             <span
                 className={cn(
-                    "rounded-full px-2 py-0.5 text-[11px] font-bold",
+                    "rounded-full px-2.5 py-0.5 text-xs font-semibold",
                     isOpen
-                        ? "bg-primary/10 text-primary"
-                        : "bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400",
+                        ? "border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-[#26533c] dark:bg-[#1c382b] dark:text-[#4ade80]"
+                        : "border border-red-200 bg-red-50 text-red-600 dark:border-[#5c2424] dark:bg-[#3b1919] dark:text-[#f87171]",
                 )}
             >
                 {isOpen ? t("open") : t("closed")}
@@ -86,9 +86,11 @@ export default function StoreHours({
     // says everything there is to say.
     if (week.length === 0) {
         return (
-            <div className={cn("flex items-center gap-1.5", className)}>
-                <Clock className="h-4 w-4 shrink-0 text-primary" />
-                <span>{todayLabel}</span>
+            <div className={cn("flex flex-wrap items-center gap-2", className)}>
+                <div className="flex items-center gap-1.5 text-emerald-600 dark:text-[#4ade80] font-medium">
+                    <Clock className="h-4 w-4 shrink-0 text-emerald-600 dark:text-[#4ade80]" />
+                    <span>{todayLabel}</span>
+                </div>
                 {pill}
             </div>
         );
@@ -98,13 +100,15 @@ export default function StoreHours({
     // of facts, and pushing a table into it shoves the rest of the card down
     // every time someone glances at the week.
     return (
-        <div className={cn("flex items-center gap-1.5", className)}>
-            <Clock className="h-4 w-4 shrink-0 text-primary" />
-            <span>{todayLabel}</span>
+        <div className={cn("flex flex-wrap items-center gap-2", className)}>
+            <div className="flex items-center gap-1.5 text-emerald-600 dark:text-[#4ade80] font-medium">
+                <Clock className="h-4 w-4 shrink-0 text-emerald-600 dark:text-[#4ade80]" />
+                <span>{todayLabel}</span>
+            </div>
             {pill}
 
             <Popover>
-                <PopoverTrigger className="cursor-pointer text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground">
+                <PopoverTrigger className="cursor-pointer text-xs text-neutral-500 underline underline-offset-2 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200">
                     {t("allHours")}
                 </PopoverTrigger>
                 <PopoverContent align="start" className="w-auto min-w-56 p-3">
