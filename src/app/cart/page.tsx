@@ -16,12 +16,12 @@ export default function CartPage() {
         <div className="relative mx-auto min-h-screen max-w-362.5 pb-24 lg:pb-0">
             <div className="px-6 py-7.5 lg:mx-25">
                 <div className="mb-2 flex items-center justify-between sm:mb-3">
-                    <h1 className="text-3xl font-bold text-green-600">{t("title")}</h1>
+                    <h1 className="text-3xl font-bold text-primary">{t("title")}</h1>
 
                     <Link href="/store">
                         <button
                             type="button"
-                            className="flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
+                            className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                         >
                             <ChevronLeft className="h-4 w-4" />
                             {t("continueShopping")}

@@ -39,7 +39,8 @@ import { useIsMessenger } from "@/lib/tma/useIsMessenger";
 function toMenuItem(
   item: StorefrontItemResponse,
   fallbackCategory: string,
-  currency?: string
+  currency?: string,
+  exchangeRate?: number | null
 ): MenuItemData {
   const isOutOfStock = isItemOutOfStock(item);
   // An item sold in options is never sold as itself, so its own price is
@@ -66,6 +67,7 @@ function toMenuItem(
     badge: item.badge,
     discountLabel: item.discountLabel,
     currency: currency,
+    exchangeRate,
     description: item.description ?? "",
     category: item.itemGroup?.name ?? fallbackCategory,
     image: primaryItemImage(item) ?? "",
@@ -245,12 +247,13 @@ export default function StoreDetail({
   const hasFilteredItems = filteredItems.length > 0;
 
   const currency = storeDetail?.displayCurrency || storeDetail?.baseCurrency;
+  const exchangeRate = storeDetail?.displayExchangeRate;
 
   const groupedItems = filteredItems.reduce<Record<string, MenuItemData[]>>(
     (acc, item) => {
       const groupName = item.itemGroup?.name?.trim() || t("common.menu");
       if (!acc[groupName]) acc[groupName] = [];
-      acc[groupName].push(toMenuItem(item, t("common.menu"), currency));
+      acc[groupName].push(toMenuItem(item, t("common.menu"), currency, exchangeRate));
       return acc;
     },
     {},
@@ -357,7 +360,7 @@ export default function StoreDetail({
 
               <div className="hidden lg:block lg:pt-4">
                 <div className="sticky top-6">
-                  <CartSidebar slug={slug} businessId={storeDetail?.id} storeCurrency={currency} />
+                  <CartSidebar slug={slug} businessId={storeDetail?.id} storeCurrency={currency} storeExchangeRate={exchangeRate} />
                 </div>
               </div>
             </div>

@@ -76,7 +76,7 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
                 {cart.storeCount > 0 && (
                     <Link
                         href="/cart"
-                        className="mt-4 inline-block text-sm font-medium text-green-600 hover:underline"
+                        className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
                     >
                         {t("seeOtherShops")} ({cart.storeCount})
                     </Link>
@@ -94,7 +94,7 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
                 otherShops > 0 && (
                     <p className="-mt-1 mb-2 text-sm text-neutral-500 dark:text-muted-foreground sm:mb-4">
                         Paying {scoped.name} ·{" "}
-                        <Link href="/cart" className="text-green-600 hover:underline">
+                        <Link href="/cart" className="text-primary hover:underline">
                             {otherShops} other {otherShops === 1 ? "shop" : "shops"} in your cart
                         </Link>
                     </p>

@@ -97,7 +97,7 @@ export default function ApiErrorFallback({
           <Button
             onClick={onRetry}
             disabled={isRetrying}
-            className="gap-2 rounded-full bg-green-600 px-5 text-sm font-semibold text-white shadow-md hover:bg-green-700 dark:bg-primary dark:text-primary-foreground"
+            className="gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-md hover:bg-primary/90"
           >
             <RefreshCw className={cn("h-4 w-4", isRetrying && "animate-spin")} />
             {isRetrying ? t("retrying") : t("retry")}

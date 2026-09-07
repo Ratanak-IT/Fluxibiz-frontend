@@ -25,7 +25,7 @@ import {
 
 import { formatPrice } from "@/lib/store/productdetail/product";
 
-function toMenuItem(item: StorefrontItemResponse, currency?: string): MenuItemData {
+function toMenuItem(item: StorefrontItemResponse, currency?: string, exchangeRate?: number | null): MenuItemData {
   const isOutOfStock = isItemOutOfStock(item);
   // An item sold in options is never sold as itself, so its own price is
   // empty and the options carry the real ones.
@@ -51,6 +51,7 @@ function toMenuItem(item: StorefrontItemResponse, currency?: string): MenuItemDa
     badge: item.badge,
     discountLabel: item.discountLabel,
     currency: currency,
+    exchangeRate,
     description: item.description ?? "",
     category: item.itemGroup?.name ?? "Menu",
     image: primaryItemImage(item) ?? "",
@@ -94,6 +95,7 @@ export default function DetailProductPage({
     .slice(0, 6);
 
   const currency = storeDetail?.displayCurrency || storeDetail?.baseCurrency;
+  const exchangeRate = storeDetail?.displayExchangeRate;
   const t = useTranslations("Store.common");
 
   // The online store's hours, as the checkout enforces them. A shopper who
@@ -108,6 +110,7 @@ export default function DetailProductPage({
         storeSlug={storeSlug}
         storeName={storeDetail?.name}
         currency={currency}
+        exchangeRate={exchangeRate}
         isLoading={isLoadingItems}
         isStoreOpen={storeOpen}
         onlineHours={storeDetail?.onlineHours}
@@ -144,7 +147,7 @@ export default function DetailProductPage({
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {relatedStoreItems.map((item) => (
-              <MenuProductCard key={item.id} item={toMenuItem(item, currency)} />
+              <MenuProductCard key={item.id} item={toMenuItem(item, currency, exchangeRate)} />
             ))}
           </div>
         </section>

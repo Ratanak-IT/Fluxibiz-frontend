@@ -20,6 +20,8 @@ export interface MenuItemData {
   category: string;
   image: string;
   currency?: string;
+  /** Units of `currency` per one unit of the item's own base price — see `formatMoney`. */
+  exchangeRate?: number | null;
   isOutOfStock?: boolean;
   /** What the online store has left, or null when the shop tracks no stock for it. */
   remaining?: number | null;

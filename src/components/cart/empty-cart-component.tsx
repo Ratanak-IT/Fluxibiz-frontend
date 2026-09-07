@@ -23,7 +23,7 @@ export default function EmptyCartComponent({ shopSlug }: { shopSlug?: string } =
             </p>
 
             <Link href={browseHref}>
-                <Button className="mt-2 h-11 rounded-full bg-green-600 px-8 font-semibold text-white hover:bg-green-700 dark:bg-primary dark:hover:bg-primary/90">
+                <Button className="mt-2 h-11 rounded-full bg-primary px-8 font-semibold text-primary-foreground hover:bg-primary/90">
                     {t("browseShops")}
                 </Button>
             </Link>

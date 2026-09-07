@@ -341,7 +341,22 @@ export interface AddToCartPayload {
     };
 }
 
-export function formatMoney(amount: number, currency = "USD", exchangeRate = 4000): string {
+/**
+ * `amount` is always in the order/store's own base currency. When that base
+ * currency itself is KHR, it is already the right number — nothing to
+ * convert. When the shop's *display* currency is KHR but the base currency
+ * is something else (usually USD), the backend hands over the rate it was
+ * shown at (`CurrencyDisplayHelper`/`publicStore.displayExchangeRate`/
+ * `order.displayExchangeRate`) and this must multiply by exactly that, never
+ * guess from how big the number looks.
+ *
+ * So `exchangeRate` is only ever supplied when a real conversion applies —
+ * a caller that doesn't have one (base currency is already KHR, or the
+ * screen hasn't been wired to fetch one) must leave it unset, which passes
+ * `amount` through unmultiplied rather than mangling an already-correct
+ * riel figure with a fallback rate.
+ */
+export function formatMoney(amount: number, currency = "USD", exchangeRate?: number | null): string {
     const code = (currency || "").toUpperCase().trim();
     if (
         code === "KHR" ||
@@ -355,8 +370,8 @@ export function formatMoney(amount: number, currency = "USD", exchangeRate = 400
         code.includes("KHMER") ||
         code.includes("៛")
     ) {
-        const finalAmount = amount < 100 ? amount * exchangeRate : amount;
-        return `${Math.round(finalAmount).toLocaleString("en-US")} ៛`;
+        const rate = exchangeRate && exchangeRate > 0 ? exchangeRate : 1;
+        return `${Math.round(amount * rate).toLocaleString("en-US")} ៛`;
     }
     return `$${amount.toFixed(2)}`;
 }

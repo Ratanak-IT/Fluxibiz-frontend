@@ -13,10 +13,12 @@ import { cartTotals, computeTax, formatMoney, type StoreCart } from "@/lib/type/
 export default function OrderSummaryComponent({
     store,
     currency,
+    exchangeRate: exchangeRateProp,
     storeItems = [],
 }: {
     store: StoreCart;
     currency?: string;
+    exchangeRate?: number | null;
     storeItems?: any[];
 }) {
     const t = useTranslations("Cart");
@@ -43,6 +45,7 @@ export default function OrderSummaryComponent({
     const isTaxActive = Boolean(publicStore?.taxEnabled) && taxAmount > 0;
     const effectiveTaxName = publicStore?.taxLabel?.trim() || "VAT";
     const promotionName = publicStore?.discountLabel?.trim();
+    const exchangeRate = exchangeRateProp ?? publicStore?.displayExchangeRate;
 
     const { data: active } = useGetActiveCheckoutQuery();
 
@@ -73,7 +76,7 @@ export default function OrderSummaryComponent({
                 <div className="flex items-center justify-between">
                     <span>{t("subtotal")}</span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
-                        {formatMoney(originalSubtotal, activeCurrency)}
+                        {formatMoney(originalSubtotal, activeCurrency, exchangeRate)}
                     </span>
                 </div>
 
@@ -96,7 +99,7 @@ export default function OrderSummaryComponent({
                         )}
                     </span>
                     <span className="font-bold text-neutral-900 dark:text-card-foreground">
-                        {discount > 0 ? `-${formatMoney(discount, activeCurrency)}` : formatMoney(0, activeCurrency)}
+                        {discount > 0 ? `-${formatMoney(discount, activeCurrency, exchangeRate)}` : formatMoney(0, activeCurrency, exchangeRate)}
                     </span>
                 </div>
 
@@ -106,7 +109,7 @@ export default function OrderSummaryComponent({
                             {effectiveTaxName} {taxRate > 0 ? `(${taxRate}%)` : ""}
                         </span>
                         <span className="font-bold text-neutral-900 dark:text-card-foreground">
-                            +{formatMoney(taxAmount, activeCurrency)}
+                            +{formatMoney(taxAmount, activeCurrency, exchangeRate)}
                         </span>
                     </div>
                 )}
@@ -117,7 +120,7 @@ export default function OrderSummaryComponent({
                             {effectiveTaxName} {taxRate > 0 ? `(${taxRate}% Incl.)` : "(Incl.)"}
                         </span>
                         <span className="font-semibold text-neutral-700 dark:text-neutral-300">
-                            {formatMoney(taxAmount, activeCurrency)}
+                            {formatMoney(taxAmount, activeCurrency, exchangeRate)}
                         </span>
                     </div>
                 )}
@@ -128,7 +131,7 @@ export default function OrderSummaryComponent({
                     </span>
 
                     <span className="text-2xl font-bold text-primary">
-                        {formatMoney(total, activeCurrency)}
+                        {formatMoney(total, activeCurrency, exchangeRate)}
                     </span>
                 </div>
 
