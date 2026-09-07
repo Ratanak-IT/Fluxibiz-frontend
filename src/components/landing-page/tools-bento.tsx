@@ -115,13 +115,14 @@ export function ToolsBento() {
             title={t("pos.title")}
             className="bg-card"
           >
-            <div className="relative mt-5 aspect-[1.55/1] overflow-hidden rounded-xl border border-border bg-card">
+            <div className="relative mt-5 overflow-hidden rounded-lg sm:rounded-xl">
               <Image
                 src={LANDING_IMAGES.tools.posScreen}
                 alt={t("pos.imageAlt")}
-                fill
+                width={1572}
+                height={1001}
                 sizes="(max-width: 1024px) 100vw, 58vw"
-                className="object-contain"
+                className="w-full h-auto object-contain rounded-lg sm:rounded-xl shadow-md ring-1 ring-border/50 dark:ring-white/10"
               />
             </div>
           </ToolCard>
