@@ -323,7 +323,7 @@ export default function ReceiptComponent({
                           {price?.discountLabel && (
                             <span className="text-primary">{price.discountLabel} · </span>
                           )}
-                          <span className="text-accent font-semibold">
+                          <span className="text-red-500 dark:text-red-400 font-semibold">
                             -{formatMoney(lineDiscount, order.currency)}
                           </span>
                         </p>
@@ -361,10 +361,10 @@ export default function ReceiptComponent({
             </div>
 
             {order.discountAmount > 0 && (
-              <div className="flex justify-between items-center text-xs text-accent">
+              <div className="flex justify-between items-center text-xs text-red-500 dark:text-red-400">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <BiLabel en="Discount" km="បញ្ចុះតម្លៃ" />
-                  <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[11px] font-semibold text-accent">
+                  <span className="rounded-md bg-red-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-red-500 dark:bg-red-400/10 dark:text-red-400">
                     {order.discountLabel || (order.subtotal > 0 ? `${Math.round((order.discountAmount / order.subtotal) * 100)}% OFF` : "Savings")}
                   </span>
                 </div>

@@ -162,36 +162,29 @@ export function FeatureModules() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.25, ease }}
                     className={cn(
-                      "relative mx-auto w-full",
+                      "relative mx-auto w-full flex items-center justify-center",
                       imageFirst && "lg:order-1",
                       isPhone
-                        ? "max-w-[320px] sm:max-w-[390px]"
+                        ? "max-w-[300px] sm:max-w-[360px]"
                         : activeIndex % 3 === 0
                           ? "max-w-[720px]"
                           : "max-w-[640px]",
                     )}
                   >
-                    <div className="relative">
-                      <div
+                    <div className="relative w-full flex items-center justify-center">
+                      <Image
+                        src={activeModule.image}
+                        alt={activeModuleAlt}
+                        width={isPhone ? 853 : 1600}
+                        height={isPhone ? 1844 : 1000}
+                        priority={activeIndex === 0}
+                        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 85vw, 58vw"
                         className={cn(
-                          "relative",
-                          isPhone
-                            ? "h-[330px] sm:h-[430px] lg:h-[500px]"
-                            : "h-[250px] sm:h-[340px] lg:h-auto lg:aspect-[1.48/1]",
+                          "w-full h-auto object-contain object-center",
+                          !isPhone && "rounded-lg sm:rounded-xl shadow-xl ring-1 ring-white/10",
+                          activeModule.imageClassName,
                         )}
-                      >
-                        <Image
-                          src={activeModule.image}
-                          alt={activeModuleAlt}
-                          fill
-                          priority={activeIndex === 0}
-                          sizes="(max-width: 640px) 92vw, (max-width: 1024px) 85vw, 58vw"
-                          className={cn(
-                            "object-contain object-center",
-                            activeModule.imageClassName,
-                          )}
-                        />
-                      </div>
+                      />
                     </div>
                   </motion.div>
                 </motion.article>

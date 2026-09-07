@@ -319,11 +319,11 @@ export default function CheckoutPage({
                             </div>
 
                             {discount > 0 && (
-                                <div className="flex items-center justify-between text-sm text-accent">
+                                <div className="flex items-center justify-between text-sm text-red-500 dark:text-red-400">
                                     <span className="flex items-center gap-1.5 font-medium">
                                         {t("discount")}
                                         {freeItemCount > 0 && (
-                                            <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[11px] font-semibold text-accent">
+                                            <span className="rounded-md bg-red-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-red-500 dark:bg-red-400/10 dark:text-red-400">
                                                 {freeItemCount} FREE
                                             </span>
                                         )}

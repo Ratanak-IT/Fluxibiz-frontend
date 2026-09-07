@@ -57,7 +57,7 @@ export default function MenuCard({
         <CardTitle className="text-gray-500 font-semibold line-clamp-1">
           {name}
         </CardTitle>
-        <CardTitle className="text-accent font-bold">${price}</CardTitle>
+        <CardTitle className="text-red-500 dark:text-red-400 font-bold">${price}</CardTitle>
       </CardHeader>
     </Card>
   );

@@ -140,7 +140,7 @@ function FeatureVisual({
 
         <div>
           <div className="flex items-center gap-2 text-sm font-bold text-text dark:text-white">
-            <Utensils className="size-4 text-accent" />
+            <Utensils className="size-4 text-red-500 dark:text-red-400" />
             {labels.digitalMenu}
           </div>
 
@@ -316,10 +316,17 @@ export function FeatureBento() {
                         isModernPos
                           ? "bg-white text-primary"
                           : "bg-primary text-white",
-                        "dark:bg-white dark:text-primary",
+                        "dark:bg-white dark:!text-primary",
                       )}
                     >
-                      <Icon className="size-6" />
+                      <Icon
+                        className={cn(
+                          "size-6",
+                          isModernPos
+                            ? "text-primary"
+                            : "text-white dark:!text-primary",
+                        )}
+                      />
                     </span>
 
                     <span

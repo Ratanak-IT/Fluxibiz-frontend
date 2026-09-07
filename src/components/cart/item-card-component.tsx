@@ -146,7 +146,7 @@ export default function ItemCardComponent({
                             {line.discountLabel && (
                                 <span className="text-primary">{line.discountLabel} · </span>
                             )}
-                            <span className="text-accent font-semibold">
+                            <span className="text-red-500 dark:text-red-400 font-semibold">
                                 -{formatMoney(line.discountAmount, currency)}
                             </span>
                         </p>

@@ -39,7 +39,11 @@
       "viewProfile": "View profile",
       "paymentHistory": "Payment history",
       "settings": "Settings",
-      "logout": "Log out"
+      "logout": "Log out",
+      "logoutConfirmTitle": "Log out of your account?",
+      "logoutConfirmDescription": "Are you sure you want to log out? You will need to sign in again to access your account.",
+      "cancel": "Cancel",
+      "confirmLogout": "Log Out"
     }
   },
   "Footer": {

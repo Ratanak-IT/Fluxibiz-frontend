@@ -19,12 +19,7 @@ interface ProductListProps {
     items: MenuItemData[];
 }
 
-/**
- * One horizontally scrolling row of cards, with its own scroll position.
- *
- * An arrow button appears on hover at whichever end still has items past it,
- * styled with a clean white circle, drop shadow, and smooth fade transition.
- */
+
 function ProductRow({ items }: { items: MenuItemData[] }) {
     const t = useTranslations("Store");
     const trackRef = useRef<HTMLDivElement>(null);
@@ -85,7 +80,7 @@ function ProductRow({ items }: { items: MenuItemData[] }) {
                 track.scrollBy({ left: -step, behavior: "smooth" });
             }
         } else {
-            // When within one card of the end, scroll cleanly to maxScroll
+            
             if (track.scrollLeft + step >= maxScroll - 20) {
                 track.scrollTo({ left: maxScroll, behavior: "smooth" });
             } else {
@@ -93,7 +88,7 @@ function ProductRow({ items }: { items: MenuItemData[] }) {
             }
         }
 
-        // Re-check as smooth scroll animation progresses and finishes
+      
         setTimeout(syncArrows, 80);
         setTimeout(syncArrows, 220);
         setTimeout(syncArrows, 420);
@@ -144,11 +139,6 @@ function ProductRow({ items }: { items: MenuItemData[] }) {
 export default function ProductList({ title, items = [] }: ProductListProps) {
     const list = Array.isArray(items) ? items : [];
 
-    // Two rows, each scrolling on its own — so a shopper can leave one where
-    // it is while working through the other. Split down the middle rather
-    // than dealt alternately: each row is then a run of consecutive items and
-    // reads as its own sequence, which dealing would scramble the moment the
-    // two scroll positions differ.
     const splitAt = Math.ceil(list.length / 2);
     const rows =
         list.length > SINGLE_ROW_MAX

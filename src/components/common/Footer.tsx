@@ -31,12 +31,12 @@ const usefulLinks = [
 const socialLinks = [
   {
     label: "Facebook",
-    href: "https://www.facebook.com/",
+    href: "https://www.facebook.com/profile.php?id=61593729882954",
     icon: FaFacebookF,
   },
   {
     label: "Telegram",
-    href: "https://t.me/",
+    href: "https://t.me/Liepsokkeang",
     icon: FaTelegramPlane,
   },
 ];
@@ -476,8 +476,8 @@ export default function Footer() {
       </div>
 
       <ContactLink
-        href="tel:+85515338826"
-        label="+855 15 33 88 26"
+        href="tel:+85510946085"
+        label="+855 10 94 60 85"
       >
         <Phone
           aria-hidden="true"

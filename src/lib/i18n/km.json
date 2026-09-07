@@ -39,7 +39,11 @@
       "viewProfile": "មើលប្រវត្តិរូប",
       "paymentHistory": "ប្រវត្តិការទូទាត់",
       "settings": "ការកំណត់",
-      "logout": "ចាកចេញ"
+      "logout": "ចាកចេញ",
+      "logoutConfirmTitle": "តើអ្នកពិតជាចង់ចាកចេញមែនទេ?",
+      "logoutConfirmDescription": "តើអ្នកប្រាកដជាចង់ចាកចេញពីគណនីរបស់អ្នកមែនទេ? អ្នកនឹងត្រូវចូលគណនីម្តងទៀតដើម្បីប្រើប្រាស់។",
+      "cancel": "បោះបង់",
+      "confirmLogout": "ចាកចេញ"
     }
   },
   "Footer": {
@@ -794,7 +798,7 @@
       "category": "ប្រភេទ",
       "priceRange": "ចន្លោះតម្លៃ",
       "sortBy": "តម្រៀបតាម",
-      "resetFilters": "កំណត់តម្រងឡើងវិញ",
+      "resetFilters": "កំណត់ឡើងវិញ",
       "all": "ទាំងអស់",
       "allPrices": "គ្រប់តម្លៃ",
       "default": "លំនាំដើម",

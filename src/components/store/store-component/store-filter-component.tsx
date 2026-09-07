@@ -398,15 +398,6 @@ export default function StoreFilterComponent({
                   <DrawerTitle className="text-xl font-bold text-foreground truncate hover:text-primary transition-colors">{t("title")}</DrawerTitle>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  {hasActiveFilters && (
-                    <button
-                      type="button"
-                      onClick={handleResetFilters}
-                      className="rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-primary"
-                    >
-                      {t("resetFilters")}
-                    </button>
-                  )}
                   <DrawerClose
                     render={
                       <button
@@ -429,23 +420,14 @@ export default function StoreFilterComponent({
         </div>
       </div>
 
-      <div className="hidden w-full max-w-[420px] xl:block xl:min-w-[340px]">
+      <div className="hidden w-full xl:block">
         <div className="sticky top-0 z-30 bg-background pt-1 pb-4 space-y-4">
           <div>
             <SearchDrawer value={currentSearchValue} onChange={handleSearchChange} />
           </div>
 
-          <div className="flex items-center justify-between gap-3">
+          <div>
             <h2 className="text-xl font-bold text-foreground hover:text-primary transition-colors cursor-default">{t("title")}</h2>
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="shrink-0 text-sm font-medium text-muted-foreground transition hover:text-primary"
-              >
-                {t("resetFilters")}
-              </button>
-            )}
           </div>
         </div>
 

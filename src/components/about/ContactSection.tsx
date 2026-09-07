@@ -44,15 +44,15 @@ export function ContactSection() {
     {
       icon: Phone,
       label: t("details.call"),
-      value: "+855 15 33 88 26",
-      href: "tel:+85515338826",
+      value: "+855 10 94 60 85",
+      href: "tel:+85510946085",
       external: false,
     },
     {
       icon: Send,
       label: t("details.telegram"),
-      value: "@fluxibiz_team",
-      href: "https://t.me/fluxibiz_team",
+      value: "@Liepsokkeang",
+      href: "https://t.me/Liepsokkeang",
       external: true,
     },
   ];

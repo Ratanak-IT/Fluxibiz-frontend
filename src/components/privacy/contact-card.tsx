@@ -11,8 +11,8 @@ const CONTACT_DETAILS = [
   {
     icon: Phone,
     label: "Phone",
-    value: "+885 15 33 88 26",
-    href: "tel:+885 15 33 88 26",
+    value: "+855 10 94 60 85",
+    href: "tel:+85510946085",
   },
   {
     icon: MapPin,

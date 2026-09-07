@@ -77,7 +77,7 @@ export default function OrderSummaryComponent({
                     </span>
                 </div>
 
-                <div className={`flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-border ${discount > 0 ? "text-accent" : ""}`}>
+                <div className={`flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-border ${discount > 0 ? "text-red-500 dark:text-red-400" : ""}`}>
                     <span className="flex items-center gap-1.5 font-medium">
                         {t("discount")}
                         {/* Named only for a storewide promotion. A line-level
@@ -85,17 +85,17 @@ export default function OrderSummaryComponent({
                             the store's headline promotion may not even be the
                             one that row used. */}
                         {isOrderWideDiscount && promotionName && (
-                            <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[11px] font-semibold text-accent">
+                            <span className="rounded-md bg-red-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-red-500 dark:bg-red-400/10 dark:text-red-400">
                                 {promotionName}
                             </span>
                         )}
                         {freeItemCount > 0 && (
-                            <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[11px] font-semibold text-accent">
+                            <span className="rounded-md bg-red-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-red-500 dark:bg-red-400/10 dark:text-red-400">
                                 {freeItemCount} FREE
                             </span>
                         )}
                     </span>
-                    <span className={`font-bold ${discount > 0 ? "text-accent" : "text-neutral-900 dark:text-card-foreground"}`}>
+                    <span className={`font-bold ${discount > 0 ? "text-red-500 dark:text-red-400" : "text-neutral-900 dark:text-card-foreground"}`}>
                         {discount > 0 ? `-${formatMoney(discount, activeCurrency)}` : formatMoney(0, activeCurrency)}
                     </span>
                 </div>

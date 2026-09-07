@@ -53,6 +53,14 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 type NavbarAfterLoginComponentProps = {
   user: SessionUser;
   cartCount?: number;
@@ -97,6 +105,8 @@ export default function NavbarAfterLoginComponent({
   const pathname = usePathname();
 
   const [mobileNavOpen, setMobileNavOpen] =
+    useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] =
     useState(false);
 
   const { isAuthenticated } = useAuth();
@@ -277,7 +287,7 @@ export default function NavbarAfterLoginComponent({
           <UserDropdown
             user={user}
             avatarSrc={avatarSrc}
-            onLogout={onLogout}
+            onLogout={() => setShowLogoutConfirm(true)}
           />
         </div>
 
@@ -612,14 +622,12 @@ export default function NavbarAfterLoginComponent({
                   {t("account.paymentHistory")}
                 </Link>
 
-
-
                 {/* Logout */}
                 <button
                   type="button"
                   onClick={() => {
                     setMobileNavOpen(false);
-                    onLogout?.();
+                    setShowLogoutConfirm(true);
                   }}
                   className="
                     group
@@ -636,6 +644,7 @@ export default function NavbarAfterLoginComponent({
                     text-destructive
                     transition-colors
                     hover:bg-destructive/10
+                    cursor-pointer
 
                     [&_svg]:text-destructive
                   "
@@ -648,6 +657,51 @@ export default function NavbarAfterLoginComponent({
           </Sheet>
         </div>
       </div>
+
+      {/* Logout Confirmation Dialog */}
+      <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+        <DialogContent
+          showCloseButton
+          className="max-w-[390px] rounded-2xl border border-border/80 bg-card p-6 shadow-2xl"
+        >
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-4 grid size-12 place-items-center rounded-full bg-[#D14341]/10 text-[#D14341] dark:bg-[#D14341]/20">
+              <LogOut className="size-6 text-[#D14341]" />
+            </div>
+
+            <DialogHeader className="gap-1.5 text-center">
+              <DialogTitle className="text-xl font-bold text-foreground">
+                {t("account.logoutConfirmTitle")}
+              </DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
+                {t("account.logoutConfirmDescription")}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="mt-6 flex w-full gap-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 rounded-full h-11 border border-neutral-300 dark:border-neutral-700 bg-transparent font-medium text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+              >
+                {t("account.cancel")}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLogoutConfirm(false);
+                  onLogout?.();
+                }}
+                className="flex-1 rounded-full h-11 bg-[#D14341] hover:bg-[#b83836] active:scale-[0.98] font-medium text-white shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <LogOut className="size-4" />
+                {t("account.confirmLogout")}
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

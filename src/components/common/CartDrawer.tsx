@@ -495,7 +495,7 @@ function LineRow({
                         {freeUnits} FREE
                     </p>
                 ) : line.discountAmount && line.discountAmount > 0 ? (
-                    <p className="mt-0.5 text-[11px] font-semibold text-accent">
+                    <p className="mt-0.5 text-[11px] font-semibold text-red-500 dark:text-red-400">
                         -{formatMoney(line.discountAmount, currency)}
                     </p>
                 ) : null}
