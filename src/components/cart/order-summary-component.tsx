@@ -77,25 +77,25 @@ export default function OrderSummaryComponent({
                     </span>
                 </div>
 
-                <div className="flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-border">
-                    <span className="flex items-center gap-1.5">
+                <div className={`flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-border ${discount > 0 ? "text-accent" : ""}`}>
+                    <span className="flex items-center gap-1.5 font-medium">
                         {t("discount")}
                         {/* Named only for a storewide promotion. A line-level
                             one is already named on the row it applies to, and
                             the store's headline promotion may not even be the
                             one that row used. */}
                         {isOrderWideDiscount && promotionName && (
-                            <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[11px] font-semibold text-primary">
+                            <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[11px] font-semibold text-accent">
                                 {promotionName}
                             </span>
                         )}
                         {freeItemCount > 0 && (
-                            <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[11px] font-semibold text-primary">
+                            <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[11px] font-semibold text-accent">
                                 {freeItemCount} FREE
                             </span>
                         )}
                     </span>
-                    <span className="font-bold text-neutral-900 dark:text-card-foreground">
+                    <span className={`font-bold ${discount > 0 ? "text-accent" : "text-neutral-900 dark:text-card-foreground"}`}>
                         {discount > 0 ? `-${formatMoney(discount, activeCurrency)}` : formatMoney(0, activeCurrency)}
                     </span>
                 </div>

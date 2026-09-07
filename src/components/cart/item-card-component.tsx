@@ -138,13 +138,17 @@ export default function ItemCardComponent({
                     )}
 
                     {freeUnits > 0 ? (
-                        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        <p className="text-xs font-bold text-primary">
                             {freeUnits} FREE{line.discountLabel ? ` · ${line.discountLabel}` : ""}
                         </p>
                     ) : line.discountAmount && line.discountAmount > 0 ? (
-                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                            {line.discountLabel ? `${line.discountLabel} · ` : ""}
-                            -{formatMoney(line.discountAmount, currency)}
+                        <p className="text-xs font-semibold">
+                            {line.discountLabel && (
+                                <span className="text-primary">{line.discountLabel} · </span>
+                            )}
+                            <span className="text-accent font-semibold">
+                                -{formatMoney(line.discountAmount, currency)}
+                            </span>
                         </p>
                     ) : null}
 

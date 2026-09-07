@@ -315,13 +315,17 @@ export default function ReceiptComponent({
                         {formatMoney(item.unitPrice, order.currency)} ea
                       </p>
                       {item.freeQuantity && item.freeQuantity > 0 ? (
-                        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        <p className="text-xs font-bold text-primary">
                           {item.freeQuantity} FREE
                         </p>
                       ) : lineDiscount > 0 ? (
-                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                          {price?.discountLabel ? `${price.discountLabel} · ` : ""}
-                          -{formatMoney(lineDiscount, order.currency)}
+                        <p className="text-xs font-semibold">
+                          {price?.discountLabel && (
+                            <span className="text-primary">{price.discountLabel} · </span>
+                          )}
+                          <span className="text-accent font-semibold">
+                            -{formatMoney(lineDiscount, order.currency)}
+                          </span>
                         </p>
                       ) : null}
                     </div>
@@ -357,10 +361,10 @@ export default function ReceiptComponent({
             </div>
 
             {order.discountAmount > 0 && (
-              <div className="flex justify-between items-center text-xs text-primary">
+              <div className="flex justify-between items-center text-xs text-accent">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <BiLabel en="Discount" km="បញ្ចុះតម្លៃ" />
-                  <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[11px] font-semibold text-primary">
+                  <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[11px] font-semibold text-accent">
                     {order.discountLabel || (order.subtotal > 0 ? `${Math.round((order.discountAmount / order.subtotal) * 100)}% OFF` : "Savings")}
                   </span>
                 </div>

@@ -289,7 +289,7 @@ export default function CheckoutPage({
                                         <span className="text-neutral-700 dark:text-card-foreground">
                                             {line.name} × {line.quantity}
                                             {lineDiscount > 0 && (
-                                                <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                                <span className="ml-2 text-xs font-semibold text-primary">
                                                     {linePrice?.discountLabel ?? t("discount")}
                                                 </span>
                                             )}
@@ -319,11 +319,11 @@ export default function CheckoutPage({
                             </div>
 
                             {discount > 0 && (
-                                <div className="flex items-center justify-between text-sm text-emerald-600 dark:text-emerald-400">
+                                <div className="flex items-center justify-between text-sm text-accent">
                                     <span className="flex items-center gap-1.5 font-medium">
                                         {t("discount")}
                                         {freeItemCount > 0 && (
-                                            <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                            <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[11px] font-semibold text-accent">
                                                 {freeItemCount} FREE
                                             </span>
                                         )}

@@ -133,7 +133,7 @@ export default function PaymentHistoryComponent() {
               onClick={() => setActiveTab("PAID")}
               className={`flex flex-1 justify-center shrink-0 whitespace-nowrap items-center gap-0 sm:gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold transition-all sm:flex-initial sm:px-4 sm:py-1.5 sm:text-xs ${
                 activeTab === "PAID"
-                  ? "bg-[#00932A] text-white shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900 dark:text-muted-foreground"
               }`}
             >
@@ -263,7 +263,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
                 className="size-13 shrink-0 rounded-2xl object-cover"
               />
             ) : (
-              <div className="flex size-13 shrink-0 items-center justify-center rounded-2xl bg-[#00932A]/10 text-[#00932A]">
+              <div className="flex size-13 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <Store className="h-6 w-6" />
               </div>
             )}
@@ -273,14 +273,14 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
                 <Link
                   href={`/store/${order.storeSlug}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="font-bold text-neutral-900 transition-colors hover:text-[#00932A] dark:text-foreground"
+                  className="font-bold text-neutral-900 transition-colors hover:text-primary dark:text-foreground"
                 >
                   {order.storeName}
                 </Link>
 
                 {/* Status Pill */}
                 {isPaid && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-0.5 text-[11px] font-bold text-primary dark:bg-primary/20 dark:text-primary">
                     <CheckCircle2 className="h-3 w-3" />
                     {t("paid")}
                   </span>
@@ -321,7 +321,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
           <div className="flex items-center justify-between border-t border-neutral-100 pt-3 sm:border-t-0 sm:pt-0 sm:flex-col sm:items-end">
             <div className="flex items-center gap-1.5 sm:block sm:text-right">
               <span className="text-xs text-neutral-400">{t("total")}</span>
-              <p className="text-xl font-black text-[#00932A]">
+              <p className="text-xl font-black text-primary">
                 {formatMoney(order.total, order.currency)}
               </p>
             </div>
@@ -341,7 +341,7 @@ function OrderCard({ order }: { order: StorefrontOrder }) {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 gap-1.5 rounded-full border-gray-200 text-xs font-semibold hover:border-[#00932A] hover:text-[#00932A]"
+                    className="h-8 gap-1.5 rounded-full border-gray-200 text-xs font-semibold hover:border-primary hover:text-primary"
                   >
                     {t("viewReceipt")}
                   </Button>

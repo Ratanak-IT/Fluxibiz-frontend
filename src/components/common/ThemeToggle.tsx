@@ -106,13 +106,8 @@ export default function ThemeToggle({
             ? "Switch to light mode"
             : "Switch to dark mode"
       }
-      className={mobile ? mobileClassName : desktopClassName}
-    >
-      {/*
-        Fixed icon container:
-        both Sun and Moon always occupy the same width,
-        height, left position, and center alignment.
-      */}
+      className={mobile ? mobileClassName : desktopClassName}>
+     
       <span
         aria-hidden="true"
         className="
@@ -121,8 +116,7 @@ export default function ThemeToggle({
           size-6
           shrink-0
           place-items-center
-        "
-      >
+        ">
         <Sun
           className={`
             absolute
@@ -139,8 +133,7 @@ export default function ThemeToggle({
                 : "pointer-events-none opacity-0"
             }
           `}
-          strokeWidth={2}
-        />
+          strokeWidth={2}/>
 
         <Moon
           className={`
