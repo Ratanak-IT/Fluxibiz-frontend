@@ -178,12 +178,12 @@ export default function KhqrPaymentComponent({
 
     if (phase === "paid") {
         return (
-            <div className="rounded-2xl border border-green-200/80 bg-green-50/60 p-7 sm:p-8 text-center dark:border-green-900/60 dark:bg-green-950/30">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#00932A] shadow-md">
+            <div className="rounded-2xl border border-primary/20 bg-primary/10 p-7 sm:p-8 text-center dark:border-primary/30 dark:bg-primary/15">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary shadow-md">
                     <Check className="h-7 w-7 text-white" strokeWidth={3} />
                 </div>
 
-                <h2 className="mt-4 text-xl font-bold tracking-tight text-green-700 dark:text-green-400 sm:text-2xl">
+                <h2 className="mt-4 text-xl font-bold tracking-tight text-primary sm:text-2xl">
                     Payment received
                 </h2>
 
@@ -197,7 +197,7 @@ export default function KhqrPaymentComponent({
 
                 <div className="mt-6 flex justify-center">
                     <Link href={`/receipt/${session.orderId}`}>
-                        <Button className="h-11 w-full rounded-full bg-[#00932A] px-8 font-semibold text-white shadow-sm hover:bg-[#007a22] sm:w-auto">
+                        <Button className="h-11 w-full rounded-full bg-primary px-8 font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 sm:w-auto">
                             View E-Receipt
                         </Button>
                     </Link>
@@ -408,7 +408,7 @@ export default function KhqrPaymentComponent({
             </div>
 
             <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-400 dark:text-neutral-500">
-                <ShieldCheck className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+                <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                 Paid directly {t("payTo", { storeName: session.storeName })} through Bakong
             </p>
         </div>

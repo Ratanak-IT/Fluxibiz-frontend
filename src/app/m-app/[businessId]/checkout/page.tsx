@@ -159,7 +159,7 @@ export default function MessengerCheckoutPage({
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -198,7 +198,7 @@ export default function MessengerCheckoutPage({
           label="ទូទាត់"
         />
         <div
-          className={`h-0.5 flex-1 mx-2 ${step !== "PAYMENT" ? "bg-emerald-500" : "bg-slate-200"}`}
+          className={`h-0.5 flex-1 mx-2 ${step !== "PAYMENT" ? "bg-primary" : "bg-slate-200"}`}
         />
         <StepBadge
           active={step === "PROCESSING"}
@@ -207,7 +207,7 @@ export default function MessengerCheckoutPage({
           label="ផ្ទៀងផ្ទាត់"
         />
         <div
-          className={`h-0.5 flex-1 mx-2 ${step === "DONE" ? "bg-emerald-500" : "bg-slate-200"}`}
+          className={`h-0.5 flex-1 mx-2 ${step === "DONE" ? "bg-primary" : "bg-slate-200"}`}
         />
         <StepBadge
           active={step === "DONE"}
@@ -221,20 +221,20 @@ export default function MessengerCheckoutPage({
       {step === "PAYMENT" && (
         <div className="flex flex-1 flex-col justify-between rounded-3xl border border-slate-100 bg-white p-6 text-center shadow-sm">
           <div>
-            <span className="inline-block rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 mb-2">
+            <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-2">
               វិក្កយបត្រ៖ {orderData.invoiceNumber}
             </span>
             <h1 className="text-lg font-bold text-slate-800">
               ទូទាត់ប្រាក់តាម KHQR
             </h1>
-            <p className="mt-1 text-3xl font-black text-emerald-600">
+            <p className="mt-1 text-3xl font-black text-primary">
               ${orderData.total.toFixed(2)}{" "}
               {orderData.currency !== "USD" ? orderData.currency : ""}
             </p>
 
             {/* KHQR Code Frame */}
             <div className="my-4 flex justify-center">
-              <div className="rounded-2xl border-2 border-emerald-500/20 bg-white p-3 shadow-inner">
+              <div className="rounded-2xl border-2 border-primary/20 bg-white p-3 shadow-inner">
                 {orderData.qrImageUri ? (
                   <Image
                     src={orderData.qrImageUri}
@@ -295,8 +295,8 @@ export default function MessengerCheckoutPage({
       {step === "PROCESSING" && (
         <div className="flex flex-1 flex-col items-center justify-center rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-sm">
           <div className="relative mb-6">
-            <div className="absolute inset-0 animate-ping rounded-full bg-emerald-400/30" />
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+            <div className="absolute inset-0 animate-ping rounded-full bg-primary/30" />
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Loader2 className="h-10 w-10 animate-spin" />
             </div>
           </div>
@@ -312,7 +312,7 @@ export default function MessengerCheckoutPage({
       {/* STEP 3: DONE */}
       {step === "DONE" && (
         <div className="flex flex-1 flex-col items-center justify-center rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-sm">
-          <div className="mb-6 flex h-20 w-20 animate-bounce items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+          <div className="mb-6 flex h-20 w-20 animate-bounce items-center justify-center rounded-full bg-primary/10 text-primary">
             <CheckCircle2 className="h-12 w-12" />
           </div>
           <h2 className="text-2xl font-bold text-slate-900">
@@ -321,7 +321,7 @@ export default function MessengerCheckoutPage({
           <p className="mt-2 text-sm text-slate-500">
             វិក្កយបត្រត្រូវបានផ្ញើចូលក្នុង Messenger Chat របស់អ្នករួចរាល់ហើយ។
           </p>
-          <span className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-600">
+          <span className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
             <ShieldCheck className="h-4 w-4" /> ផ្ទាំងនេះនឹងបិទស្វ័យប្រវត្តិ...
           </span>
         </div>
@@ -336,7 +336,7 @@ function StepBadge({ active, completed, stepNumber, label }: any) {
       <div
         className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors ${
           completed
-            ? "bg-emerald-500 text-white"
+            ? "bg-primary text-primary-foreground"
             : active
               ? "bg-slate-900 text-white ring-4 ring-slate-900/10"
               : "bg-slate-100 text-slate-400"

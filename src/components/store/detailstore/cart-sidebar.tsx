@@ -324,9 +324,9 @@ function CartSidebarLine({
             onClick={increase}
             disabled={busy || outOfStock || atStockCeiling}
             aria-label={t("increaseQuantity")}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-green-200 dark:border-green-900/40 text-[#00932A] transition-colors hover:bg-green-50 dark:hover:bg-green-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-primary/30 dark:border-primary/40 text-primary transition-colors hover:bg-primary/10 dark:hover:bg-primary/20 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
           >
-            <Plus className="h-3 w-3 text-[#00932A]" />
+            <Plus className="h-3 w-3 text-primary" />
           </button>
 
           <div className="ml-auto flex items-center gap-1.5">

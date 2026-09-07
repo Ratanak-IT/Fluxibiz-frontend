@@ -39,15 +39,15 @@ export function ProductPreview() {
                         <span className="text-[11px] uppercase tracking-wider">
                             TOTAL
                         </span>
-                        <span className="text-emerald-600">$17.25</span>
+                        <span className="text-primary font-bold">$17.25</span>
                     </div>
                     <p className="mt-1 text-[9px] font-medium text-zinc-400">
                         KHQR · paid ✓
                     </p>
                 </div>
             </div>
-            <div className="hero-float-slow absolute -top-6 -right-4 z-30 flex items-center gap-3 rounded-2xl border border-emerald-100 bg-white p-3.5 shadow-xl sm:top-20 sm:right-6 sm:px-4 sm:py-3">
-                <div className="flex size-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+            <div className="hero-float-slow absolute -top-6 -right-4 z-30 flex items-center gap-3 rounded-2xl border border-primary/20 bg-white p-3.5 shadow-xl sm:top-20 sm:right-6 sm:px-4 sm:py-3">
+                <div className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <Check className="size-4" />
                 </div>
                 <div>
@@ -58,7 +58,7 @@ export function ProductPreview() {
                         Order #2246 · Counter
                     </p>
                 </div>
-                <span className="ml-2 text-xs font-bold text-emerald-600 sm:text-sm">
+                <span className="ml-2 text-xs font-bold text-primary sm:text-sm">
                     +$11.00
                 </span>
             </div>

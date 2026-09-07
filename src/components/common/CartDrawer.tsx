@@ -132,7 +132,7 @@ export default function CartDrawer({
 
             <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
                 <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">
-                    <SheetTitle className="flex items-center gap-2 text-xl font-bold text-green-600">
+                    <SheetTitle className="flex items-center gap-2 text-xl font-bold text-primary">
                         {t("title")}
                         {cart && cart.storeCount > 0 && (
                             <span className="text-sm font-normal text-neutral-500 dark:text-muted-foreground">
@@ -230,7 +230,7 @@ function StoreSection({
 
                     {store.location && (
                         <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-muted-foreground">
-                            <MapPin className="h-3 w-3 shrink-0 text-green-600 dark:text-primary" />
+                            <MapPin className="h-3 w-3 shrink-0 text-primary" />
                             <span className="truncate">{store.location}</span>
                         </div>
                     )}
@@ -495,12 +495,12 @@ function LineRow({
                 </div>
 
                 {freeUnits > 0 ? (
-                    <p className="mt-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                    <p className="mt-0.5 text-[11px] font-bold text-primary">
                         {freeUnits} FREE
                     </p>
                 ) : line.discountAmount && line.discountAmount > 0 ? (
-                    <p className="mt-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                        -{formatMoney(line.discountAmount, currency, exchangeRate)}
+                    <p className="mt-0.5 text-[11px] font-semibold text-primary">
+                        -{formatMoney(line.discountAmount, currency)}
                     </p>
                 ) : null}
 
@@ -526,10 +526,10 @@ function LineRow({
                             size="icon"
                             onClick={handleIncrease}
                             disabled={busy || outOfStock || atStockCeiling}
-                            className="h-6 w-6 border border-green-200 text-[#00932A] hover:bg-green-50 dark:border-green-900/50 dark:bg-transparent dark:text-[#00932A] dark:hover:bg-green-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
+                            className="h-6 w-6 border border-primary/30 text-primary hover:bg-primary/10 dark:border-primary/40 dark:bg-transparent dark:text-primary dark:hover:bg-primary/20 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
                             aria-label="Increase quantity"
                         >
-                            <Plus className="h-3.5 w-3.5 text-[#00932A]" />
+                            <Plus className="h-3.5 w-3.5 text-primary" />
                         </Button>
                     </div>
 

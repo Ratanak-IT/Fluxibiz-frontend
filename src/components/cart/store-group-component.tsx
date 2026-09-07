@@ -27,7 +27,7 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
             <div className="mt-6 flex flex-col items-start gap-8 pt-2 lg:flex-row">
                 <div className="flex w-full flex-1 flex-col gap-4">
                     <div className="flex items-center justify-between px-1">
-                        <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 dark:bg-primary/15 dark:text-primary">
+                        <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary dark:bg-primary/15 dark:text-primary">
                             {store.itemCount} {store.itemCount === 1 ? "item" : "items"}
                         </span>
 

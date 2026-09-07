@@ -617,11 +617,11 @@ export function ProductStorefrontUI({
                                             )
                                         }
                                         className={cn(
-                                            "text-[#00932A] hover:text-[#007d24] transition-colors cursor-pointer",
+                                            "text-primary hover:text-primary/90 transition-colors cursor-pointer",
                                             (outOfStock || atStockCeiling) && "opacity-40 pointer-events-auto cursor-not-allowed",
                                         )}
                                     >
-                                        <Plus className="size-4 text-[#00932A]" />
+                                        <Plus className="size-4 text-primary" />
                                     </button>
                                 </div>
 
