@@ -73,13 +73,8 @@ export interface PublicStoreDetailResponse {
     storefrontUrl: string | null;
     baseCurrency: string;
     displayCurrency: string;
-<<<<<<< HEAD
     displayExchangeRate?: number | null;
     exchangeRate?: number | null;
-=======
-    /** Units of displayCurrency per one unit of baseCurrency — null when the shop shows only one currency. */
-    displayExchangeRate?: number | null;
->>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
     category: BusinessSubCategory | null;
     socialLinks: Record<string, string>[] | null;
     facebookPageName?: string | null;

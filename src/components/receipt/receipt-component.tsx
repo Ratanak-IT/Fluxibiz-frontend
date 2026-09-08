@@ -319,7 +319,6 @@ export default function ReceiptComponent({
                           {item.freeQuantity} FREE
                         </p>
                       ) : lineDiscount > 0 ? (
-<<<<<<< HEAD
                         <p className="text-xs font-semibold">
                           {price?.discountLabel && (
                             <span className="text-primary">{price.discountLabel} · </span>
@@ -327,11 +326,6 @@ export default function ReceiptComponent({
                           <span className="text-red-500 dark:text-red-400 font-semibold">
                             -{formatMoney(lineDiscount, order.currency)}
                           </span>
-=======
-                        <p className="text-xs font-semibold text-primary">
-                          {price?.discountLabel ? `${price.discountLabel} · ` : ""}
-                          -{formatMoney(lineDiscount, order.currency)}
->>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
                         </p>
                       ) : null}
                     </div>

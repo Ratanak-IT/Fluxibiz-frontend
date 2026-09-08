@@ -179,21 +179,6 @@ export default function PaymentHistoryComponent() {
               {t("cancelled")} ({cancelledCount})
             </button>
           </div>
-<<<<<<< HEAD
-=======
-
-          {/* Search Box */}
-          <div className="relative w-full md:flex-1 md:max-w-md lg:max-w-lg">
-            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <Input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t("searchPlaceholder")}
-              className="h-10 w-full rounded-full border border-gray-200 bg-white pl-9 text-xs transition-colors focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/30 dark:border-neutral-800 dark:bg-card"
-            />
-          </div>
->>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
         </div>
         {/* Orders List */}
         {filteredOrders.length === 0 ? (

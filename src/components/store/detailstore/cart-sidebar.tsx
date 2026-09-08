@@ -42,16 +42,12 @@ interface CartSidebarProps {
   storeExchangeRate?: number | null;
 }
 
-<<<<<<< HEAD
 export default function CartSidebar({
   slug,
   businessId,
   storeCurrency,
   storeExchangeRate,
 }: CartSidebarProps) {
-=======
-export default function CartSidebar({ slug, businessId, storeCurrency, storeExchangeRate }: CartSidebarProps) {
->>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
   const t = useTranslations("Cart");
   const { isMiniApp, queryParam } = useMiniAppMode();
   const { isAuthenticated, status: authStatus, login } = useAuth();
@@ -130,16 +126,12 @@ export default function CartSidebar({ slug, businessId, storeCurrency, storeExch
               }`}
           >
             {lines.map((line) => (
-<<<<<<< HEAD
               <CartSidebarLine
                 key={line.cartItemId}
                 line={line}
                 currency={currency}
                 exchangeRate={storeExchangeRate ?? undefined}
               />
-=======
-              <CartSidebarLine key={line.cartItemId} line={line} currency={currency} exchangeRate={exchangeRate} />
->>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
             ))}
           </div>
         )}
@@ -153,19 +145,11 @@ export default function CartSidebar({ slug, businessId, storeCurrency, storeExch
             <div className="flex items-baseline gap-1.5">
               {discount > 0 && (
                 <span className="text-xs text-neutral-400 line-through">
-<<<<<<< HEAD
                   {formatMoney(originalSubtotal, currency, storeExchangeRate ?? undefined)}
                 </span>
               )}
               <span className="font-semibold text-neutral-900 dark:text-neutral-50">
                 {formatMoney(effectiveSubtotal, currency, storeExchangeRate ?? undefined)}
-=======
-                  {formatMoney(originalSubtotal, currency, exchangeRate)}
-                </span>
-              )}
-              <span className="font-semibold text-neutral-900 dark:text-neutral-50">
-                {formatMoney(effectiveSubtotal, currency, exchangeRate)}
->>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
               </span>
             </div>
           </div>
@@ -217,11 +201,7 @@ function CartSidebarLine({
 }: {
   line: CartLine;
   currency: string;
-<<<<<<< HEAD
   exchangeRate?: number;
-=======
-  exchangeRate?: number | null;
->>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
 }) {
   const t = useTranslations("Cart");
   const rootT = useTranslations();
