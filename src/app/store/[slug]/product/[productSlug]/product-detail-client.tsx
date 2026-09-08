@@ -99,6 +99,7 @@ export default function DetailProductPage({
     .slice(0, 6);
 
   const currency = storeDetail?.displayCurrency || storeDetail?.baseCurrency;
+  const exchangeRate = storeDetail?.displayExchangeRate;
   const t = useTranslations("Store.common");
 
   // The online store's hours, as the checkout enforces them. A shopper who
@@ -113,6 +114,7 @@ export default function DetailProductPage({
         storeSlug={storeSlug}
         storeName={storeDetail?.name}
         currency={currency}
+        exchangeRate={exchangeRate}
         isLoading={isLoadingItems}
         isStoreOpen={storeOpen}
         onlineHours={storeDetail?.onlineHours}

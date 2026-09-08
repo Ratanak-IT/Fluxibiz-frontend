@@ -53,6 +53,7 @@ export default function ProductQuickViewModal({
   });
   const storeOpen = isStorefrontOpen(storeDetail);
   const todayHours = useTodayHoursLabel(storeDetail?.onlineHours);
+  const exchangeRate = storeDetail?.displayExchangeRate ?? item?.exchangeRate;
 
   const [addToCartMutation, { isLoading: isAdding }] = useAddToCartMutation();
   const { isAuthenticated, status: authStatus, login } = useAuth();
@@ -225,6 +226,7 @@ export default function ProductQuickViewModal({
           <ProductStorefrontUI
             item={product}
             currency={currency}
+            exchangeRate={exchangeRate}
             onClose={() => onOpenChange(false)}
             onAddToCart={handleAddToCart}
             isAddingToCart={isAdding}

@@ -55,13 +55,13 @@ export default function TmaHeader({ store }: TmaHeaderProps) {
           )}
           {store.phoneNumber && (
             <div className="flex items-center gap-1">
-              <Phone className="w-3.5 h-3.5 text-green-400" />
+              <Phone className="w-3.5 h-3.5 text-primary" />
               <span>{store.phoneNumber}</span>
             </div>
           )}
           <div className="flex items-center gap-1">
             <Clock className="w-3.5 h-3.5 text-amber-400" />
-            <span className={isClosed ? "text-red-400" : "text-emerald-400 font-semibold"}>
+            <span className={isClosed ? "text-red-400" : "text-primary font-semibold"}>
               {isClosed ? "Closed" : "Open Now"}
             </span>
           </div>

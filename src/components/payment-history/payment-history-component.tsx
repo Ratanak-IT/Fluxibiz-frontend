@@ -83,7 +83,7 @@ export default function PaymentHistoryComponent() {
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="flex items-center gap-2.5 text-2xl font-black text-primary sm:text-3xl  dark:text-primary">
-              <Receipt className="h-7 w-7 text-[#00932A]" />
+              <Receipt className="h-7 w-7 text-primary" />
               {t("title")}
             </h1>
             <p className="mt-1 text-sm text-neutral-500 dark:text-muted-foreground">
@@ -97,7 +97,7 @@ export default function PaymentHistoryComponent() {
           {isTma ? (
             tmaStoreHref && (
               <Link href={tmaStoreHref}>
-                <Button className="gap-2 rounded-full bg-[#00932A] font-bold text-white shadow-sm hover:bg-[#007d24]">
+                <Button className="gap-2 rounded-full bg-primary font-bold text-primary-foreground shadow-sm hover:bg-primary/90">
                   <ShoppingBag className="h-4 w-4" />
                   {t("backToStore")}
                 </Button>
@@ -105,7 +105,7 @@ export default function PaymentHistoryComponent() {
             )
           ) : (
             <Link href="/store">
-              <Button className="gap-2 rounded-full bg-[#00932A] font-bold text-white shadow-sm hover:bg-[#007d24]">
+              <Button className="gap-2 rounded-full bg-primary font-bold text-primary-foreground shadow-sm hover:bg-primary/90">
                 <ShoppingBag className="h-4 w-4" />
                 {t("exploreStores")}
               </Button>
@@ -179,11 +179,26 @@ export default function PaymentHistoryComponent() {
               {t("cancelled")} ({cancelledCount})
             </button>
           </div>
+<<<<<<< HEAD
+=======
+
+          {/* Search Box */}
+          <div className="relative w-full md:flex-1 md:max-w-md lg:max-w-lg">
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <Input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t("searchPlaceholder")}
+              className="h-10 w-full rounded-full border border-gray-200 bg-white pl-9 text-xs transition-colors focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/30 dark:border-neutral-800 dark:bg-card"
+            />
+          </div>
+>>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
         </div>
         {/* Orders List */}
         {filteredOrders.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-neutral-200 bg-white p-12 text-center dark:border-border dark:bg-card">
-            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-[#00932A]/10 text-[#00932A]">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Receipt className="h-8 w-8" />
             </div>
 
@@ -200,14 +215,14 @@ export default function PaymentHistoryComponent() {
             {isTma ? (
               tmaStoreHref && (
                 <Link href={tmaStoreHref} className="mt-6 inline-block">
-                  <Button className="rounded-full bg-[#00932A] px-6 text-xs font-bold text-white hover:bg-[#007d24]">
+                  <Button className="rounded-full bg-primary px-6 text-xs font-bold text-primary-foreground hover:bg-primary/90">
                     {t("backToStore")}
                   </Button>
                 </Link>
               )
             ) : (
               <Link href="/store" className="mt-6 inline-block">
-                <Button className="rounded-full bg-[#00932A] px-6 text-xs font-bold text-white hover:bg-[#007d24]">
+                <Button className="rounded-full bg-primary px-6 text-xs font-bold text-primary-foreground hover:bg-primary/90">
                   {t("startShopping")}
                 </Button>
               </Link>

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, History, ShoppingCart, User } from "lucide-react";
 
+import { useGetCartQuery } from "@/features/cart/cartApi";
+import { useAuth } from "@/features/auth/useAuth";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 
 /**
@@ -13,6 +15,9 @@ import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 export function TmaBottomTabBar({ slug }: { slug: string }) {
   const pathname = usePathname();
   const { queryParam } = useMiniAppMode();
+  const { isAuthenticated } = useAuth();
+  const { data: cart } = useGetCartQuery(undefined, { skip: !isAuthenticated });
+  const totalItems = cart?.totalItems ?? 0;
 
   const homePath = `/store/${slug}`;
   const tabs = [
@@ -32,6 +37,7 @@ export function TmaBottomTabBar({ slug }: { slug: string }) {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 pb-[max(0.75rem,env(safe-area-inset-bottom))] px-3">
+<<<<<<< HEAD
       <div className="mx-auto max-w-md bg-white/90 dark:bg-slate-950/90 backdrop-blur-md rounded-3xl shadow-lg border border-gray-100 dark:border-white/10 px-4 py-2">
         <div className="grid grid-cols-4 gap-1">
           {tabs.map(({ key, label, icon: Icon, href, path }) => {
@@ -62,6 +68,33 @@ export function TmaBottomTabBar({ slug }: { slug: string }) {
             );
           })}
         </div>
+=======
+      <div className="mx-auto flex max-w-md items-center justify-between gap-1 rounded-2xl border border-border/60 bg-background/95 p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.12)] backdrop-blur-md dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+        {tabs.map(({ key, label, icon: Icon, href, path }) => {
+          const active = isActive(path);
+          return (
+            <Link
+              key={key}
+              href={href}
+              className={`flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl py-2 text-[11px] font-semibold transition-all ${
+                active
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground active:bg-muted"
+              }`}
+            >
+              <span className="relative inline-block">
+                <Icon className={`size-5 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                {key === "cart" && totalItems > 0 && (
+                  <span className="absolute -right-2 -top-1.5 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 py-0.5 text-[9px] font-semibold leading-none text-white">
+                    {totalItems > 99 ? "99+" : totalItems}
+                  </span>
+                )}
+              </span>
+              {label}
+            </Link>
+          );
+        })}
+>>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
       </div>
     </nav>
   );

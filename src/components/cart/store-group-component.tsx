@@ -18,6 +18,7 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
     const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
     const { data: storeItems = [] } = useGetPublicStoreItemsQuery(store.slug, { skip: !store.slug });
     const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
+    const exchangeRate = publicStore?.displayExchangeRate;
 
     return (
         <section aria-label={t("cartForStore", { storeName: store.name })}>
@@ -26,7 +27,7 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
             <div className="mt-6 flex flex-col items-start gap-8 pt-2 lg:flex-row">
                 <div className="flex w-full flex-1 flex-col gap-4">
                     <div className="flex items-center justify-between px-1">
-                        <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 dark:bg-primary/15 dark:text-primary">
+                        <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary dark:bg-primary/15 dark:text-primary">
                             {store.itemCount} {store.itemCount === 1 ? "item" : "items"}
                         </span>
 
@@ -48,13 +49,14 @@ export default function StoreGroupComponent({ store }: { store: StoreCart }) {
                             key={line.cartItemId}
                             line={line}
                             currency={effectiveCurrency}
+                            exchangeRate={exchangeRate}
                             storeSlug={store.slug}
                             storeItems={storeItems}
                         />
                     ))}
                 </div>
 
-                <OrderSummaryComponent store={store} currency={effectiveCurrency} storeItems={storeItems} />
+                <OrderSummaryComponent store={store} currency={effectiveCurrency} exchangeRate={exchangeRate} storeItems={storeItems} />
             </div>
         </section>
     );

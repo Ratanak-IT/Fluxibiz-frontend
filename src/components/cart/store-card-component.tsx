@@ -53,13 +53,13 @@ export function StoreCardComponent({ store }: { store: StoreCart }) {
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-muted-foreground dark:text-[#a7b4ad]">
                         {finalAddress && (
                             <div className="flex items-center gap-1.5 min-w-0">
-                                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-green-600 dark:text-[#21b94b]" />
+                                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-primary" />
                                 {finalGoogleMap ? (
                                     <a
                                         href={finalGoogleMap}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="hover:underline text-green-600 dark:text-green-500 truncate"
+                                        className="hover:underline text-primary truncate"
                                         title={finalAddress}
                                     >
                                         <span className="truncate">{finalAddress}</span>
@@ -72,7 +72,7 @@ export function StoreCardComponent({ store }: { store: StoreCart }) {
 
                         {store.hours && (
                             <div className="flex items-center gap-1.5">
-                                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-green-600 dark:text-[#21b94b]" />
+                                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-primary" />
                                 <span>{store.hours}</span>
                             </div>
                         )}

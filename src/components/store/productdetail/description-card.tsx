@@ -34,10 +34,10 @@ export default function DescriptionCard({
       <Card className={`grid grid-cols-1 overflow-hidden rounded-3xl border-border bg-card p-0 shadow-sm ${imageSrc ? "md:min-h-80 md:grid-cols-2" : "grid-cols-1"}`}>
         <div className="flex min-h-0 flex-col justify-center p-6 sm:p-8 lg:p-10">
           <CardHeader className="p-0">
-            <CardTitle className="text-xl font-bold text-[#00932A]">
+            <CardTitle className="text-xl font-bold text-primary">
               {title ?? t("productOverview")}
             </CardTitle>
-            <span className="mt-2 block h-1 w-10 rounded-full bg-[#00932A]/30" />
+            <span className="mt-2 block h-1 w-10 rounded-full bg-primary/30" />
             {description && (
               <CardDescription className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
                 {description}
@@ -49,7 +49,7 @@ export default function DescriptionCard({
             <CardContent className="mt-6 space-y-3 p-0">
               {features.map((feature) => (
                 <div key={feature} className="flex items-start gap-2.5">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#00932A]" />
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <span className="text-sm text-foreground sm:text-base">
                     {feature}
                   </span>

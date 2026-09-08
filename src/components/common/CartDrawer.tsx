@@ -132,7 +132,7 @@ export default function CartDrawer({
 
             <SheetContent side="right" className="flex w-full flex-col p-0 sm:w-[440px]">
                 <SheetHeader className="border-b border-neutral-200 px-5 py-4 dark:border-border">
-                    <SheetTitle className="flex items-center gap-2 text-xl font-bold text-green-600">
+                    <SheetTitle className="flex items-center gap-2 text-xl font-bold text-primary">
                         {t("title")}
                         {cart && cart.storeCount > 0 && (
                             <span className="text-sm font-normal text-neutral-500 dark:text-muted-foreground">
@@ -192,6 +192,7 @@ function StoreSection({
 
     const { data: publicStore } = useGetPublicStoreQuery(store.slug, { skip: !store.slug });
     const effectiveCurrency = publicStore?.displayCurrency || publicStore?.baseCurrency || store.currency || "USD";
+    const exchangeRate = publicStore?.displayExchangeRate;
 
     const effectiveSubtotal = useMemo(() => {
         return store.items.reduce((acc, line) => acc + extractCartLinePrices(line).subtotal, 0);
@@ -229,7 +230,7 @@ function StoreSection({
 
                     {store.location && (
                         <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-muted-foreground">
-                            <MapPin className="h-3 w-3 shrink-0 text-green-600 dark:text-primary" />
+                            <MapPin className="h-3 w-3 shrink-0 text-primary" />
                             <span className="truncate">{store.location}</span>
                         </div>
                     )}
@@ -259,6 +260,7 @@ function StoreSection({
                         key={line.cartItemId}
                         line={line}
                         currency={effectiveCurrency}
+                        exchangeRate={exchangeRate}
                         storeSlug={store.slug}
                         onNavigate={onNavigate}
                     />
@@ -281,11 +283,11 @@ function StoreSection({
                         <div className="flex items-baseline gap-1.5">
                             {storeDiscount > 0 && (
                                 <span className="text-xs text-neutral-400 line-through font-normal">
-                                    {formatMoney(storeOriginal, effectiveCurrency)}
+                                    {formatMoney(storeOriginal, effectiveCurrency, exchangeRate)}
                                 </span>
                             )}
                             <span className="text-base font-bold text-primary">
-                                {formatMoney(store.subtotal, effectiveCurrency)}
+                                {formatMoney(store.subtotal, effectiveCurrency, exchangeRate)}
                             </span>
                         </div>
                     </div>
@@ -355,11 +357,13 @@ function StoreCheckoutButton({
 function LineRow({
     line,
     currency,
+    exchangeRate,
     storeSlug,
     onNavigate,
 }: {
     line: CartLine;
     currency: string;
+    exchangeRate?: number | null;
     storeSlug?: string;
     onNavigate?: () => void;
 }) {
@@ -522,10 +526,10 @@ function LineRow({
                             size="icon"
                             onClick={handleIncrease}
                             disabled={busy || outOfStock || atStockCeiling}
-                            className="h-6 w-6 border border-green-200 text-[#00932A] hover:bg-green-50 dark:border-green-900/50 dark:bg-transparent dark:text-[#00932A] dark:hover:bg-green-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
+                            className="h-6 w-6 border border-primary/30 text-primary hover:bg-primary/10 dark:border-primary/40 dark:bg-transparent dark:text-primary dark:hover:bg-primary/20 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
                             aria-label="Increase quantity"
                         >
-                            <Plus className="h-3.5 w-3.5 text-[#00932A]" />
+                            <Plus className="h-3.5 w-3.5 text-primary" />
                         </Button>
                     </div>
 
@@ -533,15 +537,15 @@ function LineRow({
                         {hasDiscount ? (
                             <>
                                 <span className="text-[11px] text-muted-foreground line-through font-normal">
-                                    {formatMoney(compareAtSubtotal, currency)}
+                                    {formatMoney(compareAtSubtotal, currency, exchangeRate)}
                                 </span>
                                 <span className="whitespace-nowrap text-sm font-bold text-primary">
-                                    {formatMoney(currentSubtotal, currency)}
+                                    {formatMoney(currentSubtotal, currency, exchangeRate)}
                                 </span>
                             </>
                         ) : (
                             <span className="whitespace-nowrap text-sm font-bold text-red-500 dark:text-destructive">
-                                {formatMoney(currentSubtotal, currency)}
+                                {formatMoney(currentSubtotal, currency, exchangeRate)}
                             </span>
                         )}
                     </div>

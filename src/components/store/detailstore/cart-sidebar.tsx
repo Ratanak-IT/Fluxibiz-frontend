@@ -42,12 +42,16 @@ interface CartSidebarProps {
   storeExchangeRate?: number | null;
 }
 
+<<<<<<< HEAD
 export default function CartSidebar({
   slug,
   businessId,
   storeCurrency,
   storeExchangeRate,
 }: CartSidebarProps) {
+=======
+export default function CartSidebar({ slug, businessId, storeCurrency, storeExchangeRate }: CartSidebarProps) {
+>>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
   const t = useTranslations("Cart");
   const { isMiniApp, queryParam } = useMiniAppMode();
   const { isAuthenticated, status: authStatus, login } = useAuth();
@@ -72,6 +76,7 @@ export default function CartSidebar({
   );
 
   const currency = storeCurrency || storeCart?.currency || "USD";
+  const exchangeRate = storeExchangeRate;
   const itemCount = storeCart?.itemCount ?? 0;
   const otherShops = (cart?.storeCount ?? 0) - (storeCart ? 1 : 0);
 
@@ -125,12 +130,16 @@ export default function CartSidebar({
               }`}
           >
             {lines.map((line) => (
+<<<<<<< HEAD
               <CartSidebarLine
                 key={line.cartItemId}
                 line={line}
                 currency={currency}
                 exchangeRate={storeExchangeRate ?? undefined}
               />
+=======
+              <CartSidebarLine key={line.cartItemId} line={line} currency={currency} exchangeRate={exchangeRate} />
+>>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
             ))}
           </div>
         )}
@@ -144,11 +153,19 @@ export default function CartSidebar({
             <div className="flex items-baseline gap-1.5">
               {discount > 0 && (
                 <span className="text-xs text-neutral-400 line-through">
+<<<<<<< HEAD
                   {formatMoney(originalSubtotal, currency, storeExchangeRate ?? undefined)}
                 </span>
               )}
               <span className="font-semibold text-neutral-900 dark:text-neutral-50">
                 {formatMoney(effectiveSubtotal, currency, storeExchangeRate ?? undefined)}
+=======
+                  {formatMoney(originalSubtotal, currency, exchangeRate)}
+                </span>
+              )}
+              <span className="font-semibold text-neutral-900 dark:text-neutral-50">
+                {formatMoney(effectiveSubtotal, currency, exchangeRate)}
+>>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
               </span>
             </div>
           </div>
@@ -200,7 +217,11 @@ function CartSidebarLine({
 }: {
   line: CartLine;
   currency: string;
+<<<<<<< HEAD
   exchangeRate?: number;
+=======
+  exchangeRate?: number | null;
+>>>>>>> c0d590f675c3cfed30c97e8cea447c768bb0feba
 }) {
   const t = useTranslations("Cart");
   const rootT = useTranslations();
@@ -333,9 +354,9 @@ function CartSidebarLine({
             onClick={increase}
             disabled={busy || outOfStock || atStockCeiling}
             aria-label={t("increaseQuantity")}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-green-200 dark:border-green-900/40 text-[#00932A] transition-colors hover:bg-green-50 dark:hover:bg-green-950/40 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-primary/30 dark:border-primary/40 text-primary transition-colors hover:bg-primary/10 dark:hover:bg-primary/20 disabled:opacity-40 disabled:pointer-events-auto disabled:cursor-not-allowed cursor-pointer"
           >
-            <Plus className="h-3 w-3 text-[#00932A]" />
+            <Plus className="h-3 w-3 text-primary" />
           </button>
 
           <div className="ml-auto flex items-center gap-1.5">

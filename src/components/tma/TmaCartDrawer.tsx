@@ -88,7 +88,7 @@ export default function TmaCartDrawer({
             <div className="flex-1 overflow-y-auto py-4 space-y-3">
               {isOrderPlaced ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
-                  <CheckCircle2 className="w-16 h-16 text-emerald-400 animate-bounce" />
+                  <CheckCircle2 className="w-16 h-16 text-primary animate-bounce" />
                   <h3 className="text-lg font-bold text-white">Order Placed Successfully!</h3>
                   <p className="text-xs text-slate-400 max-w-xs">
                     Thank you for ordering from {store.name || store.displayName}. Your order has been sent to the store.
@@ -98,7 +98,7 @@ export default function TmaCartDrawer({
                       setIsOrderPlaced(false);
                       setIsOpen(false);
                     }}
-                    className="mt-2 px-5 py-2 bg-emerald-600 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-600/30"
+                    className="mt-2 px-5 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-semibold shadow-lg shadow-primary/30"
                   >
                     Done
                   </button>
