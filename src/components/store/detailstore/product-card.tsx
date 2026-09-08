@@ -91,15 +91,15 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
                   /* A span where the options differ — "8,000 ៛ – 10,000 ៛" —
                      since there is no one price such an item is sold at. */
                   <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
-                    {formatPrice(Number(item.price), item.currency)}
+                    {formatPrice(Number(item.price), item.currency, item.exchangeRate ?? undefined)}
                     {item.priceMax
-                      ? ` – ${formatPrice(Number(item.priceMax), item.currency)}`
+                      ? ` – ${formatPrice(Number(item.priceMax), item.currency, item.exchangeRate ?? undefined)}`
                       : ""}
                   </p>
                 )}
                 {isPricedDown && (
                   <p className="text-[10px] sm:text-[11px] font-medium text-neutral-400 line-through shrink-0">
-                    {formatPrice(compareAt, item.currency)}
+                    {formatPrice(compareAt, item.currency, item.exchangeRate ?? undefined)}
                   </p>
                 )}
                 {isPricedDown && percentOff > 0 && (

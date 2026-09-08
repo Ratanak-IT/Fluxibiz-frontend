@@ -20,6 +20,7 @@ export interface MenuItemData {
   category: string;
   image: string;
   currency?: string;
+  exchangeRate?: number | null;
   isOutOfStock?: boolean;
   /** What the online store has left, or null when the shop tracks no stock for it. */
   remaining?: number | null;
