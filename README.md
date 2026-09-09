@@ -1,7 +1,7 @@
 # FluxiBiz
 
 <p align="center">
-  <img src="./public/image/footer/fluxibiz-logo-darkmode.png" alt="FluxiBiz Logo" width="200"/>
+  <img src="./public/image/footer/fluxibiz-lightmode.png" alt="FluxiBiz Logo" width="200"/>
 </p>
 
 <p align="center"><b>Run your whole business from one screen.</b></p>
