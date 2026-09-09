@@ -12,6 +12,7 @@ export interface AboutHeroSectionProps {
   description?: string;
   primaryCta?: string;
   secondaryCta?: string;
+  secondaryCtaHref?: string;
 
   className?: string;
 }
@@ -61,6 +62,7 @@ export default function HeroSection({
   description,
   primaryCta,
   secondaryCta,
+  secondaryCtaHref = "https://document.fluxibiz.store/",
   className = "",
 }: AboutHeroSectionProps) {
   const t = useTranslations("Feature.hero");
@@ -147,7 +149,9 @@ export default function HeroSection({
             </Link>
 
             <Link
-              href="/support#contact"
+              href={secondaryCtaHref}
+              target="_blank"
+              rel="noopener noreferrer"
               className="ease-hero border-line text-ink inline-flex cursor-pointer items-center gap-[0.55rem] rounded-full border bg-surface px-6 py-[0.85rem] text-[0.95rem] font-semibold transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_22px_-10px_var(--ah-shadow-md)] dark:border-white/15 dark:bg-white/10 dark:text-white"
             >
               {displayedSecondaryCta}
