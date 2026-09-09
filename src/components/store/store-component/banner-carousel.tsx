@@ -118,7 +118,6 @@ const BannerCarousel = () => {
 
   const go = React.useCallback((dir: 1 | -1) => setActive(i => (i + dir + total) % total), [total])
 
-  // Keyboard navigation — unchanged
   React.useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') go(-1)
@@ -130,7 +129,6 @@ const BannerCarousel = () => {
     return () => window.removeEventListener('keydown', handler)
   }, [go])
 
-  // Auto-play — unchanged
   React.useEffect(() => {
     if (isPaused) return
 
@@ -139,7 +137,6 @@ const BannerCarousel = () => {
     return () => clearInterval(id)
   }, [go, isPaused])
 
-  // Same formulas as your original arcStyle/cardHeight, closures over responsive dims
   const arcStyle = (offset: number) => {
     const abs = Math.abs(offset)
 
@@ -168,7 +165,7 @@ const BannerCarousel = () => {
     >
       <div
         className='relative w-screen overflow-hidden sm:mx-auto sm:max-w-[760px] lg:max-w-[1450px]'
-        style={{ height: CARD_HEIGHT + 24 }} // derived from CARD_HEIGHT — no more mismatched empty space
+        style={{ height: CARD_HEIGHT + 24 }}
       >
         {Images.map((slide, i) => {
           const raw = (i - active + total) % total
@@ -191,9 +188,6 @@ const BannerCarousel = () => {
                 animate={{ height: cardHeight(offset) }}
                 transition={SPRING}
               >
-                {/* Banner — the active (offset 0) slide is the LCP candidate on
-                    this page, so it alone gets priority + eager loading;
-                    every other slide stays lazy. */}
                 <Image
                   src={slide.image}
                   alt={slide.title || 'FluxiBiz storefront banner'}

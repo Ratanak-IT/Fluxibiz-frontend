@@ -8,10 +8,6 @@ import { useGetCartQuery } from "@/features/cart/cartApi";
 import { useAuth } from "@/features/auth/useAuth";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 
-/**
- * Fixed bottom tab bar for Mini App (Messenger & Telegram).
- * Styled to match the store bottom nav with smooth hover transitions to secondary color.
- */
 export function TmaBottomTabBar({ slug }: { slug: string }) {
   const pathname = usePathname();
   const { queryParam } = useMiniAppMode();

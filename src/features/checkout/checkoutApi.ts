@@ -28,11 +28,6 @@ export const checkoutApi = createApi({
     tagTypes: ["Checkout", "OrderHistory", "CustomerSelfProfile"],
     endpoints: (builder) => ({
 
-        // Checked right before "Pay"/"Confirm order" on every channel (web,
-        // Telegram, Messenger) — a phone number is the one thing every
-        // channel's checkout requires the shop to be able to reach the
-        // customer, and it lives on GlobalCustomer rather than being
-        // guaranteed by any one channel's own sign-in flow.
         getMyCustomerProfile: builder.query<CustomerSelfProfile, void>({
             query: () => "/me/profile",
             providesTags: ["CustomerSelfProfile"],

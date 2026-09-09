@@ -53,8 +53,6 @@ export const makeStore = () => {
       )
   })
 
-  // Lets an API opt into re-reading when the tab is looked at again or the
-  // connection comes back. Without this the flags on `storeCateApi` are inert.
   setupListeners(store.dispatch)
 
   return store

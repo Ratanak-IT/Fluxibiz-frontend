@@ -2,14 +2,6 @@ import { backendBaseUrl } from "@/lib/seo";
 import type { PublicStoreDetailResponse, StorefrontItemResponse } from "@/lib/type/storeType";
 import DetailProductPage from "./product-detail-client";
 
-/**
- * Fetches the shop's menu on the server so a shopper arriving from a shared link
- * sees the product rather than a skeleton.
- *
- * The menu is what identifies the product — there is no endpoint for one item —
- * so the same request already serves the page's metadata, and Next reuses it
- * rather than asking twice.
- */
 async function fetchItems(storeSlug: string): Promise<StorefrontItemResponse[]> {
   try {
     const res = await fetch(`${backendBaseUrl}/api/v1/public/stores/${storeSlug}/items`, {

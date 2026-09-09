@@ -16,19 +16,7 @@ const plainBaseQuery = fetchBaseQuery({
   prepareHeaders: applyTmaAuthHeader,
 });
 
-/**
- * Drop-in replacement for `fetchBaseQuery({ baseUrl: "/api/v1", prepareHeaders:
- * applyTmaAuthHeader })` used by every RTK Query slice a Messenger Mini App
- * visitor's bearer token flows through (cart, checkout, user profile).
- *
- * A device session's access token has no refresh flow — see
- * `reissueMessengerDeviceToken` — so without this, a Messenger visitor whose
- * token quietly expired (Mini App left open, or backgrounded, for a while)
- * would see the request 401 and — depending on the call site — either look
- * silently broken or get bounced to a Keycloak login page they have no
- * credentials to get past. This retries once, transparently, after silently
- * re-registering the same device.
- */
+
 export const tmaBaseQuery: BaseQueryFn<
   string | FetchArgs,
   unknown,

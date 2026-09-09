@@ -76,8 +76,6 @@ export default function Footer() {
   const isTma = useIsTma();
   const isMessenger = useIsMessenger();
 
-  // Same reasoning as Navbar: the Mini App has its own bottom tab bar and
-  // no cross-site navigation, so the site-wide footer has no place here.
   if (isTma || isMessenger) {
     return null;
   }

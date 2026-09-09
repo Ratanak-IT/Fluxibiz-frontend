@@ -14,10 +14,6 @@ import {
     StorefrontItemResponse,
 } from "@/lib/type/storeType";
 
-/**
- * The /public/* endpoints are unauthenticated, so unlike cartApi/checkoutApi
- * this slice sends no Authorization header.
- */
 const baseQuery = fetchBaseQuery({
     baseUrl: "/api/v1",
 });
@@ -57,11 +53,6 @@ async function enrichStoresWithDetails(
     if (!stores || stores.length === 0) return [];
     return Promise.all(
         stores.map(async (store) => {
-            // `address` is what the card actually shows; `cityOrProvince` is
-            // deprecated and null for every business created since location
-            // moved to the map picker, so requiring both here meant this
-            // fired for every store, every time — an extra full detail fetch
-            // per card, on every listing render.
             if (store.address || !store.slug) {
                 return store;
             }
@@ -83,11 +74,6 @@ async function enrichStoresWithDetails(
     );
 }
 
-/**
- * The API takes a single `categoryId`. To honour a multi-select filter we fan
- * out one request per selected category and merge, de-duplicating by store id.
- * Page metadata is recomputed since per-category pages can't be summed.
- */
 async function fetchMergedStores(
     query: PublicStoreQuery,
     fetchWithBQ: (
@@ -142,12 +128,6 @@ export const storeCateApi = createApi({
     reducerPath: "storeCateApi",
     baseQuery,
     keepUnusedDataFor: 300,
-    // A storefront is a live shop. The prices, the opening hours and what is
-    // even listed are all changed from the back office while shoppers are on
-    // the page, and a read cached for the session showed them yesterday's menu
-    // until they reloaded. So the store is read again when a page is opened,
-    // when the tab is looked at again, and when the connection comes back.
-    // Nothing here seeds a form, so nobody loses typing to a refetch.
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
     refetchOnReconnect: true,

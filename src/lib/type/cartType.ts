@@ -1,11 +1,9 @@
-/** One option chosen on a line — "Sugar Level" = "50", shown as "50%". */
 export interface CartSelection {
     attributeName: string;
     value: string;
     label: string;
 }
 
-/** One extra riding on a line, at the price it was ticked at. */
 export interface CartLineAddOn {
     addOnId: string | null;
     name: string;
@@ -19,21 +17,13 @@ export interface CartLine {
     name: string;
     description: string | null;
     imageUrl: string | null;
-    /** Display chips: the variant name, then each chosen option. */
     badges: string[];
-    /** The same choices, structured, for anything that needs them apart. */
     selections?: CartSelection[];
-    /** The extras ticked on this line. Already in the badges as "+ Name". */
     addOns?: CartLineAddOn[];
     quantity: number;
-    /** The thing itself, without its extras. */
     unitPrice: number;
     compareAtPrice?: number | null;
-    /**
-     * What one of this line is billed at — the price above plus every extra
-     * on it. This is what `subtotal` is a multiple of, so a per-unit price
-     * shown to a shopper should be this one.
-     */
+
     unitPriceWithAddOns?: number;
     subtotal: number;
     isOutOfStock?: boolean | null;
@@ -43,39 +33,23 @@ export interface CartLine {
     status?: string | null;
     stock?: number | null;
     availableQuantity?: number | null;
-    /** Total knocked off this whole line by an active promotion — a line total, not a per-unit amount. */
     discountAmount?: number | null;
-    /** Human label for the promotion applied to this line, e.g. "Buy 2 Get 1 Free" or "10% OFF". */
     discountLabel?: string | null;
-    /** Units within this line's quantity given free by a Buy X Get Y promotion. */
     freeQuantity?: number | null;
 }
 
-/** Units on this line given away free by a Buy X Get Y promotion, if the backend reported any. */
 export function freeUnitsOnLine(line: { freeQuantity?: number | null }): number {
     return line.freeQuantity && line.freeQuantity > 0 ? line.freeQuantity : 0;
 }
 
-/**
- * What one of a line is actually billed at.
- *
- * The extras ticked on it are part of what the checkout will charge, so every
- * total on screen has to be a multiple of this rather than of the bare item
- * price. Falls back for a line sent before the field existed.
- */
+
 export function billedUnitPrice(
     line: { unitPrice: number; unitPriceWithAddOns?: number | null },
 ): number {
     return line.unitPriceWithAddOns ?? line.unitPrice;
 }
 
-/**
- * Reads a line's price/discount straight off what the backend already
- * computed (`unitPriceWithAddOns`, `subtotal`, `discountAmount`) instead of
- * guessing a discount from price differences — the fields are always
- * populated (compareAtPrice/discountAmount null when nothing applies), so
- * there is nothing left to infer.
- */
+
 export function extractCartLinePrices(
     line: CartLine | any,
     _catalogItem?: { price?: number | string | null; compareAtPrice?: number | string | null } | null
@@ -204,27 +178,10 @@ export interface StoreCart {
     items: CartLine[];
 }
 
-/**
- * A store cart's totals, discount-aware.
- *
- * `subtotal` off the wire is already NET of every discount — each line's
- * `subtotal` has its own `discountAmount` taken off, and an order-wide
- * promotion (a storewide Buy X Get Y, say) is deducted on top without ever
- * showing up on a line. Subtracting the line discounts from it again charges
- * every promotion twice: a 10% discount reads as 20% off, and a 90% one wipes
- * the order out entirely.
- *
- * So `net` is the server's number, untouched, and the saving is recovered by
- * rebuilding the undiscounted total from each line's own billed unit price
- * and diffing — which also catches the order-wide portion that no line
- * reports.
- */
+
 export function cartTotals(store: { subtotal: number; items: CartLine[] }): {
-    /** What every line would have cost with no promotion applied. */
     original: number;
-    /** Total knocked off — line-level and order-wide alike. */
     discount: number;
-    /** What is actually owed before tax. */
     net: number;
 } {
     const original = store.items.reduce(
@@ -236,7 +193,6 @@ export function cartTotals(store: { subtotal: number; items: CartLine[] }): {
     return { original, discount: Math.max(0, original - net), net };
 }
 
-/** What one line should show for its price, after a storewide discount is accounted for. */
 export interface DisplayLinePrice {
     subtotal: number;
     compareAtSubtotal: number;
@@ -244,24 +200,14 @@ export interface DisplayLinePrice {
     discountLabel: string | null;
 }
 
-/**
- * Per-line prices for display, spreading a storewide discount across lines
- * pro rata when the server hasn't attributed any of it to a line itself —
- * older backend responses only ever subtract it from the store total, which
- * leaves every line looking like full price even though the shopper is
- * genuinely paying less. This is a display-only estimate: `store.subtotal`
- * (via {@link cartTotals}) is always what actually gets charged, regardless
- * of how it's split across lines here.
- */
+
 export function displayLinePrices(store: { subtotal: number; items: CartLine[] }): Map<string, DisplayLinePrice> {
     const result = new Map<string, DisplayLinePrice>();
     const lineAttributed = store.items.reduce((acc, line) => acc + (line.discountAmount ?? 0), 0);
     const { original, discount } = cartTotals(store);
 
     if (lineAttributed > 0 || discount <= 0) {
-        // Either every line already carries its own share (a fixed backend,
-        // or a line/category-scoped discount, which was always attributed),
-        // or there is nothing to spread — read straight off each line.
+       
         store.items.forEach((line) => {
             const prices = extractCartLinePrices(line);
             result.set(line.cartItemId, {
@@ -311,51 +257,25 @@ export interface AddToCartPayload {
     businessId: string;
     itemId: string;
     variantId?: string;
-    /**
-     * The unit being bought — a six-pack, a case. Absent means one of the
-     * item's base unit. A pack is priced in its own right, so the server
-     * prices the line from this rather than multiplying.
-     */
+
     unitId?: string;
-    /**
-     * Options picked on the product page. Sent by attribute name and stored
-     * value — the value is the identity, the label is only how it was shown.
-     */
+  
     selections?: { attributeName: string; value: string }[];
-    /**
-     * The extras ticked on the product page. The server prices them from the
-     * library and refuses any the item does not offer, so only ids travel.
-     */
+
     addOnIds?: string[];
     quantity: number;
     itemDetails?: {
         name: string;
-        /** All-in, extras included: it stands in for the billed price. */
         price: number;
         compareAtPrice?: number | null;
         imageUrl?: string | null;
         storeName?: string;
         currency?: string;
-        /** The extras ticked, named, so the placeholder line reads right. */
         addOns?: CartLineAddOn[];
     };
 }
 
-/**
- * `amount` is always in the order/store's own base currency. When that base
- * currency itself is KHR, it is already the right number — nothing to
- * convert. When the shop's *display* currency is KHR but the base currency
- * is something else (usually USD), the backend hands over the rate it was
- * shown at (`CurrencyDisplayHelper`/`publicStore.displayExchangeRate`/
- * `order.displayExchangeRate`) and this must multiply by exactly that, never
- * guess from how big the number looks.
- *
- * So `exchangeRate` is only ever supplied when a real conversion applies —
- * a caller that doesn't have one (base currency is already KHR, or the
- * screen hasn't been wired to fetch one) must leave it unset, which passes
- * `amount` through unmultiplied rather than mangling an already-correct
- * riel figure with a fallback rate.
- */
+
 export function formatMoney(amount: number, currency = "USD", exchangeRate?: number | null): string {
     const code = (currency || "").toUpperCase().trim();
     if (
@@ -376,13 +296,6 @@ export function formatMoney(amount: number, currency = "USD", exchangeRate?: num
     return `$${amount.toFixed(2)}`;
 }
 
-/**
- * Mirrors the backend's TaxCalculator exactly (see `TaxCalculator.java`), so
- * the cart and checkout never quote a number the real order wouldn't also
- * charge.
- *
- * @param netAmount the amount tax applies to — subtotal after discount, never before it
- */
 export function computeTax(
     netAmount: number,
     rate: number | null | undefined,

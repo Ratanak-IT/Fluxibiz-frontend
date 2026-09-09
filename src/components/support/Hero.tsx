@@ -271,8 +271,6 @@ export function HeroSection() {
       </div>
 
       <style>{`
-        /* Everything animates on transform + opacity only, so the compositor
-           handles it and nothing triggers layout or paint. */
         .hero-in, .badge-float, .ring-in, .arrow-in, .item-in, .sheen {
           will-change: transform, opacity;
         }

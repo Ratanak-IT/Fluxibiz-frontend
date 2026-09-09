@@ -169,14 +169,10 @@ export function todaysStoreHours(
     };
 }
 
-/** One day of the week, as the online store keeps it. */
 export interface StoreDayHours {
-    /** MON…SUN, for looking up a translated name. */
     key: string;
     closed: boolean;
-    /** "9:00 AM – 6:00 PM", one per window. Empty on a closed day. */
     windows: string[];
-    /** Whether this is the day the shopper is reading it on. */
     today: boolean;
 }
 
@@ -254,14 +250,6 @@ export function groupedWeeklyStoreHours(
     return runs;
 }
 
-/**
- * Whether the online store is taking orders right now.
- *
- * The server's `openNow` is the authority — it is the same schedule the
- * checkout enforces, read on the same clock — so a storefront that decided
- * for itself could offer an Add to Cart the basket then refuses. The local
- * reading below is only for a payload sent before the field existed.
- */
 export function isStorefrontOpen(
     store?: {
         isClosed?: boolean | null;
@@ -351,10 +339,8 @@ export interface PublicStorePage {
 export interface PublicStoreQuery {
     categoryIds?: string[];
     cityOrProvince?: string;
-    /** A province name as returned by /public/stores/provinces — geocoded text, not an id. */
     province?: string;
     district?: string;
-    /** Shopper's own position — when both are present, results sort nearest-first. */
     lat?: number;
     lng?: number;
     keyword?: string;
@@ -490,17 +476,7 @@ type ItemWithPictures = {
     variants?: { imageUrl?: string | null }[] | null;
 };
 
-/**
- * Every picture an item has, best first — the same gallery, in the same
- * order, as the back office builds in `itemImageUrls`.
- *
- * The item's own `imageUrl` comes first and is the only one that can be a
- * plain link: uploaded images live in `images` as keys into our asset store,
- * but an imported item has never been near it and its picture is a URL on the
- * shop's old system sitting in `imageUrl` alone. Leaving that out is why an
- * imported item showed a placeholder here while the back office showed the
- * real photograph.
- */
+
 export function itemImageUrls(item?: ItemWithPictures | null): string[] {
     const gallery: string[] = [];
 
@@ -534,11 +510,7 @@ export interface ItemVariant {
     title?: string;
     price: number;
     compareAtPrice?: number | null;
-    /**
-     * The option's own picture. It leads the gallery while the option is
-     * picked, so choosing a size changes what is on show — and on an item
-     * whose only pictures live on its options, it is the only picture there is.
-     */
+  
     imageUrl?: string | null;
 
     optionName?: string | null;
@@ -584,11 +556,9 @@ export interface DescriptionBlockResponse {
 export interface ItemUomConversion {
     id: string;
     unit: { id: string; name: string; symbol?: string | null } | null;
-    /** The option it is for — a case of Large is not a case of Small. */
     variantId: string | null;
     variantName: string | null;
     factor: number;
-    /** Null when the seller has not priced it as a pack yet, so it cannot be bought. */
     price: number | null;
 }
 
@@ -603,23 +573,14 @@ export interface StorefrontItemResponse {
     sku: string | null;
     code: string | null;
     description: string | null;
-    /**
-     * The item's own picture, as a plain link. An item imported from another
-     * system carries its photograph here and has no `images` at all.
-     */
+   
     imageUrl?: string | null;
     images: ItemImage[];
     barcode: string | null;
     price: number;
     compareAtPrice?: number | null;
     badge?: string | null;
-    /**
-     * The promotion currently on this item, named by the server — "Summer
-     * Sale", "Buy 2 Get 1", "10% OFF". Present whenever a discount applies to
-     * the item, including a storewide one whose amount is only ever worked
-     * out once per order and so never shows up in `price` here. Distinct from
-     * `badge`, which is a label the seller typed on the item itself.
-     */
+
     discountLabel?: string | null;
     itemType: string;
     attributes: ItemAttribute[] | null;

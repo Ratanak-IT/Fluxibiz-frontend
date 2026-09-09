@@ -136,10 +136,6 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
-        {/* Defines window.Telegram.WebApp — TelegramWebAppProvider reads
-            initData from it to verify a Mini App shopper. Without this,
-            the Mini App always looks "opened outside Telegram" even when
-            launched from the bot's own menu button. */}
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
@@ -185,11 +181,6 @@ export default async function RootLayout({
             </AuthProvider>
           </StoreProvider>
         </NextIntlClientProvider>
-        {/* Reports load timings from real shoppers on real networks. Everything
-            we tuned — the function region, the server-rendered pages, the API
-            cache — was measured on a developer's machine against a warm API;
-            this is the only way to see what a phone in Phnom Penh actually
-            waits for. */}
         <SpeedInsights />
       </body>
     </html>

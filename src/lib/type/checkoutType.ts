@@ -48,14 +48,10 @@ export interface StorefrontOrderItem {
     itemName: string;
     quantity: number;
     unitPrice: number;
-    /** Total knocked off this whole line by an active promotion — a line total, not a per-unit amount. */
     discountAmount?: number;
-    /** Name of the discount that produced discountAmount for this line, e.g. "Summer Sale 15%". */
     discountLabel?: string | null;
-    /** Units within this line's quantity given free by a Buy X Get Y promotion, when the backend reports it. */
     freeQuantity?: number;
     lineTotal: number;
-    /** Options this line was ordered with, already rendered — "Sugar Level: 50%". */
     selections?: string[];
 }
 
@@ -80,13 +76,10 @@ export interface StorefrontOrder {
     taxRate?: number;
     taxAmount?: number;
     taxInclusionType?: "INCLUSIVE" | "EXCLUSIVE" | string | null;
-    /** What to call it on the receipt — "VAT", "GST" — set by the business, defaults to "Tax". */
     taxLabel?: string | null;
     total: number;
     currency: string;
-    /** The second currency this order was shown in, frozen at checkout — null when the shop shows only one currency. */
     displayCurrency?: string | null;
-    /** Units of displayCurrency per one unit of currency. */
     displayExchangeRate?: number | null;
     itemCount: number;
     createdDate: string;
@@ -94,7 +87,6 @@ export interface StorefrontOrder {
     items: StorefrontOrderItem[];
 }
 
-/** What one receipt line should show for its price, after an order-wide discount is accounted for. */
 export interface DisplayOrderItemPrice {
     lineTotal: number;
     compareAtLineTotal: number;
@@ -102,21 +94,13 @@ export interface DisplayOrderItemPrice {
     discountLabel: string | null;
 }
 
-/**
- * Per-item prices for a receipt, spreading an order-wide discount across
- * items pro rata when the order was placed before the discount was
- * attributed to each item — an older order only ever carries the discount
- * on its own total, which leaves every item looking like full price even
- * though less was actually charged. Display-only: `order.total` is always
- * what was actually charged, regardless of how it's split across items here.
- */
+
 export function displayOrderItemPrices(order: StorefrontOrder): DisplayOrderItemPrice[] {
     const itemAttributed = order.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0);
     const orderDiscount = order.discountAmount ?? 0;
 
     if (itemAttributed > 0 || orderDiscount <= 0) {
-        // Either every item already carries its own share, or there is
-        // nothing to spread — read straight off each item.
+  
         return order.items.map((item) => ({
             lineTotal: item.lineTotal,
             compareAtLineTotal:

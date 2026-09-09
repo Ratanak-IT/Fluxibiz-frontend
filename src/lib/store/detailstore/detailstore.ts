@@ -3,18 +3,11 @@ import { remainingStock, type StorefrontItemResponse } from "@/lib/type/storeTyp
 export interface MenuItemData {
   id: string;
   name: string;
-  /**
-   * Undefined until the seller sets one — the card says so rather than "0".
-   *
-   * On an item sold in options this is the cheapest of them, and
-   * {@link MenuItemData.priceMax} is the dearest, so the card reads as a span.
-   */
+ 
   price?: string;
-  /** Set only when the options differ in price; the card shows "min – max". */
   priceMax?: string;
   compareAtPrice?: string;
   badge?: string | null;
-  /** The promotion on this item, named by the server. See StorefrontItemResponse.discountLabel. */
   discountLabel?: string | null;
   description: string;
   category: string;
@@ -22,7 +15,6 @@ export interface MenuItemData {
   currency?: string;
   exchangeRate?: number | null;
   isOutOfStock?: boolean;
-  /** What the online store has left, or null when the shop tracks no stock for it. */
   remaining?: number | null;
   status?: string;
   rawItem?: StorefrontItemResponse;
@@ -44,31 +36,13 @@ export function markItemOutOfStock(itemId?: string | null) {
   }
 }
 
-/**
- * The little any caller needs to answer the stock question — an id to check
- * against the session marker, and the figure itself. Stated structurally
- * because callers hold an item, a menu entry or a cart line, and all three
- * carry these two things.
- */
 type StockSource = {
   id?: string | null;
   availableQuantity?: number | null;
   rawItem?: { id?: string | null; availableQuantity?: number | null } | null;
 };
 
-/**
- * Whether this item can still be bought online.
- *
- * The API's `availableQuantity` is the answer whenever it gives one — it is
- * already capped to what the seller allocated the online store, so it is the
- * same figure the cart will enforce. This used to be guessed from a pile of
- * fields (`quantity`, `stock`, `inStock`, a badge reading "SOLD OUT") that the
- * public API never sent, which meant nothing was ever out of stock.
- *
- * The session marker is the fallback for items the shop tracks no stock for:
- * there is no figure to read, so a refused add-to-cart is the only signal
- * there will ever be.
- */
+
 export function isItemOutOfStock(item?: StockSource | null): boolean {
   if (!item) return false;
 

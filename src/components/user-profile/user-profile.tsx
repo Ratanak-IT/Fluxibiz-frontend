@@ -149,9 +149,6 @@ export default function UserProfile() {
     }
   }, [profile, user, reset]);
 
-  // Matches the backend's own multipart limit (application-*.yaml:
-  // spring.servlet.multipart.max-file-size) — checked here so an oversized
-  // photo never reaches "Save Changes" only to fail with a vague error.
   const MAX_PROFILE_IMAGE_BYTES = 10 * 1024 * 1024;
 
   // Handle local image file selection (Preview only, uploaded on Save Changes)

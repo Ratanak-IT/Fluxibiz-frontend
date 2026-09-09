@@ -1,13 +1,6 @@
 "use client";
 
-/**
- * Holds the access token issued by `/telegram-webapp/auth` for the current
- * Mini App session. Kept in both memory (fast, synchronous reads for
- * `prepareHeaders`) and `sessionStorage` (survives a reload within the same
- * Telegram WebView tab — Telegram re-opens the same page rather than a fresh
- * one on most re-entries, but a reload shouldn't force the customer to
- * re-authenticate visibly).
- */
+
 const STORAGE_KEY = "tma:session";
 
 export interface TmaSession {

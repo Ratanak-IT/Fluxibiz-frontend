@@ -16,13 +16,6 @@ import { useUpdateMyPhoneNumberMutation } from "@/features/checkout/checkoutApi"
 import { updateTmaSession } from "@/lib/tma/tmaSession";
 import { profileErrorMessage } from "@/lib/tma/profileErrorMessage";
 
-/**
- * Shown right before "Pay"/"Confirm order" — on any channel (web, Telegram,
- * Messenger) — whenever the customer has no phone number on file yet. Uses
- * `checkoutApi`'s mutation (auth via `applyTmaAuthHeader`: bearer token in a
- * Mini App webview, cookie session on the regular site) rather than the
- * Telegram-only `/me/profile` client, so the same popup works everywhere.
- */
 export function PhoneNumberPrompt({
   open,
   businessId,

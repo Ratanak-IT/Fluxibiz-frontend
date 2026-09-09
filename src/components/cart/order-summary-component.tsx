@@ -26,10 +26,6 @@ export default function OrderSummaryComponent({
     const { original: originalSubtotal, discount, net: netAmount } = cartTotals(store);
     const freeItemCount = store.items.reduce((acc, item) => acc + (item.freeQuantity ?? 0), 0);
 
-    // A discount the cart has but no line claims is a storewide one, worked
-    // out once against the order. Nothing on the item rows can show it — they
-    // each still cost what they cost — so this is the only place the shopper
-    // can be told which promotion took the money off.
     const lineAttributed = store.items.reduce((acc, item) => acc + (item.discountAmount ?? 0), 0);
     const isOrderWideDiscount = discount > 0 && lineAttributed === 0;
 

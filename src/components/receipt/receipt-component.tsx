@@ -20,9 +20,6 @@ import { useTranslations } from "next-intl";
 import ApiErrorFallback from "@/components/common/api-error-fallback";
 import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 
-/** A row/column label shown as "English / Khmer" on one line — this receipt is
- * always bilingual regardless of the site's language toggle, the way a printed
- * receipt in Cambodia normally is. */
 function BiLabel({ en, km, className }: { en: string; km: string; className?: string }) {
   return (
     <span className={className}>
@@ -89,9 +86,6 @@ export default function ReceiptComponent({
   const isPending = order.status === "PENDING" && !isCancelled;
   const isPaid = order.status === "PAID" && !isPayLater;
 
-  // No separate "amount collected" field from the backend — derive it from the
-  // same status/paymentMethod the app already has: a settled order is paid in
-  // full unless it was placed Pay Later, in which case nothing has been collected.
   const amountPaid = isPaid ? order.total : 0;
   const balanceDue = Math.max(order.total - amountPaid, 0);
   const isTaxInclusive = order.taxInclusionType === "INCLUSIVE";
@@ -162,8 +156,6 @@ export default function ReceiptComponent({
           Back to Payment History
         </Link>
 
-        {/* window.print() has nothing to do inside Telegram's in-app
-            WebView — there is no printer dialog to open there. */}
         {!isTma && (
           <div className="flex items-center gap-2">
             <Button

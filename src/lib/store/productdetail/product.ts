@@ -124,12 +124,7 @@ export async function addToCart(payload: {
   return { success: true };
 }
 
-/**
- * Mirrors `formatMoney` in `cartType.ts` — see its comment. `value` is
- * always in the item's own base currency; `exchangeRate` must be the real
- * `displayExchangeRate` from the store/order, or left unset when the base
- * currency is already KHR (nothing to convert), never guessed from size.
- */
+
 export function formatPrice(value: number, currency: string = "USD", exchangeRate?: number | null): string {
   const code = (currency || "").toUpperCase().trim();
   if (

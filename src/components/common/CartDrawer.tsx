@@ -268,9 +268,6 @@ function StoreSection({
             </div>
 
             {(() => {
-                // `store.subtotal` is already net of every discount, so the
-                // struck-through "before" price has to be rebuilt from the
-                // lines' own undiscounted prices — see cartTotals.
                 const { original: storeOriginal, discount: storeDiscount } =
                     cartTotals(store);
 

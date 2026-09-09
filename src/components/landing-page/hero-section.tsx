@@ -125,7 +125,6 @@ function FloatingDots({
     );
 }
 
-/** Sparkline for the "Today, at a glance" card. Static by design — it's a preview, not live data. */
 function Sparkline() {
     const t = useTranslations("LandingHero");
 

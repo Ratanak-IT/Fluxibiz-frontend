@@ -30,23 +30,13 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
   const storeSlug = (params?.slug as string) || "";
   const t = useTranslations("Store");
 
-  // A link that 404s leaves the browser rendering the alt text in the frame,
-  // which reads as a caption rather than a missing picture. Once it has
-  // failed there is nothing to show, so the frame falls back to the same
-  // placeholder an item with no picture at all gets.
   const [imageFailed, setImageFailed] = useState(false);
   const imageSrc = item.image?.trim() ? item.image : null;
   const imageUrl = imageFailed ? null : imageSrc;
   const outOfStock = isItemOutOfStock(item);
 
-  // A live promotion is the more urgent thing to say in the one badge slot
-  // the card has, so it wins over the label the seller typed on the item.
-  // It is the only signal for a storewide promotion, whose amount is worked
-  // out once per order and so never shows up in this item's own price.
   const cornerBadge = item.discountLabel?.trim() || item.badge;
 
-  // Shown only when the server actually priced the promotion into `price` —
-  // the strikethrough beside it is what it was worth before.
   const compareAt = Number(item.compareAtPrice);
   const priceNow = Number(item.price);
   const isPricedDown =
@@ -79,17 +69,12 @@ export function MenuProductCard({ item }: MenuProductCardProps) {
               <CardTitle className="truncate text-[16px] @xs:text-[17px] font-bold text-text dark:text-text">
                 {item.name}
               </CardTitle>
-              {/* Current price, what it used to cost, and the percent off all
-                  read as one line — the eye takes in the whole deal at once
-                  instead of hunting a strikethrough on the row below. */}
               <div className="flex flex-wrap items-center gap-1.5">
                 {item.price === undefined ? (
                   <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                     {t("detail.priceNotSet")}
                   </p>
                 ) : (
-                  /* A span where the options differ — "8,000 ៛ – 10,000 ៛" —
-                     since there is no one price such an item is sold at. */
                   <p className="text-sm font-bold text-red-500 sm:text-base dark:text-red-400">
                     {formatPrice(Number(item.price), item.currency, item.exchangeRate ?? undefined)}
                     {item.priceMax

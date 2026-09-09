@@ -15,25 +15,6 @@ import {
 } from "@/lib/type/storeType";
 import { cn } from "@/lib/utils";
 
-/**
- * When the online store takes orders — today at a glance, the week behind a
- * click.
- *
- * Today answers the only question most shoppers have; the week answers the
- * one a shopper who arrives after closing has, which is when to come back.
- * Folded away rather than listed out, because seven rows is a lot of card for
- * a shop that is open right now.
- *
- * These are the Online Store's hours, not the shopfront's: they are what the
- * checkout enforces, so they are the only ones worth printing here.
- */
-/**
- * Today's hours as one readable line — "Open today 9:00 AM – 6:00 PM".
- *
- * Composed here rather than taken from the server's `hoursToday`, which is an
- * English sentence in 24-hour time. Null when the shop keeps no web hours:
- * there is nothing to say about a store that never closes.
- */
 export function useTodayHoursLabel(
     onlineHours?: ChannelSchedule | null,
 ): string | null {
@@ -82,8 +63,6 @@ export default function StoreHours({
             </span>
         );
 
-    // Nothing to unfold on a shop that keeps no hours: the summary already
-    // says everything there is to say.
     if (week.length === 0) {
         return (
             <div className={cn("flex flex-wrap items-center gap-2", className)}>
@@ -96,9 +75,6 @@ export default function StoreHours({
         );
     }
 
-    // Floated rather than unfolded in place: the card's bottom row is a line
-    // of facts, and pushing a table into it shoves the rest of the card down
-    // every time someone glances at the week.
     return (
         <div className={cn("flex flex-wrap items-center gap-2", className)}>
             <div className="flex items-center gap-1.5 text-emerald-600 dark:text-[#4ade80] font-medium">

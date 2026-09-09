@@ -32,11 +32,7 @@ export default async function StoreDetailPage({
 }) {
   const { slug } = await params;
 
-  // In parallel: one is not needed to ask for the other.
   const [store, items] = await Promise.all([fetchStore(slug), fetchItems(slug)]);
 
-  // Neither fetch throws. If the API is unreachable from here the page still
-  // renders and the browser's own queries take over, which is exactly how this
-  // page behaved before it was given a server side at all.
   return <StoreDetail slug={slug} initialStore={store} initialItems={items} />;
 }

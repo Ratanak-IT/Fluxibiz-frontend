@@ -18,14 +18,6 @@ function splitName(fullName: string): { firstName: string; lastName: string } {
   return { firstName: trimmed.slice(0, spaceIndex), lastName: trimmed.slice(spaceIndex + 1) };
 }
 
-/**
- * The Mini App's "Me" tab — name and phone, editable any time (they might
- * type it wrong once, or change their number). Email is a synthetic address
- * Keycloak assigns automatically and was never something to show or edit
- * here; gender and delivery address were part of an older, fuller profile
- * form this app no longer collects since only a phone number is required to
- * order. Telegram's avatar stays read-only since it isn't set here either.
- */
 export default function TmaMePage({
   params,
 }: {
@@ -82,11 +74,6 @@ export default function TmaMePage({
   }
 
   if (!session) {
-    // A Messenger visitor who hasn't added to cart or checked out yet has
-    // no session at all — `getTmaSession()` reads synchronously, so this
-    // isn't a "still loading" state, it's genuinely "nothing to show yet."
-    // Telegram always authenticates before browsing starts, so it never
-    // lands here.
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 px-6 text-center">
         <UserIcon className="size-8 text-muted-foreground" />

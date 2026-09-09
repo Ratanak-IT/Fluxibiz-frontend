@@ -217,16 +217,9 @@ export function ProductStorefrontUI({
             ? Math.round(((compareAt - activePrice) / compareAt) * 100)
             : 0;
 
-    // The promotion the server named for this item wins over the label the
-    // seller typed, and is the only signal for a storewide promotion, whose
-    // amount is worked out once per order and never priced into `price`.
     const promoLabel = item.discountLabel?.trim() || item.badge;
 
     const images = useMemo(() => {
-        // The shared gallery covers the item's own picture and its images, in
-        // the back office's order. The options are appended from the lists
-        // this screen has already resolved, which may hold more than the item
-        // payload's own — `itemImageUrls` de-duplicates against what it built.
         const gallery = itemImageUrls(item);
 
         const push = (url: string | null) => {
@@ -762,11 +755,6 @@ function Gallery({
     onSelect: (index: number) => void;
     outOfStock?: boolean;
 }) {
-    // A link that 404s leaves the browser rendering the alt text inside the
-    // frame, which reads as a caption rather than a missing picture. A photo
-    // that fails is dropped from the gallery instead, and if every one of
-    // them fails the frame falls back to the same placeholder an item with no
-    // pictures at all gets.
     const [broken, setBroken] = useState<string[]>([]);
     const markBroken = (image: string) =>
         setBroken((previous) => (previous.includes(image) ? previous : [...previous, image]));

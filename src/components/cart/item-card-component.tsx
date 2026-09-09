@@ -38,8 +38,6 @@ export default function ItemCardComponent({
     const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
     const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
-    // A link that 404s leaves the browser rendering the alt text in the frame
-    // like a caption; the placeholder says "no picture" far more clearly.
     const [imageFailed, setImageFailed] = useState(false);
     const busy = isUpdating || isRemoving;
     const outOfStock = isCartLineOutOfStock(line);
@@ -57,10 +55,6 @@ export default function ItemCardComponent({
     const catalogItem = (storeItems ?? []).find((i: any) => i.id === line.itemId || i.slug === line.itemId);
     const { hasDiscount, subtotal: lineSubtotal, compareAtSubtotal } = extractCartLinePrices(line, catalogItem);
 
-    // The line carries whichever picture the server chose for it, but a row
-    // added before that choice was widened can arrive without one. The store
-    // listing is already loaded on this screen, so it fills the gap using the
-    // same gallery order the back office uses.
     const resolvedImage = resolveMediaUrl(line.imageUrl) ?? primaryItemImage(catalogItem);
     const imageUrl = imageFailed ? null : resolvedImage;
 
@@ -238,10 +232,6 @@ function Stepper({
     const stockLimit = getCartLineStock(line);
 
     const handleDecrease = () => {
-        // Pressing "-" at 1 removes the line — the same behavior the
-        // sidebar's mini-cart already has, and the more expected one
-        // (the X button doing this is easy to miss, especially on the
-        // narrow mobile-only layout this stepper renders in).
         if (line.quantity <= 1 && onRemove) {
             onRemove().unwrap().catch((err: unknown) => {
                 toast.error(apiErrorMessage(err, "Failed to remove item"));

@@ -7,8 +7,6 @@ import { useMiniAppMode } from "@/lib/tma/useMiniAppMode";
 export default function EmptyCartComponent({ shopSlug }: { shopSlug?: string } = {}) {
   const t = useTranslations("Cart");
     const { isMiniApp, queryParam } = useMiniAppMode();
-    // Inside a business's own Mini App there is no general store directory
-    // to browse — send them back to that business's own storefront instead.
     const browseHref = isMiniApp && shopSlug ? `/store/${shopSlug}?${queryParam}` : "/store";
     return (
         <div className="flex flex-col items-center justify-center gap-4 rounded-2xl bg-gray-100 py-24 dark:bg-card">

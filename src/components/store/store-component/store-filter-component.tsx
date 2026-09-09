@@ -30,16 +30,10 @@ import ApiErrorFallback from "@/components/common/api-error-fallback";
 interface StoreFilterComponentProps {
   selected?: string[];
   onSelectedChange?: (selected: string[]) => void;
-  /** The one selected province's id — a store belongs to exactly one, so this isn't multi-select. */
   selectedLocations?: string[];
   onLocationsChange?: (locations: string[]) => void;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
-  /**
-   * Called after Reset clears search/category/location — forces the store
-   * list's own query to refetch explicitly rather than relying solely on
-   * the state clear to be picked up as an arg change on its own.
-   */
   onResetFilters?: () => void;
 }
 

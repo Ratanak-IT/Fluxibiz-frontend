@@ -110,11 +110,6 @@ export default function ProductDetail({
       return;
     }
 
-    // Messenger never goes through the regular Keycloak OAuth login — a
-    // brand-new visitor has no tmaSession token yet (one isn't created
-    // until they register via the MessengerProfileGate popup below), so
-    // `isAuthenticated` would otherwise read false here and bounce them to
-    // the Keycloak login page for no reason.
     if (!isMessenger && !isAuthenticated) {
       toast.error(t("errors.signInRequired"));
       login();

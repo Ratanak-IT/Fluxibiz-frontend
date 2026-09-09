@@ -31,14 +31,11 @@ function toMenuItem(
   exchangeRate?: number | null
 ): MenuItemData {
   const isOutOfStock = isItemOutOfStock(item);
-  // An item sold in options is never sold as itself, so its own price is
-  // empty and the options carry the real ones.
   const range = itemPriceRange(item);
   const hasOwnPrice = item.price !== undefined && item.price !== null;
   return {
     id: item.id,
     name: item.name,
-    // An unpriced item is not a free one, so it carries no price at all.
     price: hasOwnPrice
       ? String(item.price)
       : range
@@ -74,7 +71,6 @@ export default function DetailProductPage({
 }: {
   storeSlug: string;
   productSlug: string;
-  /** Fetched on the server, so the product is on screen before the queries below resolve. */
   initialItems: StorefrontItemResponse[];
   initialStore: PublicStoreDetailResponse | null;
 }) {
@@ -87,7 +83,6 @@ export default function DetailProductPage({
   const storeItems = fetchedItems ?? initialItems;
   const storeDetail = fetchedStore ?? initialStore ?? undefined;
 
-  // Nothing to wait for once the server has already sent the menu.
   const isLoadingItems = isLoadingItemsQuery && initialItems.length === 0;
 
   const rawItem = storeItems.find(
@@ -102,9 +97,6 @@ export default function DetailProductPage({
   const exchangeRate = storeDetail?.displayExchangeRate;
   const t = useTranslations("Store.common");
 
-  // The online store's hours, as the checkout enforces them. A shopper who
-  // can read the page can read this too, rather than finding out by being
-  // refused at Add to Cart.
   const storeOpen = isStorefrontOpen(storeDetail);
 
   return (

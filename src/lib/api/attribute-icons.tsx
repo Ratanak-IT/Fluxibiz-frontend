@@ -24,12 +24,6 @@ import {
     type LucideIcon,
 } from "lucide-react";
 
-/**
- * The API stores an opaque icon key; this file is the only place that decides
- * what it looks like. Adding a glyph is a frontend change alone, and an
- * unrecognised key degrades to a neutral dot rather than breaking the page —
- * which is why the backend deliberately does not validate against an enum.
- */
 const iconsByKey: Record<string, LucideIcon> = {
     TRUCK: Truck,
     SHIELD: ShieldCheck,

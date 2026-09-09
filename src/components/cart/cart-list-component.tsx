@@ -25,21 +25,12 @@ export default function CartList({ shopSlug }: { shopSlug?: string } = {}) {
     const { status: authStatus, isAuthenticated } = useAuth();
     const isMessenger = useIsMessenger();
 
-    // A Messenger visitor who hasn't added to cart or checked out yet has no
-    // tmaSession token at all (registration only happens lazily, at those
-    // actions) — `isAuthenticated` reads false forever for them, unlike
-    // Telegram/web where it resolves quickly. Skipping the query and
-    // showing a skeleton in that case would spin forever, so Messenger lets
-    // the request through: cartApi's own 401 handling already returns an
-    // empty cart, which is the correct answer here anyway.
     const waitingOnAuth = !isMessenger && (authStatus === "loading" || !isAuthenticated);
 
     const { data: cart, isLoading, isError, error, refetch } = useGetCartQuery(undefined, {
         skip: waitingOnAuth,
     });
 
-    // Auth itself still resolving, or user genuinely not logged in and about
-    // to be redirected — show the skeleton instead of a scary error.
     if (waitingOnAuth) {
         return <CartSkeletonComponent />;
     }

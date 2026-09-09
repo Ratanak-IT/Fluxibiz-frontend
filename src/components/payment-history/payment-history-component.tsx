@@ -91,9 +91,6 @@ export default function PaymentHistoryComponent() {
             </p>
           </div>
 
-          {/* Inside the Mini App there is no general store directory to
-              browse — this goes back to this business's own storefront
-              instead of the site-wide /store listing outside its bot. */}
           {isTma ? (
             tmaStoreHref && (
               <Link href={tmaStoreHref}>

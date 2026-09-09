@@ -21,11 +21,6 @@ export function useAuth() {
     const reduxStatus = useAppSelector(selectAuthStatus);
     const reduxIsAuthenticated = useAppSelector(selectIsAuthenticated);
 
-    // A Telegram Mini App shopper is authenticated via a bearer token in
-    // sessionStorage, never the httpOnly cookie the normal OAuth login sets
-    // — so the regular session check always comes back unauthenticated for
-    // them. Read on mount only (client-only value, same pattern as
-    // useIsTma) to avoid a hydration mismatch.
     const [tmaAuthenticated, setTmaAuthenticated] = useState(false);
     useEffect(() => {
         setTmaAuthenticated(hasTmaSessionToken());

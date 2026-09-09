@@ -43,14 +43,11 @@ function toMenuItem(
   exchangeRate?: number | null
 ): MenuItemData {
   const isOutOfStock = isItemOutOfStock(item);
-  // An item sold in options is never sold as itself, so its own price is
-  // empty and the options carry the real ones.
   const range = itemPriceRange(item);
   const hasOwnPrice = item.price !== undefined && item.price !== null;
   return {
     id: item.id,
     name: item.name,
-    // An unpriced item is not a free one, so it carries no price at all.
     price: hasOwnPrice
       ? String(item.price)
       : range
@@ -84,7 +81,6 @@ export default function StoreDetail({
   initialItems,
 }: {
   slug: string;
-  /** Fetched on the server so the first paint is the shop, not a skeleton. Null when that fetch failed. */
   initialStore: PublicStoreDetailResponse | null;
   initialItems: StorefrontItemResponse[];
 }) {
@@ -93,10 +89,6 @@ export default function StoreDetail({
   const isTma = useIsTma();
   const isMessenger = useIsMessenger();
   const isMiniAppMode = isTma || isMessenger;
-  // The server already fetched both of these without the shopper's coordinates,
-  // which it cannot know. These queries re-fetch with the location once the
-  // browser shares it, so the distance appears a moment later on a page that was
-  // readable from the start.
   const {
     data: fetchedStore,
     isLoading: isLoadingStore,
@@ -152,8 +144,6 @@ export default function StoreDetail({
     // Price range filter
     if (selectedPriceRange !== "All Prices") {
       result = result.filter((item) => {
-        // The least it can be bought for, so an item priced only through its
-        // options is filtered on a price it really has rather than on zero.
         const price = sellingPriceFrom(item) ?? 0;
         switch (selectedPriceRange) {
           case "Under $2":
@@ -206,8 +196,6 @@ export default function StoreDetail({
       ? `${storeDetail.openTime} - ${storeDetail.closeTime}`
       : t("common.openAllDay"));
 
-  // The online store's own hours, as the checkout enforces them — not the
-  // shopfront's opening times, which say nothing about the web.
   const storefrontOpen = isStorefrontOpen(storeDetail);
   const todayHours = useTodayHoursLabel(storeDetail?.onlineHours);
 
@@ -260,15 +248,10 @@ export default function StoreDetail({
   );
 
   const menuSections = Object.entries(groupedItems);
-  // Only a page with nothing to show waits. With server data in hand the shop is
-  // already on screen and the queries above are just refreshing it.
   const isLoading = !storeDetail && (isLoadingStore || isLoadingItems);
 
   return (
     <div className="mx-auto max-w-362.5 space-y-10 py-6 px-4 sm:px-10 dark:bg-background">
-      {/* The Mini App is scoped to this one business's own Telegram/Messenger
-          bot — a way back to the general store directory makes no sense
-          there, same reasoning as hiding the site-wide Navbar/Footer. */}
       {!isMiniAppMode && (
         <div className="mb-4 flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-20">
           <Link
@@ -310,8 +293,6 @@ export default function StoreDetail({
             </div>
           </div>
 
-          {/* Said once, at the top: the menu below is still worth reading,
-              but nothing on it can be ordered until the shop reopens. */}
           {storeDetail && !storefrontOpen ? (
             <div className="mt-6 px-4 sm:px-6 md:px-12 lg:px-20">
               <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-400">

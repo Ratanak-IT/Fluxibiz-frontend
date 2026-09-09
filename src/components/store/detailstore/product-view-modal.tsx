@@ -45,9 +45,6 @@ export default function ProductQuickViewModal({
   const tCart = useTranslations("Cart");
   const product: StorefrontItemResponse | undefined = rawItem ?? item?.rawItem;
 
-  // The shop's own record, for its Online Store hours. The detail endpoint
-  // takes an id as readily as a slug, and the card that opened this has no
-  // slug to hand — only the item, which knows whose shop it is.
   const { data: storeDetail } = useGetPublicStoreQuery(product?.businessId ?? "", {
     skip: !open || !product?.businessId,
   });
@@ -62,9 +59,7 @@ export default function ProductQuickViewModal({
 
   const [selectedVariant, setSelectedVariant] = useState<ItemVariant | null>(null);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
-  /** null is the item itself — one of its base unit, rather than a pack. */
   const [selectedPack, setSelectedPack] = useState<ItemUomConversion | null>(null);
-  /** The extras ticked, by id. Nothing is ticked to start with. */
   const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
 
@@ -81,7 +76,6 @@ export default function ProductQuickViewModal({
 
     const rafId = requestAnimationFrame(() => {
       setQuantity(1);
-      // Land on something buyable rather than a sold-out first option.
       setSelectedVariant(variants.find(isVariantSelectable) ?? variants[0] ?? null);
       setSelectedPack(null);
       setSelectedAddOnIds([]);
@@ -110,18 +104,11 @@ export default function ProductQuickViewModal({
       return;
     }
 
-    // Messenger never goes through the regular Keycloak OAuth login — a
-    // brand-new visitor has no tmaSession token yet (one isn't created
-    // until they register via the MessengerProfileGate popup below), so
-    // `isAuthenticated` would otherwise read false here and bounce them to
-    // the Keycloak login page for no reason.
     if (!isMessenger && !isAuthenticated && authStatus !== "loading") {
       login();
       return;
     }
 
-    // The basket refuses an out-of-hours add anyway; saying so here spares a
-    // request that was never going to work.
     if (!storeOpen) {
       toast.error(
         todayHours
@@ -153,8 +140,6 @@ export default function ProductQuickViewModal({
       return;
     }
 
-    // Only the ones this item still sells, priced from its own library; the
-    // server checks the same thing rather than trusting the tick.
     const extras = sellableAddOns(product).filter((addOn) =>
       selectedAddOnIds.includes(addOn.id),
     );
@@ -200,10 +185,6 @@ export default function ProductQuickViewModal({
           if (isUnauthorized(err) && !isMessenger) {
             login();
           } else if (isUnauthorized(err)) {
-            // Messenger never has Keycloak credentials to log back in with —
-            // by this point `tmaBaseQuery` has already tried silently
-            // re-registering the device and retrying once; a 401 surviving
-            // that means it genuinely failed, not just an expired token.
             toast.error(t("errors.addToCartFailed"));
           } else {
             const msg = formatStockErrorMessage(err, product?.name || item?.name);

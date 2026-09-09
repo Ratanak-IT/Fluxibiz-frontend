@@ -10,11 +10,6 @@ import type {
     CartSummary,
 } from "@/lib/type/cartType";
 
-/**
- * A line's chosen options reduced to one comparable string, sorted by
- * attribute name so the same choices made in a different order still match.
- * Mirrors `CartItem.selectionKey()` on the server.
- */
 function selectionKeyOf(
     selections?: { attributeName: string; value: string }[] | null,
 ): string {
@@ -25,29 +20,11 @@ function selectionKeyOf(
         .join("|");
 }
 
-/**
- * The extras ticked, reduced to one comparable string. Sorted so the same two
- * ticked in a different order still match. Mirrors `CartItem.addOnKey()`.
- */
 function addOnKeyOf(addOnIds?: string[] | null): string {
     if (!addOnIds || addOnIds.length === 0) return "";
     return [...addOnIds].sort().join("|");
 }
 
-/**
- * Fills in anything the server left off a cart, without changing what it
- * charges.
- *
- * Every total here is the server's own and is kept as sent. A store's
- * `subtotal` in particular must never be re-derived by adding up its lines:
- * an order-wide promotion (a storewide percentage, a "$5 off the order") is
- * deducted from the store total and is deliberately attributed to no line at
- * all, so summing the lines silently charges full price again — a 90% off
- * cart reappears at 100% of its cost.
- *
- * Only a value the server genuinely omitted is derived, and a line's own
- * subtotal likewise falls back to its billed unit price only when absent.
- */
 function sanitizeCartData(cartData: CartSummary | null | undefined): CartSummary {
     if (!cartData || !Array.isArray(cartData.stores)) {
         return cartData || { storeCount: 0, totalItems: 0, stores: [] };
@@ -151,8 +128,6 @@ export const cartApi = createApi({
                 body: { businessId, itemId, variantId, unitId, selections, addOnIds, quantity },
             }),
             async onQueryStarted({ businessId, itemId, variantId, selections, addOnIds, quantity, itemDetails }, { dispatch, queryFulfilled }) {
-                // itemDetails only fills the optimistic line until the server
-                // answers; the response then replaces it wholesale.
                 pendingMutationsCount++;
                 const patch = dispatch(
                     cartApi.util.updateQueryData("getCart", undefined, (draft) => {
@@ -183,17 +158,11 @@ export const cartApi = createApi({
                         }
 
                         store.itemCount += quantity;
-                        // Same identity rule the server uses: item, option and
-                        // choices together. Matching on itemId alone merged a
-                        // 50%-sugar line into a 0% one until the response
-                        // arrived and pulled them apart again.
                         const existingLine = store.items.find(
                             (l) =>
                                 l.itemId === itemId &&
                                 (l.variantId ?? null) === (variantId ?? null) &&
                                 selectionKeyOf(l.selections) === selectionKeyOf(selections) &&
-                                // One with pearls is not one without: different
-                                // money, different line — as on the server.
                                 addOnKeyOf(
                                     (l.addOns ?? [])
                                         .map((addOn) => addOn.addOnId)

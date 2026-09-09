@@ -27,14 +27,6 @@ type Phase = "waiting" | "paid" | "expired" | "cancelled";
 function secondsLeft(expiresAt: string | null): number {
     if (!expiresAt) return 180; // 3 minutes default KHQR TTL fallback
 
-    // The backend's timestamps are LocalDateTime — a bare string with no
-    // timezone marker, captured in the server's own local wall-clock time
-    // (Asia/Phnom_Penh, see the api container's TZ setting). Appending "Z"
-    // here used to be correct back when the server ran in UTC, but now it
-    // makes the browser (also Phnom Penh time) misread the value as UTC and
-    // add a further 7 hours on top — inflating a ~2 minute countdown to
-    // ~422 minutes. Parsing the bare string directly lets `Date` read it as
-    // local time, which is what it already is.
     const parsed = new Date(expiresAt).getTime();
     if (Number.isNaN(parsed)) return 180;
 
@@ -64,9 +56,6 @@ export default function KhqrPaymentComponent({
     const t = useTranslations("Checkout");
     const [phase, setPhase] = useState<Phase>("waiting");
     const [remaining, setRemaining] = useState(() => secondsLeft(session.expiresAt));
-    // The real KHQR TTL — captured once per QR so the progress bar starts
-    // full and empties over the window this QR actually has, instead of
-    // assuming a fixed 3 minutes when the backend may grant less (or more).
     const [totalWindow, setTotalWindow] = useState(() => Math.max(1, secondsLeft(session.expiresAt)));
     const [notice, setNotice] = useState<string | null>(null);
 
@@ -223,12 +212,6 @@ export default function KhqrPaymentComponent({
     const expired = phase === "expired";
     const progress = Math.min(100, Math.max(0, (remaining / totalWindow) * 100));
 
-    // The scannable amount/currency shown here has to match what Bakong
-    // actually encoded in the QR (`session.currency`/`session.total`, the
-    // order's real base currency) exactly — not the shop's preferred
-    // display currency. Relabeling it as a converted KHR figure would show
-    // a number the customer's own banking app won't agree with once they
-    // scan it, which reads as far more broken than an unconverted one.
     const scanCurrency = session.currency;
     const isRiel = scanCurrency?.toUpperCase() === "KHR" || scanCurrency?.toUpperCase() === "RIEL";
     const currencySymbol = isRiel ? "៛" : "$";

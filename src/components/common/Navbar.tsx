@@ -11,9 +11,6 @@ export default function Navbar() {
     const isTma = useIsTma();
     const isMessenger = useIsMessenger();
 
-    // The Mini App gets its own business-specific TmaNavbar instead — this
-    // one links to other businesses and the general /store directory, which
-    // makes no sense inside a single business's own Telegram/Messenger bot.
     if (isTma || isMessenger) {
         return null;
     }

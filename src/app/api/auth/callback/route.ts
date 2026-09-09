@@ -53,13 +53,6 @@ export async function GET(req: NextRequest) {
     const businessRedirect = process.env.BUSINESS_REDIRECT_URL;
     const globleUserRedirect = process.env.GLOBLE_USER_REDIRECT_URL;
 
-    // Business and Super Admin accounts are routed straight to their own
-    // dashboard app, which manages its own session — this storefront must
-    // never also hand them a customer session cookie here. Without this,
-    // the storefront's own domain still ends up "logged in" as that
-    // business/admin account (its cookies were set right before the
-    // external redirect fired), even though the shopper-facing storefront
-    // was never the account's actual destination.
     let targetUrl: URL;
     let shouldSetStorefrontSession = true;
     if ((roles.includes("SUPER_ADMIN") || roles.includes("GLOBLE_ADMIN")) && superAdminRedirect) {

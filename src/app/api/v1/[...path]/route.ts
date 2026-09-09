@@ -34,19 +34,8 @@ async function proxyHandler(
     }
   });
 
-  // ngrok's free-tier interstitial ("You are about to visit...") intercepts
-  // any request that looks like a browser navigation and would otherwise
-  // return its warning HTML instead of the backend's real JSON — this header
-  // tells ngrok to skip it. Harmless outside of ngrok (the real backend just
-  // ignores an extra header it doesn't recognise).
   headers.set("ngrok-skip-browser-warning", "true");
 
-  // Every browser call reaches the backend through this proxy, so without this
-  // the backend sees one address — this function's — for every shopper on the
-  // site, and anything it counts per caller (rate limits) would count the whole
-  // marketplace as a single visitor. Vercel puts the real client address on the
-  // incoming request; pass it along so the backend can count people rather than
-  // proxies.
   const clientIp =
     req.headers.get("x-real-ip") ||
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();

@@ -20,13 +20,6 @@ import {
 import StoreFilterComponent from "@/components/store/store-component/store-filter-component";
 import { useShopperLocation } from "@/lib/hooks/useShopperLocation";
 
-/**
- * What the server already fetched, mirroring this page's four queries so the
- * first paint is shops rather than skeletons. Each section prefers its own live
- * query and falls back to these until it resolves; an empty array means that
- * fetch failed, and the section behaves as it did before, showing its skeleton
- * while the browser fetches.
- */
 export type MarketplaceInitialData = {
   recommended: PublicStore[];
   recommendedFallback: PublicStore[];
@@ -173,11 +166,6 @@ function RecommendedSection({
   const rawRecStores = recData?.content ?? initialRecommended;
   const rawPublicStores = publicData?.content ?? initialFallback;
   const rawStores = rawRecStores.length > 0 ? rawRecStores : rawPublicStores;
-  // Same reasoning as the main listing: only the true first-load gap (no
-  // data has ever arrived) should show the skeleton. RTK Query keeps the
-  // previous `data` visible through a coords-driven refetch on its own, so
-  // gating on `isFetching` too — as this used to — blanked the section on
-  // every refetch, which is what read as "jumping."
   const recSettled = !isLoadingRec && recData !== undefined;
   const publicSettled = !isLoadingPublic && publicData !== undefined;
   const isLoading = !recSettled && !publicSettled;
@@ -185,9 +173,6 @@ function RecommendedSection({
   const storesToDisplay = useMemo(() => {
     return rawStores
       .filter((store) => {
-        // The "recommended" endpoint doesn't take a province filter, so this
-        // stays a client-side match — but against the geocoded provinceName
-        // now, not a free-text guess.
         if (selectedProvinceName && store.provinceName !== selectedProvinceName) {
           return false;
         }
@@ -327,9 +312,6 @@ function PromotionsSection({
       .map(toStoreCard);
   }, [rawStores, searchValue]);
 
-  // Only a section with nothing to show waits, matching the two around it. Left
-  // as a bare isLoading check, server-rendered promotions would still be hidden
-  // behind a skeleton until the browser had refetched what it already had.
   if (isLoading && promoStores.length === 0) {
     return (
       <section className="space-y-0">
@@ -353,11 +335,6 @@ function PromotionsSection({
 
 export default function HomePage({ initial }: { initial: MarketplaceInitialData }) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  // Holds at most one province name — a store belongs to exactly one
-  // province, so this is a single-select even though the filter UI still
-  // renders checkboxes (see store-filter-component's toggleLocation). The
-  // name itself is the value: provinces come from /public/stores/provinces,
-  // a plain distinct list of what's actually geocoded onto real stores.
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const selectedProvinceName = selectedLocations[0];
@@ -376,13 +353,6 @@ export default function HomePage({ initial }: { initial: MarketplaceInitialData 
     lng: coords?.lng,
   });
 
-  // Reset calls this to force an explicit refetch as a safety net. Doing it
-  // synchronously in the click handler would refetch using the *pre-reset*
-  // args — React batches the state clear, so the hook hasn't re-subscribed
-  // to the new (unfiltered) cache key yet at that point. Bumping a signal
-  // and refetching from an effect instead means it fires after the reset
-  // has already committed and this hook has already re-run with the new
-  // args, so `refetchPublicStores` here is bound to the correct query.
   const [resetSignal, setResetSignal] = useState(0);
   useEffect(() => {
     if (resetSignal > 0) {
@@ -391,17 +361,6 @@ export default function HomePage({ initial }: { initial: MarketplaceInitialData 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetSignal]);
 
-  // `coords` starts null and flips to a real position once geolocation
-  // resolves — a genuinely new query-cache key, not just a refetch of the
-  // same one. RTK Query keeps showing the last-loaded `data` while that new
-  // key fetches in the background (by design, to avoid exactly this kind of
-  // flash), so this only needs to catch the one real gap: no data has ever
-  // arrived yet. Adding `isFetching` here — true on *every* refetch,
-  // including a plain category/location change — was overcorrecting: it
-  // blanked the whole grid to a skeleton on every filter change and on the
-  // coords-driven refetch, which is what read as "jumping."
-  // With server data in hand there is no gap to cover, so the grid renders
-  // straight away and the query above only refreshes it.
   const isStoresSettling =
     (isLoadingPublic || filteredStoresData === undefined) && initial.stores.length === 0;
 

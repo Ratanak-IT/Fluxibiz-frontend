@@ -21,8 +21,6 @@ export default function StoreCard({ store }: StoreCardComponentProps) {
     return <StoreCardSkeleton />;
   }
 
-  // A logo link that 404s would otherwise render the store's name as alt
-  // text inside the logo frame; the placeholder is the honest fallback.
   const [imageFailed, setImageFailed] = useState(false);
   const imageUrl = imageFailed || !store.image?.trim() ? null : store.image;
   const distanceLabel = formatDistance(store.distanceKm);

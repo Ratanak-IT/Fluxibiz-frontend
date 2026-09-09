@@ -82,7 +82,6 @@ const EASE: [number, number, number, number] = [0.2, 1, 0.3, 1];
 /*  helpers                                                                    */
 /* -------------------------------------------------------------------------- */
 
-/** True when the device has no real hover (touch). Drives the active row from scroll instead. */
 function useCoarsePointer() {
   const [coarse, setCoarse] = useState(false);
   useEffect(() => {
@@ -101,7 +100,6 @@ function isKhmerText(text: string) {
   return /[\u1780-\u17FF]/.test(text);
 }
 
-/** Splits text into words → characters, keeping one running index for stagger. */
 function useSplit(text: string): SplitWord[] {
   return useMemo(() => {
     let k = 0;

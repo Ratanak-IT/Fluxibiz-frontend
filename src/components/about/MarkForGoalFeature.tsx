@@ -2,14 +2,6 @@
 
 import React from 'react';
 
-/**
- * Six bespoke line marks, one per principle.
- * Each one draws itself in on scroll (stroke-dashoffset) and performs a small
- * gesture when its row goes active — the gesture represents the principle.
- *
- * Pure CSS transitions, no animation library, no icon dependency.
- */
-
 export type MarkId =
   | 'simple'
   | 'local'

@@ -116,7 +116,6 @@ const SearchDrawer = ({
     return () => clearTimeout(handle)
   }, [currentValue])
 
-  // Match the typed term against category names so we can also search "by category".
   const { data: categories = [] } = useGetBusinessCategoryQuery()
   const matchedCategoryIds = useMemo(() => {
     if (!debouncedKeyword) return []

@@ -24,7 +24,6 @@ export interface TelegramWebAppAuthResponse {
   email?: string;
   gender?: string;
   address?: string;
-  /** False until email, gender, phoneNumber and address are all set — gates the "complete your profile" screen. */
   profileComplete: boolean;
 }
 
@@ -51,9 +50,6 @@ export const telegramWebAppApi = createApi({
   reducerPath: "telegramWebAppApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "/api/v1",
-    // The auth call itself is public and ignores this; every other call in
-    // this slice (profile update) needs it, since it's a real Keycloak
-    // bearer token once /telegram-webapp/auth has issued one.
     prepareHeaders: (headers) => {
       const session = getTmaSession();
       if (session?.token) {

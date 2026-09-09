@@ -62,10 +62,6 @@ export default function CartSidebar({
 
   const lines = useMemo(() => storeCart?.items ?? [], [storeCart?.items]);
 
-  // `storeCart.subtotal` is the server's own net total — the one figure
-  // that always accounts for an order-wide promotion, which no single line
-  // carries a share of on the wire. Re-summing the lines' own subtotals (as
-  // this used to) silently drops that discount and overcharges.
   const { original: originalSubtotal, discount, net: effectiveSubtotal } = useMemo(
     () => cartTotals(storeCart ?? { subtotal: 0, items: [] }),
     [storeCart],
@@ -209,8 +205,6 @@ function CartSidebarLine({
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
   const busy = isUpdating || isRemoving;
-  // A link that 404s leaves the alt text sitting in the frame like a caption;
-  // the placeholder says "no picture" far more clearly.
   const [imageFailed, setImageFailed] = useState(false);
   const imageUrl = imageFailed ? null : resolveMediaUrl(line.imageUrl);
   const outOfStock = isCartLineOutOfStock(line);

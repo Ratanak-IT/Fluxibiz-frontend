@@ -4,15 +4,7 @@ import { useEffect, useState } from "react";
 
 export type GeoStatus = "idle" | "granted" | "denied" | "unsupported";
 
-/**
- * The shopper's own position for "near me" sorting — requested automatically
- * on mount. The browser's own native permission dialog is unavoidable either
- * way (no page can skip it on a first visit); this only removes an extra
- * in-app "Allow location" step before that dialog appears. A shopper who
- * already decided once — through the browser's own remembered
- * grant/deny — gets it silently honored without a dialog at all, same as
- * any other site.
- */
+
 export function useShopperLocation() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [status, setStatus] = useState<GeoStatus>("idle");
