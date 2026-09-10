@@ -112,16 +112,29 @@ export default async function RootLayout({
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": `${SITE_URL}/#organization`,
     name: "FluxiBiz",
-    url: STORE_URL,
-    logo: absoluteUrl("/favicon.png?v=2"),
+    alternateName: ["fluxibiz", "Fluxi Biz"],
+    url: SITE_URL,
+    logo: absoluteUrl("/favicon.png?v=3"),
+    description:
+      "The all-in-one point-of-sale, inventory, commerce, and business management platform.",
+    sameAs: [
+      "https://www.facebook.com/fluxibiz",
+      "https://t.me/Liepsokkeang",
+    ],
   };
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
     name: "FluxiBiz",
+    alternateName: ["fluxibiz", "Fluxi Biz"],
     url: SITE_URL,
+    publisher: {
+      "@id": `${SITE_URL}/#organization`,
+    },
   };
 
   return (

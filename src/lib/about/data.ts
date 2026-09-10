@@ -11,7 +11,7 @@ export const mentors: Mentor[] = [
     github: "https://github.com/it-chhaya",
     telegram: "https://t.me/chhayadevkh",
     linkedin:
-      "https://www.linkedin.com/",
+      "https://www.linkedin.com/in/chan-chhaya-222a69178/",
   },
   {
     nameKey: "srorngSokcheat",
@@ -21,7 +21,7 @@ export const mentors: Mentor[] = [
     github: "https://github.com/Sokcheatsrorng",
     telegram: "https://t.me/Sokcheat_srorng",
     linkedin:
-      "https://www.linkedin.com/",
+      "https://www.linkedin.com/in/srorng-sokcheat-09b542341/",
   },
 ];
 

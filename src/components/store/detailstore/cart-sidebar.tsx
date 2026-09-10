@@ -62,6 +62,7 @@ export default function CartSidebar({
 
   const lines = useMemo(() => storeCart?.items ?? [], [storeCart?.items]);
 
+ 
   const { original: originalSubtotal, discount, net: effectiveSubtotal } = useMemo(
     () => cartTotals(storeCart ?? { subtotal: 0, items: [] }),
     [storeCart],
