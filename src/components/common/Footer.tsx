@@ -31,7 +31,7 @@ const usefulLinks = [
 const socialLinks = [
   {
     label: "Facebook",
-    href: "https://www.facebook.com/profile.php?id=61593729882954",
+    href: "https://www.facebook.com/fluxibiz",
     icon: FaFacebookF,
   },
   {
