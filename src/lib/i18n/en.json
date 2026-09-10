@@ -62,7 +62,8 @@
     "fluxiBizHome": "FluxiBiz home",
     "addressLine1": "#40, Street 273, Sangkat Boeung Kak Ti Mouy,",
     "addressLine2": "Khan Toul Kork, Phnom Penh",
-    "organizedAndSponsored": "Organized and Sponsored by",
+    "organizedAndSponsored": "Organized and Supported by",
+    "organizedAndSupported": "Organized and Supported by",
     "copyright": "All Rights Reserved © Copyright 2026 ISTAD."
   },
   "LandingHero": {
@@ -686,7 +687,10 @@
       "password": "Password",
       "confirmPassword": "Confirm password",
       "showPassword": "Show password",
-      "hidePassword": "Hide password"
+      "hidePassword": "Hide password",
+      "acceptTermsPrefix": "I accept the ",
+      "termsAndConditions": "Terms & Conditions",
+      "acceptTermsRequired": "You must accept the Terms & Conditions to proceed"
     },
     "form": {
       "continue": "Continue",
@@ -704,6 +708,9 @@
       "businessEmailPlaceholder": "Enter your business email",
       "businessAddressLabel": "Business address",
       "businessAddressPlaceholder": "Enter your business address",
+      "acceptTermsPrefix": "I accept the ",
+      "termsAndConditions": "Terms & Conditions",
+      "acceptTermsRequired": "You must accept the Terms & Conditions to register business",
       "registerBusiness": "Register Business",
       "registeringBusiness": "Registering Business...",
       "alreadyHaveAccount": "Already have an account?",
@@ -720,6 +727,9 @@
       "phonePlaceholder": "Enter your phone number",
       "emailPlaceholder": "example@gmail.com",
       "acceptTerms": "I accept the Terms & Conditions",
+      "acceptTermsPrefix": "I accept the ",
+      "termsAndConditions": "Terms & Conditions",
+      "acceptTermsRequired": "You must accept the Terms & Conditions to register",
       "register": "Register",
       "registering": "Registering...",
       "orLoginWith": "Or login with",

@@ -6,7 +6,7 @@ export const mentors: Mentor[] = [
   {
     nameKey: "chanChhaya",
     titleKey: "seniorItInstructor",
-    avatar: "/image/team/instructors/chhaya.jpg",
+    avatar: "/image/team/instructors/chanchhaya.jpg",
     tagKey: "mentor",
     github: "https://github.com/it-chhaya",
     telegram: "https://t.me/chhayadevkh",
@@ -16,7 +16,7 @@ export const mentors: Mentor[] = [
   {
     nameKey: "srorngSokcheat",
     titleKey: "itInstructor",
-    avatar: "/image/team/instructors/sokcheat.JPG",
+    avatar: "/image/team/instructors/sokcheat.jpg",
     tagKey: "mentor",
     github: "https://github.com/Sokcheatsrorng",
     telegram: "https://t.me/Sokcheat_srorng",

@@ -62,7 +62,8 @@
     "fluxiBizHome": "ទំព័រដើម FluxiBiz",
     "addressLine1": "ផ្ទះលេខ ៤០ ផ្លូវ ២៧៣ សង្កាត់បឹងកក់ទី១",
     "addressLine2": "ខណ្ឌទួលគោក រាជធានីភ្នំពេញ",
-    "organizedAndSponsored": "រៀបចំ និងឧបត្ថម្ភដោយ",
+    "organizedAndSponsored": "រៀបចំ និងគាំទ្រដោយ",
+    "organizedAndSupported": "រៀបចំ និងគាំទ្រដោយ",
     "copyright": "រក្សាសិទ្ធិគ្រប់យ៉ាង © ២០២៦ ISTAD។"
   },
   "LandingHero": {
@@ -686,7 +687,10 @@
       "password": "ពាក្យសម្ងាត់",
       "confirmPassword": "បញ្ជាក់ពាក្យសម្ងាត់",
       "showPassword": "បង្ហាញពាក្យសម្ងាត់",
-      "hidePassword": "លាក់ពាក្យសម្ងាត់"
+      "hidePassword": "លាក់ពាក្យសម្ងាត់",
+      "acceptTermsPrefix": "ខ្ញុំយល់ព្រមទទួលយក ",
+      "termsAndConditions": "លក្ខខណ្ឌនៃការប្រើប្រាស់",
+      "acceptTermsRequired": "អ្នកត្រូវតែយល់ព្រមទទួលយកលក្ខខណ្ឌនៃការប្រើប្រាស់ដើម្បីបន្ត"
     },
     "form": {
       "continue": "បន្ត",
@@ -704,6 +708,9 @@
       "businessEmailPlaceholder": "បញ្ចូលអ៊ីមែលអាជីវកម្មរបស់អ្នក",
       "businessAddressLabel": "អាសយដ្ឋានអាជីវកម្ម",
       "businessAddressPlaceholder": "បញ្ចូលអាសយដ្ឋានអាជីវកម្មរបស់អ្នក",
+      "acceptTermsPrefix": "ខ្ញុំយល់ព្រមទទួលយក ",
+      "termsAndConditions": "លក្ខខណ្ឌនៃការប្រើប្រាស់",
+      "acceptTermsRequired": "អ្នកត្រូវតែយល់ព្រមទទួលយកលក្ខខណ្ឌនៃការប្រើប្រាស់ដើម្បីចុះឈ្មោះអាជីវកម្ម",
       "registerBusiness": "ចុះឈ្មោះអាជីវកម្ម",
       "registeringBusiness": "កំពុងចុះឈ្មោះអាជីវកម្ម...",
       "alreadyHaveAccount": "មានគណនីរួចហើយ?",
@@ -720,6 +727,9 @@
       "phonePlaceholder": "បញ្ចូលលេខទូរស័ព្ទរបស់អ្នក",
       "emailPlaceholder": "បញ្ចូលអ៊ីមែលរបស់អ្នក",
       "acceptTerms": "ខ្ញុំយល់ព្រមទទួលយកលក្ខខណ្ឌនៃការប្រើប្រាស់",
+      "acceptTermsPrefix": "ខ្ញុំយល់ព្រមទទួលយក ",
+      "termsAndConditions": "លក្ខខណ្ឌនៃការប្រើប្រាស់",
+      "acceptTermsRequired": "អ្នកត្រូវតែយល់ព្រមទទួលយកលក្ខខណ្ឌនៃការប្រើប្រាស់ដើម្បីចុះឈ្មោះ",
       "register": "ចុះឈ្មោះ",
       "registering": "កំពុងចុះឈ្មោះ...",
       "orLoginWith": "ឬចូលគណនីដោយ",
