@@ -79,6 +79,9 @@ export const userRegisterSchema = z
     email: strictEmailSchema,
     password: passwordSchema,
     confirmPassword: z.string().min(1, "Please confirm your password"),
+    acceptTerms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the Terms & Conditions",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -101,6 +104,9 @@ export const businessRegisterSchema = z.object({
     .trim()
     .min(3, "Business address must be at least 3 characters"),
   description: z.string().optional(),
+  acceptTerms: z.boolean().refine((val) => val === true, {
+    message: "You must accept the Terms & Conditions",
+  }),
 });
 
 export type BusinessRegisterFormData = z.infer<typeof businessRegisterSchema>;

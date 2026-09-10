@@ -146,6 +146,7 @@ export default function LanguageSwitcherButtonComponent({
 
       <DropdownMenuContent
         align={mobile ? "start" : "end"}
+        sideOffset={12}
         className="min-w-44 border-[#e5e7eb] bg-white p-2 text-[#111827] dark:border-white/10 dark:bg-background dark:text-white"
       >
         <DropdownMenuItem

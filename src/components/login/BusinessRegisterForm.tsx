@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/features/auth/useAuth";
 import { useGetBusinessCategoriesQuery } from "@/features/business-registration/businessApi";
 import { cn } from "@/lib/utils";
@@ -187,9 +188,12 @@ export function BusinessRegisterForm({
   const { data: categories, isLoading: isLoadingCategories } =
     useGetBusinessCategoriesQuery();
 
+  const hasAcceptedTermsInStep1 = Boolean(userData?.acceptTerms);
+
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<BusinessRegisterFormData>({
     resolver: zodResolver(businessRegisterSchema),
@@ -199,8 +203,11 @@ export function BusinessRegisterForm({
       businessEmail: userData?.email ?? "",
       businessAddress: "",
       description: "",
+      acceptTerms: hasAcceptedTermsInStep1,
     },
   });
+
+  const acceptTerms = watch("acceptTerms");
 
   const onSubmit = async (
     businessData: BusinessRegisterFormData,
@@ -294,13 +301,64 @@ export function BusinessRegisterForm({
         )}
       />
 
+      {!hasAcceptedTermsInStep1 && (
+        <Controller
+          name="acceptTerms"
+          control={control}
+          render={({ field }) => (
+            <div className="grid gap-1 font-body">
+              <label
+                htmlFor="business-accept-terms"
+                className={cn(
+                  "flex min-h-8 items-start gap-2.5 cursor-pointer",
+                  "text-[15px] tracking-[0.6px]",
+                  "text-[#636b74] dark:text-white",
+                )}
+              >
+                <Checkbox
+                  id="business-accept-terms"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  className={cn(
+                    "mt-0.5 size-[18px] rounded-[4px]",
+                    "border-gray-400 dark:border-gray-400",
+                    "dark:bg-background",
+                    "dark:data-[state=checked]:border-primary dark:data-[state=checked]:bg-primary dark:data-[state=checked]:text-white",
+                    errors.acceptTerms && "border-red-500 dark:border-red-500",
+                  )}
+                />
+                <span className="select-none">
+                  {t("acceptTermsPrefix")}{" "}
+                  <a
+                    href="https://document.fluxibiz.store"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="font-bold text-blue-600 hover:underline dark:text-blue-400"
+                  >
+                    {t("termsAndConditions")}
+                  </a>
+                </span>
+              </label>
+
+              {errors.acceptTerms?.message && (
+                <span className="text-xs font-medium text-red-500 dark:text-red-400">
+                  {errors.acceptTerms.message}
+                </span>
+              )}
+            </div>
+          )}
+        />
+      )}
+
       <Button
         type="submit"
-        disabled={isSubmitting}
+        disabled={isSubmitting || !acceptTerms}
         className={cn(
           "mt-2 h-[50px] w-full rounded-[12px]",
           "text-[22px] font-semibold tracking-[1.32px]",
           "dark:text-white",
+          !acceptTerms && "opacity-50 cursor-not-allowed",
         )}
       >
         {isSubmitting ? (

@@ -31,7 +31,7 @@ const usefulLinks = [
 const socialLinks = [
   {
     label: "Facebook",
-    href: "https://www.facebook.com/profile.php?id=61593729882954",
+    href: "https://www.facebook.com/fluxibiz",
     icon: FaFacebookF,
   },
   {
@@ -510,7 +510,7 @@ export default function Footer() {
 </div>
 
         {/* ======================================================
-            ORGANIZED AND SPONSORED BY
+            ORGANIZED AND SUPPORTED BY
         ====================================================== */}
         <div
           className="
@@ -548,7 +548,7 @@ export default function Footer() {
               dark:text-white
             "
           >
-            {t("organizedAndSponsored")}
+            {t("organizedAndSupported")}
           </p>
 
           {/* Partner logos */}

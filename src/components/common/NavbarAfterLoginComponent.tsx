@@ -779,7 +779,9 @@ function UserDropdown({
 
       <DropdownMenuContent
         align="end"
+        sideOffset={14}
         className="
+          mt-1
           w-64
           border-[#e5e7eb]
           bg-white
