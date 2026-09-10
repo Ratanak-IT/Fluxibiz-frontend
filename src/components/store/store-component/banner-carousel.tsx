@@ -11,12 +11,12 @@ import { useGetStorefrontBannersQuery } from '@/features/banner/bannerApi'
 
 const DEFAULT_IMAGES = [
   {
-    image: '/carousel/banner2.png',
+    image: '/carousel/banner1.png',
     title: '',
     category: ''
   },
   {
-    image: '/carousel/banner7.png',
+    image: '/carousel/banner2.png',
     title: '',
     category: ''
   },
@@ -26,7 +26,12 @@ const DEFAULT_IMAGES = [
     category: ''
   },
   {
-    image: '/carousel/banner8.png',
+    image: '/carousel/banner4.png',
+    title: '',
+    category: ''
+  },
+  {
+    image: '/carousel/banner5.png',
     title: '',
     category: ''
   },
@@ -35,8 +40,13 @@ const DEFAULT_IMAGES = [
     title: '',
     category: ''
   },
-   {
-    image: '/carousel/banner1.jpg',
+  {
+    image: '/carousel/banner7.png',
+    title: '',
+    category: ''
+  },
+  {
+    image: '/carousel/banner8.png',
     title: '',
     category: ''
   }
