@@ -62,10 +62,7 @@ export default function CartSidebar({
 
   const lines = useMemo(() => storeCart?.items ?? [], [storeCart?.items]);
 
-  // `storeCart.subtotal` is the server's own net total — the one figure
-  // that always accounts for an order-wide promotion, which no single line
-  // carries a share of on the wire. Re-summing the lines' own subtotals (as
-  // this used to) silently drops that discount and overcharges.
+ 
   const { original: originalSubtotal, discount, net: effectiveSubtotal } = useMemo(
     () => cartTotals(storeCart ?? { subtotal: 0, items: [] }),
     [storeCart],
