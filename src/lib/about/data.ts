@@ -1,4 +1,4 @@
-// lib/about/data.ts
+
 
 import type { Mentor, TeamMember } from "./types";
 
